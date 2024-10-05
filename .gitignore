@@ -1,32 +1,80 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
+# Binaries
 *.a
-*.lib
-
-# Executables
+*.o
+*.dll
 *.exe
-*.out
-*.app
+
+# IDE folders
+.idea/
+.vscode/
+
+# Documentation
+doc/aux-txt2tags/DocTeX-VERSION.t2t
+doc/html/
+src/CoCoA-5/CoCoAManual/html/
+src/CoCoA-5/CoCoAManual/tex/
+doc/CoCoALib-CompletedTasks.html
+doc/CoCoALib-tasks.html
+doc/CoCoALib-tasks/CoCoALib-CompletedTasks.html
+doc/CoCoALib-tasks/CoCoALib-tasks.html
+doc/tex/
+*.html
+*.pdf
+
+# Generated files
+.*-hdrs
+.*_srcs
+.mutex
+.qmake.stash
+autoconf.mk*
+ERR_MESGS
+Makefile_dependencies*
+configuration/ExternalLibs/
+configuration/ExternalLibs-CoCoA5/
+configuration/last-config-cmd
+include/CoCoA/library.H
+include/CoCoA/PREPROCESSOR_DEFNS.H
+lib/timestamp
+src/CoCoA-5/**/*.Debug
+src/CoCoA-5/**/*.Release
+src/CoCoA-5/**/moc_C5.cpp
+src/CoCoA-5/**/moc_predefs.h
+src/CoCoA-5/**/qrc_C5.cpp
+src/CoCoA-5/CoCoAManual/wordlist.txt
+src/CoCoA-5/QCodeEdit/**/qrc_Edyuk.cpp
+src/CoCoA-5/QCodeEdit/.build/
+src/CoCoA-5/QCodeEdit/Makefile
+src/CoCoA-5/QCodeEdit/QCodeEdit.pro
+src/CoCoA-5/QCodeEdit/ui_*.h
+src/CoCoA-5/tests/*.cerr
+src/CoCoA-5/tests/*.cout
+src/CoCoA-5/tests/*found
+src/CoCoA-5/C5Makefile
+src/CoCoA-5/C5.pro
+src/CoCoA-5/ui_*.h
+src/server/all
+src/tests/*.cerr
+src/tests/*.cout
+src/tests/*found
+
+# Reconfiguration files
+include/CoCoA/PREPROCESSOR_DEFNS.H-old
+include/CoCoA/library.H.old
+
+# Emacs stuff
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Weird generated file
+stdin.s
+
+# Whitelist
+!doc/aux-txt2tags/index*.html
+!doc/CoCoATranslationTable.html
+!src/CoCoA-5/CoCoAManual/aux-files/GUI-extra-files/*.html
