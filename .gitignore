@@ -61,6 +61,9 @@ src/tests/*found
 include/CoCoA/PREPROCESSOR_DEFNS.H-old
 include/CoCoA/library.H.old
 
+# MacOS stuff
+.DS_Store
+
 # Emacs stuff
 *~
 \#*\#
