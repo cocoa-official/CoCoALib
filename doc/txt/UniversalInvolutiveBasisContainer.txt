@@ -1,0 +1,49 @@
+      JBMill
+      Copyright (c)  2011-2015  John Abbott,  Anna M. Bigatti    (orig author: Mario Albert)
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{UniversalInvolutiveBasisContainer}{Mario Albert}
+
+
+
+== User documentation for using the UniversalInvolutiveBasisContainer ==
+%======================================================================
+
+The normal user should not use this class directly. The class UniversalInvolutiveBasisContainer (short UIBC) is only an interface between everything which is related to involutive bases and the ``ideal`` class.
+
+
+== Maintainer documentation for UIBC ==
+%======================================================================
+
+=== Goal of UIBC ===
+
+The UIBC acts as an interface between ``JBMill``/``PBMill`` and an ``ideal``. It handles
+every request of an ``ideal`` to a ``JBMill``/``PBMill`` and computes if necessary a
+Janet or Pommaret basis. In addition to that the UIBC stores every computed
+value which is related to a Janet or Pommaret basis. Therefore it needs to
+compute values like the dimension only once, because for additional calls it
+already knows these values.
+
+=== Implementation of UIBC ===
+
+The UIBC is designed as a subclass of ``IntrusiveReferenceCount``. The reason for that
+is that we use this class as a ``SmartPtrIRC``. Nearly every datamember of UIBC is ``mutable`` one.
+The only non-mutable one is ``gens``, which is a vector of ``RingElem``s. ``gens`` is constant e.g.
+after the initialization we can't change this value anymore. As all other data members of
+UIBC are directly dependent from this generating set we make them mutable. In general
+every mutable data member is 'empty'. Only if the user requests one of this values we check
+if this value is non-empty and return it. If is empty we compute this value and return it.
+
+The class ``SparsePolyRing::IdealImpl`` contains ``SmartPtrIRC<Involutive::UniversalInvolutiveBasisContainer>``
+as data member. It implements several methods to compute values via the UIBC. In addition to that
+we have some non-member methods in the namespace ``Involutive``, which access these methods.
+
+=== Ideas ===
+At the moment UIBC contains a ``JBMill`` and a ``PBMill``. Because ``PBMill`` is a subclass of ``JBMill`` which
+only extens ``JBMill`` it would be better if (in case of delta-regular coordinates) we only store a ``PBMill``.
+
+It would be useful to set different Janet basis computation strategies via the ideal implementation. But for this we need
+to know ``Involutive::StrategyFlag`` already in ``SparsePolyRing.C``. But that is not a clean solution... (See discussion in redmine!)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

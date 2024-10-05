@@ -1,0 +1,1347 @@
+Package $cocoa5      -- communication with CoCoAServer
+
+export LT5x;
+export GBasis5x;
+export OperationCommunication;
+------------------------------------------------------
+  CoCoAServerMachine := "localhost";
+  CoCoAServerPort := 49344; //"0xc0c0";
+  PrintRequestInDir := ""; -- If not "" then log request to file in this dir
+  EnableSocket := true; -- If False, server is not called
+  PrintCPUTime := true; -- prints time from server
+  PrintCoCoAServerVersion := true; -- prints server version
+
+  CoCoAServer_Fields :=
+  ["FloatPrecision", "NumParams", "OrdMat", "GradingDim",
+   "OrdMat", "ExName",
+   "IsPosTo", "ModuleCompOrd", "ModuleShifts", "NumComponents",
+   "ReducedGBasis", "VerbosityLevel"];
+
+------------------------------------------------------
+-- --   ----[  parameters ]-----------------------------------------------
+-- --   M := $cocoa5.AddParamOrdMat(DegRevLexMat(3), 1); // compatible Term Ordering
+-- --   Use ZZ/(32003)[a, x,y,z], Ord(M);
+  
+-- --   I := Ideal((a-1)x+(a^2+a)y,(a+1)x + y);
+-- --   GBasis5(I);
+-- --   GBasis5x(I, Record[NumParams:=1]);
+  
+-- --   ----[  Twin floats  ]--------------------------------------------------
+--  use QQ[x,y,z];
+--  I := ideal(x^4*y -x*y*z, x*y^4 -x*z +1238945);
+--  LT5x(I, record[]);
+--  LT5x(I, record[FloatPrecision:=128]);
+  
+-- --   ----[  Elimination  ]----------------
+-- --   Use QQ[x,y,z,w[3..5]], Weights([7, 4, 3, 1, 1, 1]);
+  
+-- --   I := Ideal(
+-- --   	   x - 7413431 w[4]^7 - 9162341 w[3]*w[4]*w[5]^5,
+-- --   	   y - 6521443 w[4]^4 - 2312257 w[3]^2*w[4]*w[5],
+-- --   	   z - 5329421 w[4]^3 - 2122414 w[3]*w[5]^2
+-- --   	   );
+  
+-- --   Time E := Elim([w[3],w[4]], I);
+-- --   E5 := Elim5([w[3],w[4]], I);  // usually much faster than CoCoA4
+-- --   E = E5;
+  
+-- --   ----[  Intersection  ]-------------------------------
+-- --   Use QQ[x,y,z], Weights(1,2,1);
+-- --   I := Ideal(xy, z^2);
+-- --   J := Ideal(yz, x-z);
+-- --   Intersection5(I, J);
+  
+-- --   ----[  Syzygies  ]--------------------------------------
+-- --   Use ZZ/(101)[x,y,z], Weights(1,2,4);
+-- --   L := [Vector(x^2, x^2), Vector(xy, xy)];
+-- --   S5 := SyzOfGens5(L);
+  
+-- --   ----[  Modules  ]---------------------------------------------------------
+-- --   Use QQ[x,y,z], PosTo;
+-- --   M := Module([x,z], [z,y]);
+-- --   ReducedGBasis(M);
+-- --   ReducedGBasis5(M);
+  
+-- --   Use QQ[x,y,z], Weights([1,2,4]);
+-- --   M := Module([x^2-y,1],[x^4-z,y^2]);
+-- --   Info5 := Record[];
+-- --   Info5.ModuleShifts := Mat([[0,2]]);
+-- --   GBasis5x(M, Info5);
+  
+-- --   // Grading given via OrdMat and Grading Dim
+-- --   OrdMat := Mat([[1,1,1],[2,1,1],[1,1,0]]); // Ring Grading (first 2 Rows)
+-- --                                             // Plus order (last row)
+-- --   Use ZZ/(101)[x,y,z], Ord(OrdMat), ToPos;
+-- --   M := Module([y-x,0,0], [x,0,z], [0,y^2-z^2,0]);
+-- --   X := ReducedGBasis5(Module(Gens(M)));
+-- --   // GBasis on a module with shifts
+-- --   Info5 := Record[];
+-- --   Info5.OrdMat := OrdMat;
+-- --   Info5.GradingDim := 2;
+-- --   Info5.ModuleShifts := Mat([[3,1,2],[2,2,5]]); // GrDim rows!!
+-- --   ReducedGBasis5x(M, Info5);
+----------------------------------------------------------------------
+
+
+  
+Define About()
+  PrintLn "    Date: 18 Mar 2019"; // from cocoa5
+  PrintLn "    Author: John Abbott, Anna Bigatti";
+  PrintLn "    Date:  1 Jun 2010"; // from cocoa4
+  PrintLn "    Author: Anna Bigatti, Massimo Caboara";
+EndDefine; -- About
+
+Define Version()
+  Return "2.0"; -- version from cocoa-5
+//  Return "1.03"; -- CoCoAServer waits for end_of_session before quitting
+//  Return "1.02"; -- LT5 receives an Ideal, Frobby functions
+//  Return "1.01"; -- Added <number_arguments> in version 4.7.4
+EndDefine; -- Version
+
+
+
+  
+Define Initialize()
+  -- TopLevel MEMORY;
+  -- if not(IsDefined(MEMORY)) then MEMORY := record[PKG := record[]]; endif;
+  -- if not("PKG" isin fields(MEMORY)) then MEMORY.PKG := record[]; endif;
+  -- MEMORY.PKG.CoCoAServer := record[];
+//  MEMORY.PKG.CoCoAServer.PrintOnPath := ""; -- If "" there is no output on file
+//  MEMORY.PKG.CoCoAServer.PrintOnPath := GetEnv("HOME") + "/tmp";
+//  MEMORY.PKG.CoCoAServer.EnableSocket := True; -- If False server is not called
+//  MEMORY.PKG.CoCoAServer.EnableSocket := false; -- If False server is not called
+//  MEMORY.PKG.CoCoAServer.PrintCPUTime := True; -- Prints Time for server computations
+//  MEMORY.PKG.CoCoAServer.CoCoALibVersion := "Just initialized";
+  -- MEMORY.PKG.CoCoAServer.Fields :=
+  -- ["FloatPrecision", "NumParams", "OrdMat", "GradingDim",
+  --  "OrdMat", "ExName",
+  --  "IsPosTo", "ModuleCompOrd", "ModuleShifts", "NumComponents",
+  --  "ReducedGBasis", "VerbosityLevel"];
+EndDefine; -- Initialize
+
+Define Man()
+  PrintLn "DESCRIPTION";
+  PrintLn "    The functions";
+  PrintLn "            C5.GBasis5x(I, Info5);";
+  PrintLn "            C5.ReducedGBasis5x(I, Info5);";
+  PrintLn "            C5.LT5x(I, Info5);";
+  PrintLn "    peform the computation is a \"similar\" environment as the one defined in";
+  PrintLn "    CoCoA-4, but with the extra properties defined in Info5.";
+  PrintLn "    (Info5 := Record[], for only default values)";
+EndDefine; -- Man
+
+--------------------------------------------------------------
+
+
+Define ExtendedInfo(X, Info)
+  If not(IsSubset(Fields(Info), $.CoCoAServer_Fields)) Then
+    Error("5x operation not defined for " +
+	   Sprint(Diff(Fields(Info), $.CoCoAServer_Fields)));
+  EndIf;
+  If "NumParams" IsIn Fields(Info) then error("NYI: NumParams"); EndIf;
+  UndefFlds := Diff($.CoCoAServer_Fields, Fields(Info));
+  If "ExName" IsIn UndefFlds Then Info.ExName := "RequestForCoCoAServer-"+sprint(date())+"-"+sprint(TimeOfDay()); EndIf;
+--  If "ReducedGBasis" IsIn UndefFlds Then Info.ReducedGBasis := False; EndIf;
+  if type(X) = LIST then P := RingOf(X[1]); else P := RingOf(X); endif;
+  Info.OutputRing := P;
+  Info.ServerOutputRing := $.MakeServerOutputRing(Info);
+  Info.OutputHom := PolyAlgebraHom(Info.ServerOutputRing, P, indets(P));
+  -- other types?? 2019
+    -- IDEAL and MODULE --
+  If "FloatPrecision" IsIn UndefFlds Then Info.FloatPrecision := 0; EndIf;
+//  If "NumParams" IsIn UndefFlds      Then Info.NumParams := 0;  EndIf;
+    If not("OrdMat" IsIn UndefFlds) Then
+      If "GradingDim" IsIn UndefFlds Then
+	Error("ExtendedInfo: you cannot define OrdMat without defining GradingDim (first GradingDim rows of OrdMat define the grading)");
+      EndIf;
+    Else -- "OrdMat" IsIn UndefFlds
+      If GradingDim(P) > 1 Then
+	Error("ExtendedInfo: you cannot use these weights!");
+      EndIf;
+      If "GradingDim" IsIn UndefFlds Then
+	Info.GradingDim := GradingDim;
+      EndIf;
+      Info.OrdMat := OrdMat(P);
+    EndIf;
+  If Type(X) <> MODULE Then Return Info; EndIf;
+    -- MODULE --
+  If "NumComponents"  IsIn UndefFlds  Then Info.NumComponents:=1; EndIf;
+  If "FirstModuleInd" IsIn UndefFlds  Then Info.FirstModuleInd:=-1; EndIf;
+//// --2019: is posto defined in cocoa5?
+////If "IsPosTo" IsIn UndefFlds         Then Error("NYI"); Info.IsPosTo := IsPosTo(P); EndIf;
+    -- is this useless now?
+//    If not(Type(X) IsIn [IDEAL, MODULE]) Then NumComponents := 0;
+    Info.NumComponents := len(first(gens(X)));
+    Info.FirstModuleInd:=NumIndets(P)-1;
+  If "EmbeddingType" IsIn UndefFlds Then Info.EmbeddingType:="short"; EndIf;
+    If "ModuleCompOrd" IsIn UndefFlds Then // first comp is highest
+      Info.ModuleCompOrd := Reversed(1..Info.NumComponents);
+    EndIf;
+    If "ModuleShifts" IsIn UndefFlds Then // 0 shifts
+      If Info.GradingDim<>0 Then
+	Info.ModuleShifts := ZeroMat(RingZZ(), Info.GradingDim, Info.NumComponents);
+      Else
+	Info.ModuleShifts := ZeroMat(RingZZ(), 1, Info.NumComponents);
+      EndIf;
+    EndIf;
+    If Info.GradingDim<>0 And Len(Info.ModuleShifts) <> Info.GradingDim
+      Or
+      Info.GradingDim=0 And  Info.ModuleShifts <> ZeroMat(RingZZ(), 1, Info.NumComponents)
+      Then
+      Error("ExtendedInfo: Len(Info.ModuleShifts) <> Info.GradingDim");
+    EndIf;
+    Return Info;
+/////  EndUsing;
+EndDefine; -- ExtendedInfo
+
+
+Define DefaultInfo(X)
+  Return $.ExtendedInfo(X, Record[]);
+EndDefine; -- DefaultInfo
+
+-- /*
+--   <Type of computation>  One of these
+--   "groebner"
+--   "syzygy"
+--   "intersection"
+--   "colon"
+--   "saturation"
+--   "LT"
+
+--   <Ordering-Block> :  One of these
+--   "lexicographic"
+--   "graded_reverse_lexicographic"
+--   "graded_lexicographic"
+--   "matrix_ordering"
+--        Matrix ordering, : followed by UNSIGNED INT GradingDim and 2*N^2 INT
+-- 	               CHAR + (1+N^2 INT)
+--                          which stand for the ordering matrix written by lines.
+
+
+
+-- It then execute the C++ program CoCoAServerServer, which sends the result back
+-- by socket as an assigment to the cocoa var MEMORY.PKG.CoCoAServer.Result of a
+-- list of lists of monomials. The sum of each sublist gives the corresponding GB
+-- element.
+-- Every sublist then is collapsed in a poly and the list of polys (the GBasis)
+-- is returned.
+
+-- The list of list of monomials approach is necessary since CoCoA4 take too much
+-- time to read a list of big polys due to the absence of special reading
+-- routines.
+
+-- 		    */
+
+
+Define Term2Cpp(t, OutStream)
+  expv := exponents(t);
+  for j := 1 to len(expv) do
+     print expv[j]," " on OutStream;
+  endfor;
+  println " " on OutStream;
+EndDefine;
+
+Define PutInZZ(f)
+  if f=0 then return f; endif;
+  if characteristic(RingOf(f)) <> 0 then return f; endif;
+  return AsINT(CommonDenom(f))*f;
+EndDefine;
+
+  // FORMAT is
+  // {Numterms}
+  // [ {coeff} {expvec} {newline} ]*  
+Define PolyToDevice(f, OutStream)
+  f := $.PutInZZ(f);
+  println NumTerms(f) on OutStream;
+  foreach m in monomials(f) do
+    print LC(m), "  " on OutStream;
+    $.Term2Cpp(LT(m), OutStream);
+  endforeach;
+  println " " on OutStream; // useless??? 
+EndDefine; -- PolyToDevice
+
+
+// send poly in QQ[x,y,z]
+Define RatPolyToDevice(f, OutStream)
+  println NumTerms(f) on OutStream;
+  foreach m in monomials(f) do
+    c := LC(m);
+    print num(c), " ", den(c), "  " on OutStream;
+    $.Term2Cpp(LT(m), OutStream);
+  endforeach;
+  println " " on OutStream;  // useless???
+EndDefine; -- RatPolyToDevice
+
+
+Define PPToDevice(P, OutStream)
+  If NumTerms(P) <> 1 Then Error("PPToDevice: expected PowerProduct"); EndIf;
+//  If LC(P)<>1 Then Error("PPToDevice: expected PowerProduct"); EndIf;  
+  $.Term2Cpp(LT(P), OutStream);
+  println " " on OutStream;  // useless???
+EndDefine; -- PPToDevice
+
+
+// Writes The ordering specified by M on OutStream.
+Define Ordering2Cpp(M, GrDim, OutStream)
+  print   "    ordering_type " on OutStream;
+  If GrDim = 0 Then
+    If $.IsLexMat(M) Then PrintLn "  lexicographic" On OutStream; Return; EndIf;
+  EndIf;
+  If GrDim = 1 Then
+    If $.IsDegLexMat(M) Then PrintLn "  graded_lexicographic" On OutStream; Return; EndIf;
+    If $.IsDegRevLexMat(M) Then
+      PrintLn "  graded_reverse_lexicographic" On OutStream; Return;
+    EndIf;
+  EndIf;
+  PrintLn "  matrix_ordering" On OutStream;
+  PrintLn "    grading_dim ", GrDim On OutStream;// Printing Grading Dim
+----  M := $.PositiveMat(M);// Equivalent to M, non negative entries.
+  $.IntMatrixToDevice(M, OutStream);
+EndDefine; -- Ordering2Cpp
+
+
+Define Mat2Cpp(M, OutStream)
+  Foreach Row In GetRows(M) Do
+    Print "    " On OutStream;
+    Foreach X In Row Do Print X, " " On OutStream;  EndForeach;
+    PrintLn On OutStream;
+  EndForeach;
+EndDefine; -- Mat2Cpp
+
+
+
+Define HeaderToDevice(Computation, NumArgs, Info5, OutStream)
+  PrintLn "<Greetings>" On OutStream;
+  PrintLn "  CoCoAServer?" On OutStream;
+  PrintLn "  version  ", $.Version() On OutStream;
+  PrintLn "  nolimits" On OutStream;
+  PrintLn "  example_name  ", Info5.ExName On OutStream;
+//  PrintLn "  stat_level  ", 4 On D;  -- more info
+  PrintLn "</Greetings>" On OutStream;
+  PrintLn On OutStream;
+  PrintLn "<operation> ", Computation, " </operation>" On OutStream;
+///////////// NEXT BLOCK LOOKS DODGY
+--   DeviceStr := Sprint(D); // 2007-10-29: NASTY HACK only way to know
+--   If "Type := \"Socket\"" IsIn DeviceStr Then
+--     Source D; -- should wait for the answer (terminating with "Eof;)"
+--   Elif not("Type := \"OFile\""  IsIn DeviceStr) Then
+--     PrintLn DeviceStr;
+--     Error("HeaderToDevice: neither OFile nor Socket??!?!?!?");
+--   EndIf;
+-- -- The number of arguments is to be sent AFTER the answer from CoCoAServer
+  PrintLn "<number_arguments> ", NumArgs, " </number_arguments>" On OutStream;
+--   If Type(MEMORY.PKG.CoCoAServer.Result) = ERROR Then
+--     Close(D);
+--     Throw := MEMORY.PKG.CoCoAServer.Result; -- throws the error
+--   EndIf;
+-- --  PrintLn "CoCoALibVersion = ", MEMORY.PKG.CoCoAServer.CoCoALibVersion;
+  PrintLn On OutStream;
+EndDefine; -- HeaderToDevice
+
+
+-- Define ClosingMesgToDevice(D)
+--   PrintLn "<end_of_request/>" On D;
+-- EndDefine; -- HeaderToDevice
+
+
+Define VerbosityLevelToDevice(V, OutStream)
+  Print "<verbosity_level> " On OutStream;
+  $.IntToDevice(V, OutStream);
+  PrintLn " </verbosity_level>" On OutStream;
+EndDefine; -- VerbosityLevelToDevice
+
+
+Define PolyRingToDevice(P, Info5, OutStream)
+  PrintLn "<polynomial_ring>" On OutStream;
+
+  PrintLn "    name ", "P"/*P*/ On OutStream;
+
+  PrintLn "  <coefficient_ring>" On OutStream;
+  PrintLn "    characteristic ", characteristic(P) On OutStream;
+  If Info5.FloatPrecision<>0 And characteristic(P)=0 Then
+    PrintLn "    float_precision ", Info5.FloatPrecision  On OutStream;
+  EndIf;
+  PrintLn "  </coefficient_ring>" On OutStream;
+  PrintLn On OutStream;
+
+  PrintLn "  <indeterminates>" On OutStream;
+//  PrintLn "    number_indets ", NumIndets(P)-Info5.NumParams On OutStream;
+  PrintLn "    number_indets ", NumIndets(P) On OutStream;
+//  PrintLn "    number_params ", Info5.NumParams On OutStream;
+--   if IsFractionField(CoeffRing(P)) and IsPolyRing(BaseRing(CoeffRing(P))) then
+--     PrintLn "    number_params ", NumIndets(BaseRing(CoeffRing(P))) On OutStream;
+--   endif;
+  PrintLn "  </indeterminates>" On OutStream;
+  PrintLn On OutStream;
+
+  PrintLn "  <ordering_grading>" On OutStream;
+//  $.Ordering2Cpp(Info5.OrdMat, Info5.GradingDim, OutStream);
+  $.Ordering2Cpp(OrdMat(P), GradingDim(P), OutStream);
+  PrintLn "  </ordering_grading>" On OutStream;
+  PrintLn On OutStream;
+
+  PrintLn "</polynomial_ring>" On OutStream;
+  PrintLn On OutStream;
+EndDefine; -- PolyRingToDevice
+
+Define ModuleOrderingToDevice(GradingDim, ModuleShifts, IsPosTo, ModuleCompOrd, OutStream)
+  PrintLn "  <ordering_grading>" On OutStream;
+  If GradingDim<>0 Then
+    PrintLn "    <module_shifts> " On OutStream;
+    $.Mat2Cpp(Transposed(mat(ModuleShifts)), OutStream);
+    PrintLn "    </module_shifts> " On OutStream;
+  EndIf;
+  PrintLn "    <ordering_type> " On OutStream;
+  If GradingDim<>0 Then
+    If IsPosTo Then PrintLn "      wdeg_pos_to" On OutStream;
+    Else            PrintLn "      wdeg_to_pos" On OutStream;
+    EndIf;
+  Else //GradingDim=0
+    If IsPosTo Then PrintLn "      pos_to" On OutStream;
+    Else            PrintLn "      to_pos" On OutStream;
+    EndIf;
+  EndIf;
+  PrintLn "      <module_components_ordering> " On OutStream;
+  $.Mat2Cpp([ModuleCompOrd], OutStream);
+  PrintLn "      </module_components_ordering> " On OutStream;
+  PrintLn "    </ordering_type> " On OutStream;
+  PrintLn "  </ordering_grading>" On OutStream;
+EndDefine; -- ModuleOrderingToDevice
+
+
+Define GradedFreeModuleToDevice(Info5, OutStream)
+  PrintLn "<graded_free_module>" On OutStream;
+
+--  PrintLn "    name ", RingEnv() On OutStream;
+  $.PolyRingToDevice(Info5, OutStream);
+  PrintLn "  number_module_components ", Info5.NumComponents On OutStream;
+
+  $.ModuleOrderingToDevice(Info5.GradingDim,Info5.ModuleShifts, Info5.IsPosTo, Info5.ModuleCompOrd, OutStream);
+  PrintLn On OutStream;
+
+  PrintLn "</graded_free_module>" On OutStream;
+  PrintLn On OutStream;
+EndDefine; -- GradedFreeModuleToDevice
+
+
+// ANNA ToDo: unified function for **ListToDevice
+Define ListToDevice(L, CoCoAServerTag, SendElement, OutStream)
+  PrintLn "<", CoCoAServerTag, ">" On OutStream;
+  PrintLn Len(L) On OutStream;
+  PrintLn On OutStream;
+  For I := 1 To Len(L) Do
+    SendElement(L[I], OutStream);
+  EndFor;
+  PrintLn "</", CoCoAServerTag, ">" On OutStream;
+  PrintLn On OutStream;
+EndDefine; -- ListToDevice
+
+Define RatMatrixListToDevice(L, OutStream)
+  $.ListToDevice(L, "ratmat_list", $.RatMatrixToDevice, OutStream);
+EndDefine;
+
+Define PolyListToDevice(L, OutStream)
+  $.ListToDevice(L, "polynomial_list", $.PolyToDevice, OutStream);
+EndDefine; -- PolyListToDevice
+
+Define RatPolyListToDevice(L, OutStream)
+  $.ListToDevice(L, "ratpolynomial_list", $.RatPolyToDevice, OutStream);
+EndDefine; -- RatPolyListToDevice
+
+Define IntegerListToDevice(L, OutStream)
+  $.ListToDevice(L, "integer_vector", $.IntToDevice, OutStream);
+EndDefine; -- IntegerListToDevice
+
+
+Define PPListToDevice(L, OutStream)
+  $.ListToDevice(L, "powerproduct_list", $.PPToDevice, OutStream);
+EndDefine; -- PPListToDevice
+
+
+Define VectorListToDevice(L, OutStream)
+  $.ListToDevice(L, "vector_list", $.VectorToDevice, OutStream);
+EndDefine; -- VectorListToDevice
+
+
+Define IntToDevice(M, OutStream)
+  Print M On OutStream;
+EndDefine; -- IntToDevice
+
+
+Define VectorToDevice(V, OutStream)
+--  PrintLn "<vector>" On OutStream;
+  For I:=1 To Len(V) Do
+    PrintLn "      ", I On OutStream;
+    $.PolyToDevice(V[I], OutStream);
+  EndFor;
+  PrintLn On OutStream;
+--  PrintLn "</vector>" On OutStream;
+EndDefine; -- VectorListToDevice
+
+
+Define RatMatrixToDevice(M, OutStream)
+  PrintLn "<rational_matrix>" On OutStream;
+  PrintLn NumRows(M), " ", NumCols(M) On OutStream;
+  Foreach Row In GetRows(M) Do
+    Foreach J In Row Do
+      Print "   ", Num(J), " ", Den(J) On OutStream;
+    EndForeach;
+    PrintLn On OutStream;
+  EndForeach;
+  PrintLn "</rational_matrix>" On OutStream;
+EndDefine; -- RatMatrixToDevice
+
+Define DoubleMatrixToDevice(M, OutStream)
+  E := OpenOString();
+  PrintLn "<double_matrix>" On E;
+  PrintLn NumRows(M), " ", NumCols(M) On E;
+  Foreach Row In GetRows(M) Do
+    Foreach J In Row Do
+      Print " ",Num(J)," ",Den(J) On E;
+    EndForeach;
+  EndForeach;
+  PrintLn "</double_matrix>" On E;
+  Print close(E) On OutStream;
+EndDefine; -- DoubleMatrixToDevice
+
+Define IntMatrixToDevice(M, OutStream)
+  PrintLn "<integer_matrix>" On OutStream;
+  PrintLn NumRows(M), " ", NumCols(M) On OutStream;
+  Foreach Row In GetRows(M) Do
+    Foreach J In Row Do
+      If Type(J) <> INT Then Error("IntMatrixToDevice: non integer entry"); EndIf;
+      Print "   ", Num(J) On OutStream;
+    EndForeach;
+    PrintLn On OutStream;
+  EndForeach;
+  PrintLn "</integer_matrix>" On OutStream;
+EndDefine; -- IntMatrixToDevice
+
+
+-------------------- Module To Ring Maps and inverse Maps --------------------
+
+// y indets are the new ones, and they are the last ones
+Define IsInFirstVars(PP,FirstModuleInd)
+  LL:=Log(PP);
+  For I:= FirstModuleInd To NumIndets() Do
+    If LL[I]<>0 Then Return False; EndIf;
+  EndFor;
+  Return True;
+EndDefine;
+
+
+
+// short and nasty, but fast
+// Input is a PP or Monomial and an integer. Checks nothing.
+Define XDeg(T,IndexX)
+  L:=Log(T);
+  Return L[IndexX];
+EndDefine;
+
+
+-- never used:
+-- // Result is VectorList
+-- Define PolyToVectorList(ModToRingMap,PL)
+--   Return [$.PolyToVector(ModToRingMap,P)|P In PL];
+-- EndDefine;
+
+
+Define PermuteList(L, Permutation)
+  Return [ L[Permutation[I]] | I In 1..Len(L)];
+EndDefine;
+
+Define InversePermutation(L)
+  L1:=NewList(Len(L),0);
+  For I:=1 To Len(L) Do  L1[L[I]]:=I; EndFor;
+  Return L1;
+EndDefine;
+
+-- /*
+-- Permutation:=[2,3,1,4,5,7,6,9,8];// 1->2,2->3,3->1,4->4 etc
+-- L:=[1,2,3,4,5,6,7,8,9];
+-- PermuteList(L, Permutation);
+-- [2, 3, 1, 4, 5, 7, 6, 9, 8]
+-- PermuteList(It, InversePermutation(Permutation));
+-- [1, 2, 3, 4, 5, 6, 7, 8, 9]
+-- */
+-------------------------------------------------------------------------------
+
+Define ComputationRequestToDevice(Computation, Operands, Info5, OutStream)
+  $.HeaderToDevice(Computation, Len(Operands)+1, Info5, OutStream);
+  If ("Launch" IsIn Computation) Then
+	-- In case we are using the launch command nothing else needs to be sent
+	Return;
+  EndIf;
+  If MODULE IsIn [Type(O)|O In Operands] Then
+    $.GradedFreeModuleToDevice(Info5, OutStream);
+  Else // only MODULE, IDEAL, INT, and tagged types
+    $.PolyRingToDevice(RingOf(Operands[1]), Info5, OutStream);
+  EndIf;
+  Foreach M In Operands Do
+    If Type(M) = MODULE Then
+      $.VectorListToDevice([P In Gens(M) | not(IsZero(P))], OutStream);
+    Elif Type(M) = IDEAL Then
+      $.PolyListToDevice([P In Gens(M) | P<>0], OutStream);
+    Elif Type(M) = INT Then
+      $.IntToDevice(M, OutStream);
+    Elif Type(M) = TAGGED("POLY_LIST") Then
+      $.PolyListToDevice([P In M | P<>0], OutStream);// MAX WARNING no zero poly!!!!
+	Elif Type(M) = TAGGED("RATPOLY_LIST") Then
+      $.RatPolyListToDevice([P In M | P<>0], OutStream);// MAX WARNING no zero poly!!!!
+    Elif Type(M) = TAGGED("PP_LIST") Then  // Type(M)= power product list
+      $.PPListToDevice([P In Untagged(M) | P<>0], OutStream);
+    Elif Type(M) = TAGGED("INT_LIST") Then
+      $.IntegerListToDevice(Untagged(M), OutStream);
+    Elif Type(M) = TAGGED("INT_MAT") Then
+      $.IntMatrixToDevice(Untagged(M), OutStream);
+	Elif Type(M) = TAGGED("DOUBLE_MAT") Then
+	  $.DoubleMatrixToDevice(Untagged(M), OutStream);
+    Elif Type(M) = TAGGED("RAT_MAT") Then
+      $.RatMatrixToDevice(Untagged(M), OutStream);
+	Elif Type(M) = TAGGED("RATMAT_LIST") Then
+	  $.RatMatrixListToDevice(Untagged(M), OutStream);
+    Elif Type(M) = TAGGED("VERBOSITY") Then
+      $.VerbosityLevelToDevice(Untagged(M), OutStream);
+    Else
+      Error("$cocoa5.ComputationRequestToDevice: cannot transmit type "+sprint(type(M)));
+    EndIf;
+  EndForeach;
+//  $.ClosingMesgToDevice(OutStream);
+EndDefine; -- ComputationRequestToDevice
+
+
+Define MakeServerOutputRing(Info5)
+  NumInds := NumIndets(Info5.OutputRing);
+  K := CoeffRing(Info5.OutputRing);
+  return NewPolyRing(K, SymbolRange("x",0,NumInds-1));
+EndDefine; -- MakeServerOutputRing
+
+
+Define EndOfSessionTag() Return "<end_of_session/>"; EndDefine;
+
+
+-- uses the information in Info5 and writes on socket
+-- if MEMORY.PKG.CoCoAServer.PrintOnPath <> "" Then it also
+--   writes on file named MEMORY.PKG.CoCoAServer.PrintOnPath+"/"+Info5.ExName+".cocoa5"
+
+
+// AB: 4 Jun 2010, NEW SYNTAX
+// OperationCommunication(Computation, [list of Operands], optional Info5)
+-- WARN: if there is a module in the operands, it is the FIRST operand
+
+Define OperationCommunication(...)
+  NArgs := Len(ARGV);
+  If NArgs < 2 Then Error("OperationCommunication: too few arguments"); EndIf;
+  If NArgs > 3 Then Error("OperationCommunication: too many arguments"); EndIf;
+//  Operands := [ ARGV[I] | I In 1..(NArgs-2)];
+//  Computation := ARGV[NArgs-1];
+  Computation := ARGV[1];
+  Operands := ARGV[2];
+  Info5 := ARGV[3];
+  Info5 := $.ExtendedInfo(first(Operands), Info5);
+  ServerOutputRing := Info5.ServerOutputRing;
+///  Using ServerOutputRing Do
+    -- no communication channel
+    If $.PrintRequestInDir = "" And
+      not($.EnableSocket)  Then
+      Error("ComputationCommunication: neither file nor socket output is set!");
+    EndIf;
+    -- communication on file: just print the request
+    If $.PrintRequestInDir <> "" Then
+      F := OpenOFile($.PrintRequestInDir+"/"+Info5.ExName+".cocoa5");
+      $.ComputationRequestToDevice(Computation, Operands, Info5, F);
+      PrintLn $.EndOfSessionTag() On F;
+      Close(F);
+    EndIf;
+    -- communication on server
+    If $.EnableSocket Then
+      try  OutStream := OpenSocket($.CoCoAServerMachine, $.CoCoAServerPort);
+      uponerror E do
+	//println "debug: ", GetErrMesg(E);
+	If GetErrMesg(E)="failed to create socket connection" Then
+	  Error("Cannot open socket: did you start CoCoAServer?");
+	EndIf;
+	Error(GetErrMesg(E));
+      endtry;
+      $.ComputationRequestToDevice(Computation, Operands, Info5, OutStream.send);
+      CoCoAServerResult := ReadFromStream(ServerOutputRing, OutStream.recv);
+      PrintLn $.EndOfSessionTag() On OutStream.send; -- CoCoAServer waits for this tag before quitting
+//????      $.CoCoAServer_Result := "Cleaned up result from CoCoAServer";
+// 2021-06-10: JAA what are the next lines about???  Commented out
+    -- Elif not("TMP_CoCoAServer_CreatingBenchmarks" isin Fields(MEMORY) And
+    -- 	       MEMORY.TMP_CoCoAServer_CreatingBenchmarks) Then
+    --   PrintLn "WARNING: communication with CoCoAServer is disabled.";
+    --   PrintLn "  [Some errors might follow because of this....]";
+    --   PrintLn "  To enable it type \"$server.EnableSocket := true;\"";
+    EndIf;
+/////  EndUsing; 
+  If not($.EnableSocket) Then
+    ErrMsg := "no socket communication: request printed on "
+    +$.PrintRequestInDir+"/"
+    +Info5.ExName;
+    error(ErrMsg);
+  EndIf;
+  try
+    if type(CoCoAServerResult)=IDEAL then
+      Result := ideal(Info5.OutputHom(gens(CoCoAServerResult)));
+    else
+      Result := Info5.OutputHom(CoCoAServerResult);
+    endif;
+  UponError E do
+    If "Undefined variable" IsIn GetErrMesg(E) Then
+      PrintLn "--", CoCoAServerResult;
+      Error("Sorry, I guess CoCoAServer had some trouble...");
+    EndIf;
+    error(GetErrMesg(E) /*in Image(CoCoAServerResult, RMap(Indets()));*/);
+  endtry;
+  Return Result;
+ EndDefine; -- OperationCommunication
+
+
+define ReadFromStream(OutRing, stream)
+  L := [];
+  Repeat
+    S := GetLine(stream);
+    if VerbosityLevel()>=99 then println "ReadFromStream: ", S; endif;
+    if "<ideal>" isin S then
+      append(ref L, ReadFromStreamIdeal(stream, OutRing));
+    elif "<poly_list>" isin S then
+      append(ref L, ReadFromStreamPolyList(stream, OutRing));
+    elif "CoCoAServer: computing Cpu Time" isin S then
+      if $.PrintCPUTime then println S; endif;
+    elif "CoCoAServer: CoCoALib version " isin S then
+      if $.PrintCoCoAServerVersion then println S; endif;
+    elif S = "SERVER HAS FINISHED" then
+      if len(L)=0 then println "no output??!?!?"; endif;
+      if len(L)<>1 then println "more than one output??!?!?"; endif;
+      return L[1];
+    else
+      println "--  [discarded] ", S;
+    endif;
+  EndRepeat;
+EndDefine;
+
+
+define AssertTagInNextLine(stream, tag)
+  S := GetLine(stream);
+  if not(tag isin S) then
+    error("expecting "+sprint(tag)+", but found "+S);
+  endif;
+enddefine; -- AssertTagInLine
+
+
+define ReadFromStreamIdeal(stream, OutRing)
+//  println "--ReadFromStreamIdeal";
+  AssertTagInNextLine(stream, "<poly_list>");
+  I := ideal(OutRing, ReadFromStreamPolyList(stream, OutRing));
+  AssertTagInNextLine(stream, "</ideal>");
+  return I;
+EndDefine;
+
+// Expected format is:
+  // ALREADY JUST READ: <poly_list>
+  // [ {ring-elem-value} {semicolon} {newline} ]*
+  // </poly_list>
+define ReadFromStreamPolyList(stream, OutRing)
+//  println "--ReadFromStreamPolyList";
+  L := [];
+  Repeat
+    S := GetLine(stream);
+    if "</poly_list>" isin S then
+    if VerbosityLevel()>=99 then println "ReadFromStreamPolyList: ", S; endif;
+      return L;
+    endif;
+    if VerbosityLevel()>=99 then println "ReadFromStreamPolyList: ", S; endif;
+    if ";" isin S then posn:=len(S); while S[posn] <> ";" do posn:=posn-1; endwhile; S := substring(S,1,posn-1); endif;
+    append(ref L, RingElem(OutRing, S)); // Maybe use ReadExprSemicolon instead????
+  EndRepeat;
+EndDefine;
+
+  
+----------------------------------------------------------------------
+-- Define IsServerReady()
+--  Str := "<Greetings> </Greetings>";
+--  Return IsSocketActive(MEMORY.CoCoAServerMachine, MEMORY.CoCoAServerPort, Str);
+--   // Not available in older version
+-- //  Return $.OperationCommunication("TestSocket", [Ideal()]);
+-- EndDefine; -- IsServerReady
+
+
+Define IsTree5(X, Computation)
+  C5Result:= $.OperationCommunication(Computation, [Ideal(X)]);
+  Return [C5Result=[],C5Result];
+EndDefine; -- IsTree5
+
+
+-- this function does NOT memorize the GBasis into I
+-- because Info5 might be quite incompatible with CurrentRing
+Define GBasis5x(X, Info5)
+  If Type(X) = IDEAL Then Computation := "ideal_groebner";
+  Else Computation := "module_groebner";
+  EndIf;
+  If not("VerbosityLevel" IsIn Fields(Info5)) Then
+    Return $.OperationCommunication(Computation, [X], Info5);
+  Else
+    Return $.OperationCommunication(Computation,
+					  [X,
+					  Tagged(Info5.VerbosityLevel,"VERBOSITY")],
+					  Info5);
+  EndIf;
+EndDefine; -- GBasis5x
+
+
+Define ReducedGBasis5x(X, Info5)
+  Info5.ReducedGBasis := True;
+  Return Monic(GBasis5x(X, Info5)); // this is wrong! server should do it
+EndDefine; -- ReducedGBasis5x
+
+
+Define ReducedSATGBasis5x(X, Info5)
+  If Type(X) = IDEAL Then Computation := "ideal_sat_groebner";
+  Else
+    Error("ReducedSATGBasis5x:MODULE NOT ALLOWED");
+  EndIf;
+  If not(Info5 IsIn Fields("VerbosityLevel")) Then
+    Return $.OperationCommunication(Computation, [X], Info5);
+  Else
+    Return $.OperationCommunication(Computation,
+					  [X,
+					  Tagged(Info5.VerbosityLevel,"VERBOSITY")],
+					  Info5);
+  EndIf;
+EndDefine; -- ReducedSATGBasis5x
+
+
+Define ReducedSATMixGBasis5x(X, Info5)
+  If Type(X) = IDEAL Then Computation := "ideal_satmix_groebner";
+  Else
+    Error("ReducedSATMixGBasis5x:MODULE NOT ALLOWED");
+  EndIf;
+  If not("VerbosityLevel" isin Fields(Info5)) Then
+    Return $.OperationCommunication(Computation, [X], Info5);
+  Else
+    Return $.OperationCommunication(Computation,
+					  [X,
+					  Tagged(Info5.VerbosityLevel,"VERBOSITY")],
+					  Info5);
+  EndIf;
+EndDefine; -- ReducedSATMixGBasis5x
+
+
+Define SyzOfGensT5x(X, Info5)
+  If Type(X) = IDEAL Then Computation := "ideal_syzygy";
+  Else Computation := "module_syzygy";
+  EndIf;
+  Return Module($.OperationCommunication(Computation, [X], Info5));
+EndDefine; -- SyzOfGensT5x
+
+
+Define IntersectionT5x(X,Y, Info5)
+  If Type(X)=IDEAL Then
+    Computation := "ideal_intersection";
+    Result:= $.OperationCommunication(Computation, [X,Y], Info5);
+    Return Ideal(Result);
+  Else // Type(Y)=MODULE
+    Computation := "module_intersection";
+    Result:= $.OperationCommunication(Computation, [X,Y], Info5);
+    Return Module(Result);
+  EndIf;
+EndDefine; -- IntersectionT5x
+
+
+Define ElimT5x(ElimIndets, Y, Info5)
+  If Type(Y)=IDEAL Then
+    Computation := "ideal_elim";
+    Result:= $.OperationCommunication(Computation,
+					    [Y, Tagged(ElimIndets,"POLY_LIST")],
+					    Info5);
+    Return Ideal(Result);
+  Else // Type(Y)=MODULE
+    Computation := "module_elim";
+    Result:= $.OperationCommunication(Computation,
+					    [Y, Tagged(ElimIndets,"POLY_LIST")],
+					    Info5);
+    Return Module(Result);
+  EndIf;
+  Error("ElimT5x: arguments must be ElimIndets: PolyList, Y: IDEAL/MODULE");
+EndDefine; -- ElimT5x
+
+
+Define ColonT5x(X,Y, Info5)
+  If [Type(X),Type(Y)] = [IDEAL,IDEAL] Then
+    Computation := "ideal_colon_ideal";
+    Result:= $.OperationCommunication(Computation, [X,Y], Info5);
+    Return Ideal(Result);
+  Elif [Type(X),Type(Y)] = [MODULE, MODULE] Then
+    Computation := "module_colon_module";
+    Result:= $.OperationCommunication(Computation, [X,Y], Info5);
+    Return Ideal(Result);
+  Else // [Type(X),Type(Y)] = [MODULE,IDEAL]
+    Computation := "module_colon_ideal";
+    Result:= $.OperationCommunication(Computation, [X,Y], Info5);
+    Return Module(Result);
+  EndIf;
+EndDefine; -- ColonT5x
+
+
+Define HomogenizedT5x(X,Y, Info5)
+  If Type(X) = RINGELEM Then X := [X]; EndIf;
+  If Type(Y) = IDEAL Then
+    Computation := "ideal_homogenization";
+    Result:= $.OperationCommunication(Computation,
+					    [Y, Tagged(X,"POLY_LIST")],
+					    Info5);
+    Return Ideal(Result);
+  Else // Type(X) = MODULE
+    Computation := "module_homogenization";
+    Result:= $.OperationCommunication(Computation,
+					    [Y, Tagged(X,"POLY_LIST")],
+					    Info5);
+    Return Module(Result);
+  EndIf;
+  Error("HomogenizedT5x: arguments must be X: INDETLIST, Y: IDEAL/MODULE");
+EndDefine; -- HomogenizedT5x
+
+
+Define SaturationT5x(X,Y, Info5)
+  If [Type(X),Type(Y)] = [IDEAL,IDEAL] Then
+    Computation := "ideal_saturation";
+    Result:= $.OperationCommunication(Computation, [X,Y], Info5);
+    Return Ideal(Result);
+  Elif [Type(X),Type(Y)] = [MODULE,IDEAL] Then
+    Computation := "module_saturation";
+    Result:= $.OperationCommunication(Computation, [X,Y], Info5);
+    Return Module(Result);
+  EndIf;
+  Error("SaturationT5x: [IDEAL, IDEAL] or [MODULE, IDEAL]");
+EndDefine; -- SaturationT5x
+
+
+Define LT5x(X, Info5)
+  If Type(X) = IDEAL Then Computation := "ideal_LT";
+  Else Computation := "module_LT";
+  EndIf;
+  Return $.OperationCommunication(Computation, [X], Info5);
+EndDefine; -- LT5x
+
+-- by Stefan Kaspar ----------------------------------
+
+Define FGLM5(GBOld, M)
+  If GBOld <> [] Then
+    Computation := "FGLM";
+    I := Ideal(RingOf(GBOld[1]), []);
+    Return $.OperationCommunication(Computation,
+					  [I, Tagged(M,"INT_MAT")]);
+  Else
+    PrintLn "Warning: Empty list passed to function FGLM5!";
+    Return [];
+  EndIf;
+EndDefine; -- FGLM5
+
+Define BBasis5(I)
+  Computation := "BBasis";
+  Return $.OperationCommunication(Computation, [I]);
+EndDefine; -- BBasis5
+
+Define LLL5(Basis,A,B)
+  M := $.OperationCommunication("LLL",
+				      [Tagged(Mat(Basis),"INT_MAT"),
+				      [A,B]]);
+  Return List(M);
+EndDefine; -- LLL5
+
+-- /*
+-- Basis list of lists of INT
+-- FloatUsed [0 ,1,2,3,4]=
+--  [FP(double),QP(quadruple),XD(xdouble),RR(gmp float)] default FP
+-- OrthoMethod [0,1]=[Givens,GS] default Givens
+-- RAT Delta should be between 0.5 and 1, exluded default =0.99
+-- see Shoup NTL home, LLL packages for an explanation
+-- */
+Define LLLFP5(Basis,FloatUsed,OrthoMethod,Delta)
+  M := $.OperationCommunication("LLLFP",
+				      [Tagged(Mat(Basis),"INT_MAT"),
+                                      [FloatUsed,OrthoMethod,Delta.Num,Delta.Den]]);
+  Return List(M);
+EndDefine; -- LLLFP5
+
+-- /*
+-- Babai's algorithm for approximating V with respect to them integer matrix Basis describing a lattice
+-- see Shoup NTL home, LLL package for an explanation
+-- Basis is an integer matrix
+-- V is a vector with compatible length for Basis*V
+-- Output is an integer vector with the same length as V
+-- */
+Define Babai5(Basis,V)
+  V1 := $.OperationCommunication("Babai",// check the name cocoalib expects
+
+				       [Tagged(Mat(Basis),"INT_MAT"),
+				       // Tagged(V,"INT_LIST"), // <----- by Anna for Max
+				       V]// Think about having INT_VEC like INT_MAT as a tagged object
+	 );
+  Return V1;
+EndDefine; -- Babai5
+
+-- /*
+-- Basis list of lists of INT
+-- FloatUsed [0 ,1,2,3,4]=
+--  [FP(double),QP(quadruple),XD(xdouble),RR(gmp float),QP1(quad for ortho, double
+--  for the rest)] default FP
+-- OrthoMethod [0,1]=[Givens,GS] default Givens
+-- RAT Delta should be between 0.5 and 1, exluded default =0.99
+-- BlockSize INT default 10
+-- prune INT default 0
+-- see Shoup NTL home, LLL packages for an explanation
+-- */
+Define BKZ5(Basis,FloatUsed,OrthoMethod,Delta,BlockSize,Prune)
+  // <----- by Anna for Max
+  // Flags := Tagged([FloatUsed,OrthoMethod,Delta.Num,Delta.Den,BlockSize,Prune],"INT_LIST");
+  M := $.OperationCommunication("BKZ",
+				      [Tagged(Mat(Basis),"INT_MAT"),
+				      // Flags, // <----- by Anna for Max
+                                      [FloatUsed,OrthoMethod,Delta.Num,Delta.Den,BlockSize,Prune]]);
+  Return List(M);
+EndDefine; -- BKZ5
+
+-- by Laura Torrente -------------------------------------
+
+Define PreprocessPts5(...)
+  If not(Len(ARGV) IsIn [2,3]) Then Error("Preprocess5: expected 2 or 3 args"); EndIf;
+  Pts := ARGV[1];
+  Tolerance := ARGV[2];
+  If Len(ARGV) = 2 Then Return $.PreprocessChoose5(Pts, Tolerance); EndIf;
+  Return $.PreprocessAlg5(Pts, Tolerance, ARGV[3]);
+EndDefine; -- Preprocess5
+
+
+Define PreprocessChoose5(Pts, Tolerance)
+  GridPts := $.PreprocessAlg5(Pts, Tolerance, "Grid");
+  // JAA: line below is just a hasty heuristic, needs more study!!!
+  If Len(GridPts.Points)^2 > Len(Pts) Then
+    Return $.PreprocessAlg5(Pts, Tolerance, "Aggr");
+  Else
+    Return $.PreprocessAlg5(Pts, Tolerance, "Subdiv");
+  EndIf;
+EndDefine; -- PreprocessChoose5
+
+
+Define PreprocessAlg5(Pts, Tolerance, Algm)
+  If   Algm = "Aggr"      Then Computation := "PreprocessAggr";
+  Elif Algm = "Subdiv"    Then Computation := "PreprocessSubdiv";
+  Elif Algm = "Grid"      Then Computation := "PreprocessGrid";
+  Else Error("$.PreprocessAlg5: third arg not a recognized algorithm name");
+  EndIf;
+  PtsAndWts := $.OperationCommunication(Computation,
+					      [Tagged(Mat(Pts),"RAT_MAT"),
+					      Tagged(Mat([Tolerance]),"RAT_MAT")]
+					      );
+  Return PtsAndWts;
+EndDefine; -- PreprocessAlg5
+
+
+Define StableBBasis5(...)
+  If not(Len(ARGV) IsIn [2,3]) Then Error("StableBBasis5: args should be Points, Tolerance, (optional) Gamma"); EndIf;
+  Pts := ARGV[1];
+  Tolerance := ARGV[2];
+  If Type(Pts) <> LIST Or Type(Tolerance) <> LIST Or MakeSet([Type(P) | P In Pts]) <> [LIST] Then
+    Error("StableBbasis5: bad input, expected Points as LIST(LIST(RAT)) and Tolerance as LIST(RAT)");
+  EndIf;
+  If MakeSet([Len(P) | P In Pts]) <> [Len(Tolerance)] Then Error("StableBBasis5: Points and Tolerance must have same number of components"); EndIf;
+  If NumIndets() < Len(Tolerance) Then Error("StableBBasis5: current ring has too few indeterminates"); EndIf;
+  If Len(ARGV) = 2 Then Gamma := 0.1; Else Gamma := ARGV[3]; EndIf;
+  If Gamma < 0 Then Error("StableBBasis5: 3rd arg, gamma must be non-negative"); EndIf;
+  M := $.OperationCommunication("StableBorder",
+				      [Tagged(Mat(Pts),"RAT_MAT"),
+				      Tagged(Mat([Tolerance]),"RAT_MAT"),
+				      Tagged(Mat([[Gamma]]),"RAT_MAT")] );
+  Return M;
+EndDefine; -- StableBBasis5
+
+
+Define StableBBasisNBM5(Pts, Tolerance)
+  If Type(Pts) <> LIST Or Type(Tolerance) <> LIST Or MakeSet([Type(P) | P In Pts]) <> [LIST] Then
+    Error("StableBBasisNBM5: bad input, expected Points as LIST(LIST(RAT)) and Tolerance as LIST(RAT)");
+  EndIf;
+  If MakeSet([Len(P) | P In Pts]) <> [Len(Tolerance)] Then Error("StableBBasisNBM5: Points and Tolerance must have same number of components"); EndIf;
+  If NumIndets() < Len(Tolerance) Then Error("StableBBasisNBM5: current ring has too few indeterminates"); EndIf;
+  M := $.OperationCommunication("NumBMBorder",
+				      [Tagged(Mat(Pts),"RAT_MAT"),
+				      Tagged(Mat([Tolerance]),"RAT_MAT")] );
+  Return M;
+EndDefine; -- StableBBasisNBM5
+
+-- by Eduardo Saenz de Cabezon -------------------------------------
+Define MVT5(X)
+  Computation := "Mayer_Vietoris_Tree";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MVT5
+
+Define MayerVietorisTreeN1(X)
+  Computation := "MVT_N_minus_one";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MayerVietorisTreeN1
+
+Define MVTReg5(X)
+  Computation := "MVT_Regularity";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MVTReg5
+
+Define MVTRegUpperBound5(X)
+  Computation := "MVT_Regularity_Upper_Bound";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MVTRegUpperBound5
+
+Define MVTRegLowerBound5(X)
+  Computation := "MVT_Regularity_Lower_Bound";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MVTRegLowerBound5
+
+Define MVTProjDim5(X)
+  Computation := "MVT_ProjDim";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MVTProjDim5
+
+Define MVTProjDimUpperBound5(X)
+  Computation := "MVT_ProjDim_Upper_Bound";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MVTProjDimUpperBound5
+
+Define MVTProjDimLowerBound5(X)
+  Computation := "MVT_ProjDim_Lower_Bound";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MVTProjDimLowerBound5
+
+Define IsMonomialIrreducible5(X)
+  Computation := "Monomial_Is_Irreducible";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MonomialIsIrreducible5
+
+Define IsMonomialPrime5(X)
+  Computation := "Monomial_Is_Prime";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MonomialIsPrime5
+
+Define IsMonomialPrimary5(X)
+  Computation := "Monomial_Is_Primary";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MonomialIsPrimary5
+
+
+Define MappingConeRes5(X)
+  Computation := "Effective_Mapping_Cone";
+  Arguments := [Tagged(Gens(X),"PP_LIST")];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine; -- MappingConeRes5
+
+-- by Bjarke Hammersholt Roune -------------------------------------
+
+Define AlexanderDual_Frobby5(I, PP)
+  Computation := "AlexanderDual_Frobby";
+  Arguments := [I, Ideal(PP)];
+  Return Ideal($.OperationCommunication(Computation, Arguments));
+EndDefine;
+
+Define IrreducibleDecom_Frobby5(I)
+  Computation := "IrreducibleDecom_Frobby";
+  Arguments := [I];
+  Components := $.OperationCommunication(Computation, Arguments);
+  Return [ Ideal(C) | C In Components];
+EndDefine;
+
+Define MaximalStandardMonomials_Frobby5(I)
+  Computation := "MaximalStandardMonomials_Frobby";
+  Arguments := [I];
+  Return Ideal($.OperationCommunication(Computation, Arguments));
+EndDefine;
+
+Define PrimaryDecom_Frobby5(I)
+  Computation := "PrimaryDecom_Frobby";
+  Arguments := [I];
+  Components := $.OperationCommunication(Computation, Arguments);
+  Return [ Ideal(C) | C In Components];
+EndDefine;
+
+Define Dimension_Frobby5(I)
+  Computation := "Dimension_Frobby";
+  Arguments := [I];
+  Return $.OperationCommunication(Computation, Arguments);
+EndDefine;
+
+Define AssociatedPrimes_Frobby5(I)
+  Computation := "AssociatedPrimes_Frobby";
+  Arguments := [I];
+  Components := $.OperationCommunication(Computation, Arguments);
+  Return [ Ideal(C) | C In Components];
+EndDefine;
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+-- /*
+-- Return True if T is a SQFR term, False otherwise
+-- Example
+-- Use R ::= QQ[x,y,z];
+-- IsSQFRTerm(x^2);
+-- FALSE
+-- IsSQFRTerm(xy);
+-- TRUE
+-- */
+Define IsSQFRTerm(T)
+  L := Log(T);
+  For I:=1 To NumIndets() Do
+    If not(L[I] IsIn [0,1]) Then  Return False;  EndIf;
+  EndFor;
+  Return True;
+EndDefine;
+
+
+
+----------------------------------------------------------------------
+-- Functions on Ordering Matrix
+
+// Input : number of parameters and a matrix describing the ordering on k[x[]]
+// Returns the block order matrix describing the ordering on k[a[],x[]]
+-- Define AddParamOrdMat(M, NumParams)
+--   If Type(M)<>MAT Or Type(NumParams)<>INT Then
+--     Error("AddParamOrdMat: arguments must be OrdMat: MAT, NumParams: INT");
+--   EndIf;
+--   If NumParams=0 Then Return M; EndIf;
+--   If Type(M)<>MAT Then Error("Expected matrix"); EndIf;
+--   Return MatConcatAntiDiag(M, DegRevLexMat(NumParams));
+-- EndDefine; -- AddParamOrdMat
+
+
+-- Define ExtractedFromParamOrdMat(M, NumParams)
+--   Return Submat(M, 1..(NumRows(M)-NumParams), (NumParams+1)..NumCols(M));
+-- EndDefine; -- ExtractedFromParamOrdMat
+
+
+-- /*
+-- Given a r x s matrix M, produces am s x s matrix N such that
+-- * N is composed by the first s independent rows of M, plus some RL rows if
+--   necessary
+-- * N is hence the matrix for on ordering
+-- M:=Mat([[3,1,1,1],[2,1,1,1],[1,0,0,0]]);// This is 2 rows grading + elim Ist var
+-- $.CompletedOrdMat(M);
+-- //Mat([
+-- //  [3, 1, 1, 1],
+-- //  [2, 1, 1, 1],
+-- //  [0, 0, 0, -1],
+-- //  [0, 0, -1, 0]
+-- //])
+-- */
+Define ExtractedOrdMat(M)
+  NumRequiredRows:=NumCols(M);
+  If Rank(M) <> NumRequiredRows Then
+    Error("ExtractedOrdMat: This is not an ordering!");
+  EndIf;
+  I:=1;
+  N:=[];
+  While Len(N)<NumRequiredRows Do
+    Append(N,M[I]);
+    If Rank(Mat(N))<Len(N) Then Remove(N,Len(N)); EndIf;
+    I:=I+1;
+  EndWhile;
+  Return Mat(N);
+EndDefine; -- ExtractedOrdMat
+
+
+-- Define CheckParamSubMatrix(M, NumParams, FirstRows)
+--   For Par := 1 To NumParams Do
+--     For Row := 1 To FirstRows Do
+--       If M[Row,Par]<>0 Then
+-- 	Error("CheckParamSubMatrix: parameters entries must be 0");
+--       EndIf;
+--     EndFor;
+--   EndFor;
+-- EndDefine; -- CheckParamSubMatrix
+
+
+Define CompletedOrdMat(...)
+  TopLevel ERR;
+  M := ARGV[1];
+  If Len(ARGV) = 1 Then
+    Return $.ExtractedOrdMat(MatConcatVer(M, RevLexMat(NumCols(M))));
+  EndIf;
+  If Len(ARGV) <> 2 Then Return Error(ERR.BAD_PARAMS_NUM); EndIf;
+  NumParams := ARGV[2];
+  $.CheckParamSubMatrix(M, NumParams, NumRows(M));
+  M := Submat(M, 1..(NumRows(M)), (NumParams+1)..NumCols(M));
+  M := $.ExtractedOrdMat(MatConcatVer(M,RevLexMat(NumCols(M))));
+  Return $.AddParamOrdMat(M, NumParams);
+EndDefine; -- CompletedOrdMat
+
+
+Define OrdMatFromCoCoA4(NumParams)
+--  If GradingDim = 0 Then Return Ord(); EndIf;
+  If MakeSet(WeightsList())=[1] And NumParams=0 Then Return Ord(); EndIf;
+  Grading := Mat([WeightsList()]);
+  If $.IsDegRevLexMat(Ord()) Then
+    O:= $.ExtractedOrdMat(MatConcatVer(Grading, RevLexMat(NumIndets())));
+  Elif $.IsDegLexMat(Ord())  Then
+    O:= $.ExtractedOrdMat(MatConcatVer(Grading, LexMat(NumIndets())));
+  Else
+    O := Ord();
+  EndIf;
+  Return $.ExtractedFromParamOrdMat(O, NumParams); -- DegPositiveMat
+  --  Error("OrdMatFromCoCoA4: you cannot define GradingDim with this ordering");
+EndDefine; -- OrdMatFromCoCoA4
+
+Define IsDegRevLexMat(M)  Return M = StdDegRevLexMat(NumRows(M)); EndDefine;
+Define IsDegLexMat(M)     Return M = StdDegLexMat(NumRows(M));    EndDefine;
+Define IsLexMat(M)        Return M = LexMat(NumRows(M));       EndDefine;
+
+// M is square int mat
+// Output is equivalent to Deg + M with non negative entries
+Define DegPositiveMat(M)
+  DegRow := WeightsList();
+  NumCols := NumCols(M);
+  -- MulMat is a fix for CoCoA-4 WRONG behaviour on non-standard gradings
+  If DegRow<>NewList(NumCols, 1) Then
+    MulMat := ZeroMat(RingZZ(), NumCols, NumCols);
+    For I := 1 To NumCols Do MulMat[I,I]:=DegRow[I]; EndFor;
+    M := M*MulMat;
+  EndIf;
+  MM := MatConcatVer([DegRow], M);
+  NumRows := Len(MM);
+  For I := NumRows To 2 Step -1 Do
+    DegM := Submat(MM, Diff(1..NumRows, [I]), 1..NumCols);
+    If Det(DegM)<>0 Then Return $.PositiveMat(DegM); EndIf;
+  EndFor;
+  Error("DegPositiveMat: something wrong happened: matrix not invertible?");
+EndDefine; -- DegPositiveMat
+
+
+
+
+    // M is square int mat
+// Output is equivalent to M w.r.t. ordering, non negative entries
+Define PositiveMat(M)
+  N:=NumRows(M);
+  For I:=1 To N Do
+    For J:=1 To N Do
+      If M[I,J]<0 Then
+        K:=1;
+        While M[K,J]=0 Do K:=K+1; EndWhile;// find positive entry in J col
+	While M[I,J]<0 Do M[I]:=M[I]+M[K]; EndWhile;
+      EndIf;
+    EndFor;
+  EndFor;
+  Return M;
+EndDefine; -- PositiveMat
+
+
+
+EndPackage;  -- Package $cocoa5

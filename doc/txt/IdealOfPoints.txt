@@ -1,0 +1,74 @@
+    IdealOfPoints
+      Copyright (c)  2013,2017  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{IdealOfPoints}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-IdealOfPoints1.C ../../examples/index.html#ex-IdealOfPoints1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+The functions here are for computing generators of the vanishing ideal
+of a set of points (//i.e.// all polynomials which vanish at all of
+the points).
+
+The functions expect two parameters: a polynomial ring ``P``, and a set of points ``pts``.
+The coordinates of the points must reside in the coefficient ring of ``P``.
+The points are represented as a matrix: each point corresponds to a row.  Currently the **points must be distinct.**
+
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+The main functions available are:
+- ``IdealOfPoints(P,pts)`` computes the vanishing ideal in ``P`` of the points ``pts``.
+- ``IdealOfProjectivePoints(P,pts)`` computes the vanishing ideal in ``P`` of the points ``pts``.
+
+The parameter ``P`` must be a polyring over a field.
+The parameter ``pts`` is a matrix where each row corresponds to
+one point; the coordinates of the points must belong to the
+coefficient field of the polyring ``P``.
+
+Both functions compute an ideal whose generators are the reduced Groebner basis for the ideal.
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Impl is simple/clean rather than fast.
+
+There was a minor complication to handle the case where the dim of the
+space in which the points live is less than the number of indets in
+the polyring.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+2013-01-21 there is only a generic impl (which is simple but inefficient).
+
+There was a fn called ``BM``; it is now commented out (don't know why).
+
+
+== Main changes ==
+%======================================================================
+
+**2021**
+- November (v0.99718): added doc for ``IdealOfProjectivePoints``
+
+
+**2017**
+- February (v0.99543): added an example
+
+
+**2013**
+- January (v0.9953): first release
+
+

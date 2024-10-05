@@ -1,0 +1,110 @@
+----------------------------------------------------------------------
+-- Hilbert Functions 1
+-- Gradings
+----------------------------------------------------------------------
+
+-- INTRODUCTION
+
+-- In CoCoA there are two degree functions:  deg and wdeg
+
+use QQ[x,y,z];
+-- The default is the standard grading, i.e. all indeterminates have degree 1
+
+T := x^3*y^4*z^5;
+deg(T);
+wdeg(T);
+
+-- In this course we are interested in wdeg, the degree defined by a
+-- weight matrix.
+
+-- The degree is an intrinsic attribute of a polynomial ring; this is
+-- how to specify a weight matrix in a ring definition:
+-- the standard grading
+
+WSt := RowMat([1,1,1]);
+P := NewPolyRingWeights(QQ, "x,y,z", WSt);
+use P;
+wdeg(BringIn(T));
+
+-- a 2-grading with whose first row is standard
+W2St := mat([[1,1,1], [1,2,0]]);
+P := NewPolyRingWeights(QQ, "x,y,z", W2St);
+use P;
+wdeg(BringIn(T));
+
+-- a 2-grading with whose first row is not standard
+W := mat([[1,2,3], [1,2,0]]);
+P := NewPolyRingWeights(QQ, "x,y,z", W);
+use P;
+wdeg(BringIn(T));
+
+-- NB: In CoCoA-4 not all positive gradings are allowed, e.g.
+-- this is a positive grading:
+WFine := LexMat(3);  WFine;
+-- but CoCoA-4 requires that all the elements in the first row must be
+-- all strictly positive
+P := NewPolyRingWeights(QQ, "x,y,z", WFine);
+use P;
+wdeg(BringIn(T));
+
+-- NB: In this prototype of CoCoA-5 not all positive gradings are allowed e.g.
+-- this is a positive grading:
+WNeg := StdDegRevLexMat(3);  WNeg;
+-- but CoCoA-5 requires that all weights are non-negative
+P := NewPolyRing(QQ, "x,y,z", WNeg, 1); --> this is OK
+//  P := NewPolyRing(QQ, "x,y,z", WNeg, 2);
+-- we will see that this is not a problem in tutorial 3
+
+----------------------------------------------------------------------
+-- TIME TO EXPERIMENT!
+
+-- we want to experiment with many weight matrices, so it is more convenient
+-- to define a function  MyDeg(T, W)
+-- where T is a monomial, and W a weight matrix:
+
+use QQ[x,y,z];
+T := x^3*y^4*z^5;
+
+define MyDeg(T, W)
+  R := RingOf(W);
+  deg := W * ColMat(R,exponents(T));
+  return [AsINT(deg[i,1]) | i in 1..NumRows(deg)];
+enddefine; -- MyDeg
+-- test
+MyDeg(T, WSt);
+MyDeg(T, W2St);
+MyDeg(T, W);
+MyDeg(T, WFine);
+
+-- EXERCISE
+-- Compute the following sets with your preferred technique:
+-- by reasoning, by hand, by trial and Error, by brute force computing....
+-- Then verify your sets with CoCoA.
+-- (1) all power-products of degree 4 wrt WSt
+-- (2) all power-products of degree (4,2) wrt W2St
+-- (3) all power-products of degree (6,2) wrt W
+-- (4) all power-products of degree (6,2,1) wrt WFine
+L := support((x+y+z)^4);  L;
+
+-- brute force computing:
+L := support((x+y+z+1)^9);  L;
+[ T in L | MyDeg(T, WSt) = [4] ];
+[ T in L | MyDeg(T, W2St) = [4,2] ];
+[ T in L | MyDeg(T, W) = [6,2] ];
+[ T in L | MyDeg(T, WFine) = [6,2,1] ];
+
+-- EXERCISE
+-- Given two weight matrices W1, W2 such that W2 = M*W1, det(M)<>0,
+-- find (by reasoning) how to compute the W1-degree given the W2-degree.
+-- Deduce that the homogeneous components are the same.
+-- Implement the function  W1Deg(D2, M), where D2 a W2-degree,
+-- and test it on some examples.
+-- Show how this applies to the case of a "positive-type" grading.
+
+-- EXERCISE
+-- Standard grading (nice and easy ;-)
+-- Consider P/I, where
+I := ideal(x^3, x*y, y^4, y*z^2, y^3*z, z^3);
+-- Compute all power-products not in I of degree 0, 1, 2, 3, 4, ....
+-- Compute the dimension (QQ-vec.sp.) of P/I in degree 0, 1, 2, 3, 4, ....
+

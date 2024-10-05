@@ -1,0 +1,100 @@
+      RegisterServerOps
+      Copyright (c)  2007-2009 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RegisterServerOps}{Anna Bigatti}
+
+
+== User documentation ==
+%======================================================================
+
+=== Quick and easy way to add a single operation ===
+%----------------------------------------------------------------------
+
+When you want to have some operation accessible from CoCoA-4 you need
+to make these steps:
+
+- integrate your operation into CoCoALib
+ - make ``TmpMyFile.[HC]``
+ - add  ``TmpMyFile.C`` to ``src/AlgebraicCore/Makefile``
+ - add  ``TmpMyFile.H`` to ``include/library.H``
+- make a ``ServerOpBase`` for it in ``RegisterServerOpsUser.C``
+  (see [[ServerOp]])
+- register it in ``RegisterServerOps.C`` (see below)
+
+
+Register your ServerOpBase in ``bool RegisterOps()`` at the end of the file:
+```  void RegisterOp(const std::string& s, ServerOp o);
+where ``s`` is the "OpenMath name" of the operation for the
+communication with CoCoA-4 (used in cocoa5.cpkg).
+
+Properly, you need to choose 3 names for your operation:
+- the **CoCoALib name** 
+    for the ``ServerOp`` (following the CoCoALib coding conventions)
+- the **"OpenMath" name**
+    used only for computer communication
+- the **CoCoA-4 name**
+    for the CoCoA-4 user (following the CoCoA-4 conventions and ending
+    with a "5" to mean **CoCoA-5**)
+
+
+=== Proper way to add a library ===
+%----------------------------------------------------------------------
+
+You should make a dedicated file ``RegisterServerOpsMyOperations.C``
+(see, for example, ``src/AlgebraicCore/RegisterServerOpsFrobby.C``)
+
+Then you should choose a meaningful name for the namespace of your
+operations (for example ``CoCoAServerOperationsFromFrobby``) and
+define your own ``RegisterOps`` and copy the function ``RegisterOpsOnce``:
+```
+  namespace NamespaceForMyOperations
+  {
+    bool RegisterOps()
+    {
+      RegisterOp("OpenMathName1", ServerOp(new CoCoALibName1()));
+      RegisterOp("OpenMathName2", ServerOp(new CoCoALibName2()));
+      ...
+      return true;
+    }
+
+
+    bool RegisterOpsOnce()
+    {
+      static bool EvalOnce = RegisterOps();
+      return EvalOnce;
+    }
+  }
+```
+
+Then add in ``src/server/RegisterServerOps.H`` the registration of your
+operations simply copying these lines:
+```
+  namespace NamespaceForMyOperations
+  {
+    bool RegisterOpsOnce();
+    bool GlobalDummyVar = RegisterOpsOnce();
+  }
+```
+or make a dedicated file ``MyRegisterServerOps.H``
+(see, for example, ``src/server/RegisterServerOpsFrobby.H``)
+and include it in ``src/server/CoCoAServer.C``
+
+== Mantainer documentation ==
+%======================================================================
+
+How does this work?  When ``CoCoAServer.C`` is compiled the global
+variables are initialized.
+
+Therefore ``NamespaceForMyOperations::GlobalDummyVar`` which is
+declared in the included file ``RegisterServerOps.H`` is initialized
+by calling ``NamespaceForMyOperations::RegisterOpsOnce()`` with the
+//side effect// of registering your operations.
+
+== Main changes ==
+%======================================================================
+
+=== 2009 ===
+%----------------------------------------------------------------------
+
+Cleaned up the documentation after integration of the Frobby library.

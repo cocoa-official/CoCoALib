@@ -1,0 +1,184 @@
+--------------------------------------------------------------------
+-- Test for comparing different GB algorithms
+--------------------------------------------------------------------
+TEST_PrintInfo := false;
+//// TEST_PrintInfo := true; ---<<<<<<---------------------------------
+TEST_Verb := 98; ///100;
+--------------------------------------------------------------------
+if TEST_PrintInfo then SetVerbosityLevel(TEST_Verb); else SetVerbosityLevel(0); endif;
+TEST_NumAssert := 0;
+
+define TEST_ASSERT(A,B)
+  toplevel TEST_NumAssert;
+  toplevel TEST_PrintInfo;
+  incr(ref TEST_NumAssert);
+  if TEST_PrintInfo then
+    println "--TEST_NumAssert: ", TEST_NumAssert;
+  endif;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B)
+	  + "\n"+dashes()+"TEST_NumAssert: " +Sprint(TEST_NumAssert)+dashes());
+  endif;
+enddefine; -- TEST_ASSERT
+
+define TEST_Time()
+  toplevel TEST_PrintInfo;
+  toplevel t0;
+  if TEST_PrintInfo then println "--TEST_Time: \t", TimeFrom(t0), "s"; endif;
+enddefine; -- TEST_TimeFrom
+----------------------------------------------------------------------
+
+-------  TruncDeg ----------------------------------------------------
+if TEST_PrintInfo then println "--=== TruncDeg ======================="; endif;
+-------  TruncDeg ----------------------------------------------------
+  
+TEST_R := NewPolyRing(QQ, "x,y,z,t");
+I := ideal(RingElems(TEST_R, "x^3-y^3 +x*z^2, x*y*z - y^2*z, x^2*z^2 - y*z^3"));
+D := 3;
+GBD := GBasisTrunc(I, D);
+GB0 := GBasis(ideal(gens(I)));
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=3]), true);
+TEST_ASSERT(HasGBasis(I), false);
+
+TEST_R := NewPolyRingWeights(QQ, "x,y,z,t", mat([[3,4,5,1]]));
+I := ideal(RingElems(TEST_R,"x-t^3, y-t^4, z-t^5"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+GB3 := GBasisTrunc(I, D);
+GB0 := GBasis(ideal(gens(I)));
+TEST_ASSERT(EqSet(GB3, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), true);
+
+TEST_R := NewPolyRingWeights(QQ, "t,x,y,z", mat([[1,3,4,5]]));
+I := ideal(RingElems(TEST_R,"x-t^3, y-t^4, z-t^5"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+GB3 := GBasisTrunc(I, D);
+GB0 := GBasis(ideal(gens(I)));
+TEST_ASSERT(EqSet(GB3, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), false);
+
+TEST_R := NewPolyRing(QQ, "x,y,z,t");
+I := ideal(RingElems(TEST_R,"x^4-y^3*x +x*z^3 - y*z^3 -t^4, x^3*y - 2*y^2*z^2 + z^4, x^2*z^2 - 3*t*z^3 - x*z^3"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+GBD := GBasisTrunc(I, D);
+GB0 := GBasis(ideal(gens(I)));
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), false);
+
+TEST_R := NewPolyRing(QQ, "x,y,z,t");
+I := ideal(RingElems(TEST_R,"x^5-y^4*x +x*z^4 - y*z^4 -t^5, x^4+ x^3*y - 2*y^2*z^2 + z^4, x^4-x^2*z^2 - 3*t*z^3 - x*z^3"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+t0 := CpuTime(); GBD := GBasisTrunc(I, D);  TEST_Time();
+t0 := CpuTime(); MG := MinGens(I);  TEST_Time();
+t0 := CpuTime(); GB0 := GBasis(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), false);
+TEST_ASSERT(IsSubset(MG, gens(I)), false);
+TEST_ASSERT(IsContained(ideal(MG), I), true);
+TEST_ASSERT(IsContained(I,ideal(MG)), true);
+
+-------------------
+K := NewZZmod(101);
+
+TEST_R := NewPolyRing(K, "x,y,z,t");
+I := ideal(RingElems(TEST_R,"x^3-y^3 +x*z^2, x*y*z - y^2*z, x^2*z^2 - y*z^3"));
+D := 3;
+GBD := GBasisTrunc(I, D);
+GB0 := GBasis(ideal(gens(I)));
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=3]), true);
+TEST_ASSERT(HasGBasis(I), false);
+
+TEST_R := NewPolyRingWeights(K, "x,y,z,t", mat([[3,4,5,1]]));
+I := ideal(RingElems(TEST_R,"x-t^3, y-t^4, z-t^5"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+GBD := GBasisTrunc(I, D);
+GB0 := GBasis(ideal(gens(I)));
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), true);
+
+TEST_R := NewPolyRingWeights(K, "t,x,y,z", mat([[1,3,4,5]]));
+I := ideal(RingElems(TEST_R,"x-t^3, y-t^4, z-t^5"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+t0 := CpuTime(); GBD := GBasisTrunc(I, D);  TEST_Time();
+t0 := CpuTime(); GB0 := GBasis(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), false);
+
+TEST_R := NewPolyRing(K, "x,y,z,t");
+I := ideal(RingElems(TEST_R,"x^5-y^4*x +x*z^4 - y*z^4 -t^5, x^4+ x^3*y - 2*y^2*z^2 + z^4, x^2*z^2 - 3*t*z^3 - x*z^3"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+t0 := CpuTime(); GBD := GBasisTrunc(I, D);  TEST_Time();
+t0 := CpuTime(); MG := MinGens(I);  TEST_Time();
+t0 := CpuTime(); GB0 := GBasis(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), false);
+TEST_ASSERT(IsContained(ideal(MG), I), true);
+TEST_ASSERT(IsContained(I,ideal(MG)), true);
+
+TEST_R := NewPolyRing(K, "x,y,z,t");
+I := ideal(RingElems(TEST_R,"x^5-y^4*x +9*x*z^4 - 3*y*z^4 -t^5, x^5-y^4*x +x*z^4 - y*z^4 -t^5, x^4+ x^3*y - 2*y^2*z^2 + z^4, 7*x^2*z^2 - 3*t*z^3 - x*z^3"));
+D := max([wdeg(f)[1] | f in gens(I)]);
+t0 := CpuTime(); GBD := GBasisTrunc(I, D);  TEST_Time();
+t0 := CpuTime(); MG := MinGens(I);  TEST_Time();
+t0 := CpuTime(); GB0 := GBasis(ideal(gens(I)));  TEST_Time();
+t0 := CpuTime(); MSG := MinSubsetOfGens(I);  TEST_Time();
+TEST_ASSERT(EqSet(GBD, [g in GB0 | wdeg(g)[1]<=D]), true);
+TEST_ASSERT(HasGBasis(I), false);
+TEST_ASSERT(ideal(MG), I);
+TEST_ASSERT(ideal(MSG), I);
+TEST_ASSERT(len(MG), len(MSG));
+
+
+----------------------------------------------------------------------
+SetVerbosityLevel(0);-------------------------------------------------
+-------  ByHomog -----------------------------------------------------
+if TEST_PrintInfo then println "--=== ByHomog ======================="; endif;
+-------  ByHomog -----------------------------------------------------
+
+K := NewZZmod(101);
+
+TEST_R ::= K[x,y,z,t];
+I := ideal(RingElems(TEST_R, "x^5*y-y^2*z-t+2, y^5*x-z*t+1, x*z^3 -y*t^2-2, y^7-2^7"));
+
+t0 := CpuTime(); GB := GBasis(I);  TEST_Time();
+t0 := CpuTime(); GBh := GBasisByHomog(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBh, GB), true);
+
+TEST_R ::= K[x,y,z,t], lex;
+I := ideal(RingElems(TEST_R,"x^3*y-y^2*z-2, y^3*x-z*t, x*z^2 -y-2, x^7-4, y^7-2^7"));
+t0 := CpuTime(); GB := GBasis(I);  TEST_Time();
+t0 := CpuTime(); GBh := GBasisByHomog(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBh, GB), true);
+
+TEST_R ::= K[x,y,z,t], DegLex;
+I := ideal(RingElems(TEST_R,"x^3*y-y^2*z-2, y^4*x-z*t-1, x*z^2 -y-2, x^7-4, y^7-2^7"));
+t0 := CpuTime(); GB := GBasis(I);  TEST_Time();
+t0 := CpuTime(); GBh := GBasisByHomog(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBh, GB), true);
+
+TEST_R := NewPolyRingWeights(K, "x,y,z,t", RowMat([1,2,3,4]));
+I := ideal(RingElems(TEST_R,"x^3*y-y^2*z-2, y^4*x-z*t-1, x*z^2 -y-2, y^7-2^7"));
+t0 := CpuTime(); GB := GBasis(I);  TEST_Time();
+t0 := CpuTime(); GBh := GBasisByHomog(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBh, GB), true);
+
+TEST_R := NewPolyRing(K, "x,y,z,t", LexMat(4), 0);
+I := ideal(RingElems(TEST_R,"x^3*y-y^2*z-2, y^2*x-z*t-1, x*z^2 -y-2, y^3-2^3"));
+t0 := CpuTime(); GB := GBasis(I);  TEST_Time();
+t0 := CpuTime(); GBh := GBasisByHomog(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBh, GB), true);
+
+TEST_R := NewPolyRing(K, "x,y,z,t", XelMat(4), 2);
+I := ideal(RingElems(TEST_R,"x^3*y-y^2*z-2, y^2*x-z*t-1, x*z^2 -y-2, y^3-2^3"));
+t0 := CpuTime(); GB := GBasis(I);  TEST_Time();
+t0 := CpuTime(); GBh := GBasisByHomog(ideal(gens(I)));  TEST_Time();
+TEST_ASSERT(EqSet(GBh, GB), true);
+//indent(GB);
+
+--------------------------------------------------------------------
+if TEST_PrintInfo then // additional tests
+--------------------------------------------------------------------
+  
+
+--------------------------------------------------------------------
+endif; // additional tests
+--------------------------------------------------------------------

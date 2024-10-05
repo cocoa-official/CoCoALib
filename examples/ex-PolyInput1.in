@@ -1,0 +1,25 @@
+  4
+
+2    1 2 0
+10   0 0 1
+1    0 0 0
+-1   0 1 1
+
+
+  2
+
+1    2 3
+-1   0 1
+
+----------------------------------------------------------------------
+
+  4
+The first polynomial has 4 summands, the second 2.
+
+The program knows that:
+the first polynomial is in  Fpa = Z/(32003)[a[0],a[1],a[2]]
+the second polynomial is in  Px = Fpa[x[0],x[1]]
+
+2    1 2 0
+the first entry is the (integer) coefficient of the summand
+the other 3 entries are the exponents of a[0],a[1],a[2]

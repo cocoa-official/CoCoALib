@@ -1,0 +1,225 @@
+      debug_new
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{debug-new}{John Abbott}
+
+
+
+== User documentation ==
+%======================================================================
+
+``debug_new.C`` is distributed with CoCoALib, but is not really part of the
+library proper.  Together with the standalone program [[leak_checker]]
+it can help identify incorrect memory use (//e.g.// leaks).
+If you want to use ``debug_new`` to find a memory use problem, you may find it
+enough simply to see the section **Example** below.
+
+
+The purpose of ``debug_new`` is to assist in tracking down memory use problems:
+most particularly leaks and writing just outside the block allocated; it is
+**not currently able** to help in detecting writes to deleted blocks.  It works
+by intercepting all calls to global ``new/delete``.  Memory blocks are given
+small //margins// (invisible to the user) which are used to help detect
+writes just outside the legitimately allocated block.
+
+``debug_new`` works by printing out a log message for every memory allocation and
+deallocation.  Error messages are printed whenever something awry has been
+found.  The output can easily become enormous, so it is best to send the
+output to a file.  All log messages start with the string
+```     [debug_new]
+and error messages start with the string
+```     [debug_new] ERROR
+so they can be found easily.  Most messages include a brief summary of the
+amount of memory currently in use, the total amount allocated and deallocated,
+and the maximum amount of memory in use up to that point.
+
+
+=== Finding memory leaks ===
+%----------------------------------------------------------------------
+
+To use ``debug_new`` to help track down memory leaks, you must employ the
+program called ``leak_checker`` (included in this distribution) to process
+the output produced by your program linked with ``debug_new.o``.  See
+[[leak_checker]] for full details.  Your program output should be put in
+a file, say called //memchk//.  Then executing ``leak_checker memchk`` will
+print out a summary of how many ``alloc/free`` messages were found, and how
+many unpaired ones were found.  The file //memchk// is modified if
+unpaired alloc/free messages were found: an exclamation mark is placed
+immediately after the word ``ALLOC`` (where previously there was a space),
+thus a search for ``ALLOC!`` will find all unpaired allocation messages.
+
+Each call to ``new/delete`` is given a sequence number (printed as ``seq=...``).
+This information can be used when debugging.  Suppose, for instance, that
+``leak_checker`` discovers that the 500th call to ``new`` never had a matching
+``delete``.  At the start of your program (//e.g.// I suggest immediately after you
+created the ``debug_new::PrintTrace`` object) insert a call to
+
+```         debug_new::InterceptNew(500);
+
+Now use the debugger to set a breakpoint in ``debug_new::intercepted`` and start
+your program.  The breakpoint will be reached during the 500th call to ``new``.
+Examining the running program's stack should fairly quickly identify
+precisely who requested the memory that was never returned.  Obviously it is
+necessary to compile your program as well as ``debug_new.C`` with the debugger
+option set before using the debugger!
+
+Analogously there is a function ``debug_new::InterceptDelete(N)``
+which calls ``debug_new::intercepted`` during the Nth call to ``operator delete``.
+
+
+=== Example ===
+%--------------
+Try detecting the (obvious) memory problems in this program.
+```
+#include <iostream>
+#include "CoCoA/debug_new.H"
+
+int main()
+{
+  debug_new::PrintTrace TraceNewAndDelete; // merely activates logging of new/delete
+  std::cout << "Starting main" << std::endl;
+  int* pi1 = new int(1);
+  int* pi2 = new int(2);
+  pi1[4] = 17;
+  pi1 = pi2;
+  delete pi2;
+  delete pi1;
+  std::cout << "Ending main" << std::endl;
+  return 0;
+}
+```
+Make sure that ``debug_new.o`` exists (//i.e.// the ``debug_new`` program has been
+compiled).  Compile this program, and link with ``debug_new.o``.  For instance,
+if the program is in the file ``prog.C`` then a command like this should suffice:
+
+```   g++ -g -ICoCoALib/include prog.C -o prog debug_new.o
+
+Now run ``./prog >& memchk`` and see the debugging messages printed out into
+//memchk//; note that the debugging messages are printed on ``cerr/stderr`` (hence
+the use of ``>&`` to redirect the output).  In this case the output is
+relatively brief, but it can be huge, so it is best to send it to a file.
+Now look at the messages printed in //memchk//.
+
+The //probable double delete// is easily detected: it happens in the second call
+to ``delete`` (``seq=2``).  We locate the troublesome call to delete by adding a line
+in main immediately after the declaration of the ``TraceNewAndDelete`` local variable
+```   debug_new::InterceptDelete(2); // intercept 2nd call to delete
+
+Now recompile, and use the debugger to trap execution in the function
+``debug_new::intercepted``, then start the program running under the debugger.
+When the trap springs, we can walk up the call stack and quickly learn that
+``delete pi1;`` is the culprit.  We can also see that the value of ``pi1`` at the
+time it was deleted is equal the value originally assigned to ``pi2``.
+
+Let's pretend that it is not obvious why ``delete pi1;`` should cause
+trouble.  So we must investigate further to find the cause.  Here is what
+we can do.  Comment out the troublesome delete (//i.e.// ``delete pi1;``), and
+also the call to ``InterceptDelete``.  Recompile and run again, sending all the
+output into the file //memchk// (the previous contents are now old hat).  Now
+run the [[leak_checker]] program on the file //memchk// using this command:
+(make sure ``leak_checker`` has been compiled: ``g++ leak_checker.C -o leak_checker``)
+
+```  ./leak_checker memchk
+
+It will print out a short summary of the ``new/delete`` logs it has found, including
+a message that some unmatched calls exist.  By following the instructions in
+[[leak_checker]] we discover that the unfreed block is the one allocated in the
+line ``... pi1 = new ...``.  Combining this information with the //double delete//
+error for the line ``delete pi1`` we can conclude that the pointer ``pi1`` has been
+overwritten with the value of ``pi2`` somewhere.  At this point ``debug_new`` and
+``leak_checker`` can give no further help, and you must use other means to locate
+where the value gets overwritten (e.g. the //watch// facility of gdb; try it!).
+
+**WARNING** ``debug_new`` handles **all** ``new/delete`` requests including those arising
+from the initialization of static variables within functions (and also
+those arising from within the system libraries).  The [[leak_checker]] program
+will mark these as unfreed blocks because they are freed only after main
+has exited (and so cannot be tracked by ``debug_new``).
+
+
+== Maintainer documentation ==
+%======================================================================
+
+This file redefines the C++ global operators ``new`` and ``delete``.  All
+requests to allocate or deallocate memory pass through these functions
+which perform some sanity checks, pass the actual request for memory
+management to ``malloc/free``, and print out a message.
+
+Each block requested is increased in size by placing //margins// both before
+and after the block of memory the user will be given.  The size of these
+margins is determined by the compile-time (positive, even) integer constant
+``debug_new::MARGIN``; note that the number of bytes in a margin is this value
+multiplied by ``sizeof(int)``.  A margin is placed both before and after each
+allocated block handed to the user; the margins are invisible to the user.
+Indeed the user's block size is rounded up to the next multiple of
+``sizeof(int)`` for convenience.
+
+The block+margins obtained from the system is viewed as an integer array,
+and the sizes for the margins and user block are such that the boundaries
+are aligned with the boundaries between integers in the array -- this
+simplifies the code a bit (could have used ``chars``?).  Each block immediately
+prior to being handed to the user is filled with certain values: currently
+``1234567890`` is placed in each margin integer and ``-999999999`` is placed in
+each integer inside the user's block.  Upon freeing, the code checks that
+the values in the margins are unchanged, thus probably detecting any
+accidental writes just outside the allocated block.  Should any value be
+incorrect an error message is printed.  The freed block is then
+overwritten with other values to help detect accidental "posthumous" read
+accesses to data that used to be in the block before it was freed.
+
+For our use, the size of the block (the size in bytes as requested by the
+user) is stored in the very first integer in the array.  A simplistic
+sanity check is made of the value found there when the block is freed.  The
+aim is not to be immune to a hostile user, but merely to help track down
+common memory usage errors (with high probability, and at tolerable run-time
+cost).  This method for storing the block size requires that the margins be
+at least as large as a machine integer (probably ought to use ``size_t``).
+
+Note the many checks for when to call ``debug_new::intercepted``; maybe
+the code should be restructured to reduce the number of these
+checks and calls?
+
+
+== Shortcomings, bugs, etc ==
+%======================================================================
+
+**WARNING** ``debug_new`` handles calls only to plain ``new`` and plain ``delete``; it
+does not handle calls to ``new(nothrow)`` nor to ``delete(nothrow)``, nor to
+any of the array versions.
+
+Have to recompile to use the ``debug_new::PrintTrace`` to turn on printing.
+Maybe the first few messages could be buffered up and printed only when
+the buffer is full; this might buy enough time to bypass the set up
+phase of ``cerr``?
+
+Big trouble will probably occur if a user should overwrite the block
+size held in the margin of an allocated block.  It seems extremely hard
+to protect against such corruption.
+
+When a corrupted margin is found a printed memory map could be nice
+(compare with what [[MemPool]] does).
+
+An allocated block may be slightly enlarged so that its size is a whole
+multiple of ``sizeof(int)``.  If the block is enlarged then any write
+outside the requested block size but within the enlarged block is not
+detected.  This could be fixed by using a ``char`` as the basic chunk of
+memory rather than an ``int``.  It is rather unclear why ``int`` was chosen,
+perhaps for reasons of speed?  Or to avoid alignment problems?
+
+Could there be problems on machines where pointers are larger than
+``int``s (esp. if the margin size is set to 1)?  There could also be
+alignment problems if the margin size is not a multiple of the
+size of the type which has the most restrictive alignment criteria.
+
+Is it right that the debugging output and error messages are printed
+on ``cerr``?  Can/Should we allow the user to choose?  Using ``cout`` has
+given some trouble since it may call ``new`` internally for buffering:
+this seemed to yield an infinite loop, and anyway it is a nasty thought
+using the ``cout`` object to print while it was trying to increase an
+internal buffer.
+
+The code does not enable one to detect easily writes to freed memory.
+This could be enabled by never freeing memory, and instead filling the
+freed blocks with known values and then monitoring for changes to these
+values in freed blocks.  This could readily become very costly.

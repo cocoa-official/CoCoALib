@@ -1,0 +1,385 @@
+      Coding Conventions
+      Copyright (c)  2007-2010  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{Coding Conventions}{John Abbott}
+
+
+== User and contributor documentation ==
+%======================================================================
+
+This page summarises the coding conventions used in CoCoALib.  This
+document is useful primarily to contributors, but some users may find
+it handy too.  As the name suggests, these are merely guidelines; they
+are not hard and fast rules.  Nevertheless, you should violate these
+guidelines only if you have genuinely good cause.  We would also be
+happy to receive notification about parts of CoCoALib which do not
+adhere to the guidelines.
+
+We expect these guidelines to evolve slowly with time as experience grows.
+
+Before presenting the guidelines I mention some useful books.
+The first is practically a //sine qua non// for the C++ library:
+**The C++ Standard Library** by Josuttis which contains essential
+documentation for the C++ library.  Unless you already have quite a
+lot of experience in C++, you should read the excellent books by Scott
+Meyers: **Effective C++** (the new version), and **Effective STL**.
+Another book offering useful guidance is **C++ Coding Standards** by
+Alexandrescu and Sutter; it is a good starting point for setting
+coding standards.
+
+
+=== Names of CoCoA types, functions, variables ===
+%----------------------------------------------------------------------
+
+All code and "global" variables must be inside the namespace ``CoCoA``
+(or in an anonymous namespace); the only exception is code which is
+not regarded as an integral part of CoCoA (e.g. the C++ interface to
+the GMP big integer package).
+
+There are numerous conventions for how to name classes/types,
+functions, variables, and other identifiers appearing in a large
+package.  It is important to establish a convention and apply it
+rigorously (plus some common sense); doing so will facilitate
+maintenance, development and use of the code.
+(The first three rules follow the convention implicit in **NTL**)
+
+- single word names are all lower-case (//e.g.// ``ring``);
+- multiple word names have the first letter of each word capitalized,
+  and the words are juxtaposed (rather than separated by underscore,
+   (//e.g.// ``PolyRing``);
+- acronyms should be all upper-case (//e.g.// ``PPM``);
+- names of functions returning a boolean start with ``Is``
+  (``Are`` if argument is a list/vector);
+- names of functions returning a [[bool3]] start with ``Is`` and end with ``3``
+  (``Are`` if argument is a list/vector);
+- variables of type (or functions returning a) pointer end with ``Ptr``
+- data members' names start with ``my`` (or ``Iam/Ihave`` if they are boolean);
+- a class static member has a name beginning with ``our``;
+- enums are called ``BlahMarker`` if they have a single value
+  (//e.g.// ``BigInt::CopyFromMPZMarker``) and ``BlahFlag`` if they have more;
+- abbreviations should be used consistently (see below);
+- **Abstract base classes** and **derived abstract classes** normally
+  have names ending in ``Base``;
+  in contrast, a **derived concrete class** normally has a name ending
+  in ``Impl``.  Constructors for abstract classes should probably be
+  ``protected`` rather than ``public``.
+-
+
+It is best to choose a name for your function which differs from the
+names of functions in the C++ standard library, otherwise it can become
+necessary to use fully qualified names (e.g. ``std::set`` and
+``CoCoA::set``) which is terribly tedious.
+(Personally, I think this is a C++ design fault)
+
+If you are overloading a C++ operator then write the keyword
+``operator`` attached to the operator symbol (with no intervening
+space).  See ``ring.H`` for some examples.
+
+
+=== Order in function arguments ===
+%----------------------------------------------------------------------
+
+When a function has more than one argument we follow the first
+applicable of the following rules:
+
++ the non-const references are the first args, e.g.
+ - ``myAdd(a,b,c)`` as in //a=b+c//,
+ - ``IsIndetPosPower(long& index, BigInt& exp, pp)``
++ the ring/PPMonoid is the first arg, e.g.
+ - ``ideal(ring, vector<RingElem>)``
++ the //main actor// is the first arg and the //with respect to// args follow, e.g.
+ - ``deriv(f, x)``
++ optional args go last, e.g.
+ - ``NewPolyRing(CoeffRing, NumIndets)``,
+ - ``NewPolyRing(CoeffRing, NumIndets, ordering)``
++ the arguments follow the order of the common use or //sentence//, e.g.
+ - ``div(a,b)`` for //a/b//,
+ - ``IndetPower(P, long i, long/BigInt exp)`` for //x[i]^exp//,
+ - ``IsDivisible(a,b)`` for //a is divisible by b//,
+ - ``IsContained(a,b)`` for //a is contained in b//
++ strongly related functions behave as if they were overloading
+   (--> optional args go last), (??? is this ever used apart from ``NewMatrixOrdering(long NumIndets, long GradingDim, ConstMatrixView OrderMatrix);``???)
++ the more structured objects go first, e.g. ... (??? is this ever used ???)
++
+
+**IMPORTANT** we are trying to define a **good set of few rules**
+which is easy to apply and, above all, respects //common sense//.
+If you meet a function in CoCoALib not following these rules let
+us know: we will fix it, or fix the rules, or call it an interesting
+exception ;-)
+
+
+==== Explanation notes, exceptions, and more examples ====
+
+- We don't think we have any function with 1 and 2 colliding
+- The //main actor// is the object which is going to be worked on
+  to get the returning value (usually of the same type), the
+  //with respect to// are strictly constant, e.g.
+  - ``deriv(f, x)``
+  - ``NF(poly, ideal)``
+- Rule 1 wins on rule 4, e.g.
+  - ``IsIndetPosPower(index, exp, pp)`` and ``IsIndetPosPower(pp)``
+- Rule 2 wins on rule 4, e.g.
+  - ``ideal(gens)`` and ``ideal(ring, gens)``
+- we should probably change:
+  - ``NewMatrixOrdering(NumIndets, GradingDim, M)`` into ``NewMatrixOrdering(M, GradingDim)``
+
+
+
+=== Abbreviations ===
+%----------------------------------------------------------------------
+
+The overall idea is that if a given concept in a class or function
+name always has the same name: either always the full name, or always
+the same abbreviation.  Moreover a given abbreviation should have a
+unique meaning.
+
+Here is a list for common abbreviations
+
+- ``col`` -- column
+- ``ctor`` -- constructor
+- ``deg`` -- degree (exceptions: ``degree`` in class names)
+- ``div`` -- divide
+- ``dim`` -- dimension
+- ``elem`` -- element
+- ``mat`` -- matrix (exceptions: ``matrix`` in class names)
+- ``mul`` -- multiply
+- ``pos`` -- positive (or should it be ``positive``?  what about ``IsPositive(BigInt N)``?)
+-
+
+Here is a list of names that are written in full
+
+- ``assign``
+- ``one`` -- not ``1``
+- ``zero`` -- not ``0``
+
+
+== Contributor documentation ==
+%======================================================================
+
+
+=== Guidelines from Alexandrescu and Sutter ===
+%----------------------------------------------------------------------
+
+Here I paraphrase some of the suggestions from their book, picking out the
+ones I think are less obvious and are most likely to be relevant to CoCoALib.
+
+- Write correct, clean and simple code at first; optimize later.
+- Keep track of object ownership; document any "unusual" behaviour.
+- Keep implementation details hidden (//e.g.// make data members ``private``)
+- Use ``const`` as much as you reasonably can.
+- Use prefix ``++`` and ``--`` (unless you specifically do want the postfix behaviour)
+- Each class should have a //single// clearly defined purpose; keep it simple!
+- Guideline: member fns should be either ``virtual`` or ``public`` not both.
+- Exception cleanliness: dtors, deallocate and ``swap`` should never throw.
+- Use ``explicit`` to avoid making unintentional "implicit type conversions"
+- Avoid ``using`` in header files.
+- Use ``CoCoA_THROW_ERROR`` for sanity checks on args to public fns, and ``CoCoA_ASSERT`` for internal fns.
+- Use ``std::vector`` unless some other container is obviously better.
+- Avoid casting; if you must, use a C++ style cast (//e.g.// ``static_cast``)
+
+
+=== Use of #define directive ===
+%----------------------------------------------------------------------
+
+Excluding the //read once trick// for header files, ``#define``
+should be avoided (even in experimental code).  C++ is rich enough that
+normally there is a cleaner alternative to a ``#define``: for
+instance, ``inline`` functions, a ``static const``
+object, or a ``typedef`` -- in any case, one should avoid
+polluting the global namespace.
+
+If you must define a preprocessor symbol, its name should begin with
+the prefix ``CoCoA_``, and the remaining letters should all be
+capital.
+
+
+=== Header Files ===
+%----------------------------------------------------------------------
+
+The //read once trick// uses preprocessor symbols starting
+with ``CoCoA_`` and then finishing with the file
+name (retaining the capitalization of the file name but with slashes
+replaced by underscores).  The include path passed to the compiler
+specifies the directory above the one containing the CoCoALib header files,
+so to include one of the CoCoALib header files you must
+prefix ``CoCoA/`` to the name of the file -- this
+avoids problems of ambiguity which could arise if two includable files have
+the same name.  This idea was inspired by NTL.
+
+Include only the header files you really need -- this is trickier to
+determine than you might imagine.  The reasons for minimising includes are
+two-fold: to speed compilation, and to indicate to the reader which
+external concepts you genuinely need.  In header files it often suffices
+simply to write a forward declaration of a class instead of including the
+header file defining that class.  In implementation files the definition
+you want may already be included indirectly; in such cases it is enough to
+write a comment about the indirectly included definitions you will be
+using.
+
+In header files I add a commented out ``using`` command
+immediately after including a system header to say which symbols are
+actually used in the header file.  In the implementation file I write
+a ``using`` command for each system symbol used in the file; these
+commands appear right after the ``#include`` directive which
+imported the symbol.
+
+
+=== Curly brackets and indentation ===
+%----------------------------------------------------------------------
+
+Sutter claims curly bracket positioning doesn't matter: he's wrong!
+Matching curly brackets should be either vertically or horizontally
+aligned.  Indentation should be small (//e.g.// two positions for each
+level of nesting); have a look at code already in CoCoALib to see the
+preferred style.  Avoid using tabs for indentation as these do not have a
+universal interpretation.
+
+The ``else`` keyword indents the same as its matching
+``if``.
+
+
+=== Inline Functions ===
+%----------------------------------------------------------------------
+
+Use ``inline`` sparingly.  ``inline`` is useful in two
+circumstances: for a short function which is called very many times (at
+least several million), or for an extremely short function (e.g. a field
+accessor in a class).  The first case may make the program faster; the
+second may make it shorter.  You can use a profiler
+(//e.g.// ``gprof``) to count how often a function is called.
+
+There are two potential disadvantages to ``inline`` functions:
+they may force implementation details to be publicly visible, and they
+may cause code bloat.
+
+
+
+=== Exception Safety ===
+%----------------------------------------------------------------------
+
+//Exception Safety// is an expression invented/promulgated by Sutter to
+mean that a procedure behaves well when an exception is thrown during its
+execution.  All the main functions and procedures in CoCoALib should be
+fully exception safe: either they complete their computations and return
+normally, or they leave all arguments essentially unchanged, and return
+exceptionally.  A more relaxed approach is acceptable for
+functions/procedures which a normal library user would not call directly
+(//e.g.// non-public member functions): it suffices that no memory is
+leaked (or other resources lost).  Code which is not fully exception-safe
+should be clearly marked as such.
+
+Consult one of Sutter's (irritating) books for more details.
+
+
+=== Dumb/Raw Pointers ===
+%----------------------------------------------------------------------
+
+If you're using dumb/raw pointers, improve your design!
+
+Dumb/raw pointers should be used only as a last resort; prefer C++ references
+or ``std::unique_ptr;`` if you can.  Note
+that it is especially hard writing exception safe code which contains dumb/raw
+pointers.
+
+
+=== Preprocessor Symbols for Controlling Debugging ===
+%----------------------------------------------------------------------
+
+During development it will be useful to have functions perform
+//sanity checks// on their arguments.  For general use, these checks
+could readily produce a significant performance hit.
+
+Compilation without setting any preprocessor variables should produce
+fast code (i.e. without non-vital checks).  Instead there is a
+preprocessor symbol (``CoCoA_DEBUG``) which can be set to
+turn on extra sanity checks.
+Currently if ``CoCoA_DEBUG`` has value zero, all non-vital checks
+are disabled; any non-zero value enables all additional checks.
+
+There is a macro ``CoCoA_ASSERT(...)`` which will check that its
+argument yields ``true`` when ``CoCoA_DEBUG`` is set;
+if ``CoCoA_DEBUG`` is not set it does nothing (not even evaluating
+its argument).  This macro is useful for conducting extra sanity checks
+during debugging; it should **not be used** for checks that must always
+be performed (//e.g.// in the final optimized compilation).
+
+There is currently no official preprocessor symbol for (de)activating
+the gathering of statistics.
+
+**NB** I wish to avoid having a plethora of symbols for switching
+debugging on and off in different sections of the code, though I do
+accept that we may need more than just one or two symbols.
+
+
+=== Errors and Exceptions ===
+%----------------------------------------------------------------------
+
+==== During development ====
+
+Conditions we want to verify **solely during development** (i.e. when
+compiling with ``-DCoCoA_DEBUG``) can be checked simply by using
+the macro ``CoCoA_ASSERT`` with argument the condition.  Should
+the condition be false, a ``CoCoA::ErrorInfo`` object is thrown --
+this will cause an abort if not caught.  The error message indicates the
+file and line number of the failing assertion.  If the compilation
+option ``-DCoCoA_DEBUG`` is not enabled then the macro does
+nothing whatsoever.  An example of its use is:
+```
+  CoCoA_ASSERT(index <= 0 && index < length);
+```
+
+==== Always ====
+
+A different mechanism is to be used for conditions which must be
+checked even **after development is completed**.
+
+What should happen when one tries to divide by zero?  Or even asks for
+an exact division between elements that do not have an exact quotient
+(in the given ring)?
+
+Answer: call the macro ``CoCoA_THROW_ERROR(err_type, location)`` where
+``err_type`` should be one of the error codes listed in ``error.H``
+and ``location`` is a string saying where the error was detected
+(e.g. the name of the function which discovered it).
+Here is an example
+```
+  if (trouble)
+    CoCoA_THROW_ERROR(ERR::DivByZero, "applying partial ring homomorphism");
+```
+The macro ``CoCoA_THROW_ERROR`` never returns: it will throw
+a ``CoCoA::ErrorInfo`` object.  See the example programs for the
+recommended way of catching and handling exceptions: so that an informative
+message can be printed out.  See ``error.txt`` for advice on
+debugging when an unexpected CoCoA error is thrown.
+
+
+=== Functions Returning Complex Values ===
+%----------------------------------------------------------------------
+
+C++ tends to copy the return value of a function; this is undesirable if the
+value is potentially large and complex.  An obvious alternative is to supply
+as argument a reference into which the result will be placed.  If you choose
+to return the value via a reference argument then make the reference argument
+**the first one**.
+```
+  myAdd(rawlhs, rawx, rawy);  // stands for:  lhs = x + y
+```
+
+
+=== Spacing and Operators ===
+%----------------------------------------------------------------------
+
+All **binary operators** should have one space before and one space after
+the operator name (unless both arguments are particularly short and simple).
+**Unary operators** should not be separated from their arguments by
+any spaces. 
+Avoid spaces between **function** names and the immediately
+following bracket.
+```
+expr1 + expr2;
+!expr;
+UsefulFunction(args);
+```
+

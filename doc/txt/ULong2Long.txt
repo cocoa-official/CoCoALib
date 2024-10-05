@@ -1,0 +1,59 @@
+      ULong2Long
+      Copyright (c)  2011  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ULong2Long}{John Abbott}
+
+
+== User documentation ==
+%======================================================================
+
+=== Generalities ===
+%----------------------------------------------------------------------
+
+The function ``ULong2Long`` converts an ``unsigned long`` value into
+a ``signed long``, effectively inverting the standard C++ cast from
+``signed long`` to ``unsigned long``.  Note that applying a
+``static_cast`` might not produce the desired result -- officially
+the outcome is "implementation defined".
+
+
+== Maintainer Documentation ==
+%======================================================================
+
+There are three different implementations.  The choice between them
+is determined by the value of the CPP symbol ``COCOA_ULONG2LONG``;
+a suitable value for this symbol is found by a script called by the
+``configure`` script.  That script selects the simplest implementation
+which works (on certain test cases).  Note that C++ explicitly forbids
+the use of ``reinterpret_cast`` on built-in integral types, but the
+trick of applying to a reference seems to work (it was suggested to
+me by Chris Jefferson).
+
+An earlier version of this function was in ``utils.H``, but it turned
+out to be simpler to place it by itself in a separate header file
+(because the ``ULong2Long.H`` includes no further headers, so the test
+compilations made by the script ``cpp-flags-ulong2long.sh`` are simpler
+and safer).
+
+Everything is in the header file; there is no ``ULong2Long.C`` file.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+The fully portable definition is long and slow -- this seems to be a
+problem of the C++ standard.
+
+
+== Main changes ==
+%======================================================================
+
+**2011**
+- August (v0.9950):
+ - first robust version (with configure-time selection)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.
+

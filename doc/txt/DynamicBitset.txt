@@ -1,0 +1,150 @@
+      DynamicBitset
+      Copyright (c)  2010-2012 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{DynamicBitset}{Anna Bigatti}
+
+WORK-IN-PROGRESS
+
+== Examples ==[examples]
+- [ex-DynamicBitset1.C ../../examples/index.html#ex-DynamicBitset1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+Class for representing square free monomials, or subsets of integers.
+
+This is quite technical and useful only when efficiency is important.
+
+Similar to a C++ ``bitset`` except that its size does not need to be
+fixed at compile time (hence the adjective //dynamic//).
+
+=== Constructors ===[constructors]
+Let ``n`` be an integer,
+    ``pp`` a ``PPMonoidElem``,
+    ``b`` a ``DynamicBitset``
+
+- ``DynamicBitset(n)`` -- ``DynamicBitset()`` same as ``DynamicBitset(0)``
+- ``DynamicBitset(ConstRefPPMonoidElem pp)``  size is ``NumIndets(owner(pp))``, sets k-th entry iff k-th exponent is non-zero
+- ``DynamicBitset(const DynamicBitset&)``
+-
+
+=== Functions ===
+
+Let ``DB1`` and ``DB2`` be two (const) values of type ``DynamicBitset``
+
+- ``len(DB1)``  -- returns number of bits in ``DB1``
+- ``count(DB1)``  -- returns number of set bits in ``DB1``
+- ``out << DB1`` -- print out ``DB1`` (using currently chosen style)
+
+- ``DB1 | DB2``  -- bitwise or (equiv. the union of the subsets)
+- ``DB1 & DB2``  -- bitwise and (equiv. the intersection of the subsets)
+- ``DB1 - DB2``  -- bitwise diff (equiv. the set difference)
+- ``DB1 ^ DB2``  -- bitwise xor (equiv. union set-diff intersection)
+- ``IsSubset(DB1, DB2)``  -- true iff ``DB1`` is subset of ``DB2``
+- ``IsDisjoint(DB1, DB2)``  -- true iff ``DB1`` and ``DB2`` are disjoint
+- ``Is1At(DB1, n)``  -- true iff ``DB1`` is 1 at position ``n``
+- ``NewPP(PPM, DB1)`` -- create new PP in PPM whose exponents are given by ``DB1``
+- ``flip(DB1)``  -- create new DynamicBitset which is bitwise inverse of ``DB1``
+
+
+=== Member functions ===
+
+Additionally, let ``DB`` be a non-const value of type ``DynamicBitset``.
+
+- ``DB1.myLen()`` -- number of bits
+- ``DB1.IamAll0s()`` -- true iff value is [00000...0000]
+- ``DB1.IamAll1s()`` -- true iff value is [11111...1111]
+
+
+These two do not check that the index is valid:
+- ``DB.mySet(index, val)`` --  morally equiv to ``DB[index] = val`` (boolean)
+- ``DB.mySet(index)`` -- morally equiv to ``DB[index] = true``
+
+- ``DB = DB1``  -- assignment
+- ``DB &= DB1`` --  equiv. to ``DB = (DB & DB1)``
+- ``DB |= DB1`` --  equiv. to ``DB = (DB | DB1)``
+- ``DB ^= DB1`` --  equiv. to ``DB = (DB ^ DB1)``
+- ``DB -= DB1`` --  equiv. to ``DB = (DB - DB1)``
+
+- ``DB1.Iam1At(index)`` -- equiv. to DB[index] == 1
+- ``bool operator<(const DynamicBitset& rhs)   const;`` -- wrt Xel
+- ``DB1.IamSubset(DB2)`` -- true iff ``DB1`` is subset of ``DB2``
+- ``DB1.IamDisjoint(DB2)`` -- true iff ``DB1`` and ``DB2`` are disjoint
+
+- ``DB1 == DB2``  -- true iff ``DB1`` and ``DB2`` have the same value
+- ``DB1 != DB2``  -- true iff ``DB1`` and ``DB2`` have different values
+
+
+=== output options ===
+
+Default printing style is ``clean``, //i.e.// as an STL bitset of the same
+size.  Printing style can be changed by setting the variable
+``DynamicBitset::ourOutputStyle``
+Example with a 66-bit ``DynamicBitset`` on a 64-bit machine:
+ | ``DynamicBitset::clean`` | ``0000000000000000000000000000000011`` |
+ | ``DynamicBitset::WithSeparators`` | ``00-00000000.00000000.00000000.00000011`` |
+ | ``DynamicBitset::AsRevVecOfLong`` | ``[0, 3]`` |
+
+(see [ex-DynamicBitset1.C ../../examples/index.html#ex-DynamicBitset1.C]).
+
+**Member functions**
+- ``void myOutputSelf(std::ostream& out) const;``
+   --   as a bitset of same size
+- ``void myOutputSelf8(std::ostream& out) const;``
+   --  blocks of 8/ourNumBitsInBlock, for readability
+- ``void myOutputSelfLong(std::ostream& out) const;``
+   --  as reversed vector<unsigned long>
+
+
+== Maintainer documentation ==
+%======================================================================
+
+**Member fields (private)**
+ | ``std::vector<BitBlock>`` | ``myVec;`` |
+ | ``unsigned long``         | ``mySizeValue;`` |
+
+
+The ``long`` constant ``DynamicBitset::ourNumBitsInBlock``
+stores number of bits contained in an ``unsigned long`` (normally 32 or 64).
+
+So a ``DynamicBitset`` stores a STL vector of STL bitsets of
+(constant) size ``ourNumBitsInBlock`` called ``myVec``.
+The field ``mySizeValue`` is the number of bits we intend to use.
+(//e.g.// in a 32 bit machine a ``DynamicBitset`` of size 60 is stored as
+a vector with 2 ``BitBlock``s and will have 4 unused bits)
+
+```    enum OutputStyle {clean, AsRevVecOfLong, WithSeparators};
+
+**Member functions (private)**
+- ``myResize(long n);`` -- only for ctors
+- ``myVecLen() const;`` -- number of ``BitBlock``s in vector
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+=== boost? ===
+This class is needed because C++ ``bitset`` length has to be fixed at
+compile time.  There is a class in boost named ``dynamic_bitset``:
+if/when we decide CoCoALib inlude boost ``DynamicBitset`` will just
+call the boost implementation.
+
+=== Stretchable? ===
+``DynamicBitset``s, unlike boost's ``dynamic_bitset``s, are not
+//stretchable//: the resize function is private.
+They are used to represent square-free power-products, therefore
+changing size does not make sense.  But there is no technical reason
+to forbid it, so we might make it available.
+
+== Main changes ==
+%======================================================================
+
+**2010**
+
+- moved definition of class ``facet`` from ``TmpIsTree`` into
+  ``DynamicBitset.H,C`` (and renamed).
+  Rearranged and changed names for similarity with bitsets in STL and
+  boost.  Stuctured in //safe// or //fast// functions according to
+  coding conventions.  Test and example.

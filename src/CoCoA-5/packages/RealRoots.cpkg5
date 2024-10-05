@@ -1,0 +1,397 @@
+Package $RealRoots -- find or refine isolating intervals for real roots
+
+Export RealRoots;
+Export RealRootRefine;
+Export RealRootsApprox;
+
+Define About()
+  PrintLn "    Author: J Abbott";
+  PrintLn "    Date: 10 Jan 2004";
+  PrintLn "    Comment: RealRootRefine has improved efficiency now";
+  PrintLn "             added defn of Iroot to allow use with cocoa 4.2";
+EndDefine;
+-----------------------------------------------------------------------------
+
+-- Is this superseded by builtin "prim" now?
+Define IntegerPoly(F)
+  TopLevel QQ;
+  X := indet(RingOf(F), UnivariateIndetIndex(F));
+  C := CoefficientsWRT(F, [X]);
+  ScaleNum := 0;
+  ScaleDen := 1;
+  Foreach CPP In C Do
+    If not(IsRational(ref q, CPP.coeff)) Then Return 0; /*0 means ERROR*/ EndIf;
+    ScaleNum := gcd(ScaleNum, num(q));
+    ScaleDen := lcm(ScaleDen, den(q));
+  EndForeach;
+  // 2022-06-13  BUG??? ScaleNum & ScaleDen are unused???
+  QQz ::= QQ[z];
+  z := indet(QQz,1);
+  ans := 0;
+  Foreach CPP In C Do
+    discard := IsRational(ref a, CPP.coeff);
+    D := deg(CPP.PP,X);
+    ans := ans + a*z^D;
+  EndForeach;
+  Return ans;
+EndDefine;
+
+
+-----------------------------------------------------------------------------
+-- Main functions
+  
+-- Entry routine: returns a list of numerical approximations to the real roots.
+--                The approximations returned by this function cannot be refined.
+Define RealRootsApprox(...)
+  If len(ARGV) = 1 Then Return $.RealRootsApprox(ARGV[1],1/65536); EndIf;
+  Return [(Intvl.sup+Intvl.inf)/2 | Intvl In $.RealRoots(...)];
+EndDefine; -- RealRootsApprox
+
+
+-- Entry routine: does sanity check on args then passes them to RealRoots2
+Define RealRoots(F, Opt Eps, Opt Intvl)
+  TopLevel QQ;
+  If type(F) <> RINGELEM Then error("RealRoots: args should be polynomial, precision(opt.), interval(opt.)"); EndIf;
+  If characteristic(owner(F)) <> 0
+    Or UnivariateIndetIndex(F) = 0
+    Or F = 0
+  Then
+    error("RealRoots: poly must be non-zero univariate with rational coeffs");
+  EndIf;
+
+  if deg(F) = 0 then return []; endif;  // allow non-zero constant
+
+  If IsDefined(Eps) Then
+    If not(type(Eps) IsIn [RAT, INT]) Then error("RealRoots: 2nd arg must be the precision (type RAT or INT)"); EndIf;
+    Eps := max(0, Eps);
+  Else
+    Eps := 0; -- zero means use whatever interval is convenient
+  EndIf;
+
+  If IsDefined(Intvl) Then
+    If not(shape(Intvl) IsIn [[INT,INT], [INT,RAT], [RAT,INT], [RAT,RAT]]) Then
+      error("RealRoots: 3rd arg must be the interval in which to look for roots (type [RAT,RAT])");
+    EndIf;
+    If Intvl[1] > Intvl[2] Then Return []; EndIf;
+  Else
+    Intvl := [];
+  EndIf;
+
+  FF := IntegerPoly(F);
+  QQz := RingOf(FF);
+  z := indet(QQz,1);
+  -- Make FF squarefree and with integer coefficients
+-----------(Future ideas)----------------------
+-- SHOULD USE SQFR DECOMP HERE!!!  (but then need RRList)
+-- Should also remove linear factors.  Maybe even try factorizing?
+-- If poly is clearly always positive (or neg) then skip it.
+-----------------------------------------------
+  FF := FF/gcd(FF, deriv(FF, z));
+  phi := CanonicalHom(QQ,QQz);
+  c := phi(content(FF));
+  if LC(FF) < 0 then c := -c; endif;
+  FF := FF/c;
+  Return $.RealRoots2(FF, Eps, Intvl);
+EndDefine; -- RealRoots
+
+
+-- F is squarefree, primitive with integer coeffs, and positive LC.
+-- Eps is maximum isolating interval width; zero means use whatever width is convenient.
+-- Intvl is [] (all of real line) or [Lo, Hi] the closed interval in which roots are sought.
+-- ??? -- Assumes current ring is RingEnv(F).
+Define RealRoots2(F_orig, Eps, Intvl)  -- F_orig in QQ[x]
+  F := F_orig;
+  //  X := indet(owner(F_orig), UnivariateIndetIndex(F));
+  X := indet(owner(F_orig), 1);
+  // Handle case F = X^k specially to avoid log(0) when computing B below.
+  if F = X then
+    if Intvl <> [] and (Intvl[1] > 0 or Intvl[2] < 0) then return [];
+    else return [record[CoeffList:=[], inf:=0, sup:=0]];
+    endif;
+  endif;
+  -- Compute root bound which is a power of 2 in B.
+  -- Use power of 2 to have nice rationals during isolation (unless user gave strange interval)
+  RBF := RootBound(F);
+  B := 2^(1+FloorLog2(RBF));
+//  BF := RootBoundNoChecks(F);
+//  B := 2^FloorLog2(BF);
+//  If B < BF Then B := 2*B; EndIf;
+  If Intvl = [] Then Intvl := [-B, B]; EndIf;
+  If Intvl[1] < -B Then Intvl[1] := -B; EndIf;
+  If Intvl[2] > B Then Intvl[2] := B; EndIf;
+
+  Ans := [];
+  -- Handle case of roots on the boundary of the given interval
+  If MySubst(F, Intvl[1]) = 0 Then
+    Ans := [Record[CoeffList:=[], inf:=Intvl[1], sup:=Intvl[1]]];
+    F := F/(X-Intvl[1]);
+  EndIf;
+  If Intvl[1] = Intvl[2] Then Return Ans; EndIf;
+  If MySubst(F, Intvl[2]) = 0 Then
+    append(Ref Ans, Record[CoeffList:=[], inf:=Intvl[2], sup:=Intvl[2]]);
+    F := F/(X-Intvl[2]);
+  EndIf;
+
+  F := MySubst(F, (Intvl[2]-Intvl[1])*X + Intvl[1]);
+  -- The above line may have caused F to have a denominator
+  DenF := lcm(den(Intvl[1]), den(Intvl[2]-Intvl[1]));
+  D := deg(F);
+  F := F*DenF^D;
+  D1 := D+1;
+  CoeffList := NewList(D1, 0);
+--   C := coefficients(F);
+--   S := support(F);
+--   For I:=1 To len(S) Do
+--     CoeffList[1+D-deg(S[I])] := num(C[I]);
+--   EndFor;
+  While F<>0 Do
+    CoeffList[D1-deg(F)] := AsINT(LC(F));
+    F := F - LM(F);
+  EndWhile;
+  Ans := concat(Ans, $.RealRootsIn01(CoeffList, Intvl[1], Intvl[2]));
+  F := F_orig/product([X - Z.inf | Z In Ans And Z.inf = Z.sup], 1); // prod may be empty
+//  F := F*LCM([den(A) | A In coefficients(F)]); -- clear denom in F
+  F := ClearDenom(F);
+  D1 := deg(F)+1;
+  CoeffList := NewList(D1, 0);
+--   Foreach M In monomials(F) Do
+--     CoeffList[1+deg(F)-deg(M)] := LC(M);
+--   EndForeach;
+  While F<>0 Do
+    CoeffList[D1-deg(F)] := AsINT(LC(F));
+    F := F - LM(F);
+  EndWhile;
+  For I := 1 To len(Ans) Do
+    If Ans[I].inf <> Ans[I].sup Then
+      If $.evaluate(CoeffList, Ans[I].inf) < 0 Then
+	Ans[I].CoeffList := CoeffList;
+      Else
+	Ans[I].CoeffList := -1*CoeffList;
+      EndIf;
+    EndIf;
+  EndFor;
+  If Eps = 0 Then Return Ans; EndIf;
+  Return [$.RealRootRefine(RootApprox, Eps) | RootApprox In Ans];
+EndDefine; -- RealRoots2
+
+-----------------------------------------------------------------------------
+-- Functions in this section ***DETERMINE ISOLATING INTERVALS*** for the
+-- real roots.  We assume poly is in ZZ[x] & square-free, and not div by x.
+
+-- All functions below this line represent polynomials as lists of
+-- (integer) coefficients in "reverse order".
+-- e.g.  x^3+x+1 has coeff list  [1, 0, 1, 1]
+  
+-- In this fn Lo, Hi are RAT with Lo < Hi.
+-- Compute isolating intervals for roots of poly in L, but scale
+-- them according linearly (so that [0,1] corr to [Lo, Hi]).
+-- What is the source text?
+Define RealRootsIn01(L, Lo, Hi)
+  Count := $.descartes(L);
+  If Count = 0 Then Return []; EndIf;
+  If Count = 1 Then Return [Record[CoeffList:=L, inf:=Lo, sup:=Hi]]; EndIf;
+
+  $.DoubleX(Ref L);
+  Ans := [];
+  Mid := (Lo+Hi)/2;  // SLUG??? Should this be SimplestBinaryRatBetween???
+  If sum(L)=0 Then  // NB sum(L) is poly evaluated at x=1
+    Ans := [Record[CoeffList:=[], inf:=Mid, sup:=Mid]];
+    L := $.DivByXminus1(L);
+  EndIf;
+  -- Compute Left and Right outside concat to reduce recursion depth
+  Left := $.RealRootsIn01(L, Lo, Mid);
+  Ans := concat(Left, Ans);
+  Right := $.RealRootsIn01($.Shift1(L), Mid, Hi);
+  Ans := concat(Ans, Right);
+  Return Ans;
+EndDefine; -- RealRootsIn01
+
+Define descartes(L)
+  Linf := $.Shift1(reversed(L));
+  Count := 0;
+  S := sign(Linf[1]);
+  Foreach C In Linf Do
+    If sign(C) = -S Then
+      S := -S;
+      incr(ref Count);
+    EndIf;
+  EndForeach;
+  Return Count;
+EndDefine; -- descartes
+
+-- Transform L by x |-> x+1
+Define Shift1(L)
+  Ans := [];
+  Foreach C In L Do
+    append(Ref Ans, C);
+    For I:=len(Ans) To 2 Step -1 Do
+      Ans[I] := Ans[I] + Ans[I-1];
+    EndFor;
+  EndForeach;
+-- It runs more slowly with the two lines below
+--  G := GCD(Ans);
+--  If abs(G) > 1 Then Ans := [C/G | C In Ans]; EndIf;
+  Return Ans;
+EndDefine; -- Shift1
+
+-- Transform L by x |-> 2*x
+Define DoubleX(Ref L)
+  L := [L[I]*2^(I-1) | I In 1..len(L)];
+  G := gcd(L);
+  If G = 1 Or G = -1 Then Return; EndIf;
+  For I:=1 To len(L) Do L[I] := L[I]/G; EndFor;
+EndDefine; -- Double
+
+-- Divide the poly in L by (x-1); assuming division is exact.
+Define DivByXminus1(L)
+  For I := 2 To len(L) Do
+    L[I] := L[I]+L[I-1];
+  EndFor;
+//  Return first(L, len(L)-1);
+  Return [L[I] | I In 1..(len(L)-1)];
+EndDefine; -- DivByXminus1
+
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+-- Functions below are to do with interval refinement rather than
+-- determination of the isolating intervals.
+
+-- This function is faster than calling Subst.
+-- CF is a coefficient list (list of integers e.g. x^2-2 <--> [1,0,-2]).
+-- N is integer or rational.
+Define evaluate(CF, N)
+  Return NumEvalUPoly(reversed(CF), AsRAT(N));
+  -- Val := 0;
+  -- Foreach C In CF Do
+  --   Val := Val*N+C;
+  -- EndForeach;
+  -- Return Val;
+EndDefine; -- evaluate
+
+
+Define MySubst(F, Y)
+  P := owner(F);
+  Return PolyAlgebraHom(P,P,[Y])(F);
+EndDefine; -- MySubst
+
+
+-- This function computes round(RefinementFactor*FLo/(FLo-FHi))
+-- in a way which avoids potentially expensive GCD computations
+-- when normalizing rationals.
+Define PredictSubinterval(FLo, FHi, RefinementFactor)
+  H := FLo - FHi;
+  D := max(den(FLo), den(H)); -- this is a common denominator!
+  H := -num(H*D);
+  W := -num(FLo*D);
+  -- Round down if RF=4, otherwise round to nearest integer.
+  If RefinementFactor = 4 Then Return div(4*W, H); EndIf;
+  Return div(2*RefinementFactor*W + H, 2*H);
+EndDefine;  -- PredictSubinterval
+
+
+-- This function narrows the interval [Lo, Hi] by a factor of 4.
+-- It returns True iff linear interpolation indicated the correct
+-- quarter-size subinterval.
+Define RRRStep4(CF, Ref Lo, Ref Hi, Ref FLo, Ref FHi)
+  K := $.PredictSubinterval(FLo, FHi, 4);
+  PredictedLo := Lo + K*(Hi-Lo)/4;
+
+  -- Now do two Bisection steps and see if the prediction was good.
+  For I := 1 To 2 Do
+    Mid := (Hi+Lo)/2;
+    FMid := $.evaluate(CF, Mid);
+    If FMid = 0 Then Lo := Mid; Hi := Mid; FLo := 0; FHi := 0; Return True; EndIf;
+    If FMid > 0 Then
+      Hi := Mid;
+      FHi := FMid;
+    Else
+      Lo := Mid;
+      FLo := FMid;
+    EndIf;
+  EndFor;
+  Return Lo = PredictedLo;
+EndDefine; -- RRRStep4
+
+
+-- The function tries to narrow the interval [Lo, Hi] in which the root
+-- lies to an interval of width (Hi-Lo)/RefinementFactor.
+-- RefinementFactor is always a power of 4 (and at least 4^2).
+-- The result is True if we succeed, otherwise False.
+-- Lo, Hi, FLo, and FHi are updated only if we succeed.
+Define RRRStep(CF, Ref Lo, Ref Hi, Ref FLo, Ref FHi, RefinementFactor)
+  K := $.PredictSubinterval(FLo, FHi, RefinementFactor);
+  Width := (Hi-Lo)/RefinementFactor;
+  Guess := Lo + K*Width;
+  FGuess := $.evaluate(CF, Guess);
+
+  If FGuess = 0 Then -- we happened upon a root
+    Lo := Guess; Hi := Guess; FLo := 0; FHi := 0; Return True;
+  EndIf;
+  If FGuess < 0 Then -- Guess is too low, so step upwards
+    FGuess1 := $.evaluate(CF, Guess+Width);
+    If FGuess1 = 0 Then Lo := Guess+Width; Hi := Guess+Width; FLo := 0; FHi := 0; Return True; EndIf;
+    If FGuess1 < 0 Then Return False; EndIf;
+    FLo := FGuess;
+    FHi := FGuess1;
+    Lo := Guess;
+    Hi := Lo + Width;
+    Return True;
+  Else -- FGuess > 0, Guess is too high, so step downwards
+    FGuess1 := $.evaluate(CF, Guess-Width);
+    If FGuess1 = 0 Then Lo := Guess-Width; Hi := Guess-Width; FLo := 0; FHi := 0; Return True; EndIf;
+    If FGuess1 > 0 Then Return False; EndIf;
+    FLo := FGuess1;
+    FHi := FGuess;
+    Hi := Guess;
+    Lo := Hi - Width;
+    Return True;
+  EndIf;
+EndDefine; -- RRRStep
+
+
+-- An entry routine:
+--   RootIntvl should have been produced by RealRoots (or RealRootRefine),
+--   Eps is an upper limit on width of refined interval.
+--   Result is another RootInterval Record For the refined interval.
+Define RealRootRefine(RootIntvl, Eps)
+    Xinf := RootIntvl.inf;
+    Xsup := RootIntvl.sup;
+    Xwidth := Xsup - Xinf;
+    If Eps <= 0 Or Eps >= Xwidth Then Return RootIntvl; EndIf;
+
+    CF := RootIntvl.CoeffList;
+    Lo := RootIntvl.inf;
+    Hi := RootIntvl.sup;
+    FLo := $.evaluate(CF, Lo);
+    FHi := $.evaluate(CF, Hi);
+    If FLo >= 0 Or FHi <= 0 Then
+      error("RealRootRefine: improper input interval"); -- should never happen
+    EndIf;
+    RefinementFactor := 4;
+    While Hi-Lo > Eps Do
+///PrintLn "Trying with N=2^",FloorLog2(RefinementFactor), "  = 4^(2^",FloorLog2I(FloorLog2I(RefinementFactor)-1),")";
+      If RefinementFactor = 4 Then
+	OK := $.RRRStep4(CF, Ref Lo, Ref Hi, Ref FLo, Ref FHi);
+///PrintLn "Succeeded? ",OK;
+	If OK Then
+	  RefinementFactor := RefinementFactor^2;
+	EndIf;
+      Else
+	OK := $.RRRStep(CF, Ref Lo, Ref Hi, Ref FLo, Ref FHi, RefinementFactor);
+///PrintLn "Succeeded? ",OK;
+	If not(OK) Then
+	  RefinementFactor := FloorSqrt(RefinementFactor);
+	Else
+	  RefinementFactor := RefinementFactor^2;
+	EndIf;
+      EndIf;
+    EndWhile;
+
+    If Lo = Hi Then
+      Return Record[CoeffList := [], inf := Lo, sup := Hi];
+    EndIf;
+  Return Record[CoeffList := CF, inf := Lo, sup := Hi];
+EndDefine; -- RealRootRefine
+
+-----------------------------------------------------------------------------
+EndPackage; -- end of package RealRoots

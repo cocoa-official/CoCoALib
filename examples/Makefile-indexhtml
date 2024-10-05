@@ -1,0 +1,71 @@
+# Makefile for CoCoALib/examples/index.html
+
+COCOA_ROOT=..
+include $(COCOA_ROOT)/configuration/autoconf.mk
+CWD=examples/
+
+index.html: Makefile-indexhtml  CopyInfo.C  index-preamble  ex-*.C
+	@$(MAKE) -f Makefile-indexhtml  CopyInfo
+	@echo "Creating index.html for directory CoCoALib/examples/"
+	@/bin/rm -f  index.html  index-tmp.html
+	@/bin/cat index-preamble                              >> index-tmp.html
+	@echo "<table>"                                       >> index-tmp.html;
+	@for SrcFile in ex-*.C; do \
+	  echo "<!--=====================================-->" >> index-tmp.html;\
+	  echo "<tr bgcolor=\"#ddddff\">"                     >> index-tmp.html;\
+	  echo "<th valign=top><a href=\"$$SrcFile\" name=\"$$SrcFile\">$$SrcFile</a></th>" >> index-tmp.html; \
+	  echo "<td>"                                         >> index-tmp.html; \
+          ./CopyInfo "ShortDescription" < "$$SrcFile"         >> index-tmp.html; \
+	  if [ $$? -ne 0 ]; then echo; echo "***ERROR*** Problem with ShortDescription in file $$SrcFile"; echo; exit 1; fi; \
+	  echo "</td></tr><tr><td colspan=2><pre>"            >> index-tmp.html; \
+          ./CopyInfo "LongDescription"  < "$$SrcFile"         >> index-tmp.html; \
+	  if [ $$? -ne 0 ]; then echo; echo "***ERROR*** Problem with LongDescription in file $$SrcFile"; echo; exit 1; fi; \
+	  echo "</pre></td></tr>"                             >> index-tmp.html; \
+        done
+	@echo "</table></body></html>"                        >> index-tmp.html;
+	@/bin/mv -f index-tmp.html index.html
+
+
+## does not depend on libcocoa (--> out of general Makefile)
+CopyInfo: CopyInfo.C
+	$(CXX) -O CopyInfo.C -o CopyInfo
+
+.PHONY: clean  clean-local
+clean: clean-local
+	@echo "Cleaned CoCoALib/$(CWD) index files"
+
+clean-local:
+	@/bin/rm -f  CopyInfo  CopyInfo.o
+	@/bin/rm -f  index-tmp.html  ./*~  ./.*~  ./.\#*
+	@/bin/rm -rf  ./*.dSYM
+
+.PHONY: veryclean  veryclean-local
+veryclean: veryclean-local
+	@echo "Verycleaned CoCoALib/$(CWD) index files"
+
+veryclean-local: clean-local
+	@/bin/rm -f  index.html
+
+
+#############################################################################
+# Next few lines are for RCS header/log
+# $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/Makefile-indexhtml,v 1.6 2022/03/17 16:13:14 abbott Exp $
+# $Log: Makefile-indexhtml,v $
+# Revision 1.6  2022/03/17 16:13:14  abbott
+# Summary: Cosmetic changes (spaces)
+#
+# Revision 1.5  2019/09/16 14:37:21  abbott
+# Summary: Added defn of CWD
+#
+# Revision 1.4  2018/08/02 15:06:02  abbott
+# Summary: Added dependency on CopyInfo.C for target index.html
+#
+# Revision 1.3  2018/08/02 15:02:31  abbott
+# Summary: Fixed small bug
+#
+# Revision 1.2  2018/08/02 14:56:31  abbott
+# Summary: Improved so depends only files called ex-*.C (instead of *.C)
+#
+# Revision 1.1  2018/08/02 11:19:20  bigatti
+# -- split Makefile and Makefile-indexhtml
+#

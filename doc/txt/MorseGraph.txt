@@ -1,0 +1,111 @@
+      MorseGraph
+      Copyright (c)  2015  John Abbott,  Anna M. Bigatti   (orig author: Mario Albert)
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{MorseGraph}{Mario Albert}
+
+
+== Examples ==
+%----------------------------------------------------------------------
+- [ex-MorseGraph.C ../../examples/index.html#ex-MorseGraph.C]
+
+
+== User documentation for Morse Graph ==
+%======================================================================
+
+Via the Morse Graph we are able to compute a free resolution of a
+polynomial ideal via the ``JBMill``. We can compute a free
+resolution and, if the ideal is homogeneous, the minimal free resolution
+and the graded Betti numbers of the ideal.
+
+
+=== Using the Morse Graph ===
+%----------------------------------------------------------------------
+
+In the following let ``mill`` a [[JBMill]] with ``degrevlex`` order
+The following command computes a free resolution as ``vector<matrix>``
+- ``Resolution(mill)``
+
+Now we assume that ``mill`` contains a homogeneous ideal and ``col`` and ``row`` are of type ``long``
+
+- ``MinimalResolution(mill)`` -- Returns the minimal free resolution of ``mill`` as ``vector<matrix>``
+- ``BettiDiagramm(mill)``     -- Returns a matrix of ``ZZ``, which represents the graded Betti numbers in Macaulay-Style
+- ``BettiColumn(mill, col)``  -- Returns a matrix with only one column. This column represents the ``col``th column of the Betti diagram (The first column/row has index ``0``).
+- ``BettiNumber(mill, row, col)`` -- Returns a ``RingElem`` of type ``RingZZ`` which represents the Betti number at position (``row``, ``col``) in the Betti diagram (The first column/row has index ``0``).
+
+
+== Maintainer documentation for TmpMorseGraph.C, TmpMorseBetti.C, TmpMorseResolution.C, TmpPartialMorseBetti.C TmpMorseElement.C, TmpMorsePaths.C, TmpResolutionMinimization.C ==
+%======================================================================
+
+For computing free resolutions and graded Betti diagramms with a Janet basis we using algebraic discrete Morse theory.
+(More information about the mathematical background the user can find in "On the free resolution induced by a Pommaret basis").
+
+=== MorseElement and JBElem ===
+
+The basic datastructure is a, so called, ``MorseGraph``. The nodes are represented by the class ``MorseElement``. A ``MorseElement`` consists of three main data members:
+- ``myWedgeProduct`` -- A ``DynamicBitset`` which represents a wedge product.
+- ``myRightProduct`` -- A ``PPMonoidElem``.
+- ``myBasis`` -- A ``JBElemConstIter``. This is a constant iterator to a vector of ``JBElem``.
+
+The class ``JBElem`` is contained in the class ``MorseElement``. The set of all ``JBElem``s should represent the given Janet basis. It consists of the basis element (``elem``) as ``RingElem``, the multiplicative variables (``multVars``) as ``DynamicBitset`` and the lexicographic position above all elements in the given Janet basis (``lexPos``) as ``long``. We store this additional attributes to avoid redundant computations.
+
+``MorseElement`` implements several methods to construct and modify ``MorseElement``s. In addition to that it implements several methods which we need to compute the resolution. For detailed descriptions the user should take a look at the inline documentation.
+
+=== StandardRepresentationContainer ===
+
+During the computation of the free resolution we need to compute standard representations of the form ``x[i] * basis_element`` very often. Due to that we often compute the same standard representation. To avoid redundant computations we store every already computed standard representation in the container.
+
+A standard representation is represented by a vector of ``RingElem``s. These vector corresponds to the given Janet basis (e.g. The standard representation of ``r`` is (1. element of the vector) * (1. basis element) + (2. element of the vector) * (2. basis element) + ...). Together with ``r`` we save the standard representation in a ``pair``.
+We store all standard representations in a multimap (``myContainer``), where the key is the corresponding LPP.
+
+If we want to compute the standard representation of ``r``. We first searching for the range with the same LPP in ``myContainer``. If this is range is not empty we try to find an pair with the same ``RingElem`` than ``r``. If we do not find such an element we compute the standard representation, save it in ``myContainer`` and return the standard representation to the user.
+
+=== MorseGraph and MorsePaths ===
+
+For modelling a Graph we need some additional data structures beside a ``MorseElement``.
+Essentially we need again a map where the beginning of an edge should be the key and a vector of the tail of all edges with same beginning should be the value.
+For efficiency and simplicity we invert this natural datastructure, e.g. the tail of an edge is the key of the map and the beginning of all edges with this tail is the value (this list is called ``myResolution`` and is of type ``map<MorseElement, MorsePaths>``).
+The edges have additionally values. Therefore we join the beginnings of all edges with the value (a simple ``RingElem``) of the corresponding edges.
+These list is represented by the class ``MorsePaths``.
+``MorsePaths`` implements an intelligent version of this list. It notices if we add an already known edge and sums up the values of this edges.
+If a edge has value ``0`` it removes this edge from the list.
+
+The implementation of the list is quite complicated:
+
+The beginning of the edges are ``MorseElement``s. To avoid memory consumption we only save a ``const_iterator`` to the corresponding ``MorseElement`` in ``myResolution``.
+For efficiency we save these const iters as a key of map, where the values are ``RingElem``s, representing the value of the corresponding edges.
+
+If there is a ``MorseElement`` which is not the end of an edge we simply store it in ``myComputer`` with an empty ``MorsePaths``.
+
+``MorseGraph`` does not only consists of ``myContainer``. It also contains the a ``JBMill`` (``myMill``), the corresponding ``SparsePolyRing`` (``myRing``), the corresponding Janet basis as ``vector<MorseElement::JBElem>`` (``myBasis``) and a ``ring`` (``myMapRing``).
+``MorseGraph`` is purely virtual class. It concrete subclasses are ``MorseBetti`` and ``MorseResolution``.
+In ``MorseBetti`` all values of the edges in our graph are of type ``CoeffRing(myRing)`` and in ``MorseResolution`` they are of type ``myRing``.
+The variable ``myMapRing`` keeps track of this information.
+
+The implementation of ``MorseBetti`` and ``MorseResolution`` is quite similar.
+They compute and minimize the MorseGraph, but the ``MorseBetti`` class only computes the part of the graph where all edges have only a constant value.
+For further information look at the cited paper or at the inline documentation.
+Another difference between ``MorseBetti`` and ``MorseResolution`` is the expected output.
+``MorseBetti`` computes the graded betti diagram of an ideal. The betti diagramm is represented by ``matrix``.
+``MorseResolution`` computes a graded free resolution of an ideal. The resolution is represented by ``vector<matrix>``.
+
+=== PartialMorseBetti ===
+We use this class to compute a single Betti column or Betti number. It is a child class of ``MorseBetti``. The algorithms to compute these partial datas are nearly the same as in the class ``MorseBetti``. The only difference are the restriction to one column or only one number. For more informations take a look at the inline documentation.
+
+=== ResolutionMinimization ===
+
+This class takes a vector of matrices of ``RingElem``s which should represent a free resolution and minimizes it with the standard algorithm.
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+=== ResolutionMinimization ===
+
+Implementing a own specialized myAddRowMul function (skipping zeros...).
+
+=== MorseGraph ===
+
+Waiting for general free resolution object.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

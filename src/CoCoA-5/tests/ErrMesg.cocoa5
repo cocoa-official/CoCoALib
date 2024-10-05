@@ -1,0 +1,49 @@
+R ::= QQ[x,y,z];
+K := NewFractionField(R);
+
+// The tests below check that we obtain the expected errors:
+// we do this by catching the error, and then printing it
+// (so if the error is not as expected then the output is not as expected).
+
+try
+  println "toric: check exponents June2018 -- Bug #1190";
+  N := 9;
+  M := mat([[ random(-99,99) | j in 1..2*N] | i in 1..N]);
+  H := HilbertBasisKer(M);
+uponerror e do
+  println GetErrMesg(e); println;
+endtry
+
+try
+  println "subst now check indets 1Mar2017";
+  P1 ::= QQ[x,y];
+  P2 ::= QQ[x,y];
+  f := RingElem(P1, "x+2*y");
+  subst(f, RingElem(P2, "x"), 1); 
+uponerror e do
+  println GetErrMesg(e); println;
+endtry
+
+try
+  println "gcd in field now throws Error 24May2012";
+  gcd(zero(K), RingElem(K,"x")) = 1;
+uponerror e do
+  println GetErrMesg(e); println;
+endtry
+
+try
+  println "gcd in field now throws Error 24May2012";
+  gcd(zero(K), zero(K)) = 0;
+uponerror e do
+  println GetErrMesg(e); println;
+endtry
+
+
+try
+  println "Hilbert fn: check for positive grading Oct2019 -- Bug #1211";
+    R := NewPolyRing(QQ, "x,y,z", MakeTermOrdMat(RowMat([2,3,0])), 1);
+    HilbertSeries(R/ideal(RingElem(R, "z")));
+uponerror e do
+  println GetErrMesg(e); println;
+endtry
+

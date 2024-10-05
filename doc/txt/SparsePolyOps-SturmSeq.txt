@@ -1,0 +1,51 @@
+      SparsePolyOps-SturmSeq
+      Copyright (c)  2017 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SparsePolyOps-SturmSeq}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-SparsePolyOps3.C ../../examples/index.html#ex-SparsePolyOps3.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers two functions: ``SturmSeq`` and ``NumRealRoots``.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``f`` be a ``RingElem`` whose value is a univariate polynomial
+with rational coefficients.
+
+- ``SturmSeq(f)``  -- returns a ``vector<RingElem>`` being the Sturm sequence of the polynomial ``f`` (in order of decreasing  degree)
+- ``NumRealRoots(f)``  -- returns a ``long` being the number of real roots ``f`` has.
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The implementation is naive and simple; this is OK for small examples.
+Currently it computes a primitive PRS; seems adequate for smallish tests.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Clears denominators, but I'm not sure why ``content`` works.
+
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- November (v0.99561): first release
+-
+
+

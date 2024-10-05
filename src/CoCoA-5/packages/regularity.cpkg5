@@ -1,0 +1,117 @@
+Package $regularity
+
+export reg;
+  
+Define About()
+  PrintLn "    KeyWords : Castelnuovo-Mumford regularity, Bermejo-Gimenez";
+  PrintLn "    Author   : E.SaenzDeCabezon (updated to CoCoA-5 A.M.Bigatti)";
+  PrintLn "    Version  : CoCoA 4.7.5";
+  PrintLn "    Date     : 30 Sep 2009";
+EndDefine; -- About
+
+-----------------------------------------------------------------------
+
+//Tests if the last indeterminates are in Noether position
+Define IsNoetherPosition(I)   // I is a monomial ideal
+  P := RingOf(I);
+  D := dim(P/I);
+  If D=0 Then Return True; EndIf;
+  I := subst(I, [ [X, 0] | X In last(indets(P), D) ]);
+  Return (dim(P/I)=D);
+EndDefine; -- IsNoetherPosition
+
+
+
+//Tests if a monomial ideal is of nested type
+
+Define IsNested(I)  // I is a monomial ideal
+  P := RingOf(I);
+  N := NumIndets(P);
+  D := dim(P/I);
+  If D=0 Then Return true; EndIf;
+
+  //We first check that there is a generator of the form x_i^k_i
+  //  for each of the first n-d variables
+  //This is already done in the function IsNoetherPosition ;)
+  If not($.IsNoetherPosition(I)) Then Return false; EndIf;
+
+  //Now we check the second condition for the last variables
+  Previous := ideal(P,[]);
+  For K := N To N-D+1 Step -1 Do
+    J := IdealOfMinGens(subst(I, indet(P,K),1));
+    If not(IsContained(Previous, J)) Then Return false; EndIf;
+    Previous := J;
+  EndFor;
+  Return true;
+EndDefine;
+
+
+
+
+
+//Coordinate changes--------------
+//--------------------------------
+//--------------------------------
+
+
+Define SmallChange(I,A)
+  P := RingOf(I);
+  N := NumIndets(P);
+  D := dim(P/I);
+  F := first(indets(P),N-D+1);
+  S := [ indet(P,L) + sum([ random(-A,A)*Y | Y In [indet(P,Z)|Z In (N-D+1)..(L-1)] ])
+                                       | L In (N-D+2)..N ];
+  phi := PolyAlgebraHom(P, P, concat(F, S));
+  Return ideal([ phi(G) | G In gens(I)]);
+EndDefine; -- SmallChange
+
+
+Define BigChange(I,A)
+  P := RingOf(I);
+  N := NumIndets(P);
+  D := dim(P/I);
+  F := first(indets(P), N-D);
+  S := [ indet(P,L) + sum([ random(-A,A)*Y | Y In first(indets(P), L-1) ])
+                                       | L In (N-D+1)..N];
+  phi := PolyAlgebraHom(P, P, concat(F, S));
+  Return ideal([ phi(G) | G In gens(I)]);
+EndDefine; -- BigChange
+
+
+
+
+//Global Procedure------------------
+//------- vedi saenz3.cocoa --------
+//----------------------------------
+
+
+Define AssocNested(I)
+  //Using only (-10,10) for the random coefficients, enough?
+  J := I;
+  LTJ := LT(I);
+  IsNoethPosI := IsNoetherPosition(I); -- GBasis(I) computed by LT(I)
+  While not($.IsNested(LTJ)) Do
+    If IsNoethPosI Then J := $.SmallChange(J,10);
+    Else J := $.BigChange(J,10);
+    EndIf;
+    LTJ := LT(J);
+  EndWhile;
+  Return LTJ;
+EndDefine; -- AssocNested
+
+
+Define reg(I)
+//  Using RingOf(I) Do
+    If type(I)=RING and IsQuotientRing(I) then
+      Return $.reg(DefiningIdeal(I))-1;
+    EndIf;
+  If type(I)<>IDEAL Then error("reg: arg must be an ideal"); EndIf;
+    N := $.AssocNested(I);
+//    L := IrreducibleDecom_Frobby5(N);
+    L :=  FrbIrreducibleDecomposition(N);
+    Reg := max([sum([deg(T)|T In MinGens(Y)])-len(gens(Y))|Y In L])+1;
+    Return Reg;
+//  EndUsing;
+EndDefine; -- reg
+
+EndPackage;

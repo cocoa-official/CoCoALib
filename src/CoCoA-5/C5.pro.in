@@ -1,0 +1,61 @@
+
+#QMAKE_CXXFLAGS += -Wall -Wextra -pedantic -O0 -g3
+QMAKE_CXXFLAGS += -std=c++14 -Wall -pedantic -O2
+QMAKE_MAKEFILE = C5Makefile
+QMAKE_RPATHDIR += QCodeEdit
+DESTDIR = .
+CONFIG += c++14 release qt thread
+#CONFIG += c++14 debug qt thread  # change also OBJECTS_DIR below!!!
+TEMPLATE = app
+TARGET = C5
+DEPENDPATH += .
+INCLUDEPATH += . \
+	QCodeEdit \
+	QCodeEdit/document 
+LIBS += -LQCodeEdit  -LQCodeEdit/release  -lpthread  -lqcodeedit # AMB
+DEFINES += C5IDE
+MOC_DIR = 
+UI_DIR =
+OBJECTS_DIR = GUI-release
+#OBJECTS_DIR = GUI-debug
+QT += xml webkitwidgets printsupport
+HEADERS += AST.H \
+           Banner.H \
+           BuiltInFunctions.H \
+           BuiltInOneLiners.H \
+           C5.H \
+           C5Utils.H \
+	   CoCoALibSupplement.H \
+           CompilationDate.H \
+           Interpreter.H \
+           Lexer.H \
+           LineProviders.H \
+	   OnlineHelp.H \
+           Parser.H \
+           VersionInfo.H \
+           globals.H
+FORMS += Console.ui MainWindow.ui SourceEditor.ui Debugger.ui
+SOURCES += AST.C \
+           Banner.C \
+           BuiltInFunctions.C \
+           BuiltInFunctions-CoCoALib.C \
+           BuiltInFunctions-Frobby.C \
+           BuiltInFunctions-GFan.C \
+           BuiltInFunctions-GSL.C \
+           BuiltInFunctions-MathSAT.C \
+           BuiltInFunctions-Normaliz.C \
+           BuiltInFunctionsVarArgs-CoCoALib.C \
+           BuiltInOneLiners-CoCoALib.C \
+           C5.C \
+           CoCoALibSupplement.C \
+           CompilationDate.C \
+           Interpreter.C \
+           Lexer.C \
+           LineProviders.C \
+           Main.C \
+	   OnlineHelp.C \
+           Parser.C \
+           VersionInfo.C \
+           globals.C 
+RESOURCES += C5.qrc
+

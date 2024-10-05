@@ -1,0 +1,38 @@
+      RingDistrMPolyClean
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingDistrMPolyClean}{John Abbott}
+
+
+
+
+== User documentation for the class RingDistrMPolyClean ==
+%======================================================================
+
+``RingDistrMPoly`` implements a ring of distributed multivariate
+polynomials: you may think of the elements as being ordered lists of
+coefficient and power product pairs (with the additional guarantee
+that the coefficients are non-zero, and that the power products are
+all distinct.
+
+A ``RingDistrMPoly`` is a concrete instance of a [[SparsePolyRing]].
+
+
+== Maintainer documentation for the class RingDistrMPoly ==
+%======================================================================
+
+I have implemented ``HomImpl`` and ``IdealImpl`` as private subclasses since
+their existence should not be known outside the scope of the class
+``RingDistrMPolyImpl``.
+
+
+=== Bugs and Shortcomings ===
+%----------------------------------------------------------------------
+Documentation almost completely absent.
+
+The implementation of ``RingDistrMPolyImpl::HomImpl::myApply`` is very
+poor.  I simply needed some easy code that would work.  A major
+overhaul will be needed when I have understood how best to implement
+it.
+

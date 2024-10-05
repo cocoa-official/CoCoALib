@@ -1,0 +1,375 @@
+-- $ 2010/08/03 $
+-- package for managing lists
+-- NOTE: this is fundamental part of the CoCoA-5 system: DO NOT EDIT
+
+Package $list
+
+Export CartesianProduct;
+Export CartesianProductList;
+Export count;
+Export distrib;
+Export EqSet;
+Export flatten;
+Export IsSubset;
+Export MakeSet;
+Export MaxBy;
+Export MinBy;
+Export sort;
+Export SortBy;
+Export sorted;
+Export SortedBy;
+Export WithoutNth;
+
+Alias 	List 	:= $list;
+
+-------------------------------
+Define About()
+  PrintLn "    Version  : CoCoA3.6.2";
+  PrintLn "    Date     : 29 September 2003";
+  PrintLn "    Added    : SortedBy, now behaves correctly with a non-strict order";
+EndDefine; -- About
+
+-------------------------------
+
+Define WithoutNth(L,N)  remove(Ref L,N); Return L;  EndDefine; // was in coclib.cpkg
+
+Define flatten(...)
+  If len(ARGV)=1 Then Return List.Flatten2(ARGV[1],-1); EndIf;
+  If len(ARGV)=2 And type(ARGV[2])=INT And ARGV[2]>=0 Then
+    Return List.Flatten2(ARGV[1], ARGV[2]);
+  EndIf;
+  If len(ARGV)<>2 Then error("Flatten: 1 or 2 arguments expected"); EndIf;
+  error("Flatten: second argument must be a non-negative integer");
+EndDefine;
+
+Define Flatten2(L, N)
+  If type(L) <> LIST Or N=0 Then Return L;
+  Else Return List.ConcatMixed([List.Flatten2(X, N-1)|X In L]);
+  EndIf;
+EndDefine; -- Flatten2
+
+Define Force(X)
+  If type(X) = LIST Then Return X; EndIf;
+  Return [X];
+EndDefine; -- Force
+
+-------------------------------
+
+Define MakeSet(L)
+-- Help "MakeSet(L:LIST):LIST returns the list L without repetitions"
+  R := [];
+  Foreach X In L Do
+    If not(X IsIn R) Then append(Ref R, X); EndIf;
+  EndForeach;
+  Return R;
+EndDefine;
+
+-------------------------------
+
+Define IsSubset(L1,L2)
+  Foreach X In L1 Do
+    If not(X IsIn L2) Then Return False; EndIf;
+  EndForeach;
+  Return True;
+EndDefine;
+
+-------------------------------
+
+Define EqSet(L1,L2)
+  Return IsSubset(L1,L2) And IsSubset(L2,L1);
+EndDefine; -- EqSet
+
+-------------------------------
+
+// JAA 20140305 had already been mpoved to NotBuiltin.cpkg5
+-- Define diff(L1,L2)
+--   If [type(L1), type(L2)] <> [LIST, LIST] Then
+--     error("diff: arguments must be lists");
+--   EndIf;
+--   Return [X In L1 | not(X IsIn L2)];
+-- EndDefine;
+
+-------------------------------
+
+Define Longer(L,M) Return len(L) > len(M); EndDefine;
+
+-------------------------------
+
+
+Define InsertionSort(Ref L)
+  List.InsertionSort1(Ref L, 1, len(L));
+EndDefine;
+
+Define InsertionSort1(Ref L, Lo, Hi)
+  For I := Hi To Lo+1 Step -1 Do
+    MaxPos := Lo;
+    For J := Lo+1 To I Do
+      If L[MaxPos] < L[J] Then MaxPos := J; EndIf;
+    EndFor;
+    If MaxPos <> I Then
+      C := L[MaxPos];  L[MaxPos] := L[I];  L[I] := C;
+    EndIf
+  EndFor
+EndDefine;
+
+Define QuickSort(Ref L)
+  List.QuickSort1(Ref L, 1, len(L));
+EndDefine;
+
+Define _MiddleOf3(A, B, C)
+--   If A < B Then
+--     If A < C Then Return min(B, C);
+--     Else Return A;
+--     EndIf;
+--   Else // A >= B
+--     If A < C Then Return A;
+--     Else Return max(B, C);
+--     EndIf;
+--   EndIf;
+  
+  L := [A, B, C];
+  List.InsertionSort(Ref L);
+  Return L[2];
+EndDefine;
+
+Define _MiddleOf5(A, B, C, D, E)
+  L := [A, B, C, D, E];
+  List.InsertionSort(Ref L);
+  Return L[3];
+EndDefine;
+
+Define QuickSort1(Ref L, Lo, Hi)
+  If Hi <= Lo Then Return; EndIf;
+  If (Hi-Lo) < 32 Then List.InsertionSort1(Ref L, Lo, Hi); Return; EndIf;
+//  Mid := div(Hi+Lo, 2);
+//  Pivot := List._MiddleOf3(L[Lo], L[Mid], L[Hi]);
+  Delta := div(Hi-Lo,4);
+  Pivot := List._MiddleOf5(L[Lo], L[Lo+Delta], L[Lo+2*Delta], L[Hi-Delta], L[Hi]);
+  -- Rearrange elems so that all those "< pivot" are below Up.
+  Down := Hi;
+  Up := Lo;
+  While Down > Up Do
+    While L[Up] < Pivot Do incr(ref Up); EndWhile; --> L[Up] >= Pivot
+    While Down > Up And L[Down] >= Pivot Do decr(ref Down); EndWhile;
+    If Down > Up Then
+      swap(ref L[Down], ref L[Up]);
+      incr(ref Up); decr(ref Down); // now it may be Up=Down and L[Up]<Pivot
+    EndIf;
+  EndWhile;
+  if L[Up] < Pivot then incr(ref Up); endif; // for Up=Down and L[Up]<Pivot
+  List.QuickSort1(Ref L, Lo, Up-1); -- OK even if there are no elements less than pivot
+  -- Now move all elements not strictly greater than pivot to the middle.
+  Down := Hi;
+  While Down > Up Do
+    While Up <= Hi And L[Up] = Pivot Do incr(ref Up); EndWhile;
+    While Down > Up And L[Down] > Pivot Do decr(ref Down); EndWhile;
+    If Down > Up Then
+      swap(ref L[Down], ref L[Up]);
+      incr(ref Up); decr(ref Down); // now it may be Up=Down and L[Up]=Pivot
+    EndIf;
+  EndWhile;
+  List.QuickSort1(Ref L, Up, Hi); -- OK even if there are no elements greater than pivot
+EndDefine;
+
+Define sort(Ref L)
+  List.QuickSort(Ref L);
+EndDefine;
+
+-------------------------------
+
+Define InsertionSortBy(Ref L, LessThan)
+  List.InsertionSortBy1(Ref L, 1, len(L), LessThan);
+EndDefine;
+
+Define InsertionSortBy1(Ref L, Lo, Hi, LessThan)
+  For I := Hi To Lo+1 Step -1 Do
+    MaxPos := Lo;
+    For J := Lo+1 To I Do
+      If LessThan(L[MaxPos], L[J]) Then MaxPos := J; EndIf;
+    EndFor;
+    If MaxPos <> I Then
+      C := L[MaxPos];  L[MaxPos] := L[I];  L[I] := C;
+    EndIf
+  EndFor
+EndDefine;
+
+Define QuickSortBy(Ref L, LessThan)
+  List.QuickSortBy1(Ref L, 1, len(L), LessThan);
+EndDefine;
+
+Define _MiddleOf3By(A, B, C, LessThan)
+  L := [A, B, C];
+  List.InsertionSortBy(Ref L, LessThan);
+  Return L[2];
+EndDefine;
+
+Define Strictly(LessThan, X, Y)
+  Return LessThan(X, Y) And not(LessThan(Y, X));
+EndDefine; -- Strictly
+
+
+Define QuickSortBy1(Ref L, Lo, Hi, LessThan)
+  If Hi <= Lo Then Return; EndIf;
+  If (Hi-Lo) < 16 Then List.InsertionSortBy1(Ref L, Lo, Hi, LessThan); Return; EndIf;
+  Mid := div(Hi+Lo, 2);
+  Pivot := List._MiddleOf3By(L[Lo], L[Mid], L[Hi], LessThan);
+
+  -- Rearrange elems so that all those less than pivot are below Up.
+  Down := Hi;
+  Up := Lo;
+  While Down > Up Do
+    While List.Strictly(LessThan, L[Up], Pivot) Do incr(ref Up); EndWhile;
+    While Down > Up And not(List.Strictly(LessThan, L[Down], Pivot)) Do
+      decr(ref Down);
+    EndWhile;
+    If Down > Up Then
+      swap(ref L[Down], ref L[Up]);
+      incr(ref Up);
+      decr(ref Down);
+    EndIf;
+  EndWhile;
+  if Up = Down and List.Strictly(LessThan, L[Up], Pivot) then incr(ref Up); endif;
+  List.QuickSortBy1(Ref L, Lo, Up-1, LessThan);
+
+  -- Now move all elements not strictly greater than pivot to the middle.
+  Down := Hi;
+  While Down > Up Do
+    While Up <= Hi And not(List.Strictly(LessThan, Pivot, L[Up])) Do incr(ref Up); EndWhile;
+    While Down > Up And List.Strictly(LessThan, Pivot, L[Down]) Do decr(ref Down); EndWhile;
+    If Down > Up Then
+      swap(ref L[Down], ref L[Up]);
+      incr(ref Up);
+      decr(ref Down);
+    EndIf;
+  EndWhile;
+  List.QuickSortBy1(Ref L, Up, Hi, LessThan);
+EndDefine;
+
+
+Define SortBy(Ref L, LessThan)
+  List.QuickSortBy(Ref L, LessThan);
+EndDefine;
+
+-------------------------------
+
+// JAA 20140305  already been moved to NotBuiltin.cpkg5
+-- Define Intersection(A,B)
+--   If len(A) <= len(B) Then
+--     Return [X In A | X IsIn B];
+--   Else
+--     Return [X In B | X IsIn A];
+--   EndIf;
+-- EndDefine; -- Intersection
+
+-------------------------------
+
+Define SortedBy(L,F)
+  M := L;
+  List.SortBy(Ref M,F);
+  Return M;
+EndDefine;
+
+-------------------------------
+
+Define sorted(L)
+  TopLevel ERR;
+  If type(L) <> LIST Then error(ERR.BAD_PARAMS, ": expected LIST"); EndIf;
+  sort(Ref L);
+  Return L;
+EndDefine;
+
+
+-------------------------------
+define MinBy(L, LessThan)
+  if L = [] then error("MinBy: list is empty"); endif;
+  MinElem := L[1];
+  n := len(L);
+  for i := 2 to n do
+    if LessThan(L[i], MinElem) then MinElem := L[i]; endif;
+  endfor;
+  return MinElem;
+enddefine; -- MinBy
+
+define MaxBy(L, LessThan)
+  if L = [] then error("MaxBy: list is empty"); endif;
+  MaxElem := L[1];
+  n := len(L);
+  for i := 2 to n do
+    if LessThan(MaxElem, L[i]) then MaxElem := L[i]; endif;
+  endfor;
+  return MaxElem;
+enddefine; -- MaxBy
+  
+-------------------------------
+
+Define count(L,E)
+  C := 0;
+  Foreach X In L Do
+    Try 
+      If X = E Then incr(ref C); EndIf;
+    UponError Err Do /* ignore */; 
+    EndTry;
+  EndForeach;
+  Return C;
+EndDefine;
+
+-------------------------------
+
+Define distrib(L)
+  Es := MakeSet(L);
+  Return [[E,count(L,E)] | E In Es];
+EndDefine;
+
+-------------------------------
+
+
+// JAA 20140305 this fn is already builtin in C5.
+  
+-- -- Last(L) returns the last element of the list L
+-- -- Last(L,N) returns the last N elements of L
+-- Define last(...)
+--   TopLevel ERR;
+--   If len(ARGV) = 1 Then
+--     If ARGV[1] <> [] Then Return ARGV[1][len(ARGV[1])]; EndIf;
+--     Return ERR.CANNOT_APPLY_TO_EMPTY;
+--     EndIf;
+--   If len(ARGV) > 2 Then Return ERR.BAD_PARAMS_NUM; EndIf;
+--   Return List.Last2(ARGV[1],ARGV[2]);
+-- EndDefine; -- Last
+
+
+-- Define last2(L,N)
+--   M := len(L);
+--   If M < N Then Return error("List too short"); EndIf;
+--   Return [ L[I] | I In (M-N+1)..M];
+-- EndDefine;
+
+Define ConcatMixed(LL)
+  Return ConcatLists([List.Force(X) | X In LL]);
+EndDefine;
+
+
+Define CartesianProduct(...)
+  Return $.CartesianProductList(ARGV);
+EndDefine; -- CartesianProduct
+
+
+Define CartesianProductList(L)
+  if len(L) = 0 then return [[]]; endif; -- or should this give error (to be more helpful)?
+  if len(L) = 1 then return [[x] | x in L[1]]; endif;-- list of 1-tuples, see redmine 1239
+  if len(L) = 2 then return L[1] >< L[2]; endif;
+  if len(L) = 3 then return L[1] >< L[2] >< L[3]; endif;
+  if len(L) = 4 then return L[1] >< L[2] >< L[3] >< L[4]; endif;
+  if len(L) = 5 then return L[1] >< L[2] >< L[3] >< L[4] >< L[5]; endif;
+
+  half := div(len(L),2);
+  LHS := first(L,half);
+  RHS := last(L,len(L)-half);
+  LHSprod := CartesianProductList(LHS);
+  RHSprod := CartesianProductList(RHS);
+  ans := [[concat(LHSpart, RHSpart) | RHSpart in RHSprod] | LHSpart in LHSprod];
+  return flatten(ans,1);
+EndDefine; -- CartesianProductList
+
+
+EndPackage; -- Package

@@ -1,0 +1,563 @@
+Package $obsolescent
+
+export apply;
+export ArrDerMod;
+export MultiArrDerMod;
+export AllReducedGroebnerBases;
+///export adjoint;
+///export AffHilbert;
+///export AffPoincare;
+export Bin;
+export ColumnVectors;
+///export Comp;
+export Fact;
+///export FloatApprox10;
+///export Functions;
+///export Hilbert;
+export GBasisTimeout;
+export HomogElimMat;
+///export ID;
+///export ILogBase;
+export iroot;
+export image;
+export jacobian;
+///export List;
+///export log;
+///export Log;
+///export LogToTerm;
+///export MantissaAndExponent;
+export MakeTermOrd;
+export minimalize;
+export Minimalize;
+export minimalized;
+export Minimalized;
+///export Mod2Rat;
+///export MinGensGeneral;
+export NewRingFp;
+///export Poincare;
+export PreImage;
+export RMap;
+///export rank;
+///export Rank;
+export ReadExpr;
+///export RingSet;
+export SmoothFactor;
+export SubalgebraRepr;
+export sylvester;
+export TmpNBM;
+export TensorMat;
+export UniversalGroebnerBasis;
+///export WeightsMatrix;
+
+----- OBSOLETE ------
+export isqrt;
+export CompleteToOrd;
+export FactorAlgExt;
+export PrimaryDecomposition0;
+
+  
+----------------------------------------------------------------------
+-- aux
+  
+define OBSOLETE(ObsoleteName, UseInsteadName, opt version)
+  if IsDefined(version) then  v := " from "+version; else v := ""; endif;
+  str := "\"" + ObsoleteName + "\" is OBSOLETE" + v +
+         ":\n---->> use  \"" + UseInsteadName + "\"   instead <<----";
+  return str;
+enddefine; -- 
+  
+
+define PrintOBSOLESCENT(ObsolescentName, UseInsteadName, version)
+  if IsDefined(version) then  v := " from "+version; else v := ""; endif;
+  str := "--> WARNING: \"" + ObsolescentName + "\" obsolescent" + v +
+         "\n--> WARNING: use   \"" + UseInsteadName + "\"   instead";  
+  PrintLn str;
+enddefine; -- 
+  
+
+  
+--  CallCount := Record[];  -- to reduce number of warnings
+  
+-- // ADDED: April 2014
+-- // SUGGESTED EXPIRATION DATE: April 2015
+-- Define List(M)
+--   If type(M) <> MAT Then
+--     error("\"List\" not implemented for type "+sprint(type(M)));
+--   EndIf;
+-- --  if not("List" IsIn Fields($.CallCount)) then
+-- --    $.CallCount.List := 0;
+--   PrintLn "--> WARNING: List(MATRIX) works but is obsolescent (from CoCoA-5.1.0).";
+--   PrintLn "--> WARNING: Please use \"GetRows(MATRIX)\" to get rid of this message.";
+-- --  endif;
+-- --  incr(ref $.CallCount.List);
+--   Return GetRows(M);
+-- EndDefine; -- List
+
+ 
+-- // ADDED April 2014
+--   // Suggested EXPIRATION DATE: April 2015
+-- Define Mod2Rat(res, mod, DenomBound)
+--   PrintLn "--> WARNING: Mod2Rat is obsolescent (from CoCoA-5.1.0).";
+--   PrintLn "--> WARNING: Please use RatReconstructWithBounds instead.";
+--   NumerBound := div(mod,2*DenomBound);
+--   ans := RatReconstructWithBounds(0,NumerBound, DenomBound, [res], [mod]);
+--   If ans.failed Then Return 0; EndIf;
+--   Return ans.ReconstructedRat;
+-- EndDefine; -- Mod2Rat
+
+  
+-- // renamed to adj
+-- // ADDED March 2015
+-- // Suggested expiration date: March 2016
+-- define adjoint(M)
+--   PrintLn "--> WARNING: adjoint is obsolescent (from CoCoA-5.1.3); use adj instead";
+--   return adj(M);
+-- enddefine; -- adjoint
+
+
+-- // Was in approx.cpkg5
+-- // ADDED April 2014
+-- // Suggested EXPIRATION date: April 2015
+-- // Update entry for "FloatApprox" when you delete this fn!!
+-- Define FloatApprox10(N, RelativeError)
+--   PrintLn "--> WARNING: FloatApprox10 is obsolescent (from CoCoA-5.1.0); use FloatApprox (binary) instead";
+--   If type(N) <> INT And type(N) <> RAT Then error("FloatApprox10: first argument must be rational"); EndIf;
+--   If type(RelativeError) <> INT And type(RelativeError) <> RAT Then
+--     error("FloatApprox10: second argument must be rational");
+--   EndIf;
+--   If RelativeError <= 0 Or RelativeError > 0.1 Then RelativeError := 0.1; EndIf;
+--   If N = 0 Then Return 0; EndIf;
+--   Ndigits := 1;
+--   Power := 1/5;
+--   While Power > RelativeError Do
+--     Power := Power/10;
+--     incr(ref Ndigits);
+--   EndWhile;
+--   Tmp := MantissaAndExponent(N, Ndigits);
+--   Return Tmp.Mantissa*10^(Tmp.Exponent - Ndigits + 1);
+-- EndDefine; -- FloatApprox10
+
+
+-- // Was in float.cpkg5
+-- // ADDED April 2014
+-- // Suggested EXPIRATION date: April 2015  
+-- Define MantissaAndExponent(X, SigFig)
+--   PrintLn "--> WARNING: MantissaAndExponent is obsolescent (from CoCoA-5.1.0).";
+--   PrintLn "--> WARNING: Please use MantissaAndExponent10 instead.";
+--   Return MantissaAndExponent10(X, SigFig);
+-- EndDefine; -- MantissaAndExponent
+
+
+-- // Was built-in
+-- // ADDED May 2014
+-- // Suggested EXPIRATION date: May 2015
+-- Define Functions(str)
+--   PrintLn "--> WARNING: \"Functions\" is obsolete; instead please use the \"describe\" command.";
+-- EndDefine; -- Functions
+
+
+-- // Was in coclib.cpkg5
+-- // ADDED May 2014
+-- // Suggested EXPIRATION date: May 2016
+-- Define Comp(...)
+--   TopLevel ERR;
+--   PrintLn "--> WARNING: \"Comp\" is obsolete (from CoCoA-5.1.0); instead please";
+--   PrintLn "--> WARNING: use [..] for indexing, or the field selector operator.";
+--   If len(ARGV) = 0 Then error(ERR.BAD_PARAMS_NUM); EndIf;
+--   X := ARGV[1];
+--   L := tail(ARGV);
+--   Foreach I In L Do
+--     If (type(X) IsIn [LIST, MODULEELEM, STRING] And type(I)=INT) Or
+--        (type(X)=RECORD And type(I)=STRING)  Then
+--       X := X[I];
+--     Else
+--       If not(type(X) IsIn [LIST, MODULEELEM, STRING, RECORD]) Then
+-- 	error("Comp: first argument must be in [LIST, MODULEELEM, STRING, RECORD]");
+--       Else
+-- 	error("Comp: arguments must be (LIST/MODULEELEM/STRING,INT) or (RECORD,STRING)");
+--       EndIf;
+--     EndIf;
+--   EndForeach;
+--   Return X;
+-- EndDefine;
+
+
+-- // Was in BackwardCompatible.cpkg5
+-- // ADDED July 2014
+-- // Suggested EXPIRATION date: July 2016
+-- Define Poincare(X)
+--   PrintLn "--> WARNING: \"Poincare\" is obsolescent (from CoCoA-5.1.1)";
+--   PrintLn "--> WARNING: use \"HilbertSeries\" instead.";
+--   Return HilbertSeries(X);
+-- EndDefine;
+
+-- // Was in BackwardCompatible.cpkg5
+-- // ADDED July 2014
+-- // Suggested EXPIRATION date: July 2016
+-- Define Hilbert(X)
+--   PrintLn "--> WARNING: \"Hilbert\" is obsolescent (from CoCoA-5.1.1)";
+--   PrintLn "--> WARNING: use \"HilbertFn\" instead.";
+--   Return HilbertFn(X);
+-- EndDefine;
+
+-- // Was in BackwardCompatible.cpkg5
+-- // ADDED July 2014
+-- // Suggested EXPIRATION date: July 2016
+-- Define AffPoincare(M)
+--   PrintLn "--> WARNING: \"AffPoincare\" is obsolescent (from CoCoA-5.1.1)";
+--   PrintLn "--> WARNING: use \"AffHilbertSeries\" instead.";
+--   Return AffHilbertSeries(M);
+-- EndDefine;
+
+-- // Was in BackwardCompatible.cpkg5
+-- // ADDED July 2014
+-- // Suggested EXPIRATION date: July 2016
+-- Define AffHilbert(...)
+--   PrintLn "--> WARNING: \"AffHilbert\" is obsolescent (from CoCoA-5.1.1)";
+--   PrintLn "--> WARNING: use \"AffHilbertFn\" instead.";
+--   Return AffHilbertFn(...);
+-- EndDefine;
+
+-- // builtin function: insert
+-- // ADDED July 2014
+-- // Suggested EXPIRATION date: July 2016  
+
+  
+-- // Was builtin
+-- // ADDED July 2014
+-- // Suggested EXPIRATION date: July 2016
+-- Define WeightsMatrix(R)
+--   PrintLn "--> WARNING: \"WeightsMatrix\" is obsolescent (from CoCoA-5.1.1)";
+--   PrintLn "--> WARNING: use \"GradingMat\" instead.";
+--   Return GradingMat(R);
+-- EndDefine;
+
+
+-- // ADDED May 2015
+-- // Suggested EXPIRATION date: May 2017
+-- Define rank(M)
+--   PrintLn "--> WARNING: \"rank\" is obsolescent (from CoCoA-5.1.2)";
+--   PrintLn "--> WARNING: use \"rk\" instead.";
+--   Return rk(M);
+-- EndDefine;
+
+-- // ADDED May 2015
+-- // Suggested EXPIRATION date: May 2017
+-- Define Rank(M)
+--   PrintLn "--> WARNING: \"Rank\" is obsolescent (from CoCoA-5.1.2)";
+--   PrintLn "--> WARNING: use \"rk\" instead.";
+--   Return rk(M);
+-- EndDefine;
+
+-- // ADDED June 2015
+-- // Suggested EXPIRATION date: June 2017
+-- Define RingSet(M)
+--   PrintLn "--> WARNING: \"RingSet\" is obsolescent (from CoCoA-5.1.2)";
+--   PrintLn "--> WARNING: use \"RingsOf\" instead.";
+--   Return RingsOf(M);
+-- EndDefine;
+
+-- // ADDED May 2015
+-- // Suggested EXPIRATION date: May 2017
+-- Define MinGensGeneral(M)
+--   PrintLn "--> WARNING: \"MinGensGeneral\" is obsolescent (from CoCoA-5.1.2)";
+--   PrintLn "--> WARNING: use \"MinSubsetOfGens\" instead.";
+--   Return MinSubsetOfGens(M);
+-- EndDefine;
+
+-- // Was in BackwardCompatible.cpkg5
+-- // ADDED July 2015
+-- // Suggested EXPIRATION date: July 2017
+-- Define PrimaryPoincare(I, Q)
+--   PrintLn "--> WARNING: \"PrimaryPoincare\" is obsolescent (from CoCoA-5.1.2)";
+--   PrintLn "--> WARNING: use \"PrimaryHilbertSeries\" instead.";
+--   Return PrimaryHilbertSeries(I, Q);
+-- EndDefine;
+
+-- // Was in BackwardCompatible.cpkg5
+-- // ADDED July 2015
+-- // Suggested EXPIRATION date: July 2017
+-- Define ID(R)
+--   PrintLn "--> WARNING: \"ID\" is obsolescent (from CoCoA-5.1.2)";
+--   PrintLn "--> WARNING: use \"RingID\" instead.";
+--   Return RingID(R);
+-- EndDefine;
+
+-- // -------- CoCoA-5.1.3 ----------------------------------------------
+-- // log/Log added Sept 2015.
+-- // Suggested expiration date: Jan 2018
+-- define log(t)
+--   PrintLn "--> WARNING: \"log\" is obsolescent (from CoCoA-5.1.3)";
+--   PrintLn "--> WARNING: use \"exponents\" instead.";
+--   return exponents(t);
+-- enddefine; -- log
+
+-- define Log(t)
+--   PrintLn "--> WARNING: \"Log\" is obsolescent (from CoCoA-5.1.3)";
+--   PrintLn "--> WARNING: use \"exponents\" instead.";
+--   return exponents(t);
+-- enddefine; -- Log
+
+
+-- // LogToTerm added Sept 2015.
+-- // Suggested expiration date: Jan 2018
+-- define LogToTerm(P, expv)
+--   PrintLn "--> WARNING: \"LogToTerm\" is obsolescent (from CoCoA-5.1.3)";
+--   PrintLn "--> WARNING: use \"MakeTerm\" instead.";
+--   return MakeTerm(P, expv);
+-- enddefine; -- LogToTerm
+
+
+-- // ILogBase added Nov 2015
+-- // Suggested expiration date: Jan 2018
+-- define ILogBase(N,base)
+--   PrintLn "--> WARNING: \"ILogBase\" is obsolescent (from CoCoA-5.1.3)";
+--   PrintLn "--> WARNING: use \"FloorLogBase\" or \"FloorLog2\" or \"FloorLog10\" instead.";
+--   return FloorLogBase(N,base);
+-- enddefine; -- ILogBase
+
+
+// (from CoCoA-5.1.3)
+-- // isqrt added Nov 2015
+-- // Suggested expiration date: Jan 2018
+
+Define isqrt(...)
+  error(OBSOLETE("isqrt", "FloorSqrt"));
+EndDefine;
+
+Define CompleteToOrd(...)
+  error(OBSOLETE("CompleteToOrd", "MakeTermOrdMat"));
+EndDefine;
+
+
+-- version --------------------------------------------------------------
+CoCoA_5_2_0 := "CoCoA-5.2.0 (2017)";   // suggested expiration date: 2021
+-------------------------------------------------------------------------
+
+define AllReducedGroebnerBases(I)
+  error(OBSOLETE("AllReducedGroebnerBases", "GroebnerFanIdeals", $.CoCoA_5_2_0));
+enddefine; -- AllReducedGroebnerBases
+
+define UniversalGroebnerBasis(I)
+  error(OBSOLETE("UniversalGroebnerBasis", "UniversalGBasis", $.CoCoA_5_2_0));
+enddefine; -- UniversalGroebnerBasis
+  
+define HomogElimMat(M, ElimInds)
+  PrintOBSOLESCENT("HomogElimMat", "ElimHomogMat", $.CoCoA_5_2_0);
+  return ElimHomogMat(ElimInds, M);
+enddefine; -- HomogElimMat
+
+define TmpNBM(P, pts, toler)
+  error(OBSOLETE("TmpNBM", "ApproxPointsNBM", $.CoCoA_5_2_0));
+  return ApproxPointsNBM(P, pts, toler);
+enddefine; -- TmpNBM  
+
+define Bin(A,B)
+  PrintOBSOLESCENT("Bin", "binomial", $.CoCoA_5_2_0);
+  return binomial(A,B);
+enddefine; -- Bin
+
+define Der(A,B)
+  PrintOBSOLESCENT("Der", "deriv", $.CoCoA_5_2_0);
+  return deriv(A,B);
+enddefine; -- Der
+
+define ReadExpr(R,str)
+  PrintOBSOLESCENT("ReadExpr", "RingElem", $.CoCoA_5_2_0);
+  return RingElem(R,str);
+enddefine; -- ReadExpr
+
+// added May 2017
+// suggested expiration date; AS SOON AS POSSIBLE!!!
+-- Rand() returns a random integer  --> removed
+-- Rand(X,Y) returns a random integer between X and Y  --> in BackwardCompatible
+
+define PreImage(phi,y)
+  PrintOBSOLESCENT("PreImage", "preimage0", $.CoCoA_5_2_0);
+  return $HomomorphismFns.preimage_OLD(phi,y);
+EndDefine; -- PreImage
+
+Define Fact(N)
+  PrintOBSOLESCENT("Fact", "factorial", $.CoCoA_5_2_0);
+  return factorial(N);
+EndDefine; -- Fact
+
+
+-- version --------------------------------------------------------------
+CoCoA_5_2_2 := "CoCoA-5.2.2 (2018)";   // Suggested expiration date: 2022
+-------------------------------------------------------------------------
+  
+define minimalized(I)
+  error(OBSOLETE("minimalized", "IdealOfMinGens/SubmoduleOfMinGens", $.CoCoA_5_2_2));
+enddefine; -- minimalized
+
+define minimalize(ref I)
+  error(OBSOLETE("minimalized", "XXX := IdealOfMinGens/SubmoduleOfMinGens", $.CoCoA_5_2_2));
+enddefine; -- minimalize
+
+define Minimalize(ref I) minimalize(ref I); enddefine;
+define Minimalized(I) return minimalized(I); enddefine;
+
+
+define SubalgebraRepr(...)
+  println "--> WARNING: \"SubalgebraRepr\" obsolescent from CoCoA-5.2.2 2018";
+  println "--> WARNING: use \"preimage0 / ker\" of \"SubalgebraHom(R, L)\" instead.";
+  if not(len(ARGV) isin [2,3]) then error("2 or 3 arguments"); endif;
+  if len(ARGV) = 3 then
+    P := ARGV[1];
+    f := ARGV[2];
+    L := ARGV[3];
+    phi := SubalgebraHom(ARGV[1], ARGV[3]);
+  endif;
+  if len(ARGV) = 2 then
+    f := ARGV[1];
+    L := ARGV[2];
+    P := NewPolyRing(CoeffRing(RingOf(L[1])), SymbolRange("x",1,len(L)));
+    phi := SubalgebraHom(P, L);
+  endif;
+  PI := preimage0(phi, f);
+  return record[
+		IsInImage := IsZero(f) or not(IsZero(PI)),
+		OnePreImage := PI,
+		ker := ker(phi)
+		];
+enddefine; -- SubalgebraRepr
+
+
+-- version --------------------------------------------------------------
+CoCoA_5_2_4 := "CoCoA-5.2.4 (2018)";   // Suggested expiration date: 2022
+-------------------------------------------------------------------------
+  
+Define FactorAlgExt(f)
+  error(OBSOLETE("FactorAlgExt", "factor", $.CoCoA_5_2_4));
+EndDefine;
+  
+Define PrimaryDecomposition0(I)
+  error(OBSOLETE("PrimaryDecomposition0", "PrimaryDecomposition", $.CoCoA_5_2_4));
+EndDefine;
+
+
+-- version --------------------------------------------------------------
+CoCoA_5_3_0 := "CoCoA-5.3.0 (2020)";   // suggested expiration date: 2024
+-------------------------------------------------------------------------
+
+-- CoCoA-5.2.6 -- not public --------------------------------------------
+// Added Aug 2018  ---> no public version until 2020?
+
+define NewRingFp(N)
+  PrintOBSOLESCENT("NewRingFp", "NewZZmod", $.CoCoA_5_3_0);
+  if type(N) <> INT or N < 2 or not(IsProbPrime(N)) then error("NewRingFp: BAD ARG, but use NewZZmod instead!"); endif;
+  return NewZZmod(N);
+enddefine;
+  
+define sylvester(f,g,x)
+  PrintOBSOLESCENT("sylvester", "SylvesterMat", $.CoCoA_5_3_0);
+  if type(f) <> RINGELEM or type(g) <> RINGELEM or type(x) <> RINGELEM then error("sylvester: args must be RINGELEM"); endif;
+  return SylvesterMat(f,g,x);
+enddefine; -- sylvester
+  
+define jacobian(...)
+  PrintOBSOLESCENT("jacobian", "JacobianMat", $.CoCoA_5_3_0);
+  return JacobianMat(...);
+enddefine; -- jacobian
+
+-- CoCoA-5.3.0 --
+
+define ArrDerMod(Q)
+  PrintOBSOLESCENT("ArrDerMod", "ArrDerModule", $.CoCoA_5_3_0);
+  return ArrDerModule(Q);
+enddefine;
+  
+define MultiArrDerMod(MultiA)
+  PrintOBSOLESCENT("MultiArrDerMod", "MultiArrDerModule", $.CoCoA_5_3_0);
+  return MultiArrDerModule(MultiA);
+enddefine;
+  
+define iroot(N,R)
+  error(OBSOLETE("iroot", "FloorRoot", $.CoCoA_5_3_0));
+enddefine; -- iroot
+// Next line from BackwardCompatible
+Define Iroot(N,R)    Return iroot(N,R); EndDefine;
+
+
+
+-- version --------------------------------------------------------------
+CoCoA_5_3_2 := "CoCoA-5.3.2 (2020)";   // suggested expiration date: 2025
+-------------------------------------------------------------------------
+
+
+-- version --------------------------------------------------------------
+CoCoA_5_4_0 := "CoCoA-5.4.0 (2022)";   // suggested expiration date: 2026
+CoCoA_5_4_2 := "CoCoA-5.4.2 (2023)";   // suggested expiration date: 2027
+-------------------------------------------------------------------------
+
+define TensorMat(M,N)
+  PrintOBSOLESCENT("TensorMat", "KroneckerProd", $.CoCoA_5_4_0);
+  return KroneckerProd(M,N);
+enddefine;
+  
+define ConcatList(L)
+  PrintOBSOLESCENT("ConcatList", "ConcatLists", $.CoCoA_5_4_0);
+  return ConcatLists(L);
+enddefine;
+
+define SmoothFactor(N, MaxP)
+  PrintOBSOLESCENT("SmoothFactor", "FactorINT_TrialDiv", $.CoCoA_5_4_0);
+  return FactorINT_TrialDiv(N, MaxP);
+enddefine; -- SmoothFactor
+  
+define MakeTermOrd(DegVec)
+  PrintOBSOLESCENT("MakeTermOrd", "MakeTermOrdMat", $.CoCoA_5_4_0);
+  return MakeTermOrdMat(DegVec);
+enddefine; -- MakeTermOrd
+
+define ColumnVectors(M)
+  error(OBSOLETE("ColumnVectors", "GensAsCols/SubmoduleCols", $.CoCoA_5_4_0));
+enddefine; -- MakeTermOrd
+
+define apply(phi, X)
+  PrintOBSOLESCENT("apply", "[[fn call syntax, e.g. phi(X)]]", $.CoCoA_5_4_0);
+  return phi(X);
+enddefine; -- apply
+
+define RMap(...)
+  PrintOBSOLESCENT("RMap", "PolyAlgebraHom", $.CoCoA_5_4_0);
+  If ARGV=[] Or type(ARGV[1]) <> LIST Then Return RMap(ARGV);
+  Else
+    Images := ARGV[1];
+    If len(Images) = 0 Then error("RMap: list of images is empty"); EndIf;
+    RE := diff(RingsOf(Images), [INT,RAT]);
+    If len(RE) > 1 Then error("RMap: list of images in different rings"); EndIf;
+//    If len(RE) = 1 Then Images := [Var(RE[1])::Poly(F) | F In Images]; EndIf;
+    Return tagged(Images, "RMap");
+  EndIf;
+enddefine; -- RMap
+
+
+Define image(X, Phi)
+  PrintOBSOLESCENT("image", "PolyAlgebraHom, e.g. phi(X)", $.CoCoA_5_4_0);
+  If type(X) IsIn [RINGELEM] Then
+    If NumIndets(owner(X)) <> len(untagged(Phi)) Then
+      error("Image: wrong length of RMap");
+    EndIf;
+  EndIf;
+  If len(tag(X))>0 Then Return tagged(image(untagged(X),Phi),tag(X)); EndIf;
+  T := type(X);
+  If T = RINGELEM   Then Return $misc.ImagePolyList([X], Phi)[1]; EndIf;
+  If T = IDEAL  Then Return ideal(RingOf(untagged(Phi)[1]),
+				  $misc.ImagePolyList(gens(X), Phi)); EndIf;
+  If T = LIST   Then Return [image(Y,Phi)| Y In X]; EndIf;
+  If T = RECORD Then
+    Return $misc.BuildRecord(fields(X), $misc.Image(FieldValues(X),Phi));
+  EndIf;
+  Return X;  -- anything left which is ring-dependent?
+EndDefine; -- Image
+
+  
+define GBasisTimeout(I, t)
+  PrintOBSOLESCENT("GBasisTimeout", "GBasis_timeout", $.CoCoA_5_4_2);
+  return GBasis_timeout(I, t);
+enddefine; -- GBasisTimeout
+
+
+endpackage; -------------------------------------------------------------

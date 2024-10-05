@@ -1,0 +1,63 @@
+    OrthogonalPolys
+      Copyright (c)  2017,2018 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{OrthogonalPolys}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-OrthogPolys.C ../../examples/index.html#ex-OrthogPolys.C]
+-
+
+== User documentation ==
+%======================================================================
+
+Here are some functions for constructing individual members of
+certain families of orthogonal polynomials.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+Let ``n`` be a non-negative integer, and ``x`` a ring element
+(typically an indeterminate or a number).  The functions below
+evaluate the corresponding polynomial at ``x``: if ``x`` is an
+indeterminate then the polynomial itself is returned.
+
+- ``ChebyshevPoly(n,x)``  Chebyshev polynomial of 1st kind
+- ``ChebyshevPoly2(n,x)``  Chebyshev polynomial of 2nd kind
+- ``HermitePoly(n,x)``  Hermite polynomial (physics)
+- ``HermitePoly2(n,x)``  Hermite polynomial (probability)
+- ``LaguerrePoly(n,x)``  Laguerre polynomomial **multiplied** by ``factorial(n)``
+- ``DicksonPoly(x,n,alpha)``  Dickson polynomial of 1st type [not orthog fam]
+- ``DicksonPoly2(x,n,alpha)``  Dickson polynomial of 2nd type [not orthog fam]
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Some of the Chebyshev functions are not used, but I left them there
+in case they ever become useful.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+The dispatch functions for Hermite polynomials have not been tested;
+so I do not know if the criterion for choosing between "explicit" and
+"iterative" implementations actually makes any sense.
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- October (v0.99560): first release
+
+**2018**
+- November (v0.99610): added DicksonPoly
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

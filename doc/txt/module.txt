@@ -1,0 +1,172 @@
+      module
+      Copyright (c)  2005,2009  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{module}{John Abbott}
+
+
+
+== User documentation for the classes module, ModuleBase, ModuleElem ==
+%======================================================================
+
+You may also wish to look at the documentation for [[FGModule]]
+the type which represents (explicitly) Finitely Generated Modules.
+
+The classes ``module``, ``ModuleBase`` and ``ModuleElem`` are closely linked
+together (analogously to the triple ``ring``, ``RingBase`` and ``RingElem``).
+
+The class ``module`` is a reference counting smart pointer to an object of
+type derived from ``ModuleBase``; all concrete types for representing modules
+are derived from ``ModuleBase``.  For a library implementor the class
+``ModuleBase`` defines the minimal interface which every concrete module
+class must offer; indeed the concrete class must be derived from
+``ModuleBase``.
+
+
+A user of CoCoALib who does not wish to add to the library need
+know only what it is in this section.
+
+Analogously to ``ring``s and ``RingElem``s, every ``ModuleElem`` belongs to some
+``module``.  So before you can compute with ``ModuleElem``s you must create the
+``module``(s) which contain them.
+
+To create a ``module`` you must a pseudo-constructor for one of the concrete
+module classes (refer to their documentation for details): //e.g.//
+```  NewFreeModule(R, n)   -- create a new FreeModule of n components over R
+
+
+The functions which one may apply directly to a module are:
+```
+  NumCompts(M) -- the number of components an element of M has
+  RingOf(M)  -- the base ring of M (i.e. M is a module over this ring)
+  gens(M)      -- a read only C++ vector containing the generators of M
+  zero(M)      -- a read only ModuleElem which is the zero of M
+  M1 == M2     -- are the two modules identical (same repr in memory)?
+  M1 != M2     -- opposite of M1 == M2
+```
+As you can see there is not a lot one can do to a module.  Primarily
+they exist to "give the correct type" to module elements; internally
+they play a crucial role in applying operations to module elements.  A
+C++ value of type ``ModuleElem`` represents an element of some concrete
+module.  The module to which the value belongs is called the ``owner`` of
+that value.  The owner of an object of type ``ModuleElem`` must be specified
+(explicitly or implicitly) when it is created, and cannot be changed
+during the lifetime of the object; the value it contains may, however,
+be changed (C++ const rules permitting).
+
+
+==== Functions on ModuleElems ====
+
+Let ``v`` be a non-const ``ModuleElem``, and ``v1, v2`` be ``const ModuleElems`` all
+belonging to the same concrete module ``M``.  Let ``R`` be the base ring of ``M``,
+and ``r`` a const element of ``R``.  Then we summarize the possible operations
+using C++ syntax:
+```
+owner(v1)   // gives the module to which v1 belongs
+
+-v1                                       // Usual arithmetic operations
+v1 + v2                    v1 - v2        // between ModuleElems and
+r * v1                     v1 * r         // RingElems.
+                           v1 / r
+v = v1
+v += v1                    v -= v1
+v *= r                     v /= r
+v1 == v2                   v1 != v2
+IsZero(v1)                 cout << v1
+
+v[pos]  // throws if the module is not FGModule 
+```
+
+In every case it is an error to combine/compare ``ModuleElems`` belonging to
+different modules.  As you would expect, instead of multiplying or dividing
+by a [[RingElem]] you may also multiply or divide by a machine integer, a
+[[BigInt]] or a [[BigRat]].
+
+
+
+== Maintainer documentation for the classes module, and ModuleElem ==
+%======================================================================
+
+I shall suppose that the user documentation has already been read and
+digested.  It could also be helpful to have read the documentation for
+[[ring]] since the design philosophy here imitates that used for rings.
+
+The class ``module`` is simply a reference counting smart pointer class to a
+concrete module (//i.e.// an object belonging to a class derived from
+``ModuleBase``).
+
+A ``ModuleElem``, like a ``RingElem``, comprises two components: one specifying
+the algebraic structure to which the value belongs, and the other being
+an opaque representation of the value which can be correctly interpreted
+only by the owning module.  The data members are:
+```
+  module myM;             // the module to which the ModuleElem belongs
+  ModuleRawValue myValue; // "opaque" representation of the value,
+                          // concrete modules must "import" this value.
+```
+
+
+
+The design philosophy for modules follows closely that used for rings.  This means
+that every operation on ``ModuleElem``s is actually effected by calling
+the appropriate member function of the owning ``module``.  These member
+functions expect raw values as input.  A normal ``ModuleElem`` stores
+within itself both the identity of the ``module`` to which it belongs and
+its value as an element of that particular module -- we call the first
+datum the ``owner`` and the second datum the ``RawValue``.  A RawValue can
+be correctly interpreted only if supplied as argument to a member
+function of the owning module -- calling module member functions for
+an incompatible concrete module and RawValue will very likely have
+grave consequences (officially stated as //undefined behaviour//, and
+most probably perceived as a program crash).
+
+The member functions of a module **do not check** their arguments for being
+sensible.  This decision is largely just a design policy imitating
+that used for rings, but may also lead to some slight beneficial effect
+on run-time performance.  It does naturally imply that the programmer
+bears a considerable burden of responsibility.
+
+
+==== (2.1) Member functions for operations on raw values  [IGNORE THIS -- OUT OF DATE] ====
+
+For ring elements (especially those in a small finite field), noticeable
+speed gains arise from using directly raw values and ring member
+functions.  For modules the analogous effect exists in theory but will
+likely be negligible in practice.  Nevertheless we list here the member
+functions of a module; this list will be useful to library authors who
+wish to create their own concrete module classes.
+
+Let ``v`` be a non-const RawValue, and ``v1, v2`` const RawValues belonging to ``M``.
+Let ``r`` be a RingBase::RawValue belonging to the base ring of ``M``.
+```
+M.myNumCompts()
+M.myRing()
+M.myGens()        -- returns a const ref to a C++ vector of module:elems
+M.myZero()        -- returns a const ref to a ModuleElem
+
+M.myNew(v)       -- allocates resources, apply only to uninitialized RawValue
+M.myNew(v, v1)   -- allocates resources, apply only to uninitialized RawValue
+M.myDelete(v)    -- releases resources
+M.mySwap(v, w)
+M.myAssign(v, v1)
+M.myNegate(v, v1)
+M.myAdd(v, v1, v2)
+M.mySub(v, v1, v2)
+M.myMul(v, r, v1)
+M.myDiv(v, r, v1) -- NOTE funny arg order!
+M.myOutput(out, v1)
+M.myOutputSelf(out)
+M.myIsZero(v1)
+M.myIsEqual(v1, v2)
+```
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+This code is too new, largely untried/untested.  As soon as it gets
+some use, there will be some material to put here :-)
+
+The documentation is very incomplete.  Will be fixed (eventually).
+Maintainer documentation is incompleter than user doc.
+

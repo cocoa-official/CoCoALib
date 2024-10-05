@@ -1,0 +1,185 @@
+Package $GeomModelling;     -- Geometric Modeling
+  
+  -- serve Smith!!!
+  -- L'anello deva avere graduazione standard, se si vuole la matrice ordinata rispetto al grafo con la visita in ampiezza (Breadth-First Search)
+  -- specificare ordinamento DegLex nell'anello!
+  
+  ---------------------------------------------------------
+  -- Simplicial Complex C (list TOP faces) --> beta
+  --                                       --> matrix
+  --                                       --> homology
+  ---------------------------------------------------------
+  --                A2          A1
+  --  O --> C^beta2 --> C^beta1 --> C^beta0 --> O
+  ---------------------------------------------------------
+
+  export SimplicialHomology;
+  export SimplexInfo; 
+  export FVector;
+  --Funzioni interne, si possono richiamare così:
+  -- $GM.simplices(); 
+  -- $GM.BoundaryMap(); -- matrix
+  -- $GM.SmithInfo;
+  -- $GM.homology;
+
+  
+  ----------------------------------------------------------------------
+  -- Exported functions (with input checking)
+  ----------------------------------------------------------------------
+  
+Define SimplicialHomology(K, opt X)
+  --check1(K)
+
+  If IsDefined(X) Then
+    K := MakeRingAndHom(RingOf(K[1]), X)(K);
+  EndIf;
+  complex := simplices(K);
+  M := [ BoundaryMap(K, complex[i], complex[i+1])| i in 1..(len(complex)-1) ];
+  S := [ SmithInfo(MM) | MM in M];
+  S0 := record[dimI := 0, lambda := [], null := len(complex[1])];
+  Sn := record[dimI := 0, lambda := [], null := 0];
+  H := [ homology(S[i], S[i+1])| i in 1..(len(S)-1) ];
+  Return Record[H_0 := homology(S0,S[1]), H_i := H, H_max := homology(last(S),Sn)];
+EndDefine; -- SimplicialHomology
+
+		  
+Define SimplexInfo(L) -- top-faces --> non-faces
+  CheckInput(L);
+  t := product(indets(RingOf(L[1])));
+  I := ideal([t/LL | LL In L]);
+  SR := FrbAlexanderDual(I);
+  J := [t/LL | LL In gens(SR)];
+  Return Record[Delta := L, AlexanderDualIdeal := I, StanleyReisnerIdeal := SR, AlexanderDualCOMPLEX := J];
+EndDefine; -- SimplexInfo  
+
+    
+define FVector(L)
+  simplexes := simplices(L);
+  -- d := deg(max(L));
+  -- f := concat([1],[len(S)|S In simplexes]);
+  -- h := [sum([(-1)^(k-i)*binomial(d-i,k-i)*f[i+1]|i In 0..k])|k In 0..d];
+  return concat([1],[len(S)|S In simplexes]);
+enddefine; -- FVector
+
+----------------------------------------------------------------------
+-- Internal functions (no input check)
+----------------------------------------------------------------------
+-- number (d-1)-simplex: -- d=max(deg(L)); (d-1=dimensione complesso simpliciale)
+Define Simplexd(L,d)
+  Return reversed(sorted([ t in L | deg(t)=d ]));
+EndDefine; -- Simplexd
+
+  
+Define Simplexk(L, SimplexkkL, Inds, k)
+  LL := flatten([ [ F/x | x in Inds and IsDivisible(F, x) ] | F in SimplexkkL]);
+  Lk := [ t in L | deg(t)=k ];
+  Return reversed(sorted(MakeSet(concat(LL, Lk))));
+EndDefine; -- Simplexk
+
+  
+Define simplices(L)
+  CheckInput(L);
+  d := deg(max(L)); -- d-1=dim complesso simpliciale!
+  I := indets(RingOf(L[1]));
+  simplices := [Simplexd(L,d)];
+  For k := d-1 To 2 step -1 Do
+    append(ref simplices, Simplexk(L, last(simplices), I, k));
+  EndFor;
+  append(ref simplices, I);
+  return reversed(simplices);
+EndDefine; -- simplices
+
+  
+Define BoundaryMap(L, elemR, elemC)
+  A := ZeroMat(RingZZ(), len(elemR), len(elemC));
+  For j:=1 To len(elemC) Do
+    k := 1;
+    For i:=1 To len(elemR) Do
+      If elemC[j] IsIn ideal(elemR[i]) Then
+	k := k+1; -- segni alterni rispetto agli 1 che inserisco!
+	A[i,j] := (-1)^(k+deg(elemR[1]));
+-- se k=deg(elemC[1]) allora esci --> quando definisco i lati metto due 1, quando definisco i triangoli metto tre 1, etc
+      EndIf;
+    EndFor;
+  EndFor;
+  Return A;
+EndDefine; -- BoundaryMap
+
+
+Define SmithInfo(A)
+  if type(A)=RECORD then
+    A := A.Smith;
+  else
+    A := Smith(A);
+  endif;
+  q := NumCols(A)-rk(A);
+  k := 0;
+  lambda := [];
+  For i:=1 To rk(A) Do
+    If abs(A[i,i])=1 Then k := k+1;
+    Else append(ref lambda, abs(A[i,i]));
+    EndIf;
+  EndFor;
+  Return Record [dimI := k, lambda := lambda, null := q];
+EndDefine; -- SmithInfo
+
+
+Define homology(SmA, SmB) -- SmA output of SmithInfo(A) -- Record [dimI := k, lambda := lambda, null := q] 
+  betti := SmA.null - (SmB.dimI+len(SmB.lambda));
+  Return Record[betti := betti, lambda := SmB.lambda];
+EndDefine; -- homology
+
+Define MakeRingAndHom(P, L)
+  sym := IndetSymbols(P);                        
+  MySym := [sym[IndetIndex(X)] | X In L];          
+  R := NewPolyRing(RingQQ(), MySym, StdDegLexMat(len(L)), 1);
+  imm := [];
+  Foreach X In indets(P) Do
+    If X IsIn L Then append(ref imm, RingElem(R, sprint(X)));
+    Else append(ref imm, zero(R));
+    EndIf;
+  EndForeach;
+  phi := PolyAlgebraHom(P, R, imm);
+  Return phi;
+EndDefine; -- MakeRingAndHom
+
+  
+  ----------------------------------------------------------------------
+  -- Input check
+  ----------------------------------------------------------------------
+Define AreTerms(L)
+  foreach X in L do
+    if not(IsTerm(X)) then return false; endif;
+  endforeach;
+  return true;
+EndDefine; -- AreTerms
+  
+
+Define CheckInput(L)
+  if L=[] then error("Top Faces list must be non-empty"); endif;
+  If not(AreTerms(L)) then
+    error("Top Faces must be a list of terms");
+  EndIf;
+  If max([deg(LL) | LL in L])>4 Then
+    error("Top Faces list not 3-simplex list");
+  EndIf;
+  R := RingOf(L[1]);
+  If not(IsStdGraded(R)) Then error("Ring must be standard graded"); EndIf;
+  t := product(indets(R));
+  m := LCM(L);
+  If m<>t Then
+    If m<>GCD(t,product(L)) Then error("Top Faces List must be square-free");
+    Else error("Top Faces list must have all indeterminates");
+    EndIf;
+  EndIf;
+EndDefine; -- CheckInput
+
+-- Controllo se è varietà?!
+
+-- Tesi SALIETTI:
+-- Si può calcolare la funzione di Hilbert, si hanno tutti gli ingredienti:
+-- h-vettore
+-- d= dimensione di Krull (dove (d-1)=dimensione del complesso simpliciale)
+-- trasformazione da polinomiale a monomiale squarefree (ideale di polarizzazione)
+  
+EndPackage;

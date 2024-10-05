@@ -1,0 +1,53 @@
+<Greetings>
+  CoCoAServer?
+  nolimits
+  example_name  wang_hQDL
+</Greetings>
+
+<operation> ideal_groebner </operation>
+<polynomial_ring>
+    name ServerOutputRing
+  <coefficient_ring>
+    characteristic 0
+  </coefficient_ring>
+
+  <indeterminates>
+    number_indets 8
+    number_params 0
+  </indeterminates>
+
+  <ordering_grading>
+    ordering_type   graded_lexicographic
+  </ordering_grading>
+
+</polynomial_ring>
+
+<polynomial_list>
+4
+
+7
+1   0 2 0 0 0 0 0 0  
+-2   0 1 0 0 1 0 0 0  
+1   0 0 2 0 0 0 0 0  
+-2   0 0 1 0 0 1 0 0  
+1   0 0 0 0 2 0 0 0  
+1   0 0 0 0 0 2 0 0  
+-1   0 0 0 0 0 0 0 2  
+ 
+2
+-1   0 3 0 0 0 0 0 0  
+1   0 0 2 0 0 0 0 1  
+ 
+4
+-3   0 2 1 0 0 0 0 0  
+3   0 2 0 0 0 1 0 0  
+-2   0 1 1 0 0 0 0 1  
+2   0 0 1 0 1 0 0 1  
+ 
+4
+6   0 2 1 2 0 0 0 0  
+-3   0 2 0 1 0 0 0 2  
+-2   0 0 1 1 0 0 0 3  
+1   0 0 0 0 0 0 0 5  
+ 
+</polynomial_list>

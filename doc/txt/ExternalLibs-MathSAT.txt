@@ -1,0 +1,77 @@
+      ExternalLibs-MathSAT
+      Copyright (c)  2017 John Abbott, Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ExternalLibs-MathSAT}{Anna Bigatti}
+
+
+== User documentation ==
+%======================================================================
+
+**MathSAT** is a Satisfiability modulo theories (SMT) solver.
+**MathSAT** is free software.
+The joint reasearch between CoCoA and MathSAT has been supported by
+European Union's Horizon 2020 research and innovation programme 
+under grant agreement No H2020-FETOPEN-2015-CSA 712689:
+[**SC-square** website http://www.sc-square.org/]
+
+
+
+Available functions:
+```
+    MathSAT::env E; // constructor (wrapper for MathSAT ``env``)
+
+    MathSAT::AddEq0(E, linear-poly or matrix);
+    MathSAT::AddNeq0(E, linear-poly or matrix);
+    MathSAT::AddLeq0(E, linear-poly or matrix);
+    MathSAT::AddLt0(E, linear-poly or matrix);
+
+    MathSAT::LinSolve(E);
+```
+
+
+=== Examples ===
+- [ex-MathSAT1.C ../../examples/index.html#ex-MathSAT1.C]
+- [ex-MathSAT2.C ../../examples/index.html#ex-MathSAT2.C]
+-
+
+=== Download and compile MathSAT ===
+
+ | [**MathSAT** website http://mathsat.fbk.eu/]
+
+**CoCoALib** requires **MathSAT** release 5 or later.
+Download **MathSAT** from the website (binary only).
+
+=== Configure and compile CoCoALib with MathSAT ===
+
+Look to see where the library file ``libmathsat.a`` is.
+
+Then configure and compile **CoCoALib** typing
+``` 
+cd CoCoALib-0.99
+./configure --with-libmathsat=<your_path_to>/libmathsat.a
+make
+```
+
+== Maintainer documentation ==
+%======================================================================
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+
+
+== Main changes ==
+%======================================================================
+
+**2018**
+- January: first release in CoCoA-5.2.2
+
+**2017**
+- July: first public demo at SC-square workshop 2017
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

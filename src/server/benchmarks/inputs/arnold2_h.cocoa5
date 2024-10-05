@@ -1,0 +1,66 @@
+<Greetings>
+  CoCoAServer?
+  version  1.03
+  nolimits
+  example_name  arnold2_h
+</Greetings>
+
+<operation> ideal_groebner </operation>
+<number_arguments> 2 </number_arguments>
+
+<polynomial_ring>
+    name ServerOutputRing
+  <coefficient_ring>
+    characteristic 32003
+  </coefficient_ring>
+
+  <indeterminates>
+    number_indets 4
+    number_params 0
+  </indeterminates>
+
+  <ordering_grading>
+    ordering_type   graded_reverse_lexicographic
+  </ordering_grading>
+
+</polynomial_ring>
+
+<polynomial_list>
+4
+
+6
+2   1 4 2 0  
+1   3 2 1 1  
+-1   2 3 1 1  
+2   1 1 2 3  
+7   0 3 0 4  
+7   0 0 0 7  
+ 
+6
+2   2 4 1 0  
+1   2 1 2 2  
+-1   1 2 2 2  
+2   2 1 1 3  
+-12   1 0 0 6  
+12   0 1 0 6  
+ 
+6
+2   0 5 1 0  
+1   2 2 1 1  
+-1   1 3 1 1  
+-1   1 3 0 2  
+1   0 4 0 2  
+2   0 2 1 3  
+ 
+8
+3   1 4 3 0  
+1   2 2 1 3  
+-1   1 3 1 3  
+4   0 3 2 3  
+3   1 1 2 4  
+4   0 0 2 6  
+-1   1 0 0 7  
+1   0 1 0 7  
+ 
+</polynomial_list>
+

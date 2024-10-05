@@ -1,0 +1,93 @@
+      combinatorics
+      Copyright (c)  2015,2022-2024  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{combinatorics}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-combinatorics1.C ../../examples/index.html#ex-combinatorics1.C]
+-
+
+
+== User documentation ==
+%======================================================================
+Here are some basic combinatorial functions.
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+==== Counting integer partitions ====
+- ``NumPartitions(n)`` computes number of partitions of ``n``, //i.e.// how many distinct ways to write ``n`` as a sum of positive integers (error if ``n`` is negative)
+
+
+==== Subset iterator ====
+- ``SubsetIter(n)``   -- iterator for subsets of ``{0,1,...,n-1}``
+- ``SubsetIter(n,k)`` -- iterator for cardinality ``k`` subsets of ``{0,1,...,n-1}``
+- ``operator++()``    -- advance to next subset (advancing when ended does not trigger an error)
+- ``operator*()``     -- current subset as ``vector<long>``
+- ``IsEnded(it)``     -- ``true`` iff ``it`` is one-past-the-last
+
+
+Notes:
+- Currently the subsets are generated in order of cardinality (like ``DegLex``).
+
+
+==== Tuple iterator ====
+- ``TupleIter(n,k)``  -- iterator for ``k``-tuples of ``{0,1,...,n-1}``
+- ``operator++()``    -- advance to next tuple (advancing when ended does not trigger an error)
+- ``operator*()``     -- current tuple as ``vector<long>``
+- ``IsEnded(it)``     -- ``true`` iff ``it`` is one-past-the-last
+
+
+Notes:
+- Currently the tuples are generated in lexicographical order.
+
+
+==== Random subsets and random tuples ====
+- ``RandomSubsetIndices(n)``     -- returns a random subset of ``{0,1,2...,n-1}``
+- ``RandomSubsetIndices(n,r)``   -- returns a size ``r`` random subset of ``{0,1,2...,n-1}``
+- ``RandomTupleIndices(n,r)``    -- returns a random ``r``-tuple from ``{0,1,2,...,n-1}``
+- ``RandomPermutation(n)``       -- return ``vector<long>`` being a random permutation of ``{0,1,2,...,n-1}``
+- ``signature(perm)``            -- return the signature of a permutation (of type ``vector<int>`` or ``vector<long>``) of the values 0,1,2,..,``n-1``
+
+
+Notes:
+- the parameter ``n`` indicates the range {0,1,2,...,``n-1``} so that the integers produced are valid indices into a C++ vector of size ``n``.
+- the result is of type ``vector<long>``
+- the sampling is from a uniform distribution
+
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The algorithm for ``RandomSubsetIndices(n,r)`` was taken from the
+Wikipedia page on "Reservoir Sorting".  Also ``RandomPermutation``
+was taken from Wikipedia (which page?)
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Ugly fn names ``RandomSubsetIndices`` and ``RandomTupleIndices``
+For thread-safety the fns should also accept as input a random source!
+
+
+== Main changes ==
+%======================================================================
+
+**2023**
+- December (v0.99821): added ``SubsetIter(n,k)``
+
+
+**2022**
+- June (v0.99800): added doc for ``RandomPermutation`` (fn has been there for a while)
+
+
+**2015**
+- June (v0.99536): first version
+
+

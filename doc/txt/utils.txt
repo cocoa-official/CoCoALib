@@ -1,0 +1,60 @@
+      utils
+      Copyright (c)  2006,2014,2017,2020  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{utils}{John Abbott}
+
+
+
+== User documentation for file utils.H ==
+%======================================================================
+
+This file defines a few very basic functions which I feel should
+really be part of the standard C++.  Nevertheless I have placed all
+definitions inside the namespace ``CoCoA``.  Here is a summary:
+
+- ``round(x)`` -- round ``x`` (of type ``double``) to nearest integer value (of type ``double``); halves round towards +infinity.
+
+- ``ULongDiff(hi,lo)`` -- computes ``hi-lo`` as **unsigned long** (assumes ``hi>=lo``)
+
+- ``LongRange(lo,hi)`` -- returns a ``vector<long>`` filled with ``lo,lo+1,...,hi`` (useful for ``submat``)
+
+- ``IsDecimal(strm)`` -- returns ``true`` is i/o stream ``strm`` is in decimal mode, o/w returns ``false``
+
+- ``MaxSquarableInteger<T>()`` -- returns largest integer whose square fits in type ``T``
+
+- ``fold(str, n)``  -- make a copy of the string ``str`` inserting a newline every ``n`` chars
+
+- ``len(v)`` -- same as ``v.size()`` except that result is ``long``
+             rather than ``size_t``
+-
+
+== Maintainer documentation for files utils.H ==
+%======================================================================
+
+Everything is in ``utils.H``;
+the functions are all so simple that they can be implemented inline.
+
+Impl of template fn ``MaxSquarableInteger`` uses GMP to compute the
+memorized values.  A table of constants would be faster but potentially
+less portable (given that CoCoALib requires GMP anyway).  I haven't yet
+found a neat way of ensuring that the type ``T`` is integral & bounded.
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+A possibly better idea for ``MaxSquarableInteger``: precompute 2^63*sqrt(2) as
+``unsigned long``, then simply right shift this value for integral types with
+less than 127 bits.  This suggestion presupposes a binary computer.
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- February (v0.99543): added round; removed DeleteObject and cmp template fn.
+- date of first release not noted
+
+

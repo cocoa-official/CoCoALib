@@ -1,0 +1,56 @@
+
+
+##################################################################
+# This is the second fixed part of the common Makefile definitions.
+# The configure script will copy it to autoconf.mk.
+# NOTE: COCOA_ROOT is defined as a relative path in each individual Makefile.
+
+COCOA_HDR=$(COCOA_ROOT)/include/CoCoA/library.H
+
+INCLUDE_PATHS=-I$(COCOA_ROOT)/include  -$(ISYSTEM) $(EXTLIBS)/include  -$(ISYSTEM) $(EXTLIBS_5)/include
+COMPILE=$(CXX)  $(CXXFLAGS)  $(INCLUDE_PATHS)
+COCOA_LIB=$(COCOA_ROOT)/lib/libcocoa.a
+
+
+
+# Rule for compiling C++ code in *.C files into *.o object files
+%.o: %.C
+	@echo "Compiling `basename $@`"
+	$(COMPILE) -c -o $@ $<
+
+# Rule for compiling and linking C++ code in *.C files
+%: %.C
+	@echo "Compiling `basename $@`"
+	$(COMPILE) -o $@ $< $(LDLIBS)
+	@AppleDir="$@.dSYM" ; \
+	echo " " $(CXXFLAGS) " " | grep -F " -g " >/dev/null; \
+	if [ $$? -eq 1 -a -d "$$AppleDir" ] ; \
+	then \
+	  /bin/rm -rf "$$AppleDir"; \
+	fi
+
+
+# Rule for compiling C++ code in *.cpp files into *.o object files
+%.o: %.cpp
+	@echo "Compiling `basename $@`"
+	$(COMPILE) -c -o $@ $<
+
+# Rule for compiling and linking C++ code in *.cpp files
+%: %.cpp
+	@echo "Compiling `basename $@`"
+	$(COMPILE) -o $@ $< $(LDLIBS)
+	@AppleDir="$@.dSYM" ; \
+	echo " " $(CXXFLAGS) " " | grep -F " -g " >/dev/null; \
+	if [ $$? -eq 1 -a -d "$$AppleDir" ] ; \
+	then \
+	  /bin/rm -rf "$$AppleDir"; \
+	fi
+
+
+# The following are derived from the conventions for Makefiles for code
+# which should become part of the GNU project.  It seems reasonable to
+# adopt them here as well.  I found the recommendations in the online
+# help for make (e.g. run the command "info make" on a GNU/Linux system).
+SHELL=/bin/bash
+.SUFFIXES:
+.SUFFIXES: .C .o

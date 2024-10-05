@@ -1,0 +1,37 @@
+      utils_gmp
+      Copyright (c)  2016  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{utils-gmp}{John Abbott}
+
+
+
+== User documentation for file utils-gmp.H ==
+%======================================================================
+
+This file defines a few very basic functions which I feel should
+really be part of the GMP library.  Nevertheless I have placed all
+definitions inside the namespace ``CoCoA``.  Here is a summary:
+
+- ``mpq_cmpabs(q1,q2)``  compare absolute values of rationals ``q1`` and ``q2``
+
+- ``mpz_rounddiv(Q,N,D)`` -- compute Q = N/D where the quotient is **rounded**
+  to an integer (currently halves round away from zero).
+
+- ``mpq_round(N, Q)`` -- round rational ``Q`` to an integer; halves round the
+   same way as in ``mpz_rounddiv``
+
+-
+
+== Maintainer documentation for file utils-gmp.H ==
+%======================================================================
+
+The implementations are not exception safe.  The emphasis was on obvious
+correctness rather than greatest speed.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Currently ``mpz_rounddiv`` and ``mpq_round`` return a boolean saying
+whether the quotient was in fact an integer.

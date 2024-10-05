@@ -1,0 +1,60 @@
+      obsolescent
+      Copyright (c)  2016 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{obsolescent}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-obsolescent.C ../../examples/index.html#ex-obsolescent.C]
+-
+
+== User documentation ==
+%======================================================================
+
+As CoCoALib develops and evolves, it is sometimes necessary to modify
+functions (//e.g.// change the name, change the args).  To simplify
+the passage from on older version of CoCoALib to a newer one, the
+obsolescent functions are placed into the files [[obsolescent.H]]
+and [[obsolescent.C]].
+
+To compile code using an obsolescent function, you must include
+both ``CoCoA/library.H`` and ``CoCoA/obsolescent.H``.  The
+obsolescent functions are no longer considered part of CoCoALib,
+so do not appear in CoCoALib's combined header.
+
+To run code which uses obsolescent functions, you must give the
+option ``AllowObsolescentFns`` to [[GlobalManager]].  Note that
+each call to an obsolescent function will cause a log message
+to be printed out -- this is to encourage you to update your code!
+
+We do not list the obsolescent functions here: you are not supposed
+to use them!
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Each obsolescent fn should call ``LogObsolescentFn`` immediately upon entry;
+this function either throws ``ERR::OBSOLESCENT`` or prints out a log message.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Should the log message be printed to ``std::clog`` or ``std::cout``?
+Currently they are printed on ``std::clog`` but that causes the
+example program to report failure...
+
+
+== Main changes ==
+%======================================================================
+
+**2016**
+- November (v0.99544): first version
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

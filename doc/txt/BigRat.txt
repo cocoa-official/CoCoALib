@@ -1,0 +1,135 @@
+      BigRat
+      Copyright (c)  2009,2011,2014,2018,2021  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{BigRat}{John Abbott}
+
+
+== Examples ==
+%======================================================================
+- [ex-BigRat1.C   ../../examples/index.html#ex-BigRat1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+**IMPORTANT NOTE:**
+- **see [[BigRatOps]] for basic operations on values of type ``BigRat``**
+- **see [[NumTheory]] for more advanced operations**
+-
+
+=== Generalities ===
+%----------------------------------------------------------------------
+
+The class ``BigRat`` is intended to represent (exact) rational numbers
+of practically unlimited range; it is currently based on the
+implementation in the GMP //multiple precision// library.  This code forms
+the interface between CoCoALib and the big integer/rational library
+upon which it relies.  It seems most unlikely that GMP will be
+displaced from its position as the foremost library of this type; as a
+consequence the class ``BigRat`` may eventually be replaced by GMP's
+own C++ interface.
+
+
+It is important not to confuse values of type ``BigRat`` with values of type
+[[RingElem]] which happen to belong to the ring [[RingQQ]].  The distinction
+is analogous to that between values of type [[BigInt]] and value of type
+[[RingElem]] which happen to belong to the ring [[RingZZ]].  In summary, the
+operations available for [[RingElem]] are those applicable to elements of
+any ordered commutative ring, whereas the range of operations on ``BigRat``
+values is wider (since we have explicit knowledge of the type).
+
+
+
+=== The Functions Available For Use ===
+%----------------------------------------------------------------------
+
+==== Constructors ====
+ A value of type ``BigRat`` may be created from:
+- ``BigRat()``  default ctor, the value is zero
+- ``BigRat(n)`` where ``n`` is an integer: **warning: do not write** ``BigRat(2/3)``, it compiles but works unexpectedly!
+- ``BigRat(q)``  where ``q`` is another value of type ``BigRat``  (its value is copied)
+- ``BigRat(n,d)``  where ``n`` and ``d`` are both integers (machine integers or
+  [[BigInt]]s) specifying numerator and denominator in that order
+- ``BigRat(BigRat::OneOverZero)``  create the "infinity" rational ``1/0``  (will trigger
+    an error if you try to perform arithmetic with it, but you can access ``num`` and ``den``)
+- ``BigRatFromString(str)`` where ``str`` is a string of the form ``N`` or ``N/D``
+   where ``N`` is the decimal representation of the numerator and
+   ``D`` that of the denominator (leading and trailing whitespace around both ``N`` and ``D`` is permitted)
+- ``BigRatFromMPQ(mpq_value)`` copy a GMP rational (of type ``mpq_t``) into
+  a ``BigRat``; helps interfacing between CoCoALib and code using GMP directly.
+
+
+The ctors ``BigRat(n,d)`` and ``BigRatFromString(str)`` accept an optional final
+arg ``BigRat::AlreadyReduced`` which asserts that the value is already reduced
+(//i.e.// positive denominator, and numerator and denominator are coprime).
+**Use this feature only if you are absolutely certain** that there is no
+common factor between the given numerator and denominator.
+
+See **Bugs** section for why there is no ctor from a single integer.
+
+
+
++ Functions violating encapsulation
+  - ``mpqref(n)``-- this gives a (const) reference to the ``mpq_t`` value inside
+               a ``BigRat`` object.  You should use this accessor very sparingly!
+
+
+
+
+== Maintainer Documentation ==
+%======================================================================
+
+Nothing very clever.  Conversion from a string was a bit tedious.
+
+I have replaced the bodies of the ``BigRat`` ctors which take two integers
+as arguments by a call to the common body ``BigRat::myAssign``.  This does
+mean that some wasteful temporaries are created when either of the
+arguments is a machine integer.  Time will tell whether this waste is
+intolerable.
+
+
+The reason for having "strange" ctors from``std::string`` and ``mpq_t``
+was to avoid problems with ``BigRat(0)``.  Note that expressions such
+as ``BigInt(2/3)`` are equivalent to ``BigInt(0)`` but should be forbidden
+at compile time; however, at the moment ``mpq_t`` is a pointer type, so
+``BigRat(2/3)`` is seen as ``BigRat(0)``, and ``0`` can be interpreted as
+a null-pointer... so ``BigRat(mpq_t)`` would be an almost perfect match!
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+This code is probably not //exception safe//; I do not know what the ``mpq_*``
+functions do when there is insufficient memory to proceed.  Making the
+code //exception safe// could well be non-trivial: I suspect a sort of
+``auto_ptr`` to an ``mpq_t`` value might be needed.
+
+Removed ``BigRat`` ctors from a single (machine) integer because too often
+I made the mistake of writing something like ``BigRat(1/2)`` instead of
+``BigRat(1,2)``.
+
+Should the ``BigRatFromString`` pseudo-ctor also accept numbers with decimal points?
+//e.g.// ``BigRat("3.14159")``?  We'll wait and see whether there is demand for this
+before implementing; note that GMP does **not** offer this capability.
+
+
+
+== Main changes ==
+%======================================================================
+
+**2018**
+- June  (v0.99570): split off [[BigRatOps]]
+- April (v0.99570):
+   Removed ctors from ``string`` and ``mpq_t``; replaced them by pseudo-ctors.
+   This means that ``BigRat(0)`` and ``BigRat(1/2)`` etc. now give compile-time errors.
+-
+
+**2011**
+- August (v0.9950):
+   class ``QQ`` renamed into ``BigRat``:
+   to avoid confusion with [[RingQQ]] and its name in CoCoA system
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

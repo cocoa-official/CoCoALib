@@ -1,0 +1,1088 @@
+Package $MatNormalForm
+
+Export Smith;
+Export SmithFactor;
+  
+
+Define About()
+  PrintLn "    Topic   : Matrix normal forms";
+  PrintLn "    Keywords: matrix, normal form, Smith, rational";
+  PrintLn "    Authors : S. Defrancisci, A. Bigatti";
+  PrintLn "    Version : CoCoA 4.5";
+  PrintLn "    Date    : Dec 2005";
+  PrintLn "    Version : CoCoA 5.1.3";
+  PrintLn "    Date    : Feb 2016";
+EndDefine; -- About
+
+
+Define Man()
+  PrintLn "SYNTAX";
+  PrintLn "    Smith(M: MAT): MAT";
+  PrintLn "    SmithFactor(M: MAT): RECORD of MAT";
+  PrintLn "";
+  PrintLn "DESCRIPTION";
+  PrintLn "    Smith(M)";
+  PrintLn "  Returns the Smith normal form of M, a matrix over the integers or over";
+  PrintLn "  the univariate polynomials";
+  PrintLn "    SmithFactor(M)";
+  PrintLn "  Returns Record[Smith, U, V] where U * M * V = Smith (the Smith normal form)";
+  PrintLn "";
+  PrintLn ">EXAMPLE<";
+  PrintLn "";
+  PrintLn "  M  := mat([";
+  PrintLn "            [-x + 2, 0, 0, 0],";
+  PrintLn "            [-1, -x + 1, 0, 0],";
+  PrintLn "            [0, -1, -x, -1],";
+  PrintLn "            [1, 1, 1, -x + 2]";
+  PrintLn "            ]);";
+  PrintLn "  Smith(M);";
+  PrintLn "mat([";
+  PrintLn "  [1, 0, 0, 0],";
+  PrintLn "  [0, 1, 0, 0],";
+  PrintLn "  [0, 0, x - 1, 0],";
+  PrintLn "  [0, 0, 0, x^3 - 4x^2 + 5x - 2]";
+  PrintLn "])";
+  PrintLn "-------------------------------";
+  PrintLn "  SFs := SmithFactor(M);";
+  PrintLn "  SFs.U * M * SFs.V = SFs.Smith;";
+  PrintLn "TRUE";
+  PrintLn "-------------------------------";
+  PrintLn "";
+  PrintLn "  M := mat(ZZ,[";
+  PrintLn "           [2, 0, 0, 0, 0, 0, 0],";
+  PrintLn "           [0, 2, 0, 0, 0, 0, 0],";
+  PrintLn "           [0, 0, 3, 0, 0, 0, 0],";
+  PrintLn "           [0, 0, 0, 3, 0, 0, 0],";
+  PrintLn "           [0, 0, 0, 0, 5, 0, 0],";
+  PrintLn "           [0, 0, 0, 0, 0, 5, 0],";
+  PrintLn "           [0, 0, 0, 0, 0, 0, 5]";
+  PrintLn "           ]);";
+  PrintLn "  Smith(M);";
+  PrintLn "mat([";
+  PrintLn "  [1, 0, 0, 0, 0, 0, 0],";
+  PrintLn "  [0, 1, 0, 0, 0, 0, 0],";
+  PrintLn "  [0, 0, 1, 0, 0, 0, 0],";
+  PrintLn "  [0, 0, 0, 1, 0, 0, 0],";
+  PrintLn "  [0, 0, 0, 0, 5, 0, 0],";
+  PrintLn "  [0, 0, 0, 0, 0, 30, 0],";
+  PrintLn "  [0, 0, 0, 0, 0, 0, 30]";
+  PrintLn "])";
+  PrintLn "-------------------------------";
+  PrintLn "  SFs := SmithFactor(M);";
+  PrintLn "  SFs.U * M * SFs.V = SFs.M;";
+  PrintLn "TRUE";
+  PrintLn "-------------------------------";
+EndDefine; -- Man
+
+
+----------------------------------------------------------------------
+/*                RIDUZIONE A FORMA NORMALE DI SMITH                */
+----------------------------------------------------------------------
+--  INDICE
+
+-- Funzioni principali:
+-- - SmithFactor
+-- - Smith
+-- - Verify
+-- - RecMakeDiag [era RecDiag]
+-- - RecRefineDiag [era LSuperDiag]
+
+-- Funzioni ausiliarie 1:
+-- - FirstNonZeroFrom
+-- - PosMinAbs
+-- - MinInII
+
+-- Funzioni ausiliarie 2:
+-- - PDiv
+-- - PMod
+
+
+Define ManDecom1()
+  PrintLn "-- EXAMPLE 1:";
+  PrintLn "";
+  PrintLn "M := [[2,0,0,0],[-1,1,0,0],[0,-1,0,-1],[1,1,1,2]];";
+  PrintLn "Decom1(M);";
+  PrintLn "";
+  PrintLn "/* Interpretazione dei risultati: V si decompone in somma diretta di";
+  PrintLn "due sottomoduli ciclici w1 e w2 con w1 = e2-e3, w2 = -e1+e3. */";
+  PrintLn "";
+  PrintLn "-- EXAMPLE 2:";
+  PrintLn "";
+  PrintLn "M := [[0,0,-1],[1,1,1],[1,0,2]];";
+  PrintLn "Decom1(M);";
+  PrintLn "";
+  PrintLn "/* Interpretazione dei risultati: V si decompone in somma diretta di";
+  PrintLn "due sottomoduli ciclici w1 e w2 con w1 = e2, w2 = -e2+e3. */";
+  PrintLn "";
+EndDefine; -- ManDecom1
+
+
+Define ManDecom2()
+  PrintLn "-- EXAMPLE 1:";
+  PrintLn "";
+  PrintLn "M := [[2,0,0,0],[-1,1,0,0],[0,-1,0,-1],[1,1,1,2]];";
+  PrintLn "Decom2(M);";
+  PrintLn "";
+  PrintLn "/* Interpretazione dei risultati: V si decompone in somma diretta di";
+  PrintLn "tre sottomoduli ciclici w1 e z1 e z2 con w1 = e2-e3, z1 = e2-2e3, z2 =";
+  PrintLn "-e1+e2-e4.  Confrontandolo con l'Esempio 1 precedente si osserva che";
+  PrintLn "il modulo ciclico <w1> rimane immutato, mentre il modulo ciclico <w2>";
+  PrintLn "si e' spezzato nella somma diretta dei moduli ciclici irriducibili";
+  PrintLn "<z1> e <z2>. */";
+  PrintLn "";
+  PrintLn "-- EXAMPLE 2:";
+  PrintLn "";
+  PrintLn "M := [[0,0,-1],[1,1,1],[1,0,2]];";
+  PrintLn "Decom2(M);";
+  PrintLn "";
+  PrintLn "/* Interpretazione dei risultati: V si decompone in somma diretta di";
+  PrintLn "due sottomoduli ciclici w1 e w2 con w1 = e2-e3, w2 = -e1+e3.";
+  PrintLn "Confrontandolo con l'Esempio 2 precedente si osserva che la";
+  PrintLn "decomposizione rimane immutata, perche' i moduli ciclici erano gia'";
+  PrintLn "irriducibili.*/";
+  PrintLn "";
+EndDefine; -- ManDecom2
+
+
+Define ManFormaCanonicaRazionale()
+  PrintLn "-- EXAMPLE 1:";
+  PrintLn "";
+  PrintLn "M := [[0,0,-1],[1,1,1],[1,0,2]];";
+  PrintLn "FormaCanonicaRazionale(M);";
+  PrintLn "/*";
+  PrintLn " mat([";
+  PrintLn "  [1, 0, 0],";
+  PrintLn "  [0, 0, -1],";
+  PrintLn "  [0, 1, 2]";
+  PrintLn "])";
+  PrintLn " */";
+  PrintLn "";
+  PrintLn "-- EXAMPLE 2:";
+  PrintLn "";
+  PrintLn "M := [[2,0,0,0],[-1,1,0,0],[0,-1,0,-1],[1,1,1,2]];";
+  PrintLn "FormaCanonicaRazionale(M);";
+  PrintLn "/*";
+  PrintLn " mat([";
+  PrintLn "  [1, 0, 0, 0],";
+  PrintLn "  [0, 0, 0, 2],";
+  PrintLn "  [0, 1, 0, -5],";
+  PrintLn "  [0, 0, 1, 4]";
+  PrintLn "])";
+  PrintLn " */";
+  PrintLn "";
+  PrintLn "-- EXAMPLE 3:";
+  PrintLn "";
+  PrintLn "M := [[0,0,0,4],[1,0,0,0],[0,1,0,0],[0,0,1,0]];";
+  PrintLn "FormaCanonicaRazionale(M);";
+  PrintLn "/*";
+  PrintLn " mat([";
+  PrintLn "  [0, 0, 0, 4],";
+  PrintLn "  [1, 0, 0, 0],";
+  PrintLn "  [0, 1, 0, 0],";
+  PrintLn "  [0, 0, 1, 0]";
+  PrintLn "])";
+  PrintLn " */";
+EndDefine; -- ManFormaCanonicaRazionale
+
+
+Define SmithFactor(A)
+  --trova la Forma Normale di Smith di A
+//  A := $.AdjustInput(A);
+  Err := "Input must be a matrix over ZZ or poly ring";
+  If type(A)<>MAT Then error(Err); EndIf;
+  R := RingOf(A);
+  If R<>RingZZ() And not(IsPolyRing(R)) Then error(Err); EndIf;
+  NR := NumRows(A);  NC := NumCols(A);
+  If NR <= NC Then
+    S := Record[U:=IdentityMat(R,NR),
+		M:=A,
+		V:=IdentityMat(R,NC)];
+    $.RecMakeDiag2(ref S, 1);
+    Return Record[U:=S.U, Smith:=S.M, V:=S.V];
+  Else
+    S := Record[U:=IdentityMat(R,NC),
+		M:=transposed(A),
+		V:=IdentityMat(R,NR)];
+    $.RecMakeDiag2(ref S, 1);
+    Return Record[U:=transposed(S.V), Smith:=transposed(S.M), V:=transposed(S.U)];
+  EndIf;
+EndDefine; -- SmithFactor
+
+
+Define Smith(A)
+  Return $.SmithFactor(A).Smith;
+EndDefine; -- Smith
+
+
+Define Verify(M, L)
+  D := L.Smith;
+  For I := 1 To NumRows(D) Do
+    For J := 1 To NumCols(D) Do
+      If I<>J And not(IsZero(D[I,J])) Then  error("non diagonal: ", D);  EndIf;
+    EndFor;
+  EndFor;
+  For I := 2 To min(NumRows(D), NumCols(D)) Do
+    If not(IsZero(D[I-1,I-1])) Then
+      If not(IsZero($.PMod(D[I,I], D[I-1,I-1]))) Then error("non SmithNF", D);  EndIf;
+    EndIf;
+  EndFor;
+  If det(L.U) = 0 Then error("U not invertible"); EndIf;
+  If det(L.V) = 0 Then error("V not invertible"); EndIf;
+  If L.U * M * L.V = D Then Print "OK : U*M*V = SmithNF";
+  Else Print "ERROR : U*M*V <> SmithNF";
+  EndIf;
+EndDefine; -- Verifica
+
+-----------------------------------------------------------------------
+--  La funzione RecMakeDiag e' costruita in base ai passi 2 e 3 della
+-- dimostrazione del Teorema 3.1.3.
+
+-- Usando solo operazioni razionali trasforma la matrice M in una
+-- diagonale equivalente con entrate non ancora ridotte .  
+
+-- Define RecMakeDiag(S,I)
+--   PrintLn "RecMakeDiag " , I ;
+--   -- assumiamo che la matrice abbia NR <= NC
+--   If I>NumRows(S.M) Then Return $.RecRefineDiag(S, 1); EndIf;
+--   $.MinInII(ref S,I);
+--   If S.M[I,I]=0 Then Return $.RecRefineDiag(S, 1); EndIf;
+--   -- lavora sulla i-ma riga
+--   For C := I+1 To NumCols(S.M) Do
+--     PrintLn "RecMakeDiag C=" , C, "(",I, ")" ;
+--     While S.M[I,C]<>0 Do
+--       Q := $.PDiv(S.M[I,C], S.M[I,I]);
+--       $.SommaColonne(ref S, [I,C], -Q);
+--       $.MinInII(ref S, I);
+--     EndWhile;
+--   EndFor;
+--   -- lavora sulla i-ma colonna
+--   For R := I+1 To NumRows(S.M) Do
+--     PrintLn "RecMakeDiag R=" , R, "(",I, ")" ;
+--     If S.M[R,I]<>0 Then
+--       Q1 := $.PDiv(S.M[R,I], S.M[I,I]);
+--       $.SommaRighe(ref S, [R,I], -Q1);
+--     EndIf;
+--     If S.M[R,I]<>0 Then Return $.RecMakeDiag(S, I); EndIf;
+--   EndFor;
+--   -- chiamata ricorsiva
+--   Return $.RecMakeDiag(S, I+1);
+-- EndDefine; -- RecMakeDiag
+
+
+Define RecMakeDiag2(ref S, I)
+  if VerbosityLevel()>0 then fn := "RecMakeDiag2: "; endif;
+  if VerbosityLevel()>=20 then PrintLn fn,"--------- start ", I; endif;
+  -- assumiamo che la matrice abbia NR <= NC
+  for i := I to NumRows(S.M) do
+    if VerbosityLevel()>=20 then PrintLn fn,"--------- for loop ", i; endif;
+    if VerbosityLevel()>=30 then PrintLn fn, S.M; endif;
+    if not(IsOne(S.M[i,i])) Then $.MinInII(ref S,i); endif;
+    if IsZero(S.M[i,i]) Then $.RecRefineDiag(ref S, 1); return; EndIf;
+    -- lavora sulla i-ma riga
+    For col := i+1 To NumCols(S.M) Do
+      While not(IsZero(S.M[i,col])) Do
+	//      PrintLn "RecMakeDiag2 col=" , col, "(",i, ")" ;
+	Q := $.PDiv(S.M[i,col], S.M[i,i]);
+	$.SommaColonne(ref S, col,i, -Q);
+	$.MinInII(ref S, i);
+      EndWhile;
+    EndFor;
+    -- lavora sulla i-ma colonna
+    For row := i+1 To NumRows(S.M) Do
+      If not(IsZero(S.M[row,i])) Then
+	//      PrintLn "RecMakeDiag2 row=" , row, "(",i, ")" ;
+	Q1 := $.PDiv(S.M[row,i], S.M[i,i]);
+	$.SommaRighe(ref S, row,i, -Q1);
+      EndIf;
+      If not(IsZero(S.M[row,i])) Then $.RecMakeDiag2(ref S, i); return; EndIf;
+    EndFor;
+    -- chiamata ricorsiva
+  endfor;
+  //  $.RecMakeDiag2(ref S, i+1);
+  $.RecRefineDiag(ref S, 1);
+EndDefine; -- RecMakeDiag
+
+----------------------------------------------------------------------
+--  La funzione RecRefineDiag raffina la diagonalizzazione ottenuta da
+-- RecMakeDiag in base all'Osservazione 3.1.5. 
+
+Define RecRefineDiag(ref SmithFs, i)
+  if VerbosityLevel()>0 then fn := "RecRefineDiag: "; endif;
+  if VerbosityLevel()>=20 then PrintLn fn,"--------- start ", i; endif;
+  if i+1 > NumRows(SmithFs.M) Then Return; EndIf;
+  -- raffinamento in base all'osservazione 3.1.5
+  $.SommaRighe(ref SmithFs, i+1,i, one(RingOf(SmithFs.M)));
+  $.MinInII(ref SmithFs,i);
+  if IsZero(SmithFs.M[i,i]) Then Return; EndIf;
+  $.Normalizza(ref SmithFs, [i,i]);
+  -- lavora sulla i-ma riga
+  While SmithFs.M[i,i+1]<>0 Do
+    Q := $.PDiv(SmithFs.M[i,i+1], SmithFs.M[i,i]);
+    $.SommaColonne(ref SmithFs, i,i+1, -Q);
+    $.MinInII(ref SmithFs, i); --cerca il nuovo minimo
+    $.Normalizza(ref SmithFs, [i,i]);
+  EndWhile;
+  -- lavora sull'elemento diagonale utilizzando l'i-ma colonna
+  For  R := i+1 To NumRows(SmithFs.M) Do
+    If not(IsZero(SmithFs.M[R,i]))  Then
+      Q1 := $.PDiv(SmithFs.M[R,i], SmithFs.M[i,i]);
+      $.SommaRighe(ref SmithFs, i,R, -Q1);
+    EndIf;
+    if not(IsZero(SmithFs.M[R,i])) Then
+      $.RecRefineDiag(ref SmithFs, i);
+      return;
+    EndIf;
+  EndFor;
+  -- chiamata ricorsiva
+  $.RecRefineDiag(ref SmithFs, i+1);
+  if IsZero($.PMod(SmithFs.M[i+1,i+1], SmithFs.M[i,i])) Then Return; EndIf;
+  $.RecRefineDiag(ref SmithFs,i);
+EndDefine; --RecRefineDiag
+
+----------------------------------------------------------------------
+
+-- Funzioni ausiliarie 1
+
+--  Le seguenti funzioni ausiliarie individuano l'elemento minimo ( in
+-- valore assoluto o in grado) e lo spostano in (I,I). In particolare
+-- FirstNonZeroFrom prende in input la matrice M, le dimensioni NR = numero
+-- righe di M, NC = numero colonne di M e l'intero I che indica la
+-- sottomatrice che sto considerando ad un generico passo e restituisce
+-- l'elemento piu' piccolo diverso da zero.
+
+-- AdjustInput legge la matrice e controlla se vi e' almeno un'entrata
+-- polinomiale.  Se la trova trasforma anche gli eventuali interi in
+-- polinomi.  Eventualmente converte in matrice una lista di liste.
+
+-- Infine MinInII prende in input la terna di matrici S, l'intero I e
+-- modifica S portando il "minimo" della matrice Smith In posizione [i,i]
+-- e memorizzando In U e V gli scambi di righe e colonne.
+-- Il "minimo" e' calcolato In questo modo:
+-- - Se le entrate sono intere PosMinAbs prende gli stessi input della
+-- funzione FirstNonZeroFrom e restituisce la posizione dell'elemento minimo
+-- in valore assoluto.
+-- - Se le entrate sono polinomi PosMinDeg che prende gli stessi input
+-- della funzione FirstNonZeroFrom e restituisce la posizione dell'elemento
+-- minimo in grado.
+
+-- Tutte le funzioni che operano su Record[U, M, V] mantengono invariato
+-- Inverse(U) * M * Inverse(V)
+
+ 
+
+Define FirstNonZeroFrom(M,NR,NC,i)
+  --trova il primo elemento della matrice diverso da zero
+  For IP := i To NR Do
+    For JP := i To NC Do
+      If not(IsZero(M[IP, JP])) Then Return M[IP, JP]; EndIf;
+    EndFor;
+  EndFor;
+  Return 0;
+EndDefine; -- FirstNonZeroFrom
+
+
+-- Define PosMinAbs(M,NR,NC,i, NonZeroEntry)
+--   MinM := abs(NonZeroEntry)+1;
+--   MinI := -1;  MinJ := -1;
+--   For iP := i To NR Do
+--     For JP := i To NC Do
+--       If not(IsZero(M[iP,JP])) And abs(M[iP,JP])<MinM Then
+--         MinM := abs(M[iP,JP]);        MinI := iP;  MinJ := JP;
+--       EndIf;
+--     EndFor;
+--   EndFor;
+--   Return [MinI,MinJ];
+-- EndDefine;  -- PosMinAbs
+
+Define PosMinAbs(M,NR,NC,i, NonZeroEntry)
+  MinM := abs(NonZeroEntry)+1;
+  MinusMinM := -MinM;
+  MinI := -1;  MinJ := -1;
+  For iP := i To NR Do
+    For jP := i To NC Do
+      Mij := M[iP,jP];
+      if not(IsZero(Mij)) then
+	if Mij>0 then
+	  if Mij<MinM Then
+	    MinM := Mij; MinusMinM := -MinM; MinI := iP;  MinJ := jP;
+	  endif;
+	elif /*Mij<0 and*/ Mij>MinusMinM Then
+	  MinusMinM := Mij; MinM := -MinusMinM; MinI := iP;  MinJ := jP;
+	endif;
+	if IsOne(MinM) then   Return [MinI,MinJ]; endif;
+      endif;
+    EndFor;
+  EndFor;
+  Return [MinI,MinJ];
+EndDefine;  -- PosMinAbs
+
+Define PosMinDeg(M,NR,NC,I,NonZeroEntry)
+  MinD := deg(NonZeroEntry)+1;
+  MinI := -1;  MinJ := -1;
+  For iP := I To NR Do
+    For jP := I To NC Do
+      If M[iP,jP]<>0 And deg(M[iP,jP])<MinD Then
+          MinD := deg(M[iP,jP]);          MinI := iP;   MinJ := jP;
+      EndIf;
+    EndFor;
+  EndFor;
+  Return [MinI,MinJ];
+EndDefine;  --PosMinDeg
+
+Define PosMin(M,NR,NC,i)
+  NZ := $.FirstNonZeroFrom(M, NR, NC, i);
+  If NZ = 0 Then Return [i,i]; EndIf;
+//  If type(M[1,1])=POLY Then
+  If IsPolyRing(RingOf(M)) Then
+    Return  $.PosMinDeg(M,NR,NC,i,NZ);
+  Else
+    Return  $.PosMinAbs(M,NR,NC,i,NZ);
+  EndIf;
+EndDefine; -- PosMin
+
+
+Define MinInII(Ref MatL, i)
+    --sposta il minimo in (i,i)
+  NR := NumRows(MatL.M);  NC := NumCols(MatL.M);
+//  Print "PosMin-";
+  L := $.PosMin(MatL.M, NR, NC, i);
+//  Print "done  ";
+  iL := L[1];  jL := L[2];
+  -- se le  matrici sono rettangolari:    Return "Indice i troppo grande";
+  if i>NR Or i>NC Then error("MinInII: can this happen???"); EndIf;
+  if iL<>i Then
+    SwapRows(ref MatL.M, iL, i);
+    SwapRows(ref MatL.U, iL, i);
+  EndIf;
+  if jL<>i Then
+    SwapCols(ref MatL.M, jL, i);
+    SwapCols(ref MatL.V, jL, i);
+  EndIf;
+EndDefine;  -- MinInII
+
+----------------------------------------------------------------------
+
+-- Funzioni ausiliarie 2
+
+Define MoltiplicaColonna(Ref SmithFs, Col, X)
+  If IsOne(X) Then Return; EndIf;
+  SetCol(ref SmithFs.M, Col, X*GetCol(SmithFs.M, Col));
+  SetCol(ref SmithFs.V, Col, X*GetCol(SmithFs.V, Col));
+EndDefine; -- MoltiplicaColonna
+
+-- Define SommaRighe(Ref SmithFs, L, X)
+--   SetRow(ref SmithFs.M, L[1],
+-- 	 GetRow(SmithFs.M, L[1])+X*GetRow(SmithFs.M, L[2]));
+--   SetRow(ref SmithFs.U, L[1],
+-- 	 GetRow(SmithFs.U, L[1])+X*GetRow(SmithFs.U, L[2]));
+-- EndDefine; -- SommaRighe
+
+-- Define SommaColonne(Ref SmithFs, L, X)
+--   SetCol(ref SmithFs.M, L[2],
+-- 	 GetCol(SmithFs.M, L[2])+X*GetCol(SmithFs.M, L[1]));
+--   SetCol(ref SmithFs.V, L[2],
+-- 	 GetCol(SmithFs.V, L[2])+X*GetCol(SmithFs.V, L[1]));
+-- EndDefine; -- SommaRighe
+
+-- Define SommaRighe(Ref SmithFs, L, X)
+--   if IsZero(X) then PrintLn "SommaRighe 0"; return; endif;
+--   for i := 1 to NumCols(SmithFs.M) do
+--     SetEntry(ref SmithFs.M, L[2],i, SmithFs.M[L[2],i]+X*SmithFs.M[L[1],i]);
+--   endfor;
+--   for i := 1 to NumCols(SmithFs.U) do
+--     SetEntry(ref SmithFs.U, L[2],i, SmithFs.U[L[2],i]+X*SmithFs.U[L[1],i]);
+--   endfor;
+-- EndDefine; -- SommaRighe
+
+-- Define SommaColonne(Ref SmithFs, L, X)
+--   if IsZero(X) then PrintLn "SommaColonne 0"; return; endif;
+--   for i := 1 to NumRows(SmithFs.M) do
+--     SetEntry(ref SmithFs.M, i,L[2], SmithFs.M[i,L[2]]+X*SmithFs.M[i,L[1]]);
+--   endfor;
+--   for i := 1 to NumRows(SmithFs.V) do
+--     SetEntry(ref SmithFs.V, i,L[2], SmithFs.V[i,L[2]]+X*SmithFs.V[i,L[1]]);
+--   endfor;
+-- EndDefine; -- SommaRighe
+
+Define SommaColonne(Ref SmithFs, i1,i2, X)
+  AddColMul(ref SmithFs.M, i1,i2, X);
+  AddColMul(ref SmithFs.V, i1,i2, X);
+EndDefine; -- SommaRighe
+
+Define SommaRighe(Ref SmithFs, i1,i2, X)
+  AddRowMul(ref SmithFs.M, i1,i2, X);
+  AddRowMul(ref SmithFs.U, i1,i2, X);
+EndDefine; -- SommaRighe
+
+--rende monico o cambia segno a M[I,I] (operando sulla colonna)
+Define Normalizza(Ref SmithFs, L)
+  X := $.NormalizingFactor(SmithFs.M[L[1], L[2]]);
+  $.MoltiplicaColonna(ref SmithFs, L[2], X);
+EndDefine; -- NormalizeEntry
+
+
+--  La funzione PDiv prende in input due elementi che possono essere
+-- sia interi sia polinomi e restituisce il risultato della divisione tra
+-- interi nel primo caso e il risultato della divisione tra polinomi nel
+-- secondo.
+
+-- La funzione PMod prende in input due elementi che possono essere sia
+-- interi sia polinomi e restituisce il resto della divisione tra interi
+-- nel primo caso e il resto della divisione tra polinomi nel secondo.
+
+Define PDiv(F,G)
+  If RingOf(F)=RingZZ() And RingOf(G)=RingZZ() Then
+    Return RingElem(RingZZ(), div(AsINT(F),AsINT(G)));
+  EndIf;
+  E := DivAlg(F,[G]);
+  Return E.quotients[1];
+EndDefine;  -- PDiv
+
+Define PMod(F,G)
+  If RingOf(F)=RingZZ() And RingOf(G)=RingZZ() Then
+    Return RingElem(RingZZ(), mod(AsINT(F), AsINT(G)));
+  EndIf;
+  E := DivAlg(F,[G]);
+  Return E.remainder;
+EndDefine;  -- PMod
+
+Define NormalizingFactor(X)
+  If RingOf(X)=RingZZ() Then
+    Return RingElem(RingZZ(), sign(X));
+  EndIf;
+  Return RingElem(RingOf(X), 1/LC(X));
+EndDefine; -- NormalizingFactor
+
+----------------------------------------------------------------------------
+/*        DECOMPOSIZIONE DI V COME SOMMA DIRETTA DI MODULI CICLICI        */
+----------------------------------------------------------------------------
+--  INDICE
+
+-- Funzione principale:
+-- - Decom1 (presente in questa sezione)
+
+-- Funzioni ausiliarie 1:
+-- - SmithOfxI_M (presente in questa sezione)
+-- - Rho (presente in questa sezione)
+
+-- Funzioni ausiliarie 2:
+-- - Smith (in sezione "Riduzione a Forma Normale di Smith")
+
+
+-- Funzione principale
+
+-- La funzione Decom1 prende in input la matrice di interi M e restituisce
+--  la lista dei vettori wi da leggere come coefficienti della base canonica.
+
+Define Decom1(M)
+  ML := $.SmithOFxI_M(M);
+  U  := ML.U;
+  MD := ML.M;
+  NZ := len([ I In 1..NumRows(M) | deg(MD[I,I]) <> 0 ]);
+  Return Rho(NZ,inverse(U),M);
+EndDefine; -- Decom1
+
+--Funzioni ausiliarie 1
+
+-- In particolare la Funzione principale chiama per prima
+-- SmithOFxI_M(M) che pr ende in input la matrice M e restituisce la
+-- Forma Normale di Smith della matric e (XI-M), richiamando su (XI-M)
+-- la funzione Smith descritta nella sezione "Ridu zione a Forma
+-- Normale di Smith". La seconda funzione richiamata e' Rho che pren
+-- de in input NZ = non zero,ossia il numero di elementi della
+-- diagonale di Smith con grado maggiore di zero, UI = inversa della
+-- matrice U,dove U e' la matrice d i operazioni fatte sulle righe per
+-- trasformare (XI-M) in Forma di Smith e M la matrice di interi di
+-- partenza.  La funzione Rho in base all'Osservazione 4.2.6 calcola
+-- prima la base (v1,...,vn )=(e1,...,en)U^(-1) e poi usa le formule
+-- w1=rho(v_(n-r+1)),...,wr=rho(vn).
+
+Define SmithOFxI_M(M)
+  I := IdentityMat(RingOf(M), NumRows(M));
+  A := indet(RingOf(M),1) * I - M;
+  Return $.SmithFactor(A);
+EndDefine; -- SmithOFxI_M
+
+Define Rho(NZ,UI,M)
+  TM := transposed(M);
+  E := transposed(UI);
+  NR := NumRows(M);
+  Id := IdentityMat(RingOf(M), NR);
+  W := ZeroMat(RingOf(M), NZ,NR);
+  C := NewList(NR,0);
+  For K := 1 To NZ Do
+    For J := 1 To NR Do
+      C[J] := coefficients(Poly(E[NR-NZ+K,J]));
+      If  C[J] <> [0] Then
+            D := len(C[J]);
+            For I := 1 To D Do
+              If I-1 = 0 Then TT := Id; Else TT := TM^(I-1);
+              EndIf;
+              W[K] := W[K]+(C[J][D-I+1])*TT[J];
+            EndFor;
+      EndIf;
+    EndFor;
+  EndFor;
+  Return List(W);
+EndDefine; -- Rho
+
+
+---------------------------------------------------------------------------
+/* DECOMPOSIZIONE DI V COME SOMMA DIRETTA DI MODULI CICLICI IRRIDUCIBILI */
+---------------------------------------------------------------------------
+--  INDICE
+
+-- Funzione principale:
+-- - Decom2 (presente in questa sezione)
+
+-- Funzioni ausiliarie 1:
+-- - Fatt (presente in questa sezione)
+-- - SmithOfxI_M (in sezione "Decomposizione di V come somma diretta di moduli cic
+-- lici")
+-- - Rho (in sezione "Decomposizione di V come somma diretta di moduli ciclici")
+
+-- Funzioni ausiliarie 2:
+-- - Smith (in sezione "Riduzione a Forma Normale di Smith")
+
+
+-- Funzione principale
+
+--  La funzione Decom2 prende in input la matrice di interi M e
+-- restituisce in b ase al Teorema 3.1.31 l'ulteriore fattorizzazione
+-- di V. Ricordiamo, infatti, ch e se 0:m = (d) con d = p1^r1....ps^rs
+-- dove p1,...,ps sono elementi primi disti nti e r1,...,rs sono
+-- interi positivi,se si pone di = d|(pi^ri) allora si ha che <m> e'
+-- uguale alla somma diretta dei <d1 m>....<ds m>. In particolare
+-- Decom2 c ostruisce la decomposizione di V con lo stesso
+-- procedimento di Decom1, ma usand o al posto del fattore invariante
+-- un fattore alla volta della sua scomposizione . Osserviamo,
+-- inoltre, che usando l'algoritmo di fattorizzazione Fatt si puo' p
+-- rocedere a questa decomposizione solo ammenttendo l'esistenza di un
+-- tale algori tmo. Le altre funzioni ausiliarie usate sono
+-- SmithOFxI_M e Rho descritte nella sezione "Decomposizione di V come
+-- somma diretta di moduli ciclici", e Fatt des critta qui di seguito.
+
+
+Define Decom2(M)
+  R := RingOf(M);
+  ML := $.SmithOFxI_M(M);
+  U  := ML.U;
+  MD := ML.M;
+  NR := NumRows(M);
+  LL := Fatt(NR,MD);
+  F := LL[1];
+  NZ := LL[2];
+  Id := IdentityMat(RingOf(M), NR);
+  W := Rho(NZ,inverse(U),M);
+  V := NewList(NZ,0);
+  TM := transposed(mat(M));
+  For I := 1 To NZ Do
+    S := len(F[I]);
+    If S=1 Then
+      V[I] := W[I];
+    Else
+      V1 := ZeroMat(R, S,NR);
+      P := NewList(S,0);
+      C := NewList(S,0);
+      For J := 1 To S Do
+        P[J] := (F[I,J][1])^(F[I,J][2]);
+        C[J] := coefficients(P[J]);
+        DJ := len(C[J]);
+        For H := 1 To DJ Do
+          If H=1 Then
+            If deg(P[J])>=1 And DJ=1 Then TT := TM;
+            Else TT := Id;
+            EndIf;
+          Else TT := TM^(H-1);
+          EndIf;
+          For T := 1 To NR Do
+            V1[J] := V1[J]+(W[I,T]*C[J][DJ-H+1])*TT[T];
+          EndFor;
+        EndFor;
+      EndFor;
+      append(ref V,List(V1));
+    EndIf;
+  EndFor;
+  VV := [];
+  For I := 1 To len(V) Do
+    If V[I]<>0 Then append(ref VV,V[I]); EndIf;
+  EndFor;
+  Return VV;
+EndDefine; -- Decom2
+
+
+-- Funzioni ausiliarie 1
+
+--  La funzione Fatt prende in input NR = numero di righe, MD =
+-- Smith(XI-M) e re stituisce la lista di F = fattorizzazione dei
+-- fattori invarianti,NZ = numero de gli elementi di grado maggiore di
+-- zero,cioe' non costanti,presenti sulla diagon ale della matrice
+-- MD. Per fattorizzare i fattori invarianti usa Factor, funzion e
+-- gia' esistente nella versione utilizzata di "CoCoA language."
+
+
+Define Fatt(NR,MD)
+  NZ := len([ I In 1..NumRows(MD) | deg(MD[I,I]) <> 0 ]);
+  F := [ MD[I,I] | I In 1..NumRows(MD) And MD[I,I] <> 1 ];
+  For I := 1 To NZ Do
+    F[I] := factor(F[I]);
+  EndFor;
+  Return [F,NZ];
+EndDefine; -- Fatt
+
+
+
+
+
+
+--------------------------------------------------------------------------
+/*           FORMA CANONICA RAZIONALE DI UNA MATRICE QUADRATA           */
+--------------------------------------------------------------------------
+--  INDICE
+
+-- Funzione principale:
+-- - FormaCanonicaRazionale (presente in questa sezione)
+
+-- Funzioni ausiliarie 1:
+-- - FattoriInvarianti (presente in questa sezione)
+-- - SmithOfxI_M (in sezione "Decomposizione di V come somma diretta di moduli cic
+-- lici")
+-- - BloccoFattInv (presente in questa sezione)
+
+-- Funzioni ausiliarie 2:
+-- - Smith (in sezione "Riduzione a Forma Normale di Smith")
+
+
+-- Funzione principale
+
+--  La funzione FormaCanonicaRazionale calcola la Forma Canonica
+-- Razionale di una matrice quadrata nel modo seguente. Trova i fattori
+-- invarianti di XI-M tramite la funzione FattoriInvarianti (descritta
+-- nelle funzioni ausiliarie). Per ogni fattore invariante costruisce il
+-- blocco razionale elementare corrispondente chiamando la funzione
+-- BlocoFattInv (descritta nelle funzioni ausiliarie) e infine
+-- restituisce la matrice cercata. Osserviamo che usa solo operazioni
+-- razionali.
+
+
+Define FormaCanonicaRazionale(M)
+  LF := FattoriInvarianti(M);
+  N := len(LF);
+  MB := ZeroMat(RingOf(M), N,N);
+  For I := 1 To N Do
+    MB[I,I] := BloccoFattInv(LF[I]);
+  EndFor;
+  Return BlockMatrix(MB);
+EndDefine; -- FormaCanonicaRazionale
+
+
+-- Funzioni ausiliarie 1:
+
+--  La funzione FattoriInvarianti prende in input una matrice quadrata
+-- M e restituisce la lista dei fattori invarianti di (XI-M). La funzione
+-- SmithOFxI_M e' la stessa descritta nella sezione "Decomposizione di V
+-- come somma diretta di moduli ciclici", mentre la funzione
+-- BloccoFattInv prende in input un polinomio di grado n (nel nostro caso
+-- un fattore invariante alla volta) e restituisce la corrispondente
+-- matrice razionale elementare (o companion matrix) che ha 1 sulla sotto
+-- diagonale e i coefficienti del polinomio nell'ultima colonna a partire
+-- dal termine noto cambiato di segno fino al coefficiente di grado n-1
+-- sempre cambiato di segno. 
+
+
+Define FattoriInvarianti(M)
+  --trova i fattori invarianti di (XI-M)
+  ML := $.SmithOFxI_M(M);
+  MD := ML.M;
+  Return [ MD[I,I] | I In 1..NumRows(MD) And MD[I,I]<>1 ];
+EndDefine; -- FattoriInvarianti
+
+
+Define BloccoFattInv(P)
+  TopLevel x;
+  --matrice razionale elementare di P
+  If P=0 Then Return 0; EndIf;
+  CoefPol := tail(coefficients(P,x));
+  N := len(CoefPol);
+  B := ZeroMat(CoeffRing(RingOf(P)), N,N);
+  For I := 1 To N Do
+    If I >= 2 Then B[I,I-1] := 1;EndIf;
+    B[I,N] := -CoefPol[N-I+1];
+  EndFor;
+  Return B;
+EndDefine; -- BloccoFattInv
+
+
+
+
+---------------------------------------------------------------------------
+/*             FORMA QUASI DI JORDAN DI UNA MATRICE QUADRATA             */
+---------------------------------------------------------------------------
+--  INDICE
+
+-- Funzione principale:
+-- - QuasiJordan (presente in questa sezione)
+
+-- Funzioni ausiliarie 1:
+-- - TrovaQM (presente in questa sezione)
+-- - TrovaCM (presente in questa sezione)
+-- - FattoriInvarianti (in sezione "Forma Canonica Razionale di una matrice quadra
+-- ta")
+
+-- Funzioni ausiliarie 2:
+-- - TrovaQ (presente in questa sezione)
+-- - TrovaC (presente in questa sezione)
+-- - BloccoFattInv (in sezione "Forma Canonica Razionale di una matrice quadrata")
+
+-- Funzioni ausiliarie 3:
+-- - TrovaQAux (presente in questa sezione)
+-- - Pillar (presente in questa sezione)
+-- - PDiv (in sezione "Riduzione a Forma Normale di Smith")
+
+
+
+-- Funzione principale
+
+-- La funzione QuasiJordan costruisce, in base al Teorema 6.1.7, le
+--  matrici QM e CM tali che QM^-1*CM*QM = QuasiJordan. La matrice QM
+--  viene costruita dalla fun zione ausiliaria TrovaQM tramite il
+--  calcolo dei fattori invarianti di M e la co struzione della Q
+--  corrispondente. La matrice CM viene costruita sempre tramite il
+--  calcolo dei fattori invarianti di M concludendo, pero', con la
+--  costruzione d ella corrispondente matrice C.  Una descrizione piu'
+--  dettagliata si trova di seguito in Funzioni ausiliarie.
+--  Osserviamo che se i fattori invarianti si spezzano in polinomi
+--  lineari irriduci bili, allora QuasiJordan restituisce la Forma
+--  Canonica di Jordan; se i fattori invarianti si spezzano in
+--  polinomi non lineari irriducibili, allora QuasiJordan restituisce
+--  la Forma Quasi di Jordan della matrice M.
+
+
+Define QuasiJordan(M)
+  Q := $.TrovaQM(M);
+  Q1 := inverse(Q);
+  C := $.TrovaCM(M);
+  QJ := Q1*C*Q;
+  Return QJ;
+EndDefine; -- QuasiJordan
+
+
+
+-- Funzioni ausiliarie 1:
+
+-- La funzione TrovaQM prende in input una matrice quadrata e
+-- restituisce la matrice QM che contiene sulla diagonale principale
+-- i blocchi Q relativi ad ogni fa ttore invariante di M. I blocchi Q
+-- sono costruiti dalla funzione TrovaQ, descri tta in ausiliarie
+-- 2. La funzione TrovaCM prende in input una matrice quadrata e
+-- restituisce la matrice CM che contiene sulla diagonale principale i
+-- blocchi C relativi ad ogni fattore invariante di M. I blocchi C
+-- sono costruiti dalla funz ione TrovaC, descritta in ausiliarie
+-- 2. Entrambe utilizzano la funzione Fattori Invarianti gia'
+-- descritta in sezione "Forma Canonica Razionale di una matrice q
+-- uadrata."
+
+
+Define TrovaQM(M)
+  LFI := $.FattoriInvarianti(M);
+  N := len(LFI);
+  QM := ZeroMat(RingOf(M), N,N);
+  For I := 1 To N Do
+    QM[I,I] := $.TrovaQ(LFI[I]);
+  EndFor;
+  Return BlockMatrix(QM);
+EndDefine; -- TrovaQM
+
+Define TrovaCM(M)
+  LFC := $.FattoriInvarianti(M);
+  N := len(LFC);
+  CM := ZeroMat(RingOf(M), N,N);
+  For I := 1 To N Do
+    CM[I,I] := $.TrovaC(LFC[I]);
+  EndFor;
+  Return BlockMatrix(CM);
+EndDefine; -- TrovaCM
+
+
+-- Funzioni ausiliarie 2:
+
+--  La funzione TrovaQ prende in input il polinomio P, che rappresenta
+-- ogni fattore invariante di M, lo fattorizza con la funzione Factor e
+-- per ogni fattore di P trova il blocco corrispondente chiamando
+-- TrovaQAux. Infine restituisce la ma trice Q = [Q1,...,Qn].
+
+--  La funzione TrovaC prende in input il polinomio P, lo fa ttorizza con
+-- la funzione Factor e per ogni fattore di P trova il blocco corrisp
+-- ondente chiamando BloccoFattInv. Supponiamo che P := F1^n1...FS^ns,
+-- allora Trov aC contiene sulla diagonale principale le matrici
+-- razionali elementari di ogni Fi^ni.
+
+--  Infine ricordiamo che la funzione BloccoFattInv e' gia' stata
+-- descritta nella sezione "Forma Canonica Razionale di una matrice
+-- quadrata."
+
+
+Define TrovaQ(P)
+  LP := factor(P);
+  R := len(LP);
+  AA := ZeroMat(CoeffRing(RingOf(P)), R,R);
+  For K := 1 To R Do
+    PP := LP[K,1];
+    N := LP[K,2];
+    AA[K,K] := $.TrovaQAux(PP,N);
+  EndFor;
+  Return BlockMatrix(AA);
+EndDefine; -- TrovaQ
+
+Define TrovaC(P)
+  LP := factor(P);
+  R := len(LP);
+  AA := ZeroMat(CoeffRing(RingOf(P)), R,R);
+  For K := 1 To R Do
+    PP := LP[K,1];
+    N := LP[K,2];
+    AA[K,K] := $.BloccoFattInv(PP^N);
+  EndFor;
+  Return BlockMatrix(AA);
+EndDefine; -- TrovaC
+
+
+-- Funzioni ausiliarie 3:
+
+--  La funzione TrovaQAux prende in input il fattore del polinomio e il
+-- rispettivo grado e ne calcola la corrispondente
+-- (0,p^(n-j+1),m,p^n)-pillar, chiamando la funzione Pillar. La funzione
+-- Pillar prende in input la costante T che nel nostro caso e' sempre
+-- uguale a 0, P che e' il fattore che stiamo considerando del polinomio
+-- F, M che e' il grado del fattore P e F che e' il polinomio non ancora
+--  fattorizzato di grado n.
+
+--  La funzione Pillar calcola la matrice di tipo n x M l a cui k-esima
+-- colonna contiene i coefficienti, eventualmente completati con 0, del
+-- polinomo (x)^(k-1)(F/P), come voluto dalla definizione 6.1.1. In
+-- conclusion e ricordiamo che la funzione PDiv e' gia' stata descritta
+-- nella sezione "Riduzi one a Forma Normale di Smith."
+
+
+
+Define TrovaQAux(PP,N)
+--trova Qi dalle pillar
+  P := PP^N;
+  M := deg(PP);
+  Q1 :=  ZeroMat(CoeffRing(RingOf(PP)), N*M,M);
+  For J := 1 To M Do    Q1[J,J] := 1;  EndFor;
+  QJ := [ $.Pillar(0,PP^(N-(J-1)),M,P) | J In 2..N ];
+  A := concat([Q1],QJ);
+  Return BlockMatrix([A]);
+EndDefine; -- TrovaQAux
+
+Define Pillar(T,P,M,F)
+--trova le (t,p,m,f)-pillar
+  TopLevel x;
+  N := deg(F);
+  Q := ZeroMat(CoeffRing(RingOf(P)), N,M);
+  G := $.PDiv(F,P);
+  For I := 1 To N Do
+    Q[I,1] := CoeffOfTerm(x^(I-1),G);
+  EndFor;
+  For K := 2 To M Do
+    G := (x-T)*G;
+    For J := 1 To N Do
+      Q[J,K] := CoeffOfTerm(x^(J-1),G);
+    EndFor;
+  EndFor;
+  Return Q;
+EndDefine; -- Pillar
+
+----------------------------------------------------------------------
+-- Check Input
+----------------------------------------------------------------------
+
+-- Define AdjustInput(M)
+--   AdjustInputERR := "Matrix entries must be integers or univariate polys: ";
+--   If type(M) = LIST Then M := mat(M); EndIf;
+--   NR := NumRows(M);    NC := NumCols(M);
+--   PolyFound := False;
+--   For I := 1 To NR Do
+--     For J := 1 To NC Do
+--       If M[I,J] <> 0 Then
+-- 	If deg(M[I,J]) <> 0 Then PolyFound := True; Break; EndIf;
+--       EndIf;
+--     EndFor;
+--   EndFor;
+--   If PolyFound Then
+--     For I := 1 To NR Do
+--       For J := 1 To NC Do  M[I,J] := Poly(M[I,J]);  EndFor;
+--     EndFor;
+--   Else
+--     For I := 1 To NR Do
+--       For J := 1 To NC Do  M[I,J] := AsINT(M[I,J]);  EndFor;
+--     EndFor;
+--   EndIf;
+--   Return M;
+-- EndDefine; -- AdjustInput
+
+
+
+
+EndPackage; -- $MatNormalForm
+
+
+-- ----------------------------------------------------------------------
+-- -- EXAMPLE 1:
+
+-- -- Osserviamo che in questo caso troviamo la Forma Quasi di Jordan di M.
+-- M := mat(RingZZ(),[
+-- 	 [0,0,0,0,0,-125],
+-- 	 [1,0,0,0,0,-150],
+-- 	 [0,1,0,0,0,-135],
+-- 	 [0,0,1,0,0,-68],
+-- 	 [0,0,0,1,0,-27],
+-- 	 [0,0,0,0,1,-6]]);
+-- $contrib/matrixnormalform.QuasiJordan(M);
+
+
+
+--  mat(RingZZ(),[
+--   [0, -5, 0, 0, 0, 0],
+--   [1, -2, 0, 0, 0, 0],
+--   [0, 1, 0, -5, 0, 0],
+--   [0, 0, 1, -2, 0, 0],
+--   [0, 0, 0, 1, 0, -5],
+--   [0, 0, 0, 0, 1, -2]
+-- ])
+
+
+-- ----------------------------------------------------------------------
+-- -- EXAMPLE 2:
+-- -- Osserviamo che in questo caso troviamo la Forma Quasi di Jordan di M.
+
+-- M := [[0,0,0,4],[1,0,0,0],[0,1,0,0],[0,0,1,0]];
+-- $contrib/matrixnormalform.QuasiJordan(mat(RingZZ(),M));
+
+--  mat([
+--   [0, 2, 0, 0],
+--   [1, 0, 0, 0],
+--   [0, 0, 0, -2],
+--   [0, 0, 1, 0]
+-- ])
+-- -------------------------------
+
+-- ----------------------------------------------------------------------
+-- -- EXAMPLE 3:
+-- -- Osserviamo che in questo caso troviamo proprio la
+-- -- Forma Canonica di Jordan di M
+
+-- M := [[2,0,0,0],[-1,1,0,0],[0,-1,0,-1],[1,1,1,2]];
+-- $contrib/matrixnormalform.QuasiJordan(M);
+
+--  mat([
+--   [1, 0, 0, 0],
+--   [0, 2, 0, 0],
+--   [0, 0, 1, 0],
+--   [0, 0, 1, 1]
+-- ])
+-- -------------------------------
+
+
+

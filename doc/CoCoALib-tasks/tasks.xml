@@ -1,0 +1,3176 @@
+<!-- Dates format "yyyy-mm-dd".  For blank use 0 e.g. 2012-00-00 -->
+
+<!-- ===  TASK FULL TEMPLATE  ================================= -->
+<!-- <high-priority> default is FALSE -->
+<!-- <compl-date>    00 means infinite/indefinite -->
+
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title></title>
+  <lastnews-date> 2011-00-00 </lastnews-date>
+  <compl-date>    0000-00-00 </compl-date>
+  <high-priority> True       </high-priority>
+  <authors>Abbott + Bigatti</authors>
+  <stage>          </stage>
+  <status> active  </status>
+  <description>
+    blah blah    blah blah
+    blah blah    blah blah
+  </description>
+</task>
+
+<!-- ===  ==========  ========================================= -->
+<!-- ===  TASK TABLE  ========================================= -->
+<!-- ===  ==========  ========================================= -->
+
+<tasks>
+<!-- ============ ordered alphabetically ====================== -->
+
+<!-- === A ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Abstract Gaussian Reduction</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>2</stage>
+<lastnews-date>2009-07</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Currently matrix gaussian (row) reduction is implemented several times (<i>e.g.</i> for
+<code>DetByGauss</code> and <code>RankByGauss</code>).  Make a single generalized "abstract"
+implementation.  Time est.: 3 weeks.
+  </description>
+</task>
+
+<!-- === B ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>BigInt/BigRat: Non-const return values for BigInt/BigRat fns</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2011-09-26</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Many fns returning a <code>BigInt</code> value return a <code>const</code>
+value; this was done to prevent compilation of funny expressions such as
+<code>factorial(10)++</code>.  After seeing Scott Meyers's video about
+"rvalue references", it is clear that making the return value <code>const</code>
+would prevent C++ from using "move" operations on such const results.
+This is a highly undesirable restriction; so the <code>const</code>ness
+should be removed from the return types
+Time est.: 2 days.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Buffering when printing out power products</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-02-29</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Michael reported poor performance when using sockets on M$ platforms.
+Cause was many short messages.  Review use of buffering when sending PPs.
+Time est.: 1 week.
+  </description>
+</task>
+
+<!-- === C ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CanonicalPolyHom for polynomial rings</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2011-05</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+The homomorphism R[x,y,z] into R[x][y][z] is, mathematically speaking,
+      quite canonical, and also the viceversa.
+We should make this kind of homomorphisms easier to define (automatically?).
+Even though intuitively it looks quite obvious, it might be quite
+      tedious to define it properly (e.g. we should probably forbid
+      quotienting, and should we consider the symbols in R?)
+Should it be called "CanonicalHom"?  I believe not, since applying
+      such a
+      homomorphism is very costly compared with homomorphism coming
+      from a ring construction step.
+Time estimate: 1-3 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>ChangeCoeffHom</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2009-11</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+PolyRingHom can be quite inefficient when one just want to change
+  coefficients (e.g. R[x] into K[x]).  No operation of pp's exponents
+  is needed, just copy the pp.
+Time estimate: 1 day.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Check use of global variables</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2010-10</lastnews-date>
+<compl-date></compl-date>
+  <description>
+In the interests of thread safety check the use of global(static) variables; rectify if necessary.
+Time est.: 1 week
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<!-- <task>  <title>Clean up CVS</title> -->
+<!-- <high-priority>true</high-priority> -->
+<!-- <authors>Bigatti</authors> -->
+<!-- <status>inactive</status> -->
+<!-- <stage>1</stage> -->
+<!-- <lastnews-date>2011-07</lastnews-date> -->
+<!-- <compl-date>2011-09</compl-date> -->
+<!--   <description> -->
+<!-- New design for creating documentation still have trailing empty -->
+<!-- html and tex directories in CVS repository. -->
+<!-- Should remove them from the main copy of the repository: a quick and -->
+<!-- easy job, but highly dangerous.... need fresh brain a backup handy. -->
+<!--   </description> -->
+<!-- </task> -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Clean up DistrMPoly etc.</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2009-09</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+The designs of DistrMPoly, DistrMPolyInlPP, and DistrMPolyInFpPP are
+poor (due to scope creep during development).  While the code does
+appear to work well, it is fragile and hard to understand/maintain.
+Before redesigning (see <a href="#Descr19">task</a>), some cleaning up
+should be done to highlight unused features.
+Time estimate: 1 week.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Clean up OpenMath</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2010-03</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The OpenMath code looks to be hasty first prototype.  It needs to be cleaned
+(and probably redesigned).  Many of the input operations are missing or dodgy.
+Time est.: 2-3 weeks (for new design and impl).
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Clean up OpenMathXML</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-02-10</lastnews-date>
+<compl-date></compl-date>
+  <description>
+In OpenMathXML.H the class definitions are publicly visible.  Is this necessary?
+If they can be moved to the .C file then I can remove the (costly) include of
+iostream in the header file.  Time est.: 1-2 days.  The .C file is full of all
+sort of ancient stuff including debugging code -- needs a major overhaul.  Time est.: 2-3 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Clean up OrdvArith</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-02-10</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The file OrdvArith.C is full of commented out old code.  Check that this
+code can be deleted, and either delete it or reactivate it.  Time est.: 1-2 days.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Clean up ReductionCog inheritance</title>
+  <high-priority>true</high-priority>
+  <authors>Bigatti</authors>
+  <status>waiting</status>  
+  <stage>1</stage>
+  <lastnews-date>2009-08</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+ReductionCog concrete classes are based on Poly or Geobucket.
+Make two Abstract classes to avoid repeated code. 
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CoCoA5 arguments</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott + Bigatti</authors>
+  <status>active</status>  
+  <stage>3ab</stage>
+  <lastnews-date>2011-05</lastnews-date>
+  <compl-date>2016-12</compl-date>
+  <description>
+Reconsider all cocoa-4 functions with more than one argument and
+decide if arguments should be swapped.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CoCoA5 automatic CanonicalHom</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott + Bigatti</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2011-05</lastnews-date>
+  <compl-date>0000-00</compl-date>
+  <description>
+Investigate with a suitably large class of example which Mixed Ring
+      Arithmetics should be allowed in CoCoA-5 (e.g. f/LC(f)).
+A good rule could be that only "cheap" (or single-step?) automatic
+      conversion are 
+      allowed (i.e. not PolyAlgebraHom) to avoid hidden expensive
+      mapping, for example, when multiplying objects in a big
+      for-loop.  Moreover the ring of the result must be the ring of
+      one of the operands, and it must be "obvious" which one (this
+      rules out many PolyAlgebraHom).
+Time est.:1-3weeks
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CoCoAServer: Improve documentation for adding new operations</title>
+<high-priority>false</high-priority>
+<authors>Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2009-11</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Improve documentation for ServerOp and RegisterServerOps.
+Just collect neatly all emails with Eduardo for adding new operations
+  to the server.
+Time est.: 1 day.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CoCoAServer: Names for I/O fns</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2009-05</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Change <tt>read/write</tt> into <tt>input/output</tt> for fn names in server.
+This will be more coherent with the naming convention used in the library.  Time est.: 1 day.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CoCoAServer: Polys with rational coefficients to CoCoAServer</title>
+<high-priority>false</high-priority>
+<authors>Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-11-29</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Modify CoCoAServer to allow polys with integer coeffs, and to allow
+fractions when coeffs are rationals.
+Time est.: 2 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CoCoAServer: simplify output</title>
+<high-priority>false</high-priority>
+<authors>Bigatti</authors>
+<status>resting</status>
+<stage>1</stage>
+<lastnews-date>2009-01</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Simplify the way to send output in <span class=file>CoCoA4io.C</span>:
+some functions print the object itself, others print the assignment to
+the communication variable.  All objects should have a direct printing
+function (then called by the assignment function).
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>CoCoAServer: supervisor</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2008-07-22</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Exhume CoCoALib supervisor from version 0.95 (not in CVS).
+Compare with what Stefan Kaspar has implemented.
+Time estimate: 2 weeks - 1 month.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Compatibility of <code>IsRational</code> and <code>IsInteger</code></title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-03-26</lastnews-date>
+<compl-date></compl-date>
+  <description>
+In a fraction field should applying <code>IsInteger</code> to numerator and
+denominator give the "same" result as applying <code>IsRational</code> to the
+whole element?.  Time est.: decision + 3 days.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>ConstRefRingElem and ConstRefPPMonoidElem</title>
+<high-priority>true</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2011-10</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Christof has suggested a way to remove the need for <code>ConstRefRingElem</code> and <code>ConstRefPPMonoidElem</code>.
+Check to see whether his idea will actually work in practice; if so, implement.
+Time est.: 3 days.
+  </description>
+</task>
+
+<!-- === D ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Deg incompatible PP orderings</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti+Caboara</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-10-30</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The "idealization" of a graded module with a PosTo type ordering cannot
+use directly the same grading as used in the components of the module.
+One way to circumvent the  problem would be to allow PP orderings which
+are not degree compatible.  Another solution would be to extend the
+grading on the module components by prepending a single value (which is
+the position) -- but this would require creating and using a different
+grading.  We must decide what is the cleanest way forward, and then
+implement it.  Time est.: ???
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Degree dimension in <code>myWDeg</code></title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-09-20</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The PPMonoid (public) member functions <code>myWDeg</code> do not check the dimension of
+the supplied <code>degree</code>.  At the very least there should be an assertion.
+Perhaps <code>degree</code> objects should be resizable??  Time est.: 1-2 days
+(discussion and implementation)  May need a new error.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Diagonal Matrix Inheritance</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2011-02</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Zero matrices and Identity matrices are special cases of diagonal
+  matrices.  Maybe the inheritance reflect this.
+This could be used to simplify the code for optimized multiplication
+  (to do) and equality tests (done).
+Time est.: 2 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Documentation for OrdvArith and PPOrdering</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2009-12-14</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The documentation for <code>OrdvArith</code> and <code>PPOrdering</code> is mixed up and
+very incomplete.  Make a clean separation, and complete it.
+Time est.: 1 week.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Documentation for PPMonoidElem</title>
+<high-priority>true</high-priority>
+<authors>bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2011-06</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The documentation for <code>PPMonoid</code> should be split into
+<code>PPMonoid</code> and <code>PPMonoidElem</code>.
+Make a clean separation, and complete it.
+Time est.: 1 week.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Documentation for creating new rings</title>
+<high-priority>false</high-priority>
+<authors>Bigatti</authors>
+<status>inactive</status>
+<stage>early stage</stage>
+<lastnews-date>2007-02-09</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The documentation about how to create new types of ring is inadequate.
+Make better documentation, perhaps using existing rings as illustrative
+examples.  Time est.: 2 weeks.
+  </description>
+</task>
+
+<!-- === E ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Examples for <code>convert</code> and <code>IsInteger</code> and <code>IsRational</code></title>
+  <high-priority>true</high-priority>
+  <authors>Abbott</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2007-05</lastnews-date>
+  <compl-date></compl-date>
+  <description>
+The <code>convert</code> function does not handle overflow and underflow
+correctly when producing a <code>double</code> value.  Use <code>scalbn</code>
+and C error codes to achieve correct behaviour.  Add an example program showing
+how to use <code>convert</code> and related functions (<i>e.g.</i> <code>IsInteger</code> and
+<code>IsRational</code>).  Time est.: 4 days.
+  </description>
+</task>
+
+<!-- === F ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Faster eval homomorphism</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-11-30</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Produce a better implementation of the polynomial ring "evaluation
+homomorphism"; perhaps even a better default implementation?
+Time est.: 2 weeks.
+  </description>
+</task>
+
+<!-- === G ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>GBEmbeddings for ideal/module operations</title>
+  <high-priority>true</high-priority>
+  <authors>Bigatti+Caboara</authors>
+  <status>active</status>  
+  <stage>1</stage>
+  <lastnews-date>2010-06</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+GBEmbeddings need to be cleaned up, made easier and more complete
+       (including case of FractionField coefficients).
+In some ideal/module operations embeddings are done and undone
+       uselessly?
+  </description>
+</task>
+
+
+<task>  <title>GUI+GMP memory allocation problem</title>
+  <lastnews-date> 2011-09-12 </lastnews-date>
+  <compl-date>    0000-00-00 </compl-date>
+  <high-priority> False       </high-priority>
+  <authors>Abbott + Bigatti</authors>
+  <stage>          </stage>
+  <status> active  </status>
+  <description>
+    CoCoA5 in the GUI sometimes crashes (confirmed only on MacIntel OS X, so far),
+    apparently due to a memory
+    allocation problem in GMP with running inside the GUI.  A specific failing
+    example is <code>X :=  (10^131070-1984)/(10^131232);</code>
+    The problem goes away if GMP is configured to use a threadsafe allocator
+    <code>./configure  --enable-cxx --enable-alloca=malloc-reentrant</code>
+    However it is not a good idea to require that GMP be configured this
+    way because the GMP documentation reports that it may adversely effect
+    run-time performance.  There appears to be no problem in the GUI when
+    such large numbers do not arise during the computation.  What to do?
+    If we cannot find a satisfactory technical solution, at least a note must
+    be added to the documentation.
+  </description>
+</task>
+
+
+<!-- === H ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>HTML</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>active</status>  
+  <stage>1</stage>
+  <lastnews-date>2011-09</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+Make sure that all HTML files are XHTML compatible: <i>e.g.</i> lower-case element
+names, double quotes around attribute values.  Applies to "static" HTML files, and
+ones generated by some program/script.
+Time est.: 3 days.
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Hilbert driven GBasis</title>
+<high-priority>false</high-priority>
+<authors>Caboara+Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage></stage>
+<lastnews-date>2007-12-04</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Complete implementation of Hilbert driven GBasis.  Time est.: 4 weeks??
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Hilbert: final</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage>waiting</stage>
+<lastnews-date></lastnews-date>
+<compl-date></compl-date>
+  <description>
+Convert into C++ the main code of Hilbert in CoCoA4.  Waiting for the
+  special univariate polynomials and the verification of Hilbert's
+  requirements for <code>PPWithMask</code>.
+Time est.:  ???
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Hilbert: optimized use of PPWithMask</title>
+  <high-priority>true</high-priority>
+  <authors>Bigatti</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2009-01</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+Change Hilbert code so that it uses <code>PPWithMask</code> instead of C type
+<code>eterm</code>.  Might require some changes in the implementation
+of <code>PPWithMask</code>.  Use <span class=class>PPVector</span>.
+Time est.: 4+ weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Hilbert: reorganization and cleaning</title>
+  <high-priority>true</high-priority>
+  <authors>Bigatti</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2011-05</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+Change univariate and multivariate Hilbert code is unified using inheritance.
+Time est.: 1+ weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Homogeneous lists</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>active</status>  
+  <stage>1</stage>
+  <lastnews-date>2010-06</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+It appears it can be useful to have a (template?) class for
+"Homogenous lists", i.e. vectors (?) of RingElems/PPMonoidElems having
+the same owner.  It should be reference counted.
+It would be quite useful for the generators of an ideal: to avoid
+making copies, to guarantee that all elements are in the same ring.
+A bit like PPVectors....
+<br>[2009-07: first step for actual implementation: "HasUniqueOwner" in tmp.H]
+<br>[2010-06: second for actual implementation: example with RingElemVector]
+<br>[2011-01: STOP is it worth ref counting with new C++?  study paper]
+  </description>
+</task>
+
+<!-- === I ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Improve CanonicalHom</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>active</status>  
+  <stage>2</stage>
+  <lastnews-date>2011-04</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+Could modify <code>CanonicalHom</code> so that it can cope with more than a "single step"
+in the tower of ring ctors.  Is this idea worth implementing?  Time est.: 2 weeks (= 1 week
+deciding, and 1 week impl and testing).
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Improve example programs</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>Need 2nd pass</stage>
+<lastnews-date>2007-03-19</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The example programs could be clearer and easier to navigate through.
+For instance, one program could refer to others which are in some way related
+to it.  Some of the examples should be especially simple, focussing on a single
+idea.  Ideas for which examples to add can be taken from questions on the forum
+(e.g. "How do I do this in CoCoALib?").  A first hasty pass was completed on 2007-03-09,
+but a second pass will be needed.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Improve separation of library & server code</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2010-12</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Several pieces of code specific to the server are in the directory containing the library source.
+If possible, move the server specific code into the directory for the server sources.  The prime candidates
+are GlobalInput, GlobalOutput (and so on), and RegisterServerOps and its auxiliaries.
+Time est.: 2-3 weeks
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Inheritance-ready GReductor/Do_GBasis</title>
+  <high-priority>true</high-priority>
+  <authors>Caboara</authors>
+  <status>active</status>  
+  <stage>1</stage>
+  <lastnews-date>2010-06</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+Compare Do_GBasis-like functions in order to prepare code for
+migration to inheritance class GMill.
+Time est.: 1-2 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Init. of myZero/myOne in rings</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>4abcd</stage>
+<lastnews-date>2006-11-16</lastnews-date>
+<compl-date></compl-date>
+  <description>
+All concrete ring ctors currently "naughtily" create the zero and
+one elements of the ring.  This is naughty because the ring has not
+been completely constructed at that point, so conceivably calling a
+virtual member function might behave unexpectedly.  The member functions
+myZero and myOne could construct the cached value upon demand (but they
+must also decrement the reference count when construction occurs).
+The current code seems to work fine on every platform tried so far, but
+some "good style" guides say one shouldn't call virt.mem.fns. in the ctor.
+Decide what to do, do it, AND DOCUMENT IT.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>IsMonomial and IsHomog for DUP</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2008-04-24</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Decide whether <code>IsMonomial</code> and <code>IsHomog</code> are
+useful for Dense Univariate Polys.  Adjust impl accordingly.
+Time est.: 1 week.
+  </description>
+</task>
+
+<!-- === J ==================================================== -->
+<!-- === K ==================================================== -->
+<!-- === L ==================================================== -->
+<!-- === M ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Makefiles</title>
+  <lastnews-date> 2011-09-30 </lastnews-date>
+  <compl-date>    2099-00-00 </compl-date>
+  <high-priority> true       </high-priority>
+  <authors>Abbott </authors>
+  <stage>          </stage>
+  <status> active  </status>
+  <description>
+
+Several CoCoALib/CoCoA-5 Makefiles need revision.
+In particular, <code> make clean; make -j2 check</code> builds
+<code>libcocoa.a</code> twice -- this is undesirable.
+
+Time est.: 2-3 days
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>MemPool via BOOST</title>
+  <lastnews-date> 2011-08-01 </lastnews-date>
+  <compl-date>    2099-00-00 </compl-date>
+  <high-priority> false       </high-priority>
+  <authors>Abbott </authors>
+  <stage>          </stage>
+  <status> inactive  </status>
+  <description>
+
+The BOOST implementation of pools is measurably faster
+than <code>MemPoolFast</code> (about 20 percent, or 35 percent when the
+MemPool alloc fn is not inlined).  We should make a MemPool wrapper for a
+BOOST pool.  JAA thinks it is worth keeping <code>MemPool</code> for the
+moment as it offers a debugging mode.  NOTE: the
+BOOST <code>singleton_pool</code> impl is threadsafe but is about 5 times
+slower than their plain pool.  BOOST does not offer a non-singleton pool
+which is threadsafe (don't know why); JAA cannot see how to use a singleton
+pool as the impl inside a (dynamically created) MemPool.  Check that BOOST pool interface is
+superset of MemPool interface; perhaps revise MemPool interface to be
+closer to that of BOOST pools?  See file <code>pool.C</code> for an
+example of how to use BOOST pools.
+
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Module and FGModule</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2008-02-11</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Decide whether <code>module</code> and <code>FGModule</code> should be
+merged or kept distinct.  Note that the documentation for <code>FGModule</code>
+is largely absent.  A considerable overhaul is needed.  Time est.: 3 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>More operations on ideals generated by monomials</title>
+  <high-priority>true</high-priority>
+  <authors>Bigatti</authors>
+  <status>active</status>
+  <stage>3a</stage>
+  <lastnews-date>2011-07</lastnews-date>
+  <compl-date></compl-date>
+  <description>
+more operations on ideals generated by monomials.
+Now we have Gbasis/interreduction, intersection, colon,
+multiplication, for sqfr: AlexanderDual, PrimaryDecomposition.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Mysterious test failures on Digital Alpha</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage>2</stage>
+<lastnews-date>2007-12-07</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Investigate mysterious bugs which
+cause some tests (<code>ComputeSyz</code>) to fail on Digital Alpha when compiled with
+optimization.  No idea when we might get it fixed.  JAA thinks it
+is probably a compiler bug.  Time est.: &lt;1 week
+  </description>
+</task>
+
+<!-- === N ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>NTL integration</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Caboara</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-01-15</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Without doubt NTL offers some impressive implementations of algorithms
+for dense univariate polynomials and matrices of integers (or rationals?).
+Some NTL functions should be integrated into CoCoALib as a pilot project
+for understanding how conditional builds can be achieved -- CoCoALib
+should build equally easily with or without NTL cooperation (of course,
+some operations may be missing from a CoCoALib with NTL support).
+Time estimate: at least 3-4 weeks
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Names of GlobalInput, etc</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>Forum discussion</stage>
+<lastnews-date>2006-11-17</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The names GlobalInput, GlobalOutput, GlobalLogput and GlobalErrput are
+cumbersome (perhaps even ugly).  Devise better names, and ideally
+remove the need for the annoying parentheses.  Time est.: ???
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>NaturalMap</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>Forum discussion</stage>
+<lastnews-date>2011-09</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Implement <code>NaturalMap</code> for creating the natural (partial)
+ring hom between two rings, if possible.  We'll also need a function
+to say whether NaturalMap would succeed or fail.  An initial
+partial implementation would be acceptable.
+Time est. 2 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Normaliz integration & extension</title>
+<high-priority>true</high-priority>
+<authors>Bigatti+Soeger</authors>
+<status>active</status>
+<stage>1</stage>
+<lastnews-date>2011-09-30</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Clean prototype CoCoALib interface to "Normaliz": use the namespace
+<code>normaliz</code> or <code>Normaliz</code> (Christof does not
+care about capitalization).  Also add interfaces to more Normaliz fns.
+Time estimate: about 1 week
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Normalization of GCDs</title>
+<high-priority>true</high-priority>
+<authors>Abbott</authors>
+<status>active</status>
+<stage>1</stage>
+<lastnews-date>2011-06-01</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Improve the way GCDs are normalized inside fraction fields.
+JAA has already emailed a bad example where coeffs are rationals where num &amp; den each have almost 100 digits
+but true result is is just 3x+4.
+Time estimate: about 2 weeks
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Normalization of fractions</title>
+<high-priority>true</high-priority>
+<authors>Abbott</authors>
+<status>active</status>
+<stage>1</stage>
+<lastnews-date>2011-05-25</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Improve the way fractions are normalized inside fraction fields.
+JAA has already emailed a bad example where coeffs grow to 8000000 digits.
+Time estimate: about 2 weeks
+  </description>
+</task>
+
+<!-- === O ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Optimized matrix multiplication</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2008-04-22</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Matrix multiplication is currently done in a "dense" way (maybe because the
+programmer is a bit dense :-)  make it work more efficiently when at least
+one arg has a special structure (e.g. sparse, diagonal, completely zero, etc).
+No sure idea how to do this in a general way -- maybe each matrix could give
+an indication of how "clever" it is at multiplying (perhaps an estimate of
+run-time cost???)
+Time est.: 2 weeks.
+  </description>
+</task>
+
+<!-- === P ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>PartialRingHom</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott + Bigatti</authors>
+  <status>active</status>  
+  <stage>1</stage>
+  <lastnews-date>2011-09</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+To better reflect the underlying maths, and to avoid some nasty surprises
+introduce a "partial RingHom" type (from which <code>RingHom</code> will
+probably derive).  Check all pseudo-ctors, to make sure they return a
+partial or full ringhom appropriately.  Here is a problematic example
+which stimulated the thought of making partial ringhoms separate:
+let (partial) phi:QQ-->ZZ, and let psi:ZZ-->QQ, then the composition
+psi(phi) looks like a ringhom QQ-->QQ but it is not!!
+
+We must be careful when composing: with full ringhoms we can take short cuts,
+but if the inner ringhom is partial then taking shortcuts can produce wrong
+results (but is probably OK in some cases too).
+
+Time estimate: 1-2 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Permutation iterator</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott</authors>
+  <status>inactive</status>  
+  <stage>2</stage>
+  <lastnews-date>2010-03</lastnews-date>
+  <compl-date></compl-date>
+  <description>
+Write a permutation iterator: defining <code>operator++</code> and <code>operator[]</code>
+for accessing the k-th index.
+The following algorithm (taken from Wikipedia) generates the next permutation lexicographically after a given permutation. It changes the given permutation in-place.
+<pre>
+   1. Find the largest index j such that a[j] < a[j + 1]. If no such index exists, the permutation is the last permutation.
+   2. Find the largest index l such that a[j] < a[l]. Since j + 1 is such an index, l is well defined and satisfies j < l.
+   3. Swap a[j] with a[l].
+   4. Reverse the sequence from a[j + 1] up to and including the final element a[n].
+</pre>
+Time est: 2-3 days.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Positive gradings</title>
+  <high-priority>true</high-priority>
+  <authors>Bigatti</authors>
+  <status>inactive</status>  
+  <stage>1</stage>
+  <lastnews-date>2010-05</lastnews-date>
+  <compl-date></compl-date>
+  <description>
+Right now only gradings with non-negative entries are allowed
+(because only ordering matrices with non-negative entries are allowed)
+Design how to deal with negative entries.
+Tiem est: ???
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Power of matrices and ideals</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott + Bigatti</authors>
+  <status>active</status>  
+  <stage>2</stage>
+  <lastnews-date>2010-05</lastnews-date>
+  <compl-date></compl-date>
+  <description>
+Still missing: negative powers for matrices, optimized implementations?
+Time est: 2-3 days.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>PowerProduct type</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott + Bigatti</authors>
+  <status>active</status>  
+  <stage>2</stage>
+  <lastnews-date>2011-10</lastnews-date>
+  <compl-date></compl-date>
+  <description>
+Christof observed that having a type <code>PowerProduct</code> would be
+more comprehensible than <code>PPMonoidElem</code>.  Discuss, decide, and
+implement (if appropriate).  An abbreviated name could be <code>PowerProd</code>.
+Time est: 1 week.
+  </description>
+</task>
+
+<!-- === Q ==================================================== -->
+<!-- === R ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Reconsider The "New" prefix</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-03-01</lastnews-date>
+<compl-date></compl-date>
+  <description>
+A current naming convention uses the prefix "New" for certain functions which
+create new values (e.g. NewFractionField).  However, the use of the prefix is
+not universal (e.g. RingElem ctor), and the prefix is somewhat C++-ish.  An
+alternative could be to use the prefix "Make".  We should also review precisely
+when it is appropriate to use the prefix, and document why.
+Time est.: 1-2 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Redesign DistrMPoly etc.</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2006-11-13</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The designs of DistrMPoly, DistrMPolyInlPP, and DistrMPolyInFpPP are
+poor (due to scope creep during development).  While the code does
+appear to work well, it is fragile and hard to understand/maintain.
+Given that this code forms a major part of the foundations of
+CoCoALib, it is essential that this code be redesigned and
+rebuilt <b>before version 1.0</b>.  The new design must be cleaner,
+easier to understand, and no slower (in any circumstance).  Probably
+the best period for undertaking this work is early 2007; it is work
+which produces "invisible progress".  It is quite likely that other
+work on the library will be suspended during the rewrite.
+Time estimate: 1-2 months.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Redmine: move task table to Redmine</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2010-10</lastnews-date>
+<compl-date></compl-date>
+  <description>
+We really  need to move to a proper task management program.
+Redmine seems like a good choice for our purposes.  We are currently
+waiting for Fronda to set up a Redmine server for us.
+Time est.: 1 week after Redmine is installed.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Reduce wasteful alloc/free in RingTwinFloat</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2010-01</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Several internal ops in the impl of RingTwinFloat make wasteful alloc/free cycles.
+Replace most of these by use of "workspaces" held by the ring (so alloc/free occur
+only when ring is created/destroyed).  CHECK thread safety of this idea!!
+Time est.: 1 week (mostly for testing).
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Registration system for dtor of globals</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2010-10</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Consider implementing a registration system for dtors of global variables.  To use a
+new global variable you just have to register a (pseudo-)dtor for it, so that it can
+be destroyed during destruction of the global manager.
+Time est.: 2-3 weeks
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Replace SmartPtrIRC by boost </title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2006-11-07</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The BOOST library offers a sophisticated smart ptr
+implementation.  Can we use that instead of <code>SmartPtrIRC</code>?
+If so, there will be several consequential changes to the rest of the library.
+Analysis will require several days; no time estimate for consequential changes.
+The real problem is that BOOST is huge.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Requirements analysis of interactive language</title>
+<high-priority>false</high-priority>
+<authors>Abbott+Bigatti+Caboara+Figari</authors>
+<status>inactive</status>
+<stage>late discussion</stage>
+<lastnews-date>2007-11-29</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Review of the requirements for the new interactive language
+and how they interact.  The aim is to produce a report which analyses the various compromises
+and then indicates a final choice to proceed with for the production of a parser.  All decisions
+should be justfied so that a later reconsideration could be effected cheaply.  Time est.: 3-4 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Ring of infinitesimals</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-04-04</lastnews-date>
+<compl-date></compl-date>
+  <description>
+A ring for computing with first order infinitesimals would be handy for some.
+Time est.: 2 weeks (for design, impl, and testing).
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>RingDUPZ (for Hilbert)</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-11-29</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Special concrete class for univariate polynomials over Z;
+inspired by the efficient implementation of <code>unipoly</code> for Hilbert from
+CoCoA-4.  Time est.: 2-3 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>RingDUPZ (generic)</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-11-29</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Concrete class for univariate polynomials over any ring.
+Inspired by the efficient implementation of <code>unipoly</code> for Hilbert from
+CoCoA-4.  Time est.: 1-2 weeks.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>RingElemVector (same ring, ref counted)</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>waiting</status>  
+  <stage>2abc</stage>
+  <lastnews-date>2011-01</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+As a useful particular case of Homogenous lists 
+<a href="#Descr:HomogList">(task)</a>
+We have a prototype in RingElemVector:
+reference counted (copy on write) vector of RingElems in the same
+ring.
+It can be used for generators and gbases of ideals (in order to avoid copies)
+<br>[2010-06: first prototype as ex-RingElemVector]
+  </description>
+</task>
+
+<!-- === S ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Self-saturating (and cleanup for GB code)</title>
+  <high-priority>true</high-priority>
+  <authors>Bigatti+Caboara+Abbott</authors>
+  <status>waiting</status>  
+  <stage>2c</stage>
+  <lastnews-date>2009-11</lastnews-date>
+  <compl-date>0000-00-00</compl-date>
+  <description>
+Buchberger's algorithm for non-homogeneous input can be implemented as a
+self-saturating process (similar to what was done for Toric by
+Bigatti):
+Input polynomials will be homogenized with <code>h</code>;
+then every power of <code>h</code> which is a factor of a polynomials in the
+running computation may be cancelled out.
+This might be a mathematically clean way to interpret sugar (for GradingDim 1).
+Theory is all set.  Clean implementation waits for 
+task <a href="#TblReduce">sugar</a>
+and <a href="#TblGReductor">GReductor/Do_GBasis</a>
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Socket Test</title>
+<high-priority>false</high-priority>
+<authors>Bigatti</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2009-09</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The way the cocoa-4 function testing whether the socket and server are
+working provokes an error from CoCoAServer.  This is a bad design!
+Time est.: 2-3 days (for design, impl, and testing).
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Sundries</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>Pipe dream</stage>
+<lastnews-date>2007-00</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Here are some ideas for algorithms to implement in CoCoALib.
+Factorization over the reals, complex root finding.
+  </description>
+</task>
+
+<!-- === T ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Template fns for power</title>
+<high-priority>true</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2011-05</lastnews-date>
+<compl-date></compl-date>
+  <description>
+There are two algorithms for powers: sequential and quadratic.
+Is it possible to write template functions working for RingElems,
+PPMonoidElem, matrices, ideals...?
+How many types are involved?
+Should it include also the trivial cases (0, 1)?
+and the negative powers?
+Will need unification of multiplication syntax.
+Time est.: 1 week
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Template fns in io.H</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-02-10</lastnews-date>
+<compl-date></compl-date>
+  <description>
+The presence of the template functions in io.H requires that iostream be
+included, but iostream is rather lengthy, so compilation becomes slow.
+How to rectify the situation?  Time est.: &lt; 1 week!
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Toric Mill</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2011-05</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Design and implement Toric Mill using inheritance to "choose" between
+  the different concrete algorithms (currently Toric uses part of the
+  old C code which is NOT thread-safe).
+This will be pilot design for the Groebner Mill.
+Time est.: almost 1 month.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Tuples iterator</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott+Bigatti</authors>
+  <status>inactive</status>  
+  <stage>2</stage>
+  <lastnews-date>2011-02</lastnews-date>
+  <compl-date></compl-date>
+  <description>
+Vaguely related with <a href="#Descr:PermutationIterator">permutation
+ iterator</a>
+Time est: 2-3 days.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Unified RingFp</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2006-11-07</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Unify the three different implementations of RingFp,
+RingFpLog, RingFpDouble -- perhaps use a SmallFpArith object to choose the implementation?
+  </description>
+</task>
+
+<!-- === U ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Unordered PPMonoids</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-10-30</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Consider modifying existing polynomial code so that it tolerates PPMonoids
+which are not arithmetically ordered (e.g. <code>PPMonoidModSquares</code>).
+The elements of the PPMonoid must be ordered so that polynomials have
+canonical forms.  Multiplication of a polynomial by a PP will be more
+complicated: there may be zero divisors, terms may merge, terms may swap
+ordering, etc.  Decide how invasive such a change would be, and whether
+implementing it is worthwhile.
+  </description>
+</task>
+
+<!-- === V ==================================================== -->
+<!-- === W ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Warnings</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2007-03-09</lastnews-date>
+<compl-date></compl-date>
+  <description>
+We have sometimes wandered whether some commands should return an
+error or not, for example "content(f)" when the coefficient ring is a
+field.  Mathematically "1" is a correct answer, but probably it means
+that the program is not doing what is intended by the user.
+Maybe a "warning" mechanism could be usefully applied to such cases.
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>Weyl algebra</title>
+<high-priority>false</high-priority>
+<authors>Bigatti+??</authors>
+<status>inactive</status>
+<stage>4a</stage>
+<lastnews-date>2008-11</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Weyl algebras have been revived: need proper testing.
+  </description>
+</task>
+
+<!-- === X ==================================================== -->
+<!-- === Y ==================================================== -->
+<!-- === Z ==================================================== -->
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>ZZ or GMP's mpz_class?</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2010-10-06</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Do we want our own separate class for big integers, or should we simply use
+GMP's own <code>mpz_class</code>.  If we use our own class, we can modify it as we like
+(<i>e.g.</i> put in ref counts, see next task), but then we also have to write
+lots of tedious forwarding functions.
+Time est.: 2 weeks to decide, and 2 weeks to implement (if the decision favours reimplementation).
+  </description>
+</task>
+
+<!-- ===  TASK  =============================================== -->
+<task>  <title>ZZ ref count</title>
+<high-priority>false</high-priority>
+<authors>Abbott</authors>
+<status>inactive</status>
+<stage>1</stage>
+<lastnews-date>2009-12-30</lastnews-date>
+<compl-date></compl-date>
+  <description>
+Decide whether to use reference counts inside ZZ values.  This would
+avoid the wasteful copying when ZZ values are returned from functions
+(but the new C++ standard offers a completely general mechanism for
+avoid these wasteful copies).  Could reference counting provide
+benefits in other cases?  Time est.: 1 week to decide, and 2 weeks to
+implement (if the decision favours implementation).
+  </description>
+</task>
+
+
+</tasks>
+
+<!-- ============ COMPLETED TASKS ============================= -->
+<!-- ============ ordered by decreasing date ================== -->
+<completed-tasks>
+
+<!-- ===  COMPLETED TASK  =============================================== -->
+<task>  <title>CoCoA5 language</title>
+  <high-priority>true</high-priority>
+  <authors>Abbott, Bigatti, Lagorio (+Figari)</authors>
+  <compl-date>2014-01</compl-date>
+  <description>
+We shall need a new parser (and interpreter) for CoCoA 5.  Much of the
+design of the new language has already been completed, and a late prototype
+of the new lexer already exists.  The new parser and interpreter are now
+at first prototype (i.e. stage (2abc)).  This task should split into
+several more focussed smaller tasks.
+Roughly the recent news are:
+<ul>
+<li>design of the language, problems about global variables, ....
+<li>August 2010: prototype GUI/IDE with debugger, portability.
+<li>September 2010: polynomial rings
+<li>October 2010: functions returning lists
+<li>November 2010: functions on rings and RingElems
+<li>December 2010: tested and ported functions on lists from cocoa4 packages
+<li>January 2011: homomorphisms
+<li>February 2011: matrices
+</ul>
+See more at <a href="CoCoALib-functions.html">CoCoALib-functions.html</a>
+  </description>
+</task>
+
+<!-- ===  COMPLETED TASK  =============================================== -->
+<task>  <title>NumTheory file names</title>
+<authors>Abbott</authors>
+<compl-date>2012-03-16</compl-date>
+  <description>
+After renaming ZZ/QQ to BigInt/BigRat (so that ZZ/QQ are reserved for the
+corresponding rings) it no longer makes sense for <code>NumTheoryQQ</code>
+to have the QQ suffix.  Find a better name for it, and perhaps for <code>NumTheory</code>
+too.
+  </description>
+</task>
+
+<!-- ===  COMPLETED TASK =============================================== -->
+<task>  <title>Rename "RingZ/RingQ" to "RingZZ/RingQQ"?</title>
+<authors>Abbott+Bigatti</authors>
+<compl-date>2012-02</compl-date>
+  <description>
+Since we use ZZ/QQ in CoCoA-5, it would make sense for the fns
+<code>RingZ/RingQ</code> to be called <code>RingZZ/RingQQ</code>
+as this is more coherent.  Decide and, if favourable, implement.
+Time est.: 2 days.
+  </description>
+</task>
+
+<!-- ===  COMPLETED TASK  =============================================== -->
+<task>  <title>Rename "ZZ/QQ" into "BigInt/BigRat"</title>
+<authors>Abbott+Bigatti</authors>
+<compl-date>2012-02</compl-date>
+  <description>
+There is a name collision between cocoalib ZZ, type name for big
+integers, and cocoa ZZ, the ring of integers; the same occurs for QQ.
+It took a long time to decide the new names, and the decision is for
+BigInt and BigRat to replace ZZ and QQ in cocoalib.  Many consequential
+changes.
+Try using GMPXX implementation for BigInt?
+  </description>
+</task>
+
+<!-- ===  COMPLETED TASK  =============================================== -->
+<task>  <title>Rename "MachineInteger" into "MachineInt"</title>
+<authors>Abbott</authors>
+<compl-date>2011-11</compl-date>
+  <description>
+Choosing BigInt as the new name for the class ZZ suggests to change all
+classes and functions with "Integer" into "Int"... hidden surprises?
+We hope not..
+  </description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>DecimalStr</title>
+<authors>Abbott</authors>
+<compl-date>2011-08-03</compl-date>
+<description>
+New fn: <code>DecimalStr</code> with slightly cleaner semantics than
+the one implemented in CoCoA-4.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Decimal conversion</title>
+<authors>Abbott</authors>
+<compl-date>2011-08-02</compl-date>
+<description>
+New fns: <code>MantissaAndExponent</code> and <code>FloatStr</code>.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Normaliz update</title>
+<authors>Abbott + Bigatti + Bruns + Soeger</authors>
+<compl-date>2011-07-26</compl-date>
+<description>
+Visit to Osnabrueck: developing new structure for Normaliz and updated
+integration into CoCoALib and CoCoA-5
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>DateTime</title>
+<authors>Abbott + Bigatti</authors>
+<compl-date>2011-07-06</compl-date>
+<description>
+New function <code>DateTime(date, time)</code> storing the date and
+time in format yyyymmdd, hhmmss.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Task Table: conversion into XML</title>
+<authors>Bigatti</authors>
+<compl-date>2011-05-17</compl-date>
+<description>
+The HTML version of the task table was too tedious to update.
+The conversion into XML (with C++ code to create the HTML pages) 
+should encourage us to update it more frequently making the whole lot
+more meaningful.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Integration of C code for Toric Ideals</title>
+<authors>Bigatti</authors>
+<compl-date>2011-05-09</compl-date>
+<description>
+This implementation is NOT ROBUST and NOT THREAD-SAFE, but it works
+(needed for the CoCoASchool)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Renamed RandomBitStream to RandomBoolStream</title>
+<authors>Abbott</authors>
+<compl-date>2011-05-03</compl-date>
+<description>
+New, clearer name for the class of objects which generate random booleans.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New RandomSource class</title>
+<authors>Abbott</authors>
+<compl-date>2011-05-03</compl-date>
+<description>
+New class of objects for generating random values of 3 types
+(bool, long, and ZZ).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New Makefile target "veryclean"</title>
+<authors>Abbott</authors>
+<compl-date>2011-05-03</compl-date>
+<description>
+All Makefiles now offer two targets for cleaning up:
+<code>clean</code> and <code>veryclean</code>.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Multigraded Hilbert Series</title>
+<authors>Bigatti</authors>
+<compl-date>2011-04-22</compl-date>
+<description>
+And related work for CoCoASchool.
+Still needs proper implementation with inheritance.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoA5 manual</title>
+<authors>Bigatti</authors>
+<compl-date>2011-04-10</compl-date>
+<description>
+The manual for cocoa5 will still use the CoCoAHelp.xml file and
+structure.  The html and the latex version will use the same xsl code,
+  and the online version is treated by ad-hoc code in CoCoA-5:
+  OnlineHelp.[HC].
+  This has survived for long enough with just minor improvement and no
+obvious design holes.  So I consider it done!
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>all machine integers to long</title>
+<authors>Abbott + Bigatti</authors>
+<compl-date>2011-03-30</compl-date>
+<description>
+All all related work
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>ExternalLibs-GSL</title>
+<authors>Simoes + Bigatti</authors>
+<compl-date>2011-03-30</compl-date>
+<description>
+for numerical computations
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Printing Polynomials</title>
+<authors>Bigatti</authors>
+<compl-date>2011-01-28</compl-date>
+<description>
+First extensive testing of printing polynomials in several polynomial
+rings highlighted missing "style improvements".
+Improved, added test-output, updated documentation (in CoCoAReports)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>lcm</title>
+<authors>Abbott + Bigatti</authors>
+<compl-date>2011-01-19</compl-date>
+<description>
+Implemented <code>lcm</code> so that it exists whenever <code>gcd</code> exists.
+Ported to cocoa-5.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Examples and tests use cout/cerr</title>
+<authors>Abbott</authors>
+<compl-date>2010-12-15</compl-date>
+<description>
+Example programs and tests now use the standard C++ iostreams (rather than
+GlobalOutput and so on).  This change makes the code easier to understand, and
+prepares the way for moving GlobalOutput etc into the server directory.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>GlobalManager incorporates GMPMemMgr</title>
+<authors>Abbott</authors>
+<compl-date>2010-11-11</compl-date>
+<description>
+GlobalManager significantly revised.  It now creates GMPAllocator internally
+(if told to do so).  New simpler interface for ctor of GlobalManager.
+Updated documentation accordingly.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Memory leak on test-hilbert1</title>
+<authors>Bigatti</authors>
+<compl-date>2010-10-29</compl-date>
+<description>
+After the recent improvement of GlobalManager and Reference Counting
+a sort of memory leak resulted in test-hilbert1: it was
+the global variable with precomputed powers of polynomials.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Integration with Normaliz</title>
+<authors>Abbott + Bigatti + S&ouml;ger</authors>
+<compl-date>2010-10-12</compl-date>
+<description>
+Normaliz is now designed as a C++ library.
+It is still in a transition phase, but the foundations are set!
+Fruits of a 3 week visit in Genova of Christof S&ouml;ger.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Better Makefiles</title>
+<authors>Abbott</authors>
+<compl-date>2010-10-08</compl-date>
+<description>
+Improved various Makefiles: they work better with "-j" flag.
+Thanks to Christof S&ouml;ger for his help.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Exception safety</title>
+<authors>Abbott</authors>
+<compl-date>2010-10-06</compl-date>
+<description>
+Fixed subtle exception-safety bug in all ring and PPMonoid ctors.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>PPMonoid homomorphisms</title>
+<authors>Abbott</authors>
+<compl-date>2010-07-09</compl-date>
+<description>
+Implement homomorphisms for PPMonoids; first very simplistic implementation.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Generators for random ZZs</title>
+<authors>Abbott</authors>
+<compl-date>2010-06-29</compl-date>
+<description>
+Following the style of <code>RandomLongStream</code> make a class for generators
+of random ZZs.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New version 0.9937</title> 
+<authors>Abbott</authors>
+<compl-date>2010-03-22</compl-date>
+<description>
+New version to signal the fixing of many minor
+bug and the embarrassing bug in subtraction of a machine integer from
+a <code>ZZ</code>.  Upgrading strongly recommended.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Tests and bug fixes for ZZ</title>
+<authors>Abbott</authors>
+<compl-date>2010-03-22</compl-date>
+<description>
+Added tests for <code>ZZ</code>.  Fixed several bugs which were discovered.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Add iterator classes for continued fractions</title>
+<authors>Abbott</authors>
+<compl-date>2010-03-22</compl-date>
+<description>
+Two new classes: one for producing the partial quotient, the for producing
+the convergents.  I've preferred simplicity of ultimate speed.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Add ctors for ZZ and QQ from a string</title>
+<authors>Abbott</authors>
+<compl-date>2010-03-18</compl-date>
+<description>
+Done.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Example using <code>monomial</code></title>
+<authors>Bigatti</authors>
+<compl-date>2010-03-18</compl-date>
+<description>
+Added <a href="../examples/index.html#ex-PolyRing2.C">ex-PolyRing2.C</a>
+showing how to write a simple function to pass exponent vectors
+to the function <span class=func>monomial</span>.
+This way looks more natural than calling
+<span class=func>power</span> many times when writing complicated
+power-products.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Rational coeffs in <code>monomial</code>, also for principal ideals</title>
+<authors>Abbott</authors>
+<compl-date>2010-03-18</compl-date>
+<description>
+Added new pseudo-ctors for monomials which accept rational coefficients.
+Similarly for principal ideals.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>index.html for examples directory</title>
+<authors>Bigatti</authors>
+<compl-date>2010-03-11</compl-date>
+<description>
+Automatic generation of examples/index.html with description of examples.
+(also to be loaded on cocoalib web page 
+<a href="../examples/index.html">examples/index.html</a>)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Revised CoCoALib build system</title>
+<authors>Abbott</authors>
+<compl-date>2010-03-10</compl-date>
+<description>
+The <code>configure</code> script now works better, and will get some compilation
+flags automatically from the GMP header file.  Solved a problem about
+GMP version number (on Werner's new computer).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New pseudo-ctors for polynomial rings</title>
+<authors>Abbott</authors>
+<compl-date>2010-03-05</compl-date>
+<description>
+Added new pseudo-ctors for polynomial rings which accept <code>PPOrderingCtor</code>
+values; this makes it easier for the user to specify the ordering.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Multiplicative Order Modulo an Integer</title>
+<authors>Abbott</authors>
+<compl-date>2010-03-05</compl-date>
+<description>
+Added new function to <code>NumTheory</code> for computing the
+order of an element in the multiplicative group of coprime residues
+modulo an integer.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Random machine integers</title>
+<authors>Abbott</authors>
+<compl-date>2010-02-15</compl-date>
+<description>
+Added new class <code>RandomLongStream</code> to represent generators of
+random machine integers (in a given range).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Revised CoCoALib build system</title>
+<authors>Abbott</authors>
+<compl-date>2010-02-10</compl-date>
+<description>
+The <code>configure</code> script now works better, and will get some compilation
+flags automatically from the GMP header file.  Also makes it relatively to specify
+a specific compiler and/or compilation flags.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New version 0.9936</title>
+<authors>Bigatti</authors>
+<compl-date>2010-02-05</compl-date>
+<description>
+New version to mark the inclusion of many special functions for monomial ideals.
+Many thanks to Eduardo and the participants at the workshop in Ortigosa/Logro&ntilde;o.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New version 0.9935</title>
+<authors>Abbott</authors>
+<compl-date>2010-01-20</compl-date>
+<description>
+New version to "celebrate" finally completing the update of twin floats
+(famous last words?)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>RingTwinFloat theory and implementation</title>
+<authors>Abbott</authors>
+<compl-date>2010-01-20</compl-date>
+<description>
+Updated twin float implementation in accordance with revised theoretical ideas.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>ZZ max/min bug</title>
+<authors>Abbott</authors>
+<compl-date>2009-12-29</compl-date>
+<description>
+Removed the proxy class <code>ZZ::rtn</code> which caused a SEGV bug
+(see <code>test-bug4.C</code>).  May lead to poor performance for
+arithmetic on ZZ values.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Further refinement to conversion functions: <code>NumericCast</code></title>
+<authors>Abbott</authors>
+<compl-date>2009-12-23</compl-date>
+<description>
+Added new conversion function <code>NumericCast</code>.  This is just a
+placeholder for the corresponding feature in the BOOST library.  Also
+added two new conversions from QQ to machine integers.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New version 0.9934</title>
+<authors>Abbott</authors>
+<compl-date>2009-12-11</compl-date>
+<description>
+New version because changes to <code>convert</code> are not backward compatible.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Rename the function <code>convert</code> into <code>IsConvertible</code></title>
+<authors>Abbott</authors>
+<compl-date>2009-12-11</compl-date>
+<description>
+The new name gives a clearer indication of what it does.  Introduced a procedure
+called <code>convert</code> which throws in case of failure; there is a new error
+<code>ERR::BadConvert</code> for these failing cases.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Rename EFGModule into FGModule?</title>
+<authors>Abbott</authors>
+<compl-date>2009-12-03</compl-date>
+<description>
+The emphasis on the word "effectively" seems useless here.
+When an object name suggests a property that property is effective.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New version 0.9933</title>
+<authors>Abbott</authors>
+<compl-date>2009-10-29</compl-date>
+<description>
+A new version number because the handshaking introduced in the CoCoAServer
+is not backward compatible (with CoCoA 4.7.5 or earlier).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Implement proper handshake at end of session CoCoA4-CoCoAServer</title>
+<authors>Abbott</authors>
+<compl-date>2009-10-29</compl-date>
+<description>
+Modified CoCoAServer and the communications part of CoCoA4 so that
+they effect a proper handshake at the end of the session.  This seems
+to solve the (intermittent) problems observed on some Linux boxes
+(where a race condition could let the socket die too early).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Convert sugar into inheritance classes</title>
+<authors>Bigatti</authors>
+<compl-date>2009-10-28</compl-date>
+<description>
+There are different kinds of sugar (StdDeg, wdeg,
+saturating,..): an abstract class representing gives
+clean code for the reduction process, and possibly also to the
+GroebnerMill.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>RoundDiv function for pairs of integers</title>
+<authors>Abbott</authors>
+<compl-date>2009-10-08</compl-date>
+<description>
+Added a new function for computing the rounded quotient of pairs of integers.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Unique implementation for div and deriv</title>
+<authors>Bigatti</authors>
+<compl-date>2009-09-28</compl-date>
+<description>
+Like for other functions, also <code>div</code> and <code>deriv</code> have
+a unique implementation in SparsePolyRing.C instead of 3 copies in the
+DistrMPolyXX.C files.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>IsHomog wrt first rows of weight</title>
+<authors>Bigatti</authors>
+<compl-date>2009-09-22</compl-date>
+<description>
+Now we have IsHomogPartial and CmpWDegPartial considering the first i
+rows of weights (with i &lt= GradingDim)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Constructors for ideals</title>
+<authors>Bigatti</authors>
+<compl-date>2009-07-30</compl-date>
+<description>
+We used to have
+<tt>ideal(ring), ideal(ring, RingElem), ideal(ring, vector<RingElem>)</tt>.
+Now we have other nice constructors
+<tt>ideal(RingElem), ideal(vector<RingElem>)</tt> 
+the last returns en error when vector is empty.
+<tt>ideal(RingElem, RingElem), ...</tt>
+up to 4 RingElems
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Round, floor, ceiling</title>
+<authors>Abbott</authors>
+<compl-date>2009-07-15</compl-date>
+<description>
+Make ordered rings offer round, floor & ceiling functions (since these cannot
+be implemented efficiently using the existing interface).  This was actually completed
+some time ago (but I forgot to update the task table).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Improved QQ</title>
+<authors>Abbott</authors>
+<compl-date>2009-07-08</compl-date>
+<description>
+Improved the QQ implementation: added functions <code>floor</code> and <code>ceil</code>.
+Corrected the embedding of QQ values into RingTwinFloat.  Added <code>ex-QQ1</code>
+example program.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New Version</title>
+<authors>Abbott</authors>
+<compl-date>2009-07-02</compl-date>
+<description>
+Made version <span class=version>0.9931</span>
+in recognition of the substantial changes since the previous version (see below).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New class for rationals</title>
+<authors>Abbott</authors>
+<compl-date>2009-07-02</compl-date>
+<description>
+Added the new class <code>QQ</code> for representing rational numbers.
+There are some basic arithmetic operations too.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Improved NumTheory</title>
+<authors>Abbott</authors>
+<compl-date>2009-07-02</compl-date>
+<description>
+Varius functions in the recent NumTheory file have been improved: <i>e.g.</i>
+better
+interface, fewer bugs, clearer documentation.  Thanks to the participants of the recent CoCoA
+School in Barcelona whose opinions help answer some philosophical design questions.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New Version</title>
+<authors>Abbott</authors>
+<compl-date>2009-06-05</compl-date>
+<description>
+Made version <span class=version>0.9930</span>
+in recognition of the substantial changes since the previous version.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Basic Number Theory Functions</title>
+<authors>Abbott</authors>
+<compl-date>2009-06-05</compl-date>
+<description>
+Basic number theory functions (such as <tt>gcd</tt> and <tt>lcm</tt>) have been
+put together in a new file (namely <tt>NumTheory.C</tt>); some were simply moved
+from <tt>ZZ.C</tt> while others are new.  The function signatures have been
+made more coherent, and more complete (<i>i.e.</i>allowing machine integers and
+ZZs to be used interchangeably).  The <tt>IsPrime</tt> function now works
+over a wider range.  <tt>IsPPrime</tt> has been renamed to <tt>IsProbPrime</tt>
+as the new name is more meaningful and memorable.  Added several new functions:
+<tt>EulerPhi</tt>, <tt>PrimitiveRoot</tt>, <tt>SmoothFactor</tt> and <tt>factor</tt>.
+Added a new template class <tt>factorization</tt> to hold the results of factorizations.
+The code should also work correctly on both 32 and 64 bit computers (but in fact does not, sigh).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Improved printing for residues (in quotients of Z)</title>
+<authors>Abbott+Bigatti</authors>
+<compl-date>2009-05-20</compl-date>
+<description>
+There is now a global option for specifying whether elements of a
+quotient of ZZ are printed as least non-negative residues or as
+least magnitude residues.  The default is least magnitude (a change
+from the previous deault behaviour).  The residues are now always
+printed without brackets -- previously brackets were used in some
+cases and not in others.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Faster Makefiles</title>
+<authors>Abbott</authors>
+<compl-date>2009-05-20</compl-date>
+<description>
+Modified the Makefiles to use the archiver <tt>ar</tt> in a more
+economical manner; this make partial recompilation usefully faster.
+The Makefiles have been cleaned/improved as well.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Documentation converted to txt2tags</title>
+<authors>Bigatti</authors>
+<compl-date>2009-02-20</compl-date>
+<description>
+CoCoALib documentation is written in pure text.  Using
+txt2tags we can keep it clean/readable while allowing pretty
+formatting and linking into HTML and TeX.
+Proper polishing will take some time.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Better matrix examples</title>
+<authors>Abbott+Bigatti</authors>
+<compl-date>2009-02-13</compl-date>
+<description>
+The example <span class=file>ex-matrix1.C</span> 
+has been reorganized and extended with examples
+for <span class=class>(Const)MatrixView</span>
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title><tt>configure</tt> arguments</title>
+<authors>Abbott+Bigatti</authors>
+<compl-date>2009-02-11</compl-date>
+<description>
+Version <span class=version>0.9928</span>.
+(1) Configuration for optimization/debugging
+ using <code>--flags=ARG</code>.
+(2) Configuration for linking frobby
+  using <code>--with-libfrobby=ARG</code>
+and added tests (just to check the linking has been successful) in
+  cocoalib and cocoa4.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New: abstract class for sugar</title>
+<authors>Bigatti</authors>
+<compl-date>2009-02-09</compl-date>
+<description>
+Version <span class=version>0.9927</span>.
+First prototype for abstract class for sugar.  Still unused, but
+makefile, dependencies and library.H had to be changed.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Enum instead of bool arguments in GReductor</title>
+<authors>Bigatti, Caboara</authors>
+<compl-date>2009-01-30</compl-date>
+<description>
+GReductor constructor had many boolean arguments: they have been
+converted into more meaningful "enum"s.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Frobby integration</title>
+<authors>Bigatti, Roune</authors>
+<compl-date>2009-01-30</compl-date>
+<description>
+Version <span class=version>0.9926</span>.
+First check-in for Frobby files.  Configuration process not properly
+defined yet, but all code is in the right place and compilation flag
+is set.  Makefile, dependencies and library.H had to be changed.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Improve configure script</title>
+<authors>Abbott</authors>
+<compl-date>2009-01-14</compl-date>
+<description>
+Configure behaves badly when gcc exists but g++ does not.
+Fix the script so that it works gracefully in both cases.
+One or two problems still remain (e.g. 64-bit on Mac G5)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Machine integers in place of RingElems</title>
+<authors>Abbott</authors>
+<compl-date>2008-12-17</compl-date>
+<description>
+Now using <code>MachineInteger</code> type whenever a machine integer value is
+used in place of <code>RingElem</code>.  This avoids nasty surprises when C++
+silently converts signed values into unsigned (or <i>vice versa</i>).
+New version <span class=version>0.9925</span> to signal this
+wide-ranging change. 
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Makefiles</title>
+<authors>Bigatti</authors>
+<compl-date>2008-12-16</compl-date>
+<description>
+version <span class=version>0.9924</span>.
+
+Changed all Makefiles for compatibility with Solaris make 
+which has no <code>-C</code> option:
+<code>make -C dir blah</code> now is <code>(cd dir; make blah)</code>
+[Thanks to Paul Whitener for testing on Solaris]
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Revised symbol</title>
+<authors>Abbott</authors>
+<compl-date>2008-12-11</compl-date>
+<description>
+Now using <code>MachineInteger</code> type in ctors to specify the values of symbol indexes
+(but we check that the values fit into a <code>long</code>).  Corrected two bugs in
+SymbolRange (an undetected overflow and an off-by-1 error).
+This improvement needed the update to <code>MachineInteger</code> values.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Updated MachineInteger</title>
+<authors>Abbott</authors>
+<compl-date>2008-12-11</compl-date>
+<description>
+Revised <code>MachineInteger</code>.  Fixed a bug, and added the new
+function <code>IsSignedLong</code> which simplifies use of
+<code>MachineInteger</code> values.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Reorganized SOI/NBM, server changed too</title>
+<authors>Abbott</authors>
+<compl-date>2008-11-24</compl-date>
+<description>
+SOI/NBM now reside in their own separate file.  Implementation has been
+tidied considerably, and enjoys a better structured organization.  Each
+algorithm now offers three coherent interfaces, while the actual work is
+done by a single implementation of each underlying algorithm.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Preprocessing is now rational, server changed too</title>
+<authors>Abbott</authors>
+<compl-date>2008-11-24</compl-date>
+<description>
+The preprocessing algorithms are now rational, so give exact results (rather
+than the rational aproximations produced when all input data were converted
+into <code>double</code>s).  The speed of computation remains essentially unchanged.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Fixed ideal inheritance code for RingWeyl</title>
+<authors>Bigatti</authors>
+<compl-date>2008-11-18</compl-date>
+<description>
+version <span class=version>0.9922</span>.
+
+The missing <span class=class>ideal</span> constructor in
+<span class=class>RingWeyl</span> caused the ideal to be generated by
+the default constructor in <span class=class>SparsePolyRing</span>
+(the code is identical).
+So the ideal did not call the specific RingWeyl::ideal operations.
+Now test-RingWeyl1 checks that 1 is in GBasis(ideal(x, dx)).
+
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Error Codes</title>
+<authors>Abbott</authors>
+<compl-date>2008-10-08</compl-date>
+<description>
+version <span class=version>0.9921</span>.
+Error messages need to be expressive, but also short.
+To help non-english speakers, each error should
+produce an alphanumeric key/code which can be used to search in a manual of errors.
+We want to create an "index" of all coded errors with a more verbose
+explanation.  Possibly it should also include some information about
+the most common occurences of a given error and some suggestions for
+debugging and/or fixing it.
+See <span class=file>CoCoAErrorCodes.html</span>:
+<a href="http://cocoa.dima.unige.it/cocoalib/CoCoAErrorCodes.html">CoCoA
+  web page</a> or
+<a href="CoCoAErrorCodes.html">local link in <code>doc/</code></a>.
+<br>
+Moreover the way to check the type of error in an ErrorInfo object has
+been changed (and herein lies the backward incompatibility). The new
+way should be simpler to use.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Updated communication with CoCoA-4</title>
+<authors>Bigatti</authors>
+<compl-date>2008-09-22</compl-date>
+<description>
+version <span class=version>0.9920</span>.
+cocoa-4 and CoCoAServer communication has changed (you need the new
+cocoa5.cpkg for CoCoA-4):
+<span class=func>OperationCommunication</span> allows variable number
+of arguments and sends the information to the server. So the function
+myReadArgs in <span class=file>RegisterServerOps.C</span> now takes an
+extra argument, <code>NumArgs</code>.
+(added function linkability for the <span class=class>Frobby</span>
+library, updated code
+for <span class=file>TmpMayerVietorisTree</span>,
+added <span class=func>NBM</span>)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Updated communication with CoCoA-4</title>
+<authors>Abbott, Bigatti</authors>
+<compl-date>2008-09-22</compl-date>
+<description>
+version <span class=version>0.9918</span>.
+<ul>                                                              
+<li>moved code for monomial ideals into <span class=file>TmpPPVector</span>
+<li>added code <span class=file>TmpMayerVietorisTree</span> for   
+  irreducible decomposition of monomial ideals (E. Saenz de Cabezon)
+<li>added stable order ideal algorithm (<span class=func>SOI</span>) 
+<li>fixed multivariate <span class=func>GCD</span>, same as CoCoA-4.7.4
+<li>exponent overflow (and underflow) should now be detected when
+  CoCoA_DEBUG is set.
+</ul>
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>No more IsPositive/IsNegative for ZZ</title>
+<authors>Abbott</authors>
+<compl-date>2008-04-22</compl-date>
+<description>
+Removed these two silly little fns from ZZ.H.  In compensation, the usual infix
+comparison operators now handle specially the case when one of the args is 0.
+Note that <code>MachineInteger</code> does still have <code>IsNegative</code>!
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>A few more matrix ops</title>
+<authors>Abbott</authors>
+<compl-date>2008-04-21</compl-date>
+<description>
+The <code>adjoint</code> function now works over every ring
+(added <span class=func>AdjointByDetOfMinors</span>).
+Added some matrix norm functions (Frobenius, 1-norm, infinity-norm).
+Added <span class=func>PseudoInverse</span> for full rank matrices.
+Moved fns related to <span class=class>PPOrderings</span> into the new
+file <span class=file>MatrixForOrdering.H/C</span>.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Major revision of matrices</title>
+<authors>Abbott</authors>
+<compl-date>2008-04-18</compl-date>
+<description>
+New version: <span class=version>0.9917</span>
+Added the concept of "matrix views".  This should offer a good compromise between
+flexibility and efficiency.  Matrices now have a coherent design principle (which
+I hope is "correct").  Minor changes may still occur as experience with the new
+design grows.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Improved configuration</title>
+<authors>Abbott</authors>
+<compl-date>2008-02-12</compl-date>
+<description>
+improved GMP identification during configuration
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Bug in RingDenseUPolyCleanImpl ctor</title>
+<authors>Bigatti</authors>
+<compl-date>2007-12-06</compl-date>
+<description>
+A very well hidden bug has been fixed in
+<span class=class>RingDenseUPolyCleanImpl</span> ctor.
+This depends on the creation of RingElems (0, 1, x) before the
+completion of the constructor.... so, just remember this:
+<span class=func>myRefCountZero();</span> must be the last line, and
+RingElems and RingHoms must be just before it. 
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>StdDeg, log, and exponent</title>
+<authors>Bigatti</authors>
+<compl-date>2007-12-05</compl-date>
+<description>
+Main changes are:
+<ul>
+<li><span class=func>log/myLog(pp, i)</span> renamed into
+  <span class=func>exponent/myExponent(pp, i)</span>
+</li>
+<li><span class=func>log/myLog(poly, i)</span> renamed into
+  <span class=func>MaxExponent/myMaxExponent(poly, i)</span>
+</li>
+<li>return type for <span class=func>StdDeg/myStdDeg</span> changed
+  from <code>size_t</code> to <code>long</code>
+</li>
+</ul>
+CoCoALib version is now <span class=version>0.9913</span>.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Fix Eval in CoCoA-4.7</title>
+<authors>Abbott+Bigatti</authors>
+<compl-date>2007-11-28</compl-date>
+<description>
+The <code>Eval</code> tried to be too general and failed.
+Fixed the code and the manual -- should be mathematically cleaner too.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Move to GPL-3+</title>
+<authors>Abbott</authors>
+<compl-date>2007-10-30</compl-date>
+<description>
+All major parts of the source of CoCoALib are henceforth released under
+the GNU Public licence version 3 or later.  Previously the code was
+distributed under version 2 only.
+CoCoALib version is now <span class=version>0.9912</span>.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Hilbert-Poincare</title>
+<authors>Bigatti</authors>
+<compl-date>2007-10-10</compl-date>
+<description>
+version <span class=version>0.9911</span>.
+Another step in rewriting the Hilbert-Poincare code:
+<ul>
+<li>
+added <span class=file>TmpPoincare.[CH]</span>
+using <span class=class>DenseUPolyRing</span> instead of unipoly (the
+old C code)
+</li>
+<li>
+modified <span class=file>TmpHilbert.C</span> so that it can call the
+new code (<span class=func>HilbertNumeratorMod</span>)
+as well as the old one (<span class=func>HilbertNumeratorMod_C</span>).
+</li>
+</ul>
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoA-4.7.2 Double quotes for string constants</title>
+<authors>Abbott</authors>
+<compl-date>2007-09-28</compl-date>
+<description>
+As part of the "gentle migration" to a better language, change all
+strings in CoCoA-4 packages to be between double quotes instead of
+single quotes.  Check other places too (e.g. manual).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoAServer version handling</title>
+<authors>Bigatti</authors>
+<compl-date>2007-09-25</compl-date>
+<description>
+The contructor for <span class=class>ServerOpBase</span> requires a
+<span class=class>LibraryInfo</span>.
+This way the server can print all libraries which have been linked in
+(or the list of all available operations with the library they are
+defined in)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Release of CoCoA-4.7.3</title>
+<authors>Bigatti</authors>
+<compl-date>2007-09-24</compl-date>
+<description>
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Resuscitate RandomBitStream</title>
+<authors>Abbott</authors>
+<compl-date>2007-06-06</compl-date>
+<description>
+Make <span class=class>RandomBitStream</span> use GMP random number generator
+(which in turn uses the <i>Mersenne Twister</i>).  Turned out to be easier
+than expected, which probably means there's a nasty bug hidden away somewhere.
+Code still needs a little tidying.  Not sure how efficient it is either.
+Version is now <span class=version>0.9907</span>.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Check indet names properly</title>
+<authors>Bigatti</authors>
+<compl-date>2007-06-06</compl-date>
+<description>
+It should not be possible to construct rings where a symbol has an ambiguous
+interpretation.  Perhaps even the arity of a symbol should be fixed in a ring
+(<i>i.e.</i>you cannot have <code>x[1]</code> and <code>x[2,3]</code> in the
+same ring).  One version of <span class=func>NewPolyRing_DMPI</span>
+seems to check this
+correctly but other pseudo ctors do not.  Abstract a checking fn, and rectify
+the implementations.  Much the same applied to PPMonoids.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoA-4.7.2 matrix facilities</title>
+<authors>Abbott</authors>
+<compl-date>2007-06-01</compl-date>
+<description>
+Added functions <span class=func>CharPoly</span>,
+<span class=func>Eigenvectors</span>,
+and modified <span class=func>Det</span> to work better on matrices of rationals.
+Updated the manual accordingly.  (implementation subsequently updated twice)
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoA-4.7.2 string constants</title>
+<authors>Abbott+Bigatti</authors>
+<compl-date>2007-05-31</compl-date>
+<description>
+CoCoA4 now warns about obsolescent syntax for string constants inside
+single quotes.  The idea is to encourage all CoCoA4 users to migrate
+to double quotes in readiness for the transition to CoCoA5.  All
+CoCoA4 packages and tests have been brought up to date (easier said
+than done).  Anna has updated the CoCoA4 manual entry about strings.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Zero to power zero gives error</title>
+<authors>Abbott</authors>
+<compl-date>2007-05-31</compl-date>
+<description>
+Not sure what the code did before, but now any attempt to compute the
+zeroth power of zero gives error.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Snapshot releases</title>
+<compl-date>2007-05-30</compl-date>
+<authors>Bigatti</authors>
+<description>
+Bigatti has a script to create a snapshot release of CoCoALib-0.99xx.
+Then the table in the page
+<a
+href="http://cocoa.dima.unige.it/cocoalib/ChangeLog-0.99">ChangeLog-0.99</a>
+has to be manually updated with release notes.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoA-4.7.2 matrix facilities</title>
+<authors>Bigatti</authors>
+<compl-date>2007-05-29</compl-date>
+<description>
+Added functions <code>RowMat</code>, <code>ColMat</code>,
+<code>NumRows</code>, <code>NumCols</code>.
+Updated the manual.
+</description>
+</task>
+
+<!-- was task 35 -->
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Release CoCoALib-0.99</title>
+<authors>Bigatti</authors>
+<compl-date>2007-05-23</compl-date>
+<description>
+The first public version with the new code organization.
+To be synchronous with first public release of ApCoCoALib by Dortmund.
+</description>
+</task>
+
+<!-- was task 38 -->
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>PushFront/PushBack</title>
+<authors>Bigatti</authors>
+<compl-date>2007-05-22</compl-date>
+<description>
+Modify the interface to the <code>PushBack</code> family of functions
+to make it more friendly: now they all accept zero coefficients and make
+sanity checks in debugging mode.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoALib-0.9904 in CVS</title>
+<authors>Abbott</authors>
+<compl-date>2007-05-21</compl-date>
+<description>
+New version to "celebrate" the new <code>MachineInteger</code> class.
+Also fixed a long languishing bug in the linear system solver.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Proper handling of machine integers</title>
+<authors>Abbott</authors>
+<compl-date>2007-05-21</compl-date>
+<description>
+Added new class <code>MachineInteger</code> in an attempt to circumvent
+undesirable automatic type conversions between C++ machine integer types.
+Class <code>ZZ</code> modified accordingly to act as a "proving ground".
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New source code organization</title>
+<authors>Bigatti</authors>
+<compl-date>2007-05-03</compl-date>
+<description>
+Implement the new code organization agreed upon Genoa.  The configuration
+and make files still need some tweaking.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoAServer Mark III</title>
+<authors>Bigatti+Abbott</authors>
+<compl-date>2007-05-03</compl-date>
+<description>
+Redesign the server to accommodate properly the new code organization.
+The new design must improve modularity still further, and add suitable
+safety checks.  Getting the design right is of particular importance
+here.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>PPMonoidEvZZ</title>
+<authors>Abbott</authors>
+<compl-date>2007-05-03</compl-date>
+<description>
+A new PP monoid with essentially unlimited exponent size.  It seems some
+people need it.  The code is new, and largely unchecked, but does pass a
+non-trivial test.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Release CoCoA-4.7</title>
+<authors>Bigatti,Abshoff</authors>
+<compl-date>2007-04-04</compl-date>
+<description>
+Of course, this is not strictly work on CoCoALib, but it is related.  Many
+of the new features in CoCoALib-0.98 will become accessible through the new
+CoCoA-4.7.  A modified "internal" version of CoCoA-4.6 already exists, but
+we still need to document and check everything thoroughly.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Release CoCoALib-0.9801</title>
+<authors>Abbott,Bigatti,Abshoff</authors>
+<compl-date>2007-04-04</compl-date>
+<description>
+Conduct all the usual pre-release checks (portability, documentation, etc).
+Release CoCoALib-0.9801 (with revised server, and some minor bug fixes).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Integrate Gin5 and preprocessing into C4.7</title>
+the C4.7 manual.  
+<authors>Bigatti, Abbott</authors>
+<compl-date>2007-04-04</compl-date>
+<description>
+Modify server to offer Gin5 and preprocessing fns; extend C4.7 interface
+package.  Add tests for new CoCoALib fns (preprocessing and Gin5).  Update
+the C4.7 manual.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Integrate numerical routines into C4.7</title>
+<authors>Abshoff, Heldt</authors>
+<compl-date>2007-04-04</compl-date>
+<description>
+Complete integration of the "numerical" routines into the C4.7-CoCoALib
+interface: minor revisions to the CoCoALib server, minor revisions to the
+C4.7 packages.  Produce a test suite for the numerical functions (NB aim is
+to verify <i>our code</i>, not the underlying floating point matrix library).
+Complete manual for the numerical fns; Abbott can help with the language
+polishing.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoA4 manual XML tags</title>
+<authors>Bigatti, Hiddemann</authors>
+<compl-date>2007-03-31</compl-date>
+<description>
+Conclude dictionary of XML tags for the CoCoA4 manual.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Revise CoCoAServer</title>
+<authors>Bigatti</authors>
+<compl-date>2007-04-04</compl-date>
+<description>
+CoCoAServer has been redesigned so that it is easier to add new functions.
+The new design has vastly improved modularity, and should "scale well".  It
+should make it easier for non-members of the CoCoA Team to add their
+functions.  While the new design is surely a great improvement over the
+old, evolutionary one, it cannot yet be regarded as stable.  After more
+experience has been gained, the design will be reviewed.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>New code management structure</title>
+<compl-date>2007-03-21</compl-date>
+<description>
+After a review of existing code management structure and some
+consequent difficulties, a new management structure has been drafted
+allowing greater autonomy (and hopefully reducing "email synchronization").
+The transition to the new structure should occur immediately after Easter;
+we expect the draft to be approved shortly.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoA Meeting in Genoa</title>
+<compl-date>2007-03-19</compl-date>
+<description>
+Last week Genoa welcomed almost everyone involved in the project.
+It was the second intense week in a row: important meetings, presentations
+about the various aspects of the project, numerous mini-meetings to make
+good use of the physical proximity of collaborators, etc.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>CoCoALib-0.98 Released</title>
+<compl-date>2007-03-09</compl-date>
+<description>
+After a long week of very intensive work by Abbott, Bigatti, Abshoff
+and Heldt, the internal version of CoCoALib was brought up to a level
+which would permit public release.  Everyone learned that eight days'
+notice is definitely not enough for a full public release.  This task
+was actually completed almost on time (<i>i.e.</i> only about 7 hours late).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Sugar strategy in Buchberger's algorithm</title>
+<compl-date>2007-03-08</compl-date>
+<description>
+The implementation of the sugar strategy was incomplete: certain
+cases could not be handled.  A stop-gap solution has been found
+and implemented; now everything works properly.  The whole structure
+will be revised at a later date.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Remove magic numbers from MemPool</title>
+<compl-date>2007-03-07</compl-date>
+<description>
+The MemPool code contains some magic numbers (minimal loaf sizes).
+Abstracted these into named values, and improved documentation.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Update coding conventions</title>
+<compl-date>2007-03-07</compl-date>
+<description>
+The CoCoALib Coding
+Conventions need to be improved after discussions during and after the
+minicourse in Dortmund.  Especially guidelines for when to
+use <code>inline</code> and when not.  The guidelines are now publicly
+accessible on WWW at Genova.  A further update will occur after 0.98
+has been released.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Improved compilation flags</title>
+<compl-date>2007-03-07</compl-date>
+<description>
+Modified compilation flags (with <code>g++</code>): more stringent
+warnings, and position independent code (almost never harmful, and
+sometimes beneficial).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Dynamic Buchberger Algm</title>
+<compl-date>2007-03-06</compl-date>
+<description>
+First prototype of the Dynamic Buchberger's Algorithm. Uses a new way
+to compute the pairs, but there is still a problem with the GM
+criteria.  Added procedures for the lex comparison of Hilbert
+functions, for use in the Dynamic Buchberger's Algorithm.  Implemented
+the simplex algorithm, stage one.  This implementation uses the
+CoCoALib matrices.  This implementation uses GMP integers, and is for
+use in the Dynamic Buchberger Algorithm, NOT for huge optimization
+problems.  Max.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Sugar and PosWDegTO</title>
+<compl-date>2007-03-06</compl-date>
+<description>
+in the case of PosWDegTO orderings, Grading dim is now set to 0 and
+the sugar is now used. This is the case for most operations.  This
+fixes a bug, since we cannot (yet) use WSugar as it does not work in
+these cases.  Max.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Interreduced non-homog GBasis</title>
+<compl-date>2007-03-06</compl-date>
+<description>
+In non-homogenous case, a new final stage interreduces the resulting
+Groebner basis.  Max.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>FacetComplex name clash</title>
+<compl-date>2007-03-06</compl-date>
+<description>
+The name <code>complex</code> clashes with a name from the standard library.
+Changed our name to <code>FacetComplex</code>.  Max.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Eliminate RingZ type</title>
+<compl-date>2007-03-06</compl-date>
+<description>
+There was a special C++ ring type for the ring of integers, viz. <code>RingZ</code>.
+It did not appear to be of any great use in CoCoALib, and removing it did not
+make any existing code significantly harder to read/comprehend.  Combined with
+making RingZ a global value, the updated code actually becomes simpler and more
+natural.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Unique ring of integers</title>
+<compl-date>2007-03-06</compl-date>
+<description>
+After due deliberation we decided that Z, the ring of integers, and Q, the field of
+rationals should be unique "pre-existing" structures in the CoCoALib C++ run-time
+environment.  This will make life rather easier (and more natural) for users of the library.
+Rather than use an <i>ad hoc</i> technique for managing these global values, we designed
+and implemented a coherent scheme for managing them (see next task).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Management of Global Values</title>
+<compl-date>2007-03-06</compl-date>
+<description>
+A consequence of deciding to make the ring of integers a global value was the need to
+manage such a global value properly.  The tricky part was ensuring the proper destruction
+of RingZ before <code>main</code> exits.  Recall that C++ normally destroys globals after
+main has completed, and that the order of destruction cannot easily be governed; destroying
+values in the wrong order can cause to the program to crash just before it terminates.
+Another advantage of forcing destruction before <code>main</code> exits is that it makes
+debugging very much simpler.  And of course it is simply good manners to clean up properly
+at the end of the program.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Fix test-factor1</title>
+<compl-date>2007-03-05</compl-date>
+<description>
+Randomization means that <code>test-factor1</code> can appear to fail,
+though it is behaving correctly.  Fixed it so that the random effects cannot
+affect the validity.  Several other tests were cleaned up too.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Remove "New" Prefix for some homomorphisms</title>
+<compl-date>2007-03-05</compl-date>
+<description>
+The <code>New</code> prefix on some homomorphism pseudo-constructors is not
+useful and reduces readability of code using them.  Change the names of the
+pseudo-constructors to eliminate the prefix, and ensuring that the resulting
+code will be easily readable.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Canonical Homomorphisms</title>
+<compl-date>2007-03-05</compl-date>
+<description>
+Implement <code>CanonicalHom</code> which allows easy creation of certain
+canonical homomorphisms (and hopefully more readable code).  Document clearly
+which cases are covered by <code>CanonicalHom</code>.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Printing for DistrMPolyXXX objects</title>
+<compl-date>2007-02-27</compl-date>
+<description>
+The three DistrMPolyXXX implementations repeat virtually identical code for
+printing out the polynomials.  This code could be moved up to SparsePolyRing
+so that there is only a single copy BUT then DistrMPoly objects would no
+longer be directly printable (for debugging).  Perhaps this would not matter if they were
+not proper objects...?
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Index of examples</title>
+<compl-date>2007-02-20</compl-date>
+<description>
+The "examples/" directory needs an index page to help find and
+remind what the various examples illustrate.  There are two levels of index:
+a brief "one-line" summary for each example, and a fuller description.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Generate BuildInfo.C automatically</title>
+<compl-date>2007-02-08</compl-date>
+<description>
+Rather than generate BuildInfo.C automatically (which was deemed to be
+a bit too dynamic), an equivalent effect can be achieved simply by
+using special compilation flags for that one file.  This removes the
+need for the ugly and complicated CXXFLAGS which we previously used
+for all files.  In fact, CXXFLAGS was simplified further than expected:
+all the tricky stuff is concentrated inside the special case for
+BuildInfo.C.  CoCoAServer.C needed some minor adjustment.  A big
+benefit is that the command for compiling against the CoCoA library
+has become considerably simpler.  Added a new example, updated the
+corresponding documentation.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>One line defns are obsolete</title>
+<compl-date>2007-01-29</compl-date>
+<description>
+Modify CoCoA4 so that one line fn defns produce an "obsolescent" warning,
+and replace all one line defns in the packages by proper fn defns.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Unify three PolyRingHoms</title>
+<compl-date>2007-01-24</compl-date>
+<description>
+The implementations of the three PolyRingHoms
+(in the three different sort of SparsePolyRing) are virtually identical.  Now we
+have polynomial iterators, it should be possibly to unify them into a single
+implementation in SparsePolyRingBase.
+Same thing for coeff embedding homs.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Make TmpHilbertDir</title>
+<compl-date>2007-01-18</compl-date>
+<description>
+Make a separate directory for the Hilbert stuff.
+Perhaps following the scheme used for the factorizer code.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Rename "raw" args</title>
+<compl-date>2007-01-16</compl-date>
+<description>
+Improve readability/comprehensibility of code by using "suggestive"
+names for fn args which are "raw" values.  This conversion generally
+happens in parallel with other reviews of the code.  It will
+eventually require a final "closing" assessment.  While the task is
+simple, it is time-consuming to be sure that absolutely all changes
+have been effected.  It does not seem possible to get the computer to
+check that the task is complete.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>SmartPtr in RingHom</title>
+<compl-date>2007-01-15</compl-date>
+<description>
+Use SmartPtrIRC in RingHom, probably as a data member.
+Was not as quick and simple as predicted, but did lead to an overhaul
+of the code (esp. regarding printing of homomorphisms).
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Use SmartPtrIRC in ring</title>
+<compl-date>2007-01-10</compl-date>
+<description>
+Put SmartPtrIRC in
+rings, modules; substitute <i>ad hoc</i>reference counting with reuse
+of SmartPtrIRC.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Clean includes in header files</title>
+<compl-date>2007-01-11</compl-date>
+<description>
+Sutter's
+coding conventions suggest using forward declarations instead of
+including header files.  This makes (re)compilation faster, and
+expresses more clearly the true dependencies in the code.  Task should
+take at most 1 week, unless more unpleasant surprises surface.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Fix typedef ring</title>
+<compl-date>2007-01-11</compl-date>
+<description>
+The use of a typedef for
+[ring] causes trouble as a typedef cannot be forward declared as a
+class can.  [ring] should become a trivial class forwarding all its
+operations to a SmartPtrIRC data member.  Everything can be inline.
+Task should take at most 1 day.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Attach old factorizer</title>
+<compl-date>2007-01-10</compl-date>
+<description>
+Attach old CoCoA4
+factorizer to CoCoALib; mostly involves fiddling with makefiles and
+the "build system".  A working factorizer was put in CVS for version
+0.9713.  This stopgap solution should be enough for a few months.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Minicourse</title>
+<compl-date>2006-12-22</compl-date>
+<description>
+Prepare CoCoALib minicourse (to be
+held in Dortmund); Bigatti might help.  This task will occupy almost
+all of Abbott's time until the end of 2006.
+</description>
+</task>
+
+<!-- ===  COMPLETED TASK  ===================================== -->
+<task>  <title>Migrate into SparsePolyRing</title>
+<compl-date>2006-11-16</compl-date>
+<description>
+The code for
+ideal in the multivariate polynomial rings is essentially repeated
+three times: simply copied for each of the specific ring
+implementations.  This code should be migrated into SparsePolyRing, so
+that just a single copy exists.  The migration should be possible, but
+this must be verified.  It may also be possible for ideals in RingWeyl
+to be covered by this same migrated generic implementation -- again
+this must be assessed.  Time estimate: 3-7 days.
+</description>
+</task>
+
+</completed-tasks>
+
+<!--
+
+-->

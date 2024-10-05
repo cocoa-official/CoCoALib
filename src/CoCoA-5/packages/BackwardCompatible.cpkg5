@@ -1,0 +1,277 @@
+Package $BackwardCompatible -- CoCoA-4 capitalization
+
+-- functions
+-- A
+Export Abs;
+Export Ascii;
+-- B
+-- C
+Export Characteristic;
+Export Coefficients;
+Export Colon;
+Export Comps;
+Export Concat;
+Export Count;
+-- D
+Export Dashes;
+Export Date;
+Export Deg;
+Export Den;
+Export Depth;
+Export Det;
+Export Diff;
+Export Dim;
+Export Discriminant;
+Export Distrib;
+Export Div;
+-- E
+Export Elim;
+Export Eval;
+-- F
+Export Factor;
+Export Fields;
+Export First;
+Export Flatten;
+Export Format;
+-- G
+Export GCD;
+Export Gens;
+Export Gin;
+-- H
+Export Homogenized;
+-- I
+Export Ideal;
+Export Image;
+Export Indet;
+Export Indets;
+Export Interreduced;
+Export Intersection;
+Export Inverse;
+Export Isqrt;
+-- J
+Export Jacobian;
+-- L
+Export Last;
+Export Latex;
+Export LCM;
+Export Len;
+-- M
+Export Man;
+Export Mat;
+Export Max;
+Export Min;
+Export Minors;
+Export Mod;
+Export Monic;
+Export Monomials;
+Export Multiplicity;
+-- N
+Export NewLine;
+Export NewMat;
+Export Not;
+Export NOT;
+Export Num;
+-- O
+-- P
+Export Packages;
+Export Partitions;
+Export Permutations;
+Export Pfaffian;
+Export Product;
+-- R
+Export Radical;
+Export Rand;
+Export Res;
+Export Resultant;
+Export Reversed;
+-- S
+Export Saturation;
+Export Shape;
+Export Sign;
+Export Sorted;
+Export Spaces;
+Export Sprint;
+Export Submat;
+Export Subsets;
+Export Subst;
+Export Sum;
+Export Starting;
+Export Support;
+Export Sylvester;
+Export Syz;
+-- T
+Export Tag;
+Export Tagged;
+Export Tail;
+Export Toric;
+Export Transposed;
+Export Tuples;
+Export Type;
+
+-- procedures
+-- A
+Export Append;
+-- B
+-- C
+Export Close;
+-- D
+-- I
+Export Insert;
+Export Interreduce;
+-- L
+-- M
+-- P
+-- R
+Export Remove;
+Export Reverse;
+-- S
+Export Sort;
+-- U
+Export Untagged;
+
+----------------------------------------------------------------------
+
+-- functions
+-- A
+Define Abs(X)        Return abs(X); EndDefine;
+Define Ascii(X)      Return ascii(X); EndDefine;
+-- B
+-- C
+Define Characteristic(R) Return characteristic(R); EndDefine;
+Define Coefficients(...) Return coefficients(...); EndDefine;
+Define Comps(V)      Return compts(V); EndDefine;
+Define Colon(I,J)    Return colon(I,J); EndDefine;
+Define Concat(...)   Return concat(...); EndDefine;
+Define Count(A,B)    Return count(A,B); EndDefine;
+-- D
+Define Dashes()      Return dashes(); EndDefine;
+Define Date()        Return date(); EndDefine;
+Define Deg(...)      Return deg(...); EndDefine;
+Define Den(A)        Return den(A); EndDefine;
+Define Depth(RModI)  Return depth(RModI); EndDefine;
+Define Det(M)        Return det(M); EndDefine;
+Define Diff(A,B)     Return diff(A,B); EndDefine;
+Define Dim(M)        Return dim(M); EndDefine;
+Define Discriminant(...)  Return discriminant(...); EndDefine;
+Define Distrib(L)    Return distrib(L); EndDefine;
+Define Div(A,B)      Return div(A,B); EndDefine;
+-- E
+Define Equals()      Return equals(); EndDefine;
+Define Elim(L,I)     Return elim(L,I); EndDefine;
+Define Eval(X,P)     Return eval(X,P); EndDefine;
+-- F
+Define Factor(F)     Return factor(F); EndDefine;
+Define Fields(Rec)   Return fields(Rec); EndDefine;
+Define First(...)    Return first(...); EndDefine;
+Define Flatten(...)  Return flatten(...); EndDefine;
+Define Format(A,B)   Return format(A,B); EndDefine;
+-- G
+Define GCD(...)      Return gcd(...); EndDefine;
+Define Gens(...)      Return gens(...); EndDefine;
+Define Gin(...)      Return gin(...); EndDefine;
+-- H
+Define Homogenized(L, X)
+  OldSyntax := "WARNING: Homogenized(X,F) is obsolescent, use Homogenized(F,X)";
+  If Type(X)<>RINGELEM Or not(IsIndet(X)) Then
+    PrintLn OldSyntax;
+    tmp:=L; L:=X; X:=tmp;
+  EndIf;
+  Return homog(L, X);
+EndDefine;
+-- I
+Define Ideal(...)    Return ideal(...); EndDefine;
+Define Image(X,Phi)    Return image(X,Phi); EndDefine;
+Define Indet(R,I)    Return indet(R,I); EndDefine;
+Define Indets(R)     Return indets(R); EndDefine;
+Define Interreduced(L) Return interreduced(L); EndDefine;
+Define Intersection(...)
+  If len(ARGV)=2 Then Return intersection(ARGV[1], ARGV[2]); EndIf;
+  PrintLn "--> WARNING: Intersection(A,B,C) is obsolescent (from CoCoA-5.1.5); use IntersectionList([A,B,C]) instead";
+  Return IntersectionList(ARGV);
+EndDefine;
+
+Define Inverse(M)    Return inverse(M); EndDefine;
+Define Isqrt(N)      Return FloorSqrt(N); EndDefine;
+-- J
+Define Jacobian(...) Return jacobian(...); EndDefine;
+-- L
+Define LCM(...)      Return lcm(...); EndDefine;
+Define Latex(X)      Return LaTeX(X); EndDefine;
+Define Last(...)     Return last(...); EndDefine;
+Define Len(L)        Return len(L); EndDefine;
+-- M
+Define Man(str)      Error("The function 'Man' is *OBSOLETE*; use '?' instead, like this:\n?"+str); EndDefine;
+Define Mat(...)      Return mat(...); EndDefine;
+Define Max(...)      Return max(...); EndDefine;
+Define Min(...)      Return min(...); EndDefine;
+Define Minors(M,N)   Return minors(M,N); EndDefine;
+Define Mod(A,B)      Return mod(A,B); EndDefine;
+Define Monic(F)      Return monic(F); EndDefine;
+Define Monomials(F)  Return monomials(F); EndDefine;
+Define Multiplicity(M)  Return multiplicity(M); EndDefine;
+-- N
+Define NewLine()     Return "\n"; EndDefine;
+Define NewMat(R, nr, nc) Return ZeroMat(R, nr, nc); EndDefine;
+Define Not(A)        Return not(A); EndDefine;
+Define NOT(A)        Return not(A); EndDefine;
+Define Num(A)        Return num(A); EndDefine;
+-- O
+-- P
+Define Packages()    Return packages(); EndDefine;
+Define Partitions(L)    Return partitions(L); EndDefine;
+Define Permutations(L)    Return permutations(L); EndDefine;
+Define Pfaffian(M)    Return pfaffian(M); EndDefine;
+Define Product(L)    Return product(L); EndDefine;
+-- R
+Define Radical(I)  Return radical(I); EndDefine;
+Define Rand(A,B)   Return random(A,B); EndDefine;
+Define Res(X)      Return res(X); EndDefine;
+Define Resultant(F,G,x) Return resultant(F,G,x); EndDefine;
+Define Reversed(L)   Return reversed(L); EndDefine;
+-- S
+Define Saturation(I,J) Return saturate(I,J); EndDefine;
+Define Shape(X)       Return shape(X); EndDefine;
+Define Sign(X)       Return sign(X); EndDefine;
+Define Sorted(L)     Return sorted(L); EndDefine;
+Define Spaces(X)     Return spaces(X); EndDefine;
+Define Sprint(X)     Return sprint(X); EndDefine;
+Define Sum(...)      Return sum(...); EndDefine;
+Define Submat(M,R,C) Return submat(M,R,C); EndDefine;
+Define Subsets(L, Opt card)   If IsDefined(card) Then Return subsets(L,card); Else Return subsets(L); EndIf EndDefine;
+Define Subst(...)    Return subst(...); EndDefine;
+Define Starting(str) Return starting(str); EndDefine;
+Define Support(F)    Return support(F); EndDefine;
+Define Sylvester(F,G,X) Return sylvester(F,G,X); EndDefine;
+Define Syz(X)        Return syz(X); EndDefine;
+-- T
+Define Tag(X)        Return tag(X); EndDefine;
+Define Tagged(X,S)   Return tagged(X,S); EndDefine;
+Define Tail(X)        Return tail(X); EndDefine;
+Define Toric(...)    Return toric(...); EndDefine;
+Define Transposed(M) Return transposed(M); EndDefine;
+Define Tuples(X,N)   Return tuples(X,N); EndDefine;
+Define Type(X)       Return type(X); EndDefine;
+
+-- procedures
+-- A
+Define Append(Ref L, X)    append(Ref L,X); EndDefine;
+-- B
+-- C
+Define Close(D) close(D); EndDefine;
+-- D
+-- I
+Define Insert(Ref L, I, X) insert(Ref L,I,X); EndDefine;
+Define Interreduce(Ref L) interreduce(Ref L); EndDefine;
+-- L
+-- M
+-- P
+-- R
+Define Remove(Ref L, I)    remove(Ref L, I); EndDefine;
+Define Reverse(Ref L)      reverse(Ref L); EndDefine;
+-- S
+Define Sort(Ref L)      sort(Ref L); EndDefine;
+-- U
+Define Untagged(X)   Return untagged(X); EndDefine;
+
+
+EndPackage;

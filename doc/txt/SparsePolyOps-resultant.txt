@@ -1,0 +1,53 @@
+      SparsePolyOps-resultant
+      Copyright (c)  2019,2022  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SparsePolyOps-resultant}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-SparsePolyOps3.C ../../examples/index.html#ex-SparsePolyOps3.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers 3 functions: ``discriminant``, ``resultant`` and ``SubresultantSeq``.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``f`` and ``g`` be two ``RingElem`` values in a polynomial ring ``P``.
+Let ``x`` be the **index of an indeterminate** from ``P``.
+
+- ``discriminant(f)`` -- **[``f`` univariate]** returns a ``RingElem`` (in the coefficient ring) being the discriminant of univariate ``f``.
+- ``resultant(f,g)``  -- **[``f,g`` univariate]** returns a ``RingElem`` (in the coefficient ring) being the resultant of univariate ``f`` and ``g``.
+- ``discriminant(f,x)`` -- returns a ``RingElem`` (in the same ring as ``f``) being the discriminant of ``f`` wrt ``x``.
+- ``resultant(f,g,x)``  -- returns a ``RingElem`` being the resultant of ``f`` and ``g`` with respect to the indeteminate ``x``.
+- ``SubresultantSeq(f,g,x)``  -- returns a ``vector<RingElem>`` being the subresultant sequence of ``f`` and ``g`` with respect to the indeteminate ``x``.
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Surely a simple rather than fast impl.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Must coeffs be rational?
+
+
+
+== Main changes ==
+%======================================================================
+
+**2019**
+- October (v0.99610): first release
+-
+
+

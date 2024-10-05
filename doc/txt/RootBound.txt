@@ -1,0 +1,80 @@
+    RootBound
+      Copyright (c)  2017,2020  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RootBound}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-empty.C ../../examples/index.html#ex-empty.C]
+-
+
+== User documentation ==
+%======================================================================
+The function ``RootBound`` computes an estimate for the absolute
+value of the largest complex root of a univariate polynomial, or
+equivalently the radius of a disc centred on the origin of the
+complex plane which contains all complex roots.
+
+The intention is to obtain a reasonably good estimate quickly.
+An optional second argument says how many iterations of Graeffe's
+transformation to use to obtain a better bound; by default a
+heuristic is used to decide how many iterations.  More iterations
+give a better bound, but they become increasingly expensive.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+- ``RootBound(f)`` return an upper bound for absolute value of every complex root of ``f``
+- ``RootBound(f,niters)`` return an upper bound for absolute value of every complex root of ``f``,
+using ``niters`` iterations of Graeffe's transformation.  Need ``0 <= niters <= 25``
+- ``RootBoundTransform(f)`` returns a_d*x^d - sum(a_k*x^k, k=0,..,d-1) where a_k is abs value of coeff of x^k in ``f``
+
+
+== Maintainer documentation ==
+%======================================================================
+
+This is still an early version (so there is a lot of cruft).
+
+I shall probably keep the "logarithmic version".  To limit the amount
+of potentially costly arithmetic with big integers, I have used a
+(dense) logarithmic representation of the univariate polynomial:
+a ``vector<double>`` whose ``k``-th entry contains ``log(a_k)``
+where ``a_k`` means the coeff of ``x^k`` in the monic polynomial.
+I have used a "large negative" constant to represent ``log(0)``.
+
+The implementation follows what I wrote in (the "big factor" paper):
+J. Abbott: //Bounds on Factors in ZZ[x]//, JSC vol.50, 2013, pp. 532-563
+
+I have added a "preprocess" function which makes the coeffs "primitive"
+(coprime integers), and removes any powers of ``x`` which divide the
+poly, and also rewrites the poly in terms of ``x^k`` where ``k`` is
+chosen largest possible (usually it is just 1, of course).
+
+The case of a linear polynomial is handled separately since we
+can compute the root directly.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Still lots of cruft!
+
+Continues to apply Graeffe transformations even when this cannot
+produce any improvement (//i.e.// if poly is of form ``x^d - rest``
+where ``rest`` has all coeffs non-negative.
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- September (v0.99555):  first release
+-
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

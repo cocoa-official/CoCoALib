@@ -1,0 +1,227 @@
+      DivMask
+      Copyright (c)  2005-2012 John Abbott, Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{DivMask}{John Abbott}
+
+
+
+== Examples ==[examples]
+- [ex-DivMask1.C ../../examples/index.html#ex-DivMask1.C]
+- [ex-DivMask2.C ../../examples/index.html#ex-DivMask2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+The main reason for creating a ``DivMask`` is to permit a quick, coarse
+test of divisibility between power products -- but before you read on, you
+might like to consider using [[PPWithMask]] instead, which offers
+essentially the same advantages with a *much more convenient interface*.
+
+We say that ``DivMask``s permit a "coarse" test because we accept as
+responses //definitely not divisible// or //possibly divisible// (but
+further checks must be conducted to decide for certain).
+
+For example the radical of a PP .... (WORK-IN-PROGRESS)
+
+
+
+``DivMask``s are
+a fairly low-level concept, and probably of little use to most normal
+CoCoALib users.  If you need to do conduct a great many divisibility tests
+(between power products) and think you're interested, read on (assuming you
+have already decided that [[PPWithMask]] does not fulfill your needs).
+
+Note: currently ``DivMask``s cannot be used to ascertain coprimality (see Bugs section).
+
+To use ``DivMask``s you must master two concepts.  Firstly, the ``DivMask``
+itself is simply a bitset wrapped up in a class.  The size of the bitset is
+determined at compile time.  There are various rules for how to set the
+bits in the bitset, but they all satisfy the following guiding principle:
+
+	if ``t1`` divides ``t2`` then ``(DivMask(t1) & DivMask(t2)) == DivMask(t1)``
+
+	//i.e.// ``DivMask(t1)`` is a "subset" of ``DivMask(t2)``
+
+There are no other guarantees: in particular, the converse of the guiding
+principle does not hold in general.
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+You can create five different sorts of ``DivMaskRule``:
+
+WORK-IN-PROGRESS: explain what a DivMaskRule is
+
+:  ``NewDivMaskNull();``
+    no bit is ever set (relatively fast, but otherwise pretty useless).
+    (It is useful when a ``DivMaskRule`` is required and you know you
+    won't use it)
+
+:  ``NewDivMaskSingleBit();``
+    if the ``k``-th exponent in the PP is strictly positive then the
+    ``k``-th bit is set: at most a single bit is used for each indeterminate,
+    indets with ``index >= DivMask::ourMaskWidth`` are ignored completely.
+
+:  ``NewDivMaskSingleBitWrap();``
+    if the ``k``-th exponent in the PP is strictly positive then the
+    ``k%DivMask::ourMaskWidth``-th bit is set: all indets are taken into
+    account, and each bit is used for a set of indeterminates.
+    This implementation is good when we have many indeterminates in
+    supposedly sparse PPs.  (So far I don't have good examples with
+    more than 2*ourMaskWidth indeterminates)
+
+:  ``NewDivMaskEvenPowers();``
+    This rule may set several bits for a PP divisible by a "high" power of
+    an indeterminate.  For instance, with a mask width of
+    32 and 4 indets, up to 8 bits can be set for each indet: sets 1 bit if
+    exponent is 1 or 2, set 2 bits if exponent is 3 or 4, etc. The actual number
+    of bits set is ``ceiling(exponent/2)``.
+    This implementation is good when we have few indeterminates with
+    high exponents (e.g. Buchberger's algorithm).
+    It is equivalent to ``SingleBitWrapImpl`` if the number of indets is
+    bigger than ``ourMaskWidth``.
+
+:  ``NewDivMaskHashing();``
+    this rule uses a hashing scheme to allow many bits to be set for each indet
+    even when there are many indets.  The number of bits set for an indet
+    is ``ceiling(sqrt(exponent))``.
+
+    Supposedly the implementation works well in all cases (e.g.  few
+    indets and high degrees, or many indets and low degrees)
+
+    For indet x the first bit set has index ``x%ourMaskWidth``, and in
+    general the k-th bit set has index ``(x + k*hash2)%ourMaskWidth``.
+    (See code for definition of hash2)
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+==== Operations with DivMaskRule ====
+
+The type ``DivMaskRule`` is used to set the bits in a ``DivMask`` object.
+The possible function calls are:
+- ``DMR->myAssignFromExpv(mask, exps, NumIndets)`` 
+   -- sets mask according to PP with exponent vector exps.
+   Currently the parameter ``exps`` must be of type
+   ``vector<SmallExponent_t>``, but this may change.
+
+  This function might be quite expensive and its cost depends on the
+  ``DivMaskRule``, but this is not a problem if it is called much more rarely
+  than ``IsSubset``.
+
+- ``DMR->myOutputSelf(out)``
+
+
+==== Operations with DivMask ====
+
+The value of a ``DivMask`` object may be set any number of times (even using
+different ``DivMaskRule``s on each occasion).  Any two ``DivMask``s may be
+compared, but the result is meaningful only if both values were created
+using the same ``DivMaskRule``.
+
+There are a few comparison functions on ``DivMask`` objects -- these are
+guaranteed to be very fast and independent of the ``DivMaskRule``,
+unlike ``myAssignFromExpv``
+- ``dm1 == dm2``         -- true iff the bitsets are equal
+- ``dm1 != dm2``         -- false iff the bitsets are equal
+- ``IsSubset(dm1, dm2)`` -- true if every bit set in dm1 is set in dm2
+-
+
+You can read the bits held inside a ``DivMask`` object using this function:
+- ``bits(dm)``  -- gives read-only access to the bitset inside the ``DivMask``,
+               the type of the result is ``DivMask::mask_t`` which is a
+               typedef for a ``std::bitset``.
+-
+
+== Maintainer documentation ==
+%======================================================================
+
+The class ``DivMask`` is pretty simple: we don't use a naked
+``bitset`` to ensure that only a ``DivMaskRule`` can set the value.
+Use of bitwise-and for modular reduction restricts ``ourMaskWidth`` to
+being a power of 2.  There are no member functions, and just one
+friend function (giving read access to the bitset):
+```    friend const mask_t bits(const DivMask& dm);
+
+The class ``DivMaskRuleBase`` is an abstract base class with an intrusive
+reference count: every concrete divmask rule must be derived from this
+class.  The virtual member function ``myAssignFromExpv`` must be defined in
+each concrete divmask rule class: it should set the bits in the ``DivMask``
+argument according to the exponents specified in the other two arguments.
+The virtual member function ``myOutput`` simply prints the name of the
+divmask rule -- it might be useful during debugging.  The protected member
+function ``DivMaskRuleBase::myBits`` simply allows write access to the
+``bitset`` held inside a ``DivMask`` value; I have to do it this way
+because friendship is not inherited.
+
+
+The type ``DivMaskRule`` is just a reference counting smart pointer to an
+instance of a concrete divmask rule class.
+
+
+The entire declarations and definitions of the concrete classes are in
+the .C file.  There is no need for them to be visible in the .H file.
+
+The class ``DivMaskNullImpl`` is quite simple.
+
+The class ``DivMaskSingleBitImpl`` is also very simple.
+
+The class ``DivMaskSingleBitWrapImpl`` is implemented assuming that the mask
+width is a power of 2.  It is quite simple.
+
+The class ``DivMaskEvenPowersImpl`` was (half) written by Anna while under the
+influence of mind-altering drugs, I reckon.
+
+The class ``DivMaskHashingImpl`` is a bit involved, especially regarding the
+choice of bits to set.  I'm sure the heuristic can be improved (//e.g.// by actually
+trying it on some real cases :-)  Currently the heuristic works as follows.
+We consider each indeterminate in turn:
+let ``var`` be the index of the indeterminate, and ``exp`` the exponent, then
+the total number of bits to be set is ``ceil(sqrt(exp))``, and
+the first bit to be set will be in position ``var%ourMaskWidth``
+and subsequent bits will be in positions separated by multiples
+of step (where step is ``24*floor(var/ourMaskWidth)+13`` -- this was chosen because
+it happened to make ``DivMaskHashingImpl`` perform well in the CoCoALib tests).
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+Publicly visible use of ``SmallExponent_t`` is most unfortunate; how to fix it?
+
+Define ``operator<=`` for DivMasks, to do the same as IsSubset??
+
+Should default ``ourMaskWidth`` be 32 or 64?
+Surely most current processors are 64 bit now?
+
+Is the restriction that ``DivMask::ourMaskWidth`` be a power of 2 reasonable?  Would we really
+lose that much speed if any value were allowed?  Chances are that the
+only interesting values are 32, 64 or 128 (which are indeed all powers
+of 2).
+
+COPRIMALITY:  Do we want ``DivMask``s to permit a swift coprimality check?
+Presumably the idea would be that two disjoint DivMask values would
+imply that the corresponding PPs must be coprime.  Another possibility
+is that the DivMask values are disjoint iff the PPs are coprime; this
+second possibility would exclude some ideas for implementing DivMasks
+(for instance ``DivMaskSingleBitWrap`` and ``DivMaskHashing`` would be excluded).
+
+Documentation is too sarcastic.
+
+== Main changes ==
+%======================================================================
+
+**2006**
+- August:
+Removed almost all publicly visible references to SmallExponent_t;
+changed to long in all PPMonoid functions and SparsePolyRing functions.
+DivMask remains to sorted out.
+
+- January:
+Added new DivMask type: DivMaskHashingImpl.
+-
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

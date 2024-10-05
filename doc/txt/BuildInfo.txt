@@ -1,0 +1,67 @@
+      BuildInfo
+      Copyright (c)  2005,2007  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{BuildInfo}{John Abbott}
+
+
+== Examples ==
+%======================================================================
+- [ex-BuildInfo.C ../../examples/index.html#ex-BuildInfo.C]
+- [ex-limits.C ../../examples/index.html#ex-limits.C]
+-
+
+== User documentation ==
+%======================================================================
+
+The constant in ``BuildInfo`` allows you to find out which version of
+CoCoALib you are using.  The function ``BuildInfo::PrintAll`` prints out all
+the build information on the ``ostream`` passed in as argument -- you should
+include this information whenever you report a bug.
+
+There is one string constant which contains the version number of the
+library: it is of the form ``A.bcde`` where ``A`` is the major
+version, ``bc`` is the minor version, and ``de`` is the patch level.
+Note that there are always precisely 4 digits after the point (even if
+they are all zero).
+
+- ``BuildInfo::version`` -- a C string containing the CoCoALib version number.
+-
+
+NOTE: if you happen upon a copy of libcocoa.a and want to find out which
+version it is, you can use the following Unix/Linux command:
+
+```   strings libcocoa.a | grep  "CoCoA::BuildInfo"
+
+This should print out three lines informing you of the library version,
+the compiler used, and the compiler flags used when creating libcocoa.a.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+I chose to put the constants and function in their own namespace to
+emphasise that they go together.
+
+There are actually four string constants, but only one is supposed to
+be publicly accessible (because I cannot imagine why anyone would want
+access to the other three).  I made the constants C strings because it
+seemed simpler than using C++ strings.  The three constants
+``VersionMesg``, ``CompilerMesg``, and ``CompilerFlagsMesg`` contain
+the substring ``CoCoA::BuildInfo`` so that the grep trick described
+above will produce the version/compiler information directly.
+
+I made ``BuildInfo::PrintAll`` leave a blank line before and after its
+message so that it would stand out better from other output produced
+by the program.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+The constants are not C++ strings -- is this really a bug?
+
+Should the three constants ``VersionMesg``, ``CompilerMesg``, and
+[CompilerFlagsMesg] be hidden or public?  Until someone convinces me there
+is a good reason to make them public, they'll stay private.
+

@@ -1,0 +1,97 @@
+      SmartPtrIRC
+      Copyright (c)  2006  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SmartPtrIRC}{John Abbott}
+
+
+
+== User documentation for files SmartPtrIRC ==
+%======================================================================
+
+The name ``SmartPtrIRC`` stands for
+       //Smart Pointer with Intrusive Reference Count//.
+The desired behaviour is achieved through two cooperating classes:
+``SmartPtrIRC`` and ``IntrusiveReferenceCount``.  These classes exist
+to facilitate implementation of smart pointers with reference
+counting.  The suggested use is as follows.  Make your implementation
+class inherit ``protected``-ly from ``IntrusiveReferenceCount``, and
+in your implementation class declare the class
+``SmartPtrIRC<MyClass>`` as a friend.  You can now use the class
+``SmartPtrIRC<MyClass>`` as a reference counting smart pointer to your
+class.
+
+The template argument of the class ``SmartPtrIRC`` specifies the type of
+object pointed to; if you want the objects pointed at to be ``const`` then
+put the keyword "const" in the template argument like this
+``SmartPtrIRC<const MyClass>``.  Creating a new ``SmartPtrIRC`` to a datum will
+increment its reference count; conversely, destroying the ``SmartPtrIRC``
+decrements the ref count (and destroys the object pointed at if the ref
+count reaches zero, see ``IntrusiveReferenceCount::myRefCountDec``).  Five
+operations are available for ``SmartPtrIRC`` values:
+
+let ``SPtr`` be a ``SmartPtrIRC`` value
+- ``SPtr.myRawPtr()``    returns the equivalent raw pointer
+- ``SPtr.operator->()``  returns the equivalent raw pointer
+- ``SPtr.mySwap(SPtr2)`` swaps the raw pointers
+- ``SPtr1 == SPtr2``     returns true iff the equivalent raw pointers are equal
+- ``SPtr1 != SPtr2``     returns true iff the equivalent raw pointers are unequal
+
+
+The class ``IntrusiveReferenceCount`` is intended to be used solely as
+a base class.
+Note the existence of ``IntrusiveReferenceCount::myRefCountZero``
+which forces the reference count to be zero.  For instance, this is
+used in ring implementations where the ring object contains some
+//circular// references to itself; after creating the circular
+references the ring constructor then resets the reference count to
+zero so that the ring is destroyed at the right moment.  SEE BUGS
+SECTION.
+
+**IMPORTANT NOTE**:
+it is highly advisable to have ``myRefCountZero()`` as the very last
+operation in every contructor of a class derived from
+``IntrusiveReferenceCount``, i.e. intended to be used with
+``SmartPtrIRC``.
+
+
+== Maintainer documentation for files SmartPtrIRC ==
+%======================================================================
+
+The entire implementation is in the ``.H`` file: a template class, and
+another class with only inline member functions.  Inlining is appropriate
+as the functions are extremely simple and we expect them to be called a
+very large number of times.
+
+The implementation is quite straightforward with one important detail:
+the destructor of ``IntrusiveReferenceCount`` must be virtual because
+``myRefCountDec`` does a //polymorphic delete// through a pointer to
+``IntrusiveReferenceCount`` when the count drops to zero.  The book by
+Sutter and Alexandrescu gives wrong advice (in article 50) about when
+to make destructors virtual!
+
+The fn ``mySwap`` is a member fn because I couldn't figure out how to make
+it a normal (templated?) function.  I also feared there might have been
+some problems with the template fn ``std::swap``.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Should ``myRefCountZero`` be eliminated?  It is not strictly necessary
+(just call ``myRefCountDec`` after each operation which incremented
+the ref count.  This is related to how rings create their zero and one
+elements (and possibly other elements which should //always exist//,
+e.g. indets in a poly ring).
+
+Could ref count overflow?  Perhaps size_t is always big enough to
+avoid overflow?
+
+It may be possible to replace all this code with equivalent code from
+the BOOST library.  But so far (Nov 2006) the ``shared_ptr``
+implementation in BOOST is not documented, so presumably should not be
+used.  As there is no documentation I have not verified the existence
+of a //set ref count to zero// function; I rather suspect that it does
+not exist.
+
+

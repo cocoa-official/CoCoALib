@@ -1,0 +1,35 @@
+//foo := 1;
+//Protect foo;
+
+Define F(ref X, ref Y)
+	//Protect X;
+	Func ()
+		//ImportByValue X;
+		//ImportByValue Y;
+		ImportByRef X;
+		ImportByRef Y;
+		Y := "hi";
+		Y := ["a", "b", "c"];
+		G(ref X);
+	EndFunc ();
+	//Return Func () ImportByRef X; G(ref X) EndFunc;
+	//Return Func () ImportByValue X; Return X; EndFunc;
+	//Return Func () ImportByValue X; Protect X; EndFunc;
+	//Return Func () ImportByValue X; Unprotect X; EndFunc;
+EndDefine;
+
+Define G(ref A)
+	//A:=1;
+	A := A+A;
+EndDefine;
+
+//bar := F(ref foo);
+//foo := 0;
+//bar();
+
+foo := [1,2,3];
+F(ref foo[1], ref It);
+F(ref foo[1], ref foo);
+PrintLn foo;
+
+

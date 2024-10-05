@@ -1,0 +1,103 @@
+      ExternalLibs-frobby
+      Copyright (c)  2010 Anna Bigatti, Bjarke Hammersholt Roune
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ExternalLibs-frobby}{Anna Bigatti, Bjarke Hammersholt Roune}
+
+
+== User documentation ==
+%======================================================================
+
+**Frobby** is a software system and project for computations with
+monomial ideals.  **Frobby** is free software and it is intended as a
+vehicle for research on monomial ideals, as well as a useful practical
+tool for investigating monomial ideals.
+
+Available functions:
+```
+  long dimension(const ideal& I);
+
+  ideal AlexanderDualFrobby(I, pp);
+  ideal AlexanderDualFrobby(I);
+  ideal MaximalStandardMonomialsFrobby(I);
+
+  void IrreducibleDecompositionFrobby(std::vector<ideal>& components, I);
+  void PrimaryDecompositionFrobby(std::vector<ideal>& components, I);
+  void AssociatedPrimesFrobby(std::vector<ideal>& primes, I);
+
+  RingElem MultigradedHilbertPoincareNumeratorFrobby(I);
+  RingElem TotalDegreeHilbertPoincareNumeratorFrobby(I);
+  RingElem TotalDegreeHilbertPoincareNumeratorFrobby(I, const RingElem& base);
+```
+
+
+=== Examples ===
+- [ex-frobby1.C ../../examples/index.html#ex-frobby1.C]
+-
+
+=== Download and compile Frobby ===
+
+ | [**frobby** website http://www.broune.com/frobby/]
+
+**CoCoALib** requires **Frobby** release 0.9.0 or later.
+Download **Frobby** from the website.
+
+**IMPORTANT** there are some minor mistakes in the frobby source code:
+- insert the following two lines in frobby source files ``main.cpp`` and ``randomDataGenerators.cpp``
+- ``#include <sys/types.h>`` 
+- ``#include <unistd.h>``
+- on line 143 of file ``StatisticsStrategy.cpp`` change ``mpz_class`` into ``mpq_class``
+
+Now compile **Frobby** following the instructions in the **Frobby release**.
+
+**NOTE**: JAA says that to compile Frobby (0.8.2) on my machine I had to
+execute the following:
+```
+export CFLAGS="-m64 -mtune=core2 -march=core2"  # taken from gmp.h
+export LDFLAGS=$CFLAGS
+make library
+```
+``make`` might give some linking issues if ``libgmpxx`` is not installed
+systemwide.  Anyway, for linking with CoCoA you only need ``make library``.
+
+
+=== Configure and compile CoCoALib with frobby ===
+
+Look to see where the library file ``libfrobby.a`` is -- on my computer
+it was inside the Frobby subdirectory ``bin/``.  Note the full path to
+the library file as you will need it when configuring CoCoALib!
+
+Then configure and compile **CoCoALib** typing
+``` 
+cd CoCoALib-0.99
+./configure --with-libfrobby=<your_path_to>/libfrobby.a
+make
+```
+
+== Maintainer documentation ==
+%======================================================================
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Currently Frobby is not really intended to be used as a library, so linking
+it with CoCoALib is not as simple as it could be.  Hopefully this will soon
+change.
+
+
+== Main changes ==
+%======================================================================
+
+**2011**
+- 29 July: added (temporarily?) ``Frobby`` suffix to all functions
+- 5 July: modified AlexanderDualFrobby into AlexanderDualFrobby,
+          PrimaryDecomposition into PrimaryDecompositionFrobby.
+
+
+**2010**
+- 1 October: first inclusion
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

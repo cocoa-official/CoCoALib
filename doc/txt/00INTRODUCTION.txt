@@ -1,0 +1,187 @@
+      INTRODUCTION
+      Copyright (c)  2010,2013,2021 John Abbott, Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{INTRODUCTION}{John Abbott}
+
+
+== Quick Summary: CoCoALib and CoCoA-5 ==
+%======================================================================
+
+**CoCoA-5** is an easy-to-use interactive system for computations in
+commutative algebra; it contains an on-line manual accessible via the
+``?`` command.
+
+**CoCoALib** is a C++ //library// of functions for computations in
+commutative algebra.
+
+This introduction is part of the documentation for //CoCoALib//;
+to use the library you will need some //basic knowledge// of the C++
+programming language.
+
+
+%----------------------------------------------------------------------------
+== Getting Started ==
+
+The first step is to compile the CoCoA software: see [[INSTALL]]
+
+=== Using CoCoALib ===
+
+As we know that no one likes to read documentation, the best place to
+start is by looking at the [examples/ ../../examples/index.html]
+directory full of sample code using CoCoALib.
+
+
+==== Writing Your Own Programs ====
+
+To write your own program, first think of a filename in which to
+put your code, //e.g.// ``MyProg.C`` -- the name **must end in** //dot C//.
+The simplest next step is to copy the example program ``ex-empty.C``
+into ``MyProg.C``, and then modify this copy (see [guide ../../examples/index.html]).
+The advantage is that ``ex-empty.C`` contains several lines of "boilerplate"
+code which your program needs to contain.
+
+
+If you want to experiment with CoCoALib using a different directory,
+just copy ``examples/Makefile`` into your directory and change the line
+``` COCOA_ROOT=...
+so that it specifies the full path of ``CoCoALib-XX``, for instance
+``` COCOA_ROOT=/Users/bigatti/CoCoALib-0.99
+In any case, it is best to start with a copy of ``ex-empty.C``.
+
+
+==== Debugging with CoCoALib ====
+
+CoCoALib does offer some help in tracking down bugs in programs which
+use it (and in its own routines).  To enable debugging, you need to
+(re-)configure with the option ``--debug``, and then (re-)compile the
+library.
+
+Once CoCoALib has been configured and compiles with the ``--debug``
+option, the preprocessor symbol ``CoCoA_DEBUG`` is set.  This symbol
+enables various run-time assertions which perform extra checks in many
+functions.  You must also (re-)compile your program after enabling
+"debugging mode".  You may like to read [assert.html ./assert.html] to
+learn about ``CoCoA_ASSERT`` for use in your own code.
+
+In case you are already familiar with the debugger ``gdb``,
+"debugging mode" also produces a version of CoCoALib compatible
+with ``gdb``.
+
+%If your program seems to have memory leaks, or other problems to do with
+%memory alloccation, try reading the files doc/MemPool.txt, doc/debug_new.txt
+%and doc/leak_checker.txt which give advice on tracking down such problems.
+%These facilities are oriented towards programmers with a fair amount of
+%experience.
+
+
+=== Various Forms of Documentation ===
+%----------------------------------------------------------------------
+
+CoCoALib comes with a collection of hand-written descriptions of its
+capabilities as well as a collection of example programs showing how
+to use many of the features of the library.  **The hope is that the example**
+**programs (plus perhaps a little intelligent guesswork) will suffice to**
+**answer most questions about CoCoALib.**  The hand-written documentation is
+intended to be more thorough: so less guesswork is needed, but you may
+have to plough through lots of tedious text to find the detail you're
+looking for.
+
+The hand-written documentation is split into many files: generally there is
+one file of documentation for each implementation file in the source code.
+Furthermore, each file comprises three sections:
+- **User Documentation**  gives the information a normal user of
+  the library may need to know, principally the function interfaces
+  offered
+- **Maintainer Documentation** contains notes and details about how
+  the various functions are implemented in the library, essentially
+  all information that might be needed to comprehend and maintain the
+  code in the future
+- **Shortcomings, etc** contains sundry notes about the implementation,
+  for instance ideas on how the implementation might be improved in the
+  future, doubts about certain design choices, and generally any thoughts
+  to be taken into consideration for future versions.
+-
+
+The source for this documentation is in the CoCoALib directory ``doc/txt/``, and
+converted into html (``doc/html/``) and LaTeX (``doc/tex/``) using
+[``txt2tags`` http://txt2tags.sourceforge.net/].
+
+A template file fo adding to this documentation and some basic
+instructions for [``txt2tags`` http://txt2tags.sourceforge.net/] are
+in the file [doc/txt/empty.txt empty.html].
+
+There is also some (old?) automatically generated DOXYGEN documentation in
+[doxygen ../doxygen/index.html]
+
+We believe that many simple questions are probably best answered by looking
+at the example programs (and perhaps applying a little intelligent guesswork).
+The hand-written documentation in the directory ``doc/`` is supposed to be
+exhaustive (and is doubtless also rather exhausting).  The Doxygen files
+will most likely be of use to those already experienced in using CoCoALib.
+
+%----------------------------------------------------------------------------
+== Sundry Important Points ==
+
+We have tried to give CoCoALib a //natural// interface, but this has not always
+been possible.  Here are the main problem areas:
+
+==== Powering and Exponentiation ====
+
+The use of the hat symbol (^) to denote exponentiation is very widespread.
+**CoCoALib does not allow this** you must use the function ``power`` instead.
+
+//Why not?//  Because it would be too easy to write misleading code, //i.e.//
+valid code which does not compute what you would expect.  Here is a simple
+example: ``3*x^2`` is interpreted by the compiler as ``(3*x)^2``.  Unfortunately
+there is no way to make the C++ compiler use the expected interpretation.
+
+
+==== Integers and Rationals ====
+
+The C++ language is not designed to compute directly with unlimited
+integers or with exact rational numbers; special types (namely [[BigInt]] and
+[[BigRat]]) to handle these sorts of values have been added as part of CoCoALib
+(with the real work being done by the GMP library).  Nevertheless the user
+has to be wary of several pitfalls where code which looks correct at first
+glance does not produce the right answer.
+
+- rationals must be constructed explicitly, //e.g.// the expression
+  ``2/3`` is valid C++ but is interpreted as an integer division
+  giving result ``0``; instead the rational must be constructed like
+  this ``BigRat(2,3)``.
+
+- large integer constants must be converted from a string
+  representation, //e.g.// ``n = 99...99;`` (with 99 nines) will
+  probably not even compile because of an error about "integer
+  constant too big"; instead such a large value must be handled
+  directly by CoCoALib in a call like ``BigInt("99...99");`` which
+  converts the string into an integer.
+
+- the compiler believes it knows how to perform arithmetic between
+  machine integers, but there are two annoying pitfalls: (1)
+  the spectre of overflow haunts computations with machine integers;
+  (2) expressions like ``2/3`` are treated as integer division
+  (giving in this case 0, rather than the rational number 2/3).
+  To avoid risk of overflow use values of type [[BigInt]], though
+  computations will then be slower than with machine integers.
+  If you are //quite sure// that large values can //never occur// then it is
+  fine to use machine integers; otherwise use unlimited integers.
+  Rational numbers have to be created using a constructor call: //e.g.// ``BigRat(2,3)``.
+
+- (AMB: add examples from talk in Kassel)
+-
+
+%----------------------------------------------------------------------
+
+=== Reporting CoCoALib Bugs and other problems ===
+
+Please let us know if you find any bugs in CoCoALib.  Ideally your bug report should include a **small** program
+which exhibits the bad behaviour with a clear indication of what you think the
+program should do, and where it apparently goes wrong.  The best way to inform
+us of the problem is to report an //issue// on
+```   http://cocoa.dima.unige.it/redmine/
+
+If you'd rather not use redmine Forum, you can send email to:
+```  cocoa@dima.unige.it
+

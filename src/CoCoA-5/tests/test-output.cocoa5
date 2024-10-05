@@ -1,0 +1,57 @@
+define BeginTest(str) /*println str;*/ enddefine;
+
+//PrintLn "Running from "+GetEnv("PWD");
+
+BeginTest("GetEnv");
+assert(len(GetEnv("__yabba_dabba_doo__"))=0);
+
+BeginTest("123");
+ostr := OpenOString();
+Print 123, " is ", type(123) On ostr;
+s := close(ostr);
+assert(s = "123 is INT");
+
+BeginTest("Closing a closed stream");
+Try
+	close(ostr);
+	assert(false);
+UponError e Do
+	assert(GetErrMesg(e) = "This out-stream is already closed");
+EndTry
+
+BeginTest("Printing to a closed stream");
+Try
+	Print "hi there" on ostr;
+	assert(false);
+UponError e Do
+	assert(GetErrMesg(e) = "Cannot print to a closed out-stream");
+EndTry
+
+PrintTagged := Record[
+  Dots := Func (ostr, v)
+		For I:=1 To v Do
+			Print "." On ostr
+		EndFor
+	EndFunc
+];
+
+Define PrintDots(ostr)
+	three := tagged(3, "Dots");
+	Print three On ostr;
+	Print 1, 2, untagged(three), three On ostr;
+EndDefine
+
+BeginTest("Printing dots (on string)");
+ostr := OpenOString();
+PrintDots(ostr);
+s := close(ostr);
+assert(s = "...123...");
+
+-- BeginTest("Printing dots (on file)");
+-- filename := "__test__";
+-- ofile := OpenOFile(filename);
+-- PrintLn "hi!" On ofile;
+-- PrintDots(ofile);
+-- close(ofile);
+-- assert(ContentsOfFile(filename) = "hi!\n...123...");
+

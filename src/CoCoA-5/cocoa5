@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# Start the CoCoAInterpreter supplying the value of "--packageDir".
+
+#############################################################################
+# Find directory of this script (taken from link below)
+# http://stackoverflow.com/questions/4774054/reliable-way-for-a-bash-script-to-get-the-full-path-to-itself
+
+pushd . > /dev/null
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+while [ -L "$SCRIPT_PATH" ]
+do
+  cd "`dirname "$SCRIPT_PATH"`"
+  SCRIPT_PATH="$(readlink "`basename "$SCRIPT_PATH"`")"
+done
+cd "`dirname "$SCRIPT_PATH"`" > /dev/null
+SCRIPT_DIR="`pwd`"
+popd  > /dev/null
+
+
+# At this point SCRIPT_DIR contains the path to the directory
+# where the CoCoAInterpreter executable and also packages/ subdir.
+
+##################################################################
+### executable
+
+### for released CoCoA (as in release-files/): CoCoAInterpreter is in bin/
+#COCOA_EXECUTABLE="$SCRIPT_DIR/bin/CoCoAInterpreter"
+
+### for developer CoCoA
+COCOA_EXECUTABLE="$SCRIPT_DIR/CoCoAInterpreter"
+
+
+#############################################################################
+# A simple sanity check that this script has been correctly set up.
+
+if [ ! -f "$COCOA_EXECUTABLE" ]
+then
+  sleep 1 # Useful if running inside emacs (see redmine 1352)
+  echo ""                                           >/dev/stderr
+  echo "========================================="    >/dev/stderr
+  echo ">>> ERROR: COCOA-5 EXECUTABLE MISSING <<<"    >/dev/stderr
+  echo "========================================="    >/dev/stderr
+  echo "Expected to find CoCoA-5 executable at path"  >/dev/stderr
+  echo "$COCOA_EXECUTABLE"                            >/dev/stderr
+  echo                                                >/dev/stderr
+  echo "Exiting..."                                   >/dev/stderr
+  sleep 4
+  exit 1
+fi
+if [ ! -x "$COCOA_EXECUTABLE" ]
+then
+  sleep 1 # Useful if running inside emacs (see redmine 1352)
+  echo ""                                           >/dev/stderr
+  echo "============================================" >/dev/stderr
+  echo ">>> ERROR: COCOA-5 BINARY NOT EXECUTABLE <<<" >/dev/stderr
+  echo "============================================" >/dev/stderr
+  echo "CoCoA-5 binary must be executable: file is"   >/dev/stderr
+  echo "$COCOA_EXECUTABLE"                            >/dev/stderr
+  echo                                                >/dev/stderr
+  echo "Exiting..."                                   >/dev/stderr
+  sleep 4
+  exit 1
+fi
+if [ ! -d "$SCRIPT_DIR/packages" ]
+then
+  sleep 1 # Useful if running inside emacs (see redmine 1352)
+  echo ""                                           >/dev/stderr
+  echo "======================================="      >/dev/stderr
+  echo ">>> ERROR: COCOA-5 PACKAGES MISSING <<<"      >/dev/stderr
+  echo "======================================="      >/dev/stderr
+  echo "Expected CoCoA-5 package directory to be:"    >/dev/stderr
+  echo "$SCRIPT_DIR/packages/"                        >/dev/stderr
+  echo                                                >/dev/stderr
+  echo "Exiting..."                                   >/dev/stderr
+  sleep 4
+  exit 1
+fi
+
+
+#############################################################################
+# Start CoCoA!
+
+exec "$COCOA_EXECUTABLE" --packageDir "$SCRIPT_DIR/packages" "$@"

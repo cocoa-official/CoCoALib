@@ -1,0 +1,129 @@
+      degree
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{degree}{John Abbott}
+
+== Examples ==
+%======================================================================
+- [ex-PolyRing1.C ../../examples/index.html#ex-PolyRing1.C]
+- [ex-RingElem1.C ../../examples/index.html#ex-RingElem1.C]
+- [ex-module2.C ../../examples/index.html#ex-module2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+The class degree is used to represent the values returned by the "deg"
+function applied to power products and (multivariate) polynomials.
+Recall that in general a degree is a value in ``ZZ^k``; the value of ``k`` and
+the way the degree is computed (equiv. weight matrix) are specified when
+creating the ``PPOrdering`` object used for making the ``PPMonoid`` of the
+polynomial ring -- see the function ``NewPolyRing`` (in [[SparsePolyRing]]).
+
+If ``t1`` and ``t2`` are two power products then the degree of their product is
+just the sum of their individual degrees; and naturally, if ``t1`` divides
+``t2`` then the degree of the quotient is the difference of their degrees.
+The degree values are totally ordered using a **lexicographic ordering**.
+Note that a degree may have negative components.
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+A ``degree`` object may be created by using one of the following functions:
+- ``degree d1(k);`` -- create a new degree object with value (0,0,...,0), with ``k`` zeroes (the length ``k`` may be 0)
+- ``wdeg(f)`` -- where ``f`` is a [[RingElem]] belonging to a [[PolyRing]]
+- ``wdeg(t)`` -- where ``t`` is a ``PPMonoidElem``  (see [[PPMonoid]])
+-
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+The following functions are available for objects of type degree:
+
+- ``d1 = d2``     -- assignment
+- ``cout << d``   -- print out the degree
+- ``GradingDim(d)`` -- get the number of the components
+- ``d[k]`` -- get the ``k``-th component of the degree (as a ``BigInt``)
+- ``SetComponent(d, k, n)`` -- sets the ``k``-th component of ``d`` to ``n`` (integer)
+-
+
+==== Arithmetic ====
+- ``d1 + d2``  -- sum
+- ``d1 - d2``  -- difference (there might be no PP with such a degree)
+- ``d1 += d2`` -- equivalent to ``d1 = d1 + d2``
+- ``d1 -= d2`` -- equivalent to ``d1 = d1 - d2``
+- ``top(d1, d2)`` -- coordinate-by-coordinate maximum (a sort of "lcm")
+- ``cmp(d1, d2)`` -- (int) result is <0, =0, >0 according as ``d1 <,=,> d2`` in lex order
+- ``FastCmp(d1, d2)`` -- same as ``cmp(d1,d2)`` but no compatibility check on the args
+-
+
+==== Queries ====
+The usual comparison operators may be used for comparing degrees (using
+the lexicographic ordering).
+- ``d1 == d2`` and ``d1 != d2``
+- ``IsZero(d)`` -- return true iff ``d`` is the zero degree
+- ``d1 < d2``
+- ``d1 <= d2``
+- ``d1 > d2``
+- ``d1 >= d2``
+-
+
+== Maintainer documentation ==
+%======================================================================
+
+So far the implementation is very simple.  The primary design choice was to
+use C++ std::vector<>s for holding the values -- indeed a ``degree`` object is
+just a "wrapped up" vector of values of type ``degree::ElementType``.  For a
+first implementation this conveniently hides issues of memory management
+etc.  Since I do not expect huge numbers of ``degree`` objects to created and
+destroyed, there seems little benefit in trying to use [[MemPool]]s (except it
+might be simpler to detect memory leaks...)  I have preferred to make most
+functions friends rather than members, mostly because I prefer the syntax
+of normal function calls.
+
+The ``CheckCompatible`` function is simple so I made it inline.  Note the type
+of the third argument: it is deliberately not (a reference to) a
+``std::string`` because I wanted to avoid calling a ctor for a ``std::string``
+unless an error is definitely to be signalled.  I made it a private
+static member function so that within it there is free access to
+``myCoords``, the data member of a ``degree`` object; also the call
+``degree::CheckCompatible`` makes it clear that it is special to degrees.
+
+As is generally done in CoCoALib the member function ``mySetComponent`` only uses
+CoCoA_ASSERT for the index range check.  In contrast, the non-member fn ``SetComponent``
+always performs a check on the index value.  The member fn ``operator[]`` also
+always performs a check on the index value because it is the only way to get
+read access to the degree components.  I used [[MachineInt]] as the type for
+the index to avoid the nasty surprises C++ can spring with silent conversions
+between various integer types.
+
+
+In implementations of functions on degrees I have preferred to place the
+lengths of the degree vectors in a const local variable: it seems cleaner
+than calling repeatedly ``myCoords.size()``, and might even be fractionally
+faster.
+
+``operator<<`` **no longer** handles the case of one-dimensional
+degrees specially so that the value is not printed inside parentheses.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+The implementation uses [[BigInt]]s internally to hold the values of the degree
+coordinates.  The allows a smooth transition to examples with huge degrees
+but could cause some run-time performance degradation.  If many complaints
+about lack of speed surface, I'll review the implementation.
+
+Is public write-access to the components of a degree object desirable? Or is this a bug?
+
+No special handling for the case of a grading over Z (i.e. k=1) other
+than for printing.  Is this really a shortcoming?
+
+Printing via ``operator<<`` is perhaps rather crude?
+Is the special printing for k=1 really such a clever idea?
+
+``GradingDim(const degree&)`` seems a bit redundant, 
+but it is clearer than "dim" or "size" 
+
+Is use of [[MachineInt]] for the index values such a clever idea?
+

@@ -1,0 +1,68 @@
+      exception
+      Copyright (c)  2015,2021  John Abbott  &  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{exception}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-error1.C ../../examples/index.html#ex-error1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+All exceptions thrown by CoCoALib are of a type derived from ``CoCoA::exception``.
+
+An object of type ``CoCoA::exception`` contains just 2 fields: a ``message`` and
+a ``context`` (which may be empty).  The intention is that the ``message``
+indicates what caused the exception, while ``context`` may indicate where
+the exception was thrown from (or it may be empty).
+
+Note that ``CoCoA::exception`` deliberately does not derive from ``std::exception``.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+There are two constructors:
+- ``exception(mesg)``  specify the message but no context (//i.e.// empty string)
+- ``exception(mesg, where)``  specify the message and a context
+-
+
+=== Queries and views ===[queries]
+%----------------------------------------------------------------------
+Let ``E`` be an object of type ``exception``
+- ``message(E)``  gives the message inside ``E`` as a ``std::string``
+- ``context(E)``  gives the context info inside ``E`` as a ``std::string``
+-
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The class is very simple: it contains just two string data members,
+and two accessor functions.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Params are now ``std::string`` rather than ``const std::string&``
+because that should be more efficient (sometimes) thanks to move-ctor:
+the supplied arg is a copy, so can be moved into the data-structure.
+
+
+== Main changes ==
+%======================================================================
+
+**2021**
+- November (v0.99718): changed ctor args to ``std::string`` (previously ``const std::string&``)
+
+
+**2015**
+- July (v0.99536): first release
+
+

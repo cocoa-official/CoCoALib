@@ -1,0 +1,97 @@
+      convert
+      Copyright (c)  2007,2009,2013,2024  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{convert}{John Abbott}
+
+
+
+== Examples ==
+
+- [ex-convert1.C ../../examples/index.html#ex-convert1.C]
+-
+
+== User Documentation ==
+%======================================================================
+
+The header file ``convert.H`` supplies several conversion functions.
+They are for converting a //numerical// value of one type into another
+//numerical// type (at least one of the types must be a CoCoALib
+type).  There is also a way of safely converting machine integer
+values into other integral types.
+
+There are two families of conversion functions:
++ ``ConvertTo<DestType>(src)`` the result is the converted value; if ``src`` cannot
+be converted then an error is thrown (with code ``ERR::BadConvert``)
++ ``ConvertTo<DestType>(src, ErrMesg)`` the result is the converted
+value; if ``src`` cannot be converted then an error is thrown
+(with code ``ErrMesg`` typically created by calling ``ErrorInfo(ERR::code, "fn name"))
++ ``IsConvertible(dest,src)`` the result is a boolean: ``true`` means the conversion
+was successful (and the result was placed in ``dest``, the 1st arg)
++
+
+Here is a summary of the conversions currently offered:
+
+ || "to" type       |  "from" type   | notes |
+ |  (unsigned) long |  [[BigInt]]    |       |
+ |  (unsigned) int  |  [[BigInt]]    |       |
+ |  (unsigned) long |  [[BigRat]]    |       |
+ |  (unsigned) int  |  [[BigRat]]    |       |
+ |  long            |  [[RingElem]]  | equiv to ``IsInteger`` & range check |
+ |  [[BigInt]]      |  [[RingElem]]  | same as ``IsInteger``            |
+ |  [[BigRat]]      |  [[RingElem]]  | same as ``IsRational``           |
+ |  long            |    double      | value must be integral & in range |
+ |  [[BigInt]]      |    double      |       |
+ |  [[BigRat]]      |    double      |       |
+ |  double          |  [[BigInt]]    | may have rounding error!!      |
+ |  double          |  [[BigRat]]    | may have rounding error!!      |
+
+
+**NOTE 1: Conversion to a ``string``** can be achieved via ``ostringstream``:
+```
+  ostringstream buffer;
+  buffer << value;
+  const string& ConvertedValue = buffer.str();
+```
+
+**NOTE 2: Conversion fails** if overflow occurs.  Currently converting a non-zero ``BigRat`` to
+a ``double`` does not fail if the closest double is 0.
+
+====IntegerCast====
+
+There is a templated class called ``IntegerCast``.  It is to be used
+for converting safely from one machine integer type to another: the
+conversion succeeds only if the value supplied can be represented by
+the destination type.  In case of failure an ``ERR::BadConvert``
+exception is thrown.  An earlier attempt was called ``NumericCast``;
+that was decidedly inferior.
+
+
+
+== Maintenance notes for convert ==
+%======================================================================
+
+The ``ConvertTo`` fns simply call the corresponding ``IsConvertible``
+function -- indeed a template implementation is appropriate here.
+
+Only some combinations of ``IsConvertible`` functions are present so far.
+
+The class ``IntegerCast`` has a single template argument, and the constructor
+has a separate template argument to allow the "natural syntax" like that of
+``static_cast`` (or BOOST's ``numeric_cast``).  I used a class rather than a templated function because a
+function would have required the user to specify two template arguments
+(//i.e.// unnatural syntax).  I don't know if this is the best way to achieve
+what I want, but it is simple enough that there are //obviously no deficiencies//.
+
+
+== Bugs, Shortcomings, etc ==
+%======================================================================
+
+Conversion to C++ integral types other than (unsigned) int/long is not yet supported.
+Indeed the ``IsConvertible`` functions are a hotch potch, but how can it be done better?
+
+BOOST has ``numeric_cast`` which is like ``IntegerCast`` for built-in numerical types.
+Sooner or later we could pehaps use that?
+
+
+Should conversion of ``BigRat`` to ``double`` ignore underflow, or should it fail?

@@ -1,0 +1,102 @@
+<Greetings>
+  CoCoAServer?
+  version  1.03
+  nolimits
+  example_name  c7noh_hDL
+</Greetings>
+
+<operation> ideal_groebner </operation>
+<number_arguments> 2 </number_arguments>
+
+<polynomial_ring>
+    name ServerOutputRing
+  <coefficient_ring>
+    characteristic 32003
+  </coefficient_ring>
+
+  <indeterminates>
+    number_indets 8
+    number_params 0
+  </indeterminates>
+
+  <ordering_grading>
+    ordering_type   matrix_ordering
+    grading_dim 0
+<integer_matrix>
+8 8
+   1   1   1   1   1   1   1   1
+   1   0   0   0   0   0   0   0
+   0   1   0   0   0   0   0   0
+   0   0   1   0   0   0   0   0
+   0   0   0   1   0   0   0   0
+   0   0   0   0   1   0   0   0
+   0   0   0   0   0   1   0   0
+   0   0   0   0   0   0   1   0
+</integer_matrix>
+  </ordering_grading>
+
+</polynomial_ring>
+
+<polynomial_list>
+7
+
+7
+1   1 0 0 0 0 0 0 0  
+1   0 1 0 0 0 0 0 0  
+1   0 0 1 0 0 0 0 0  
+1   0 0 0 1 0 0 0 0  
+1   0 0 0 0 1 0 0 0  
+1   0 0 0 0 0 1 0 0  
+1   0 0 0 0 0 0 1 0  
+ 
+7
+1   1 1 0 0 0 0 0 0  
+1   1 0 0 0 0 0 1 0  
+1   0 1 1 0 0 0 0 0  
+1   0 0 1 1 0 0 0 0  
+1   0 0 0 1 1 0 0 0  
+1   0 0 0 0 1 1 0 0  
+1   0 0 0 0 0 1 1 0  
+ 
+7
+1   1 1 1 0 0 0 0 0  
+1   1 1 0 0 0 0 1 0  
+1   1 0 0 0 0 1 1 0  
+1   0 1 1 1 0 0 0 0  
+1   0 0 1 1 1 0 0 0  
+1   0 0 0 1 1 1 0 0  
+1   0 0 0 0 1 1 1 0  
+ 
+7
+1   1 1 1 1 0 0 0 0  
+1   1 1 1 0 0 0 1 0  
+1   1 1 0 0 0 1 1 0  
+1   1 0 0 0 1 1 1 0  
+1   0 1 1 1 1 0 0 0  
+1   0 0 1 1 1 1 0 0  
+1   0 0 0 1 1 1 1 0  
+ 
+7
+1   1 1 1 1 1 0 0 0  
+1   1 1 1 1 0 0 1 0  
+1   1 1 1 0 0 1 1 0  
+1   1 1 0 0 1 1 1 0  
+1   1 0 0 1 1 1 1 0  
+1   0 1 1 1 1 1 0 0  
+1   0 0 1 1 1 1 1 0  
+ 
+7
+1   1 1 1 1 1 1 0 0  
+1   1 1 1 1 1 0 1 0  
+1   1 1 1 1 0 1 1 0  
+1   1 1 1 0 1 1 1 0  
+1   1 1 0 1 1 1 1 0  
+1   1 0 1 1 1 1 1 0  
+1   0 1 1 1 1 1 1 0  
+ 
+2
+-1   1 1 1 1 1 1 1 0  
+1   0 0 0 0 0 0 0 7  
+ 
+</polynomial_list>
+

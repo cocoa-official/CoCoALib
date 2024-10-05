@@ -1,0 +1,36 @@
+      DistrMPolyClean
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{DistrMPolyClean}{John Abbott}
+
+
+== User documentation ==
+%----------------------------------------------------------------------
+
+Internal implementation for [[RingDistrMPolyClean]]
+
+
+== Maintainer documentation ==
+%----------------------------------------------------------------------
+
+The primary purpose for object of class ``DistrMPolyClean`` is to represent
+values in a ``RingDistrMPolyClean``; consequently all operations on a
+``DistrMPolyClean`` which could allocate or deallocate memory must take
+arguments indicating which memory manager(s) to use.
+
+An object of type ``DistrMPolyClean`` is essentially an ordered (singly) linked
+list of summands, and each summand is a pair made up of a coefficient
+(held as a RingElem) and a power product (held as a PPMonoidElem).  In a
+valid DistrMPoly all the coefficients are non-zero, the power products
+are all distinct and the summands are ordered decreasingly according to
+the ordering on the PPs (as determined by the PPO inside the owning
+PPMonoid).
+
+
+
+
+== Bugs, Shortcomings, and other ideas ==
+%----------------------------------------------------------------------
+
+

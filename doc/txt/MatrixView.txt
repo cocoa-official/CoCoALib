@@ -1,0 +1,186 @@
+      MatrixView
+      Copyright (c)  2008,2014  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{MatrixView}{John Abbott}
+
+
+
+== Examples ==[examples]
+- [ex-matrix1.C ../../examples/index.html#ex-matrix1.C]
+- [ex-matrix2.C ../../examples/index.html#ex-matrix2.C]
+- [ex-matrix4.C ../../examples/index.html#ex-matrix4.C]
+
+
+== User documentation for MatrixView ==
+%======================================================================
+
+A ``MatrixView`` offers a means to **view** one or more
+ **existing objects** as though they were a [[matrix]]:
+
+- if you change the entries in the objects then the ``MatrixView`` changes;
+- if you change the entries in the ``MatrixView`` then the underlying objects change;
+- if you destroy or change the structure of the objects then the
+  ``MatrixView`` may become invalid (and using it could lead to the
+  dreaded **undefined behaviour**, //i.e.// probably a crash).
+-
+
+**NB** //Matrix views// do not make copies, so be careful with
+  temporaries!  Look at these examples (``val`` is a [[RingElem]]):
+```
+  // OK
+  const vector<RingElem> v(3, val);
+  MatrixView MV = RowMat(v);  // MV reads/writes in the vector v
+
+  // NO   this compiles, but the vector disappears after the ";"!!
+  ConstMatrixView MVGhost = RowMat(vector<RingElem>(3, val));
+
+  // OK   NewDenseMat makes a copy of the vector before it disappears
+  matrix M = NewDenseMat(RowMat(vector<RingElem>(3, val)));
+```
+
+=== Pseudo-constructors ===[PseudoConstructors]
+
+==== Matrix Views of a Vector ====
+You can //view// a ``std::vector<RingElem>``, all of whose entries belong to the
+same [[ring]], as a matrix in three ways:
+- ``ColMat(v)``  -- view a ``vector<RingElem>`` ``v`` as a column matrix
+- ``RowMat(v)``  -- view a ``vector<RingElem>`` ``v`` as a row matrix
+- ``DiagMat(v)`` -- view a ``vector<RingElem>`` ``v`` as a diagonal matrix
+                    (NB: only the diagonal entries are //writable//)
+- ``MatByRows(r,c, v)`` -- view a ``vector<RingElem>`` ``v`` as an ``r``x``c`` matrix
+where the entries of ``v`` are row 1, then row 2, and so on.
+- ``MatByCols(r,c, v)`` -- view a ``vector<RingElem>`` ``v`` as an ``r``x``c`` matrix
+where the entries of ``v`` are col 1, then col 2, and so on.
+-
+
+==== Matrix Views of a Matrix ====
+- ``transpose(M)``         -- transposed //view// of the matrix ``M``
+- ``submat(M, rows, cols)``-- submatrix //view// into ``M``; the
+                          rows and columns visible in the submatrix
+                          are those specified in the (``std::vector<long>``) arguments ``rows``
+                          and ``cols``; repeated indices are not allowed.
+- ``RowMat(M, i)``        -- view the ``i``-th row of the matrix ``M`` as a 1-by-c matrix
+- ``ColMat(M, j)``        -- view the ``j``-th col of the matrix ``M`` as an r-by-1 matrix
+
+
+==== Matrix Views of Several Matrices ====
+The following pseudo-constructors assemble several matrices into a bigger one;
+the argument matrices must all have the same ``BaseRing``.  Be careful about
+passing temporaries to these functions: they **only make references** to the
+submatrices ``A``, ``B`` etc
+- ``ConcatVer(A, B)``     -- matrix //view// with the rows of ``A`` above those of ``B``
+                             |  A  |
+                             |  B  |
+- ``ConcatHor(A, B)``     -- matrix //view// with the cols of ``A`` before those of ``B``
+                             |  A  |  B  |
+
+- ``ConcatDiag(A,B)``     -- block diagonal matrix //view//
+                             |  A  |  0  |
+                             |  0  |  B  |
+- ``ConcatAntiDiag(A,B)`` -- block antidiagonal matrix //view//
+                             |  0  |  A  |
+                             |  B  |  0  |
+- ``BlockMat(A, B, C, D)`` -- block matrix //view//
+                             |  A  |  B  |
+                             |  C  |  D  |
+  **NB** in ``BlockMat`` the boundaries of the four submatrices must be aligned; putting ``zeroes`` in place of a matrix effectively creates a ``ZeroMat`` of the correct size.
+
+
+=== Operations on ConstMatrixView, MatrixView ===
+
+See [[matrix operations]], [[matrix constructors]] and [[MatrixOps]]
+
+
+== Maintainer documentation for MatrixView ==
+%======================================================================
+
+Most of the implementations are quite straightforward; the tricky part was
+getting the design of the abstract classes right (well, I hope it is right
+now).  Below are a few comments on some less obvious aspects of the
+implementations.
+
+Note: it is a mathematical fact that the determinant of the 0x0 matrix is 1.
+
+``ZeroMatImpl`` and ``IdentityMatImpl`` are both derived from
+``MatrixViewBase`` rather than ``ConstMatrixViewBase`` as one might
+naturally expect.  The main reason for this is to simplify the
+implementation of ``BlockMat``.  I wanted to be lazy and
+implement ``ConcatDiag`` and ``ConcatAntidiag`` using ``BlockMat``;
+while this may not be the best implementation, it is a natural
+approach and should certainly work as one might reasonably expect.
+However, the pseudo-ctor ``BlockMat`` has just two signatures: if any
+one of the submatrices is //const// then whole result becomes //const//.
+I didn't want to implement sixteen different signatures for
+``BlockMat``, and the easy way out seemed to be to make
+``ZeroMatImpl`` and ``IdentityMatImpl`` non-const.  As a consequence
+there are a number of //useless// member functions in ``ZeroMatImpl``
+and ``IdentityMatImpl``.  I believe this compromise is reasonable.  It
+seemed reasonable to allow ``ZeroMatImpl::myAssignZero`` to succeed.
+
+
+There is a small problem with creating a matrix from an empty ``std::vector``
+because there is no indication of what the base ring should be.  I have
+chosen to throw an error if one tries to create a matrix view from an empty
+vector (in ``RowMat``, ``ColMat`` and ``DiagMat``).
+
+The routines which access the ``(i,j)`` entry in a ``BlockMat`` are messy.
+I could not see an elegant way to make them simpler (or to avoid repeating
+similar structure in several places in the code).  See Bugs about implementing
+``BlockMat`` in terms of ``ConcatVer`` and ``ConcatHor``.
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+There is an appalling amount of code duplication in the implementations.
+I do not yet see a good way of reducing this.  I hope someone will sooner
+or later find an elegant way to avoid the duplication.
+Maybe a //diagonal// abstract class for ZeroMatImpl,
+IdentityMatImpl,  DiagMatImpl, ConstDiagMatImpl?
+
+It is a great nuisance to have to implement two very similar classes:
+one for the //const// case, and the other for the //non-const// case.
+Is there a better way?
+
+Add ``ColMat``, ``RowMat`` and ``DiagMat`` for a free module element?
+
+Should ``submatrix`` allow repeated row/col indices?  It could lead to
+some some funny behaviour (e.g. setting one entry may change other
+entries), so perhaps it would be better to forbid it?  Currently, it
+is forbidden.
+
+The pseudo-ctor for ``submatrix`` ought to accept begin/end iterators instead
+of insisting that the caller put the indices in ``std::vectors``.
+
+Should there be a more general version of ``BlockMat`` which allows
+non-aligned borders?  ``BlockMat`` could be eliminated and replaced by
+suitable calls to ``ConcatVer`` and ``ConcatHor``.
+
+**Tensor product** of two matrices: we implement it as a DenseMatrix
+instead of MatrixView because the latter would give no practical
+advantage and hide the cost of accessing the entries.
+
+
+== Main changes ==
+%======================================================================
+
+**2016**
+- Sept (v0.99544) added doc about ``zeroes`` in ``BlockMat``
+
+
+**2014**
+- April (v0.99533)
+  - removed ``FilledMat``
+
+
+**2011**
+- February (v0.9943):
+  - optimized implementations for ``IsSymmetric``, ``IsAntiSymmetric``, ``IsDiagonal``, ``operator==``
+  - added ``FilledMat``
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

@@ -1,0 +1,57 @@
+      PPWithMask
+      Copyright (c)  2006,2011 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{PPWithMask}{Anna Bigatti}
+
+
+== Examples ==[examples]
+%======================================================================
+- [ex-PPWithMask1.C   ../../examples/index.html#ex-PPWithMask1.C]
+- [ex-PPWithMask2.C   ../../examples/index.html#ex-PPWithMask2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+**WARNING: THIS IS STILL ONLY A PRELIMINARY INTERFACE**
+
+    friend bool IsDivisibleFast(const PPWithMask& pm1, const PPWithMask& pm2);  ///< suffix "Fast" because it does not check compatibility
+
+== constructor ==
+
+A value of type ``PPWithMask`` is an "enriched" power product: it also
+contains a "divmask" so that divisibility tests between ``PPWithMask``
+values can be effected quickly (on average, and assuming they are only
+rarely divisible).
+
+To create a ``PPWithMask`` value:
+```  PPWithMask(pp, DMRule)  -- pp is a power product, DMRule is a divmask rule
+
+Given a ``PPWithMask`` value you can extract the power product and DivMaskRule
+using the following accessor functions:
+```
+  PP(ppwm)          -- get a reference to the internal power product
+  DivMaskImpl(ppwm) -- get the div mask rule
+```
+
+
+Implementation of PPMonoidElem with DivMask for fast divisibility test
+
+This type is not intended for "public use": it must be fast, so we
+cannot guarantee safety checks.  It does some compatibility tests with
+CoCoA_ASSERT (i.e. only with ``CoCoA_DEBUG`` on)
+
+It is to be used ONLY when speed on divisibility tests is crucial
+(Buchberger, Toric, Hilbert, ...).
+
+Constructor and assignment from pp might be expensive.
+
+== Maintainer documentation for files BuildInfo ==
+%======================================================================
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Both impl and doc are very incomplete!

@@ -1,0 +1,29 @@
+-----------------------------------------------------------------------
+-- test-toric:
+-----------------------------------------------------------------------
+TestCount := 0;
+PrintInfo := false;
+
+define TEST_ASSERT(A,B)
+  toplevel TestCount;
+  toplevel PrintInfo;
+  TestCount := TestCount+1;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B));
+  endif;
+  if PrintInfo then print "."; EndIf;
+enddefine; -- TEST_ASSERT
+
+use R ::= ZZ/(2)[x[1..12]];
+
+J := ideal(
+	   x[4]*x[10] +x[3]*x[11],
+	   x[4]*x[10] +x[2]*x[12],
+	   x[4]*x[6]*x[10] +x[3]*x[5]*x[12],
+	   x[3]^2*x[5]*x[9] +x[1]*x[4]*x[6]*x[10],
+	   x[3]*x[9] +x[1]*x[12],
+	   x[8]*x[10] +x[7]*x[11]
+	   );
+
+TEST_ASSERT(toric(J), -- gave SEGV Redmine CoCoA-5 (Kazuki Maeda)
+	    ideal(x[4]*x[10] +x[3]*x[11],  x[3]*x[11] +x[2]*x[12],  x[3]*x[9] +x[1]*x[12],  x[8]*x[10] +x[7]*x[11],  x[6]*x[11] +x[5]*x[12],  x[4]*x[7] +x[3]*x[8],  x[2]*x[9] +x[1]*x[11],  x[3]*x[5] +x[2]*x[6],  x[3]*x[5]*x[9] +x[1]*x[6]*x[11],  x[4]*x[5]*x[7]*x[9] +x[1]*x[6]*x[8]*x[11]));

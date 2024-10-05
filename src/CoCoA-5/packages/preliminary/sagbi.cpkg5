@@ -1,0 +1,455 @@
+package $sagbi  // sagbi-toric
+
+export SAGBIReduceLT;
+export SAGBIReduce;
+export SAGBI;
+export sagbi;
+export SAGBIHomog;
+export SubalgebraMinGens;
+
+------------------------------------------------------------
+FullReduction := true;  -- SAGBIReduce reduces LT and tail
+// FullReduction := false;  -- SAGBIReduce reduces only LT
+MinimalizeRel := true;  -- in PPRelations minimalize gens of toric
+// MinimalizeRel := false;  -- in PPRelations do not minimalize gens of toric
+------------------------------------------------------------
+define ArePPs(L)
+  foreach t in L do
+    if not(IsMonomial(t)) or not(IsOne(LC(t))) then
+      return false;
+    endif;
+  endforeach;
+  return true;
+enddefine; -- ArePPs
+
+
+define PPRelations(...)
+  IsVERBOSE := IsVERBOSE_func("PPRelations");
+  L := ARGV[1];
+  If type(L) = RING Then
+    Kx := L;  L := ARGV[2];
+  Else
+    PL := RingOf(L[1]);
+    wdeg0 :=
+    func(gg)
+      if IsZero(gg) then return 1;
+      elif GradingDim(PL)=0 then return deg(gg);
+      else return wdeg(gg)[1];
+      endif;
+    endfunc;
+    W := RowMat([wdeg0(g) | g in L]);
+    RelRing := NewPolyRing(CoeffRing(PL), SymbolRange("x",1,len(L)), MakeTermOrdMat(W),1);
+  EndIf;
+  if not(ArePPs(L)) then error("not PPs!!"); endif;
+  T := toric(RelRing, L);
+  if not($.MinimalizeRel) then
+    return T;
+  endif;
+  if IsVERBOSE(40) then println "Minimalizing ", NumGens(T), " rels";endif;
+  return IdealOfMinGens(T);
+enddefine; -- PPRelations
+----------------------------------------------------
+
+define MakeLTElimIdeal(ref embed_P_SElim, ref J, G)
+  P := RingOf(G[1]);
+  n := NumIndets(P);
+  W := RowMat(concat([wdeg(indet(P,i))[1] | i in 1..n],
+		     [wdeg(gg)[1] | gg in G]));
+  symbols := concat(SymbolRange("e",1,n), SymbolRange("g",1,len(G)));
+//  \\ correggere ordinamento: deve prendere ord da anello
+  SElim := NewPolyRing(CoeffRing(P), symbols, ElimHomogMat(1..(n+1),  W), 1);
+  SElim_A := indets(SElim, "e");
+  SElim_X := indets(SElim, "g");
+  embed_P_SElim  := PolyAlgebraHom(P, SElim, SElim_A);
+  J := ideal([SElim_X[i]-embed_P_SElim(LT(G[i])) | i in 1..len(G)]);
+enddefine; -- MakeLTElimIdeal
+
+
+define CutLM(ref g, ref bucket)
+  bucket := bucket + LM(g);
+  g := g - LM(g);
+enddefine; -- CutLM
+
+
+define FindRel0(L) -- only with lex!!!
+  foreach f in L do
+    if LT(f) = indet(RingOf(f), 1) then return monic(f); endif;
+  endforeach;
+  return 0;
+enddefine; -- FindRel0
+
+
+define SAGBIReduceLT(g, G)
+  IsVERBOSE := IsVERBOSE_func("SAGBIReduceLT");
+  P := RingOf(g);
+  repeat
+    if IsConstant(g) then return zero(P); endif;
+    if IsVERBOSE(90) then println "g = ", g; endif;
+    Gg := [f in G | IsDivisible(LT(g), LT(f))];
+    PRel := NewPolyRing(CoeffRing(P), SymbolRange("x", 0,len(Gg)),
+			LexMat(len(Gg)+1), 0);
+    eval_Gg := PolyAlgebraHom(PRel, P, concat([0], Gg));
+//    LTGg := [LT(h) | h in Gg];
+    T := toric(PRel, concat([LT(g)], [LT(h) | h in Gg]));
+    if IsVERBOSE(41) then println "toric"; endif;
+    rel := FindRel0(gens(T));
+    if IsZero(rel) then return g; endif;
+    if IsVERBOSE(90) then println "rel = ", rel; endif;
+    Ev := eval_Gg(rel-LT(rel));
+    if IsVERBOSE(45) then println "eval_Gg"; endif;
+    g :=  g + RingElem(P,LC(g)) * Ev;
+    if IsVERBOSE(45) then println "S"; endif;
+  endrepeat;
+//  return zero(P);
+enddefine; -- SAGBIReduceLT
+
+
+define SAGBIReduce(g, G)
+  IsVERBOSE := IsVERBOSE_func("SAGBIReduce");
+  P := RingOf(g);
+  if IsVERBOSE(40) then println "-- start --"; endif;
+  if IsVERBOSE(45) and g<>0 then println " ", LM(g), " + (..", NumTerms(g)-1, "..)"; endif;
+  g := SAGBIReduceLT(g, G);
+  if IsZero(g) then
+    if IsVERBOSE(40) then println "--> 0"; endif;
+    return g;
+  endif;
+  if not($.FullReduction) then 
+    if IsVERBOSE(40) then println "-- end"; endif;
+    return g;
+  endif;
+  -- FullReduction:
+  if IsVERBOSE(40) then println "-- Tail reduction -->"; endif;
+  bucket := zero(P);
+  repeat
+    CutLM(ref g, ref bucket);
+    if IsVERBOSE(90) then println " g = ",g, " bucket = ",bucket; endif;
+    g := SAGBIReduceLT(g, G);
+    if IsZero(g) then
+      if IsVERBOSE(40) then println "-- end"; endif;
+      return bucket;
+    endif;
+  endrepeat;
+enddefine; -- SAGBIReduce
+
+
+
+define SAGBIComputeNewEntries(G, TruncDeg) -- TruncDeg<0 : no truncation
+  IsVERBOSE := IsVERBOSE_func("SAGBIComputeNewEntries");
+  P := RingOf(G[1]);
+  G_NotConst := [f in G | not(IsConstant(f))];
+  t0 := CpuTime();
+  RelSetIdeal := PPRelations([LT(g) | g in G_NotConst]);
+  if IsVERBOSE(40) then println "time PPRelations = ", TimeFrom(t0); endif;
+  eval_rel := PolyAlgebraHom(RingOf(RelSetIdeal), P, G_NotConst);
+  RelSet := SortedBy(gens(RelSetIdeal),  -- sperimentale
+		     func(A,B) ImportByRef eval_rel; return LT(A)<LT(B); endfunc);
+  if IsVERBOSE(50) then print "RelSet = ";  indent(RelSet); endif;
+  if IsVERBOSE(40) then println "len(RelSet) = ", len(RelSet); endif;
+  -- reduction
+  NewPolys := [];
+//  foreach rel in RelSet do
+  countReduce := 0;
+  for i := 1 to len(RelSet) do
+    if TruncDeg >= 0 and wdeg(RelSet[i])[1] > TruncDeg then continue; endif;
+    h := eval_rel(RelSet[i]);
+    if IsVERBOSE(40) then
+      println "RelSet[",i,"] (out of ", len(RelSet), ")";
+      if IsVERBOSE(90) then println h; endif;
+    endif;
+    incr(ref countReduce);
+    hh := SAGBIReduce(h, G_NotConst);
+//    hh := SAGBIReduceLT(h, G_NotConst);
+    if not(IsZero(hh)) then
+      append(ref G_NotConst, monic(hh));
+      append(ref NewPolys, monic(hh));
+    endif;
+  endfor;
+  if IsVERBOSE(40) then println "countReduce = ", countReduce; endif;
+  return MakeSet(NewPolys);
+enddefine; -- SAGBIComputeNewEntries
+
+
+define SAGBIComputeNewEntriesOnlyDeg(G, OnlyDeg)
+  IsVERBOSE := IsVERBOSE_func("SAGBIComputeNewEntriesOnlyDeg");
+  P := RingOf(G[1]);
+  G_NotConst := [f in G | not(IsConstant(f))];
+  t0 := CpuTime();
+  RelSetIdeal := PPRelations([LT(g) | g in G_NotConst]);
+  if IsVERBOSE(40) then println "time PPRelations = ", TimeFrom(t0); endif;
+  eval_rel := PolyAlgebraHom(RingOf(RelSetIdeal), P, G_NotConst);
+//  RelSet := [ rel in gens(RelSetIdeal) | wdeg(rel)[1] >= OnlyDeg ];
+  RelSet := SortedBy([ rel in gens(RelSetIdeal) | wdeg(rel)[1] = OnlyDeg],  -- sperimentale
+		     func(A,B) ImportByRef eval_rel; return LT(A)<LT(B); endfunc);
+  if IsVERBOSE(50) then print "RelSet = ";  indent(RelSet); endif;
+  if IsVERBOSE(40) then println "OnlyDeg = ", OnlyDeg; endif;
+  if IsVERBOSE(40) then println "len(RelSet) = ", len(RelSet); endif;
+  -- reduction
+  NewPolys := [];
+//  foreach rel in RelSet do
+  countReduce := 0;
+  for i := 1 to len(RelSet) do
+    h := eval_rel(RelSet[i]);
+    if IsVERBOSE(40) then
+      println "RelSet[",i,"] (out of ", len(RelSet), ")";
+      if IsVERBOSE(50) then println h; endif;
+    endif;
+    incr(ref countReduce);
+    hh := SAGBIReduce(h, G_NotConst);
+//    hh := SAGBIReduceLT(h, G_NotConst);
+    if not(IsZero(hh)) then
+      append(ref G_NotConst, monic(hh));
+      append(ref NewPolys, monic(hh));
+    endif;
+  endfor;
+  if IsVERBOSE(40) then println "countReduce = ", countReduce; endif;
+  return MakeSet(NewPolys);
+enddefine; -- SAGBIComputeNewEntriesOnlyDeg
+
+
+define SAGBIComputeNewEntriesOnlyDeg_andMaxDeg(G, OnlyDeg)
+  IsVERBOSE := IsVERBOSE_func("SAGBIComputeNewEntriesOnlyDeg_andMaxDeg");
+  P := RingOf(G[1]);
+  G_NotConst := [f in G | not(IsConstant(f))];
+  t0 := CpuTime();
+  RelSetIdeal := PPRelations([LT(g) | g in G_NotConst]);
+  if IsVERBOSE(40) then println "time PPRelations = ", TimeFrom(t0); endif;
+  eval_rel := PolyAlgebraHom(RingOf(RelSetIdeal), P, G_NotConst);
+//  RelSet := [ rel in gens(RelSetIdeal) | wdeg(rel)[1] >= OnlyDeg ];
+  if IsZero(RelSetIdeal) then
+    MaxDeg := OnlyDeg;
+    MinDeg := OnlyDeg;
+  else
+    wdegs := [ wdeg(rel)[1] | rel in gens(RelSetIdeal) ];
+    MaxDeg := max(wdegs);
+    if MaxDeg >= OnlyDeg then 
+      MinDeg := min([wd in wdegs | wd >=OnlyDeg ]);
+    else
+      MinDeg := 0;
+    endif;
+  endif;
+  if IsVERBOSE(40) then println  "OnlyDeg = ", OnlyDeg; endif;
+  if IsVERBOSE(40) then println  "MinDeg = ", MinDeg; endif;
+  OnlyDeg := MinDeg;
+  RelSet := SortedBy([ rel in gens(RelSetIdeal) | wdeg(rel)[1] = OnlyDeg],  -- sperimentale
+		     func(A,B) ImportByRef eval_rel; return LT(A)<LT(B); endfunc);
+  if IsVERBOSE(50) then println  "RelSet = ";  indent(RelSet); endif;
+  if IsVERBOSE(40) then println  "len(RelSet) = ", len(RelSet); endif;
+  -- reduction
+  NewPolys := [];
+//  foreach rel in RelSet do
+  countReduce := 0;
+  for i := 1 to len(RelSet) do
+    h := eval_rel(RelSet[i]);
+    if IsVERBOSE(40) then
+      println "RelSet[",i,"] (out of ", len(RelSet), ")";
+      if IsVERBOSE(50) then println h; endif;
+    endif;
+    incr(ref countReduce);
+    hh := SAGBIReduce(h, G_NotConst);
+//    hh := SAGBIReduceLT(h, G_NotConst);
+    if not(IsZero(hh)) then
+      append(ref G_NotConst, monic(hh));
+      append(ref NewPolys, monic(hh));
+    endif;
+  endfor;
+  if IsVERBOSE(40) then println "countReduce = ", countReduce; endif;
+  return record[NewPolys := MakeSet(NewPolys), MinDegRel := MinDeg, MaxDegRel := MaxDeg];
+enddefine; -- SAGBIComputeNewEntriesOnlyDeg_andMaxDeg
+
+
+define SAGBIInterreduction(ref G)
+  IsVERBOSE := IsVERBOSE_func("SAGBIInterreduction");
+  FnName := "SAGBIInterreduction: ";
+  if len(G) = 1 then return; endif;
+  repeat
+    G := [f in G | not(IsConstant(f))];
+    SortBy(ref G, func(A,B) return LT(A)<LT(B); endfunc);
+    NewG := [G[1]];
+    if IsVERBOSE(90) then println  " NewG = ", NewG; endif;
+    for i := 2 to len(G) do
+      LTGi_orig := LT(G[i]);
+      g_before := G[i];
+      if IsVERBOSE(40) then println  "G[", i,"] before = ", LT(g_before), "..."; endif;
+//      g := SAGBIReduce(G[i], NewG);
+      g := SAGBIReduceLT(G[i], NewG);
+      if IsVERBOSE(40) then
+	if g_before = g then println "  --> reduced: same as before";
+	elif g = 0 then println "  --> reduced --> 0";
+	else println "  --> reduced g --> ", LT(g), "..."; endif;
+      endif
+      if not(IsZero(g)) then
+	append(ref NewG, monic(g));
+	if IsVERBOSE(90) then println "  --> NewG = ", NewG; endif;
+//	if LT(g) < LTGi_orig then
+	if LT(g) < LT(last(NewG)) then
+	  for j := i+1 to len(G) do append(ref NewG, G[j]); endfor;
+	  break;
+	endif;
+      endif;
+      if i = len(G) then G := NewG; return; endif;
+    endfor;
+    G := NewG;
+  endrepeat;
+enddefine; -- SAGBIInterreduction
+
+
+define SAGBI(G, opt TruncDeg)
+  IsVERBOSE := IsVERBOSE_func("SAGBI");
+  if IsDefined(TruncDeg) and not(IsHomog(G)) then
+    error("Truncated sagbi must be homogenous");
+  endif;
+  if not(IsDefined(TruncDeg)) then TruncDeg := -1; endif;
+  FnName := "SAGBI: ";
+  R := RingsOf(G);
+  if len(R)>1 then error(FnName+"more than 1 ring for gens"); endif;
+  P := R[1];
+  -- start ----------------------------
+  G := [monic(f) | f in G];
+  repeat
+    SAGBIInterreduction(ref G);  -- semplificazione
+    if IsVERBOSE(90) then print "InterreducedGens = ";  indent(G); endif;
+    if IsVERBOSE(40) then println "len(InterreducedGens) = ", len(G); endif;
+    NG := SAGBIComputeNewEntries(G, TruncDeg);
+    if IsVERBOSE(90) then print "NewEntries = ";  indent(NG); endif;
+    if IsVERBOSE(40) then println  "len(NewEntries) = ", len(NG); endif;
+    if NG=[] then return G; endif;
+    G := concat(G, NG);
+  endrepeat;
+enddefine; -- SAGBI
+
+
+define sagbi(...) return SAGBI(...); enddefine;
+
+
+define MinimalSubalgebraGens_old(L)
+  if not(IsHomog(L)) then error("input must be homogenous"); endif;
+  L := SortedBy(L, func(A,B) return LT(A)<LT(B); endfunc);
+  MinimalL :=[L[1]];
+  LastSagbi := MinimalL;
+  for i := 2 to len(L) do
+    f := L[i];
+    println "controllo ", i, "  wdeg = ", wdeg(f);
+    if SAGBIReduce(f, LastSagbi) = 0 then
+      println "saltato ", i;
+      continue;
+    endif;
+    LastSagbi := SAGBI(MinimalL, wdeg(f)[1]);
+    SR_f := SAGBIReduce(f, LastSagbi);
+    if SR_f<>0 then
+      if SR_f <> f then println f , " --> ", SR_f; endif;
+      append(ref MinimalL, monic(SR_f));
+    else
+      println "-->0";
+    endif;
+  endfor;
+  return MinimalL;
+enddefine; -- MinimalSubalgebraGens_old
+  
+
+define SubalgebraMinGens(G)
+  IsVERBOSE := IsVERBOSE_func("SubalgebraMinGens");
+  if not(IsHomog(G)) then
+    error("input must be homogenous");
+  endif;
+  FnName := "MinGensSubalgebra: ";
+  R := RingsOf(G);
+  if len(R)>1 then error(FnName+"more than 1 ring for gens"); endif;
+  P := R[1];
+  -- start ----------------------------
+  G := [monic(h) | h in G];
+  SortBy(ref G, func(A,B) return LT(A)<LT(B); endfunc);
+  TmpSAGBI := [G[1]];
+  TmpMinimal := [G[1]];
+  TmpWDeg1 := wdeg(G[1])[1];
+  G := tail(G);
+  repeat
+    if IsVERBOSE(40) then println  "TmpWDeg1 = ", TmpWDeg1;endif;
+    if G = [] then return TmpMinimal; endif;
+    if wdeg(G[1])[1]<TmpWDeg1 then error("non puo' succedere"); endif;
+    while wdeg(G[1])[1] = TmpWDeg1 do
+      f := G[1];
+      if IsVERBOSE(50) then println  "f = ", f; endif;
+      G := tail(G);
+      SR_f := SAGBIReduce(f, TmpSAGBI);
+      if SR_f <> 0 then
+	append(ref TmpSAGBI, monic(SR_f));
+	append(ref TmpMinimal, monic(SR_f));
+      endif;
+      if G = [] then return TmpMinimal; endif;
+    endwhile;
+    incr(ref TmpWDeg1);
+    NG := SAGBIComputeNewEntriesOnlyDeg(TmpSAGBI, TmpWDeg1);
+    if IsVERBOSE(90) then print "NewEntries = ";  indent(NG); endif;
+    if IsVERBOSE(40) then println  "len(NewEntries) = ", len(NG); endif;
+    if NG<>[] then
+      TmpSAGBI := concat(TmpSAGBI, NG);
+      SAGBIInterreduction(ref TmpSAGBI);  -- necessario?
+      if IsVERBOSE(90) then print "InterreducedGens = ";  indent(TmpSAGBI); endif;
+      if IsVERBOSE(40) then println  "len(InterreducedGens) = ", len(TmpSAGBI); endif;
+    endif;
+  endrepeat;
+enddefine; -- SubalgebraMinGens
+
+
+define AppendGensOfDeg(ref TmpSAGBI, G, TmpWDeg1)
+  IsVERBOSE := IsVERBOSE_func("AppendGensOfDeg");
+  while G <> [] and wdeg(G[1])[1] = TmpWDeg1 do
+    if wdeg(G[1])[1]<TmpWDeg1 then error("--non puo' succedere--"); endif;
+    f := G[1];
+    if IsVERBOSE(50) then println  "f = ", f; endif;
+    G := tail(G);
+    SR_f := SAGBIReduce(f, TmpSAGBI);
+    if SR_f <> 0 then
+      append(ref TmpSAGBI, monic(SR_f));
+    endif;
+  endwhile;
+enddefine; -- AppendGensOfDeg
+
+  
+define SAGBIHomog(G, opt TruncDeg)
+  IsVERBOSE := IsVERBOSE_func("SAGBIHomog");
+  if not(IsHomog(G)) then
+    error("input must be homogenous");
+  endif;
+  FnName := "SAGBIHomog: ";
+  R := RingsOf(G);
+  if len(R)>1 then error(FnName+"more than 1 ring for gens"); endif;
+  P := R[1];
+  -- start ----------------------------
+  G := [monic(h) | h in G];
+  SortBy(ref G, func(A,B) return LT(A)<LT(B); endfunc);
+  TmpSAGBI := [];
+  WDegGen := [ wdeg(g)[1] | g in G ];
+  MaxWDegGen := max(WDegGen);
+  TmpWDeg1 := WDegGen[1];
+  repeat
+    if IsVERBOSE(40) then println  "--** gens TmpWDeg1 = ",TmpWDeg1," **--"; endif;
+    if TmpWDeg1 <= MaxWDegGen then
+      AppendGensOfDeg(ref TmpSAGBI, G, TmpWDeg1);
+    endif;
+    incr(ref TmpWDeg1);
+    if IsDefined(TruncDeg) and TmpWDeg1>TruncDeg then return TmpSAGBI; endif;
+    if IsVERBOSE(40) then println  "--** rels TmpWDeg1 = ",TmpWDeg1," **--"; endif;
+    NG_LD := SAGBIComputeNewEntriesOnlyDeg_andMaxDeg(TmpSAGBI, TmpWDeg1);
+    if NG_LD.MinDegRel > TmpWDeg1 and [wd in WDegGen | wd>=TmpWDeg1 and wd<NG_LD.MinDegRel]=[] then
+      if IsVERBOSE(40) then println  "--** Jump to deg ", NG_LD.MinDegRel," **--"; endif;
+      TmpWDeg1 := NG_LD.MinDegRel;
+    endif;
+    if IsDefined(TruncDeg) and TmpWDeg1>TruncDeg then return TmpSAGBI; endif;
+    if TmpWDeg1>MaxWDegGen and TmpWDeg1>NG_LD.MaxDegRel then return TmpSAGBI; endif;
+    NG := NG_LD.NewPolys;
+    if IsVERBOSE(90) then print  "NewEntries = ";  indent(NG); endif;
+    if IsVERBOSE(40) then println  "len(NewEntries) = ", len(NG); endif;
+//  if NG = [] and G = [] and NG_LD.MaxDegRel = TmpWDeg1 then return TmpSAGBI; endif;
+    if NG<>[] then
+      TmpSAGBI := concat(TmpSAGBI, NG);
+      SAGBIInterreduction(ref TmpSAGBI);  -- necessario?
+      if IsVERBOSE(90) then print "InterreducedGens = ";  indent(TmpSAGBI); endif;
+      if IsVERBOSE(40) then println  "len(InterreducedGens) = ", len(TmpSAGBI); endif;
+    endif;
+  endrepeat;
+enddefine; -- SAGBIHomog
+
+  
+endpackage;

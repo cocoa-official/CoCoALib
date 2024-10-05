@@ -1,0 +1,227 @@
+Package $toric      -- Toric Ideals
+
+export toric;
+export HilbertBasisKer;
+export GraverBasis;
+
+Define About()
+  PrintLn "    Author: A.M.Bigatti";
+  PrintLn "    Version: 4.2";
+  PrintLn "    Date: 12 May 2003";
+EndDefine; -- About
+
+--------------------------------------------------------------
+
+Define Initialize()
+  TopLevel MEMORY;
+  MEMORY.PKG.Toric := Record[]; // TODO: REMOVE
+  MEMORY.PKG.Toric.Algorithm := "E";
+EndDefine; -- Initialize
+
+
+-- Define UseAlgorithm(A)
+--   If not(A[1] IsIn ["E", "S", "P"]) Then
+--     error("Toric.UseAlgorithm: argument must be one of [\"E\", \"S\", \"P\"]");
+--   EndIf;
+--   MEMORY.PKG.Toric.Algorithm := A;
+-- EndDefine; -- UseAlgorithm
+
+
+Define MatToricAux(Kx, M)
+--   Alg := MEMORY.PKG.Toric.Algorithm;
+--   If Alg[1] = "E" Then Return ideal(MatToric(M)); EndIf;
+--   If Alg[1] = "S" Then Return ideal(MatSequentialToric(M)); EndIf;
+--   If Alg[1] = "P" Then Return ideal(MatParallelToric(M)); EndIf;
+  Return MatSequentialToric(Kx, M);
+EndDefine; -- MatToricAux
+
+
+Define HilbertBasisKer(M)
+  TopLevel ZZ;
+  If NumRows(M) = 0 Then Return []; EndIf;
+  N := NumCols(M);
+//  HilbertBasisRing ::= ZZ/(2)[x[1..N], w[1..N], t];
+  HilbertBasisRing ::= ZZ/(2)[x[1..N], w[1..N]];
+  I := toric(HilbertBasisRing, LawrenceMat(M));
+  If IsZero(I) Then Return []; EndIf;
+  LTGens := ideal([LT(F) | F In gens(I)]);
+  E := elim(indets(HilbertBasisRing, "w"), LTGens);
+  If IsZero(E) Then Return []; EndIf;
+  Return [ first(exponents(T), N) | T In gens(E)];
+EndDefine; -- HilbertBasisKer
+
+
+Define GraverBasis(P, M)
+  K := CoeffRing(P);
+  if NumIndets(P) < NumCols(M) then error("not enough indets in ring"); endif;
+  If NumRows(M) = 0 Then Return []; EndIf;
+  N := NumCols(M);
+  GraverBasisRing ::= K[x[1..N], y[1..N]];
+  I := toric(GraverBasisRing, LawrenceMat(M));
+  If IsZero(I) Then Return []; EndIf;
+  phi := PolyAlgebraHom(GraverBasisRing, P,
+			concat(first(indets(P),N), NewList(N, one(P))));
+  Return phi(gens(I));
+EndDefine; -- GraverBasis
+
+
+Define toric(...)
+  TopLevel CurrentRing;
+  X := ARGV[1];
+  If type(X) = RING Then Kx := X;  X := ARGV[2]; Else Kx := CurrentRing; EndIf;
+  If type(X) = LIST And type(X[1]) = RINGELEM and IsPolyRing(RingOf(X[1])) Then
+    foreach t in X do
+      if not(IsMonomial(t)) or not(IsOne(LC(t))) then
+	error("only PPs expected");
+      endif;
+    endforeach;
+    X := transposed(mat([exponents(t) | t in X]));
+  EndIf;
+  If type(X) = LIST And type(X[1]) = LIST Then  X := mat(X);  EndIf;
+  If type(X) = MAT Then
+    If NumIndets(Kx)<NumCols(X) Then
+      error("Toric: "+sprint(NumCols(X))+" indeterminates needed");
+    EndIf;
+    NegativeEntries := $toric.CheckInput(X);
+    If NegativeEntries Then
+      // -vvv-  WITH negative entries  -vvv-
+      M := $toric.HToricMat(X);
+      If NumIndets(Kx) < NumCols(M) Then
+	K := CoeffRing(Kx);
+	NewToricRing ::= K[x[1..(NumCols(M))]];
+	I := $toric.MatToricAux(NewToricRing, M);
+//	Return image(I, RMap(concat(indets(Kx),[1])));
+	Return ideal(Kx, PolyAlgebraHom(NewToricRing, Kx, concat(indets(Kx),[1]))(gens(I)));
+      Else
+      // -vvv-  WITHOUT negative entries  -vvv-
+	I := $toric.MatToricAux(Kx, M);
+	Return $toric.DeHomog(I, indet(Kx, NumCols(M)));
+      EndIf;
+    EndIf;
+    Return $toric.MatToricAux(Kx, X);
+  Else
+    If len(ARGV) = 1 Then IndList := []; Else IndList := ARGV[2]; EndIf;
+--    If type(X) = IDEAL Then X := gens(X); EndIf;
+--     Alg := MEMORY.PKG.TORIC.Algorithm;
+--     If Alg[1] = "E" Then Return ideal(BinToric(X, IndList)); EndIf;
+--     If Alg[1] = "S" Then Return ideal(BinSequentialToric(X, IndList)); EndIf;
+--     If Alg[1] = "P" Then Return ideal(BinParallelToric(X, IndList)); EndIf;
+    Return BinSequentialToric(X, [ IndetIndex(x)-1 | x In IndList]);
+  EndIf;
+EndDefine; -- Toric
+
+
+-- Define ParallelAlg(...)
+--   A := MEMORY.PKG.TORIC.Algorithm;
+--   MEMORY.PKG.TORIC.Algorithm := "P";
+--   T := toric(...);
+--   MEMORY.PKG.TORIC.Algorithm := A;
+--   Return T;
+-- EndDefine; -- Parallel
+
+
+-- Define SequentialAlg(...)
+--   A := MEMORY.PKG.TORIC.Algorithm;
+--   MEMORY.PKG.TORIC.Algorithm := "S";
+--   T := toric(...);
+--   MEMORY.PKG.TORIC.Algorithm := A;
+--   Return T;
+-- EndDefine; -- Sequential
+
+
+-- Define ElimAlg(...)
+--   A := MEMORY.PKG.TORIC.Algorithm;
+--   MEMORY.PKG.TORIC.Algorithm := "E";
+--   T := toric(...);
+--   MEMORY.PKG.TORIC.Algorithm := A;
+--   Return T;
+-- EndDefine; -- Elim
+
+-- builtin
+-- Define LawrenceMat(M)
+--   N := NumCols(M);
+--   R := RingOf(M);
+--   Return BlockMat2x2(M, ZeroMat(R, NumRows(M), N),
+-- 		     IdentityMat(R, N), IdentityMat(R, N));
+-- EndDefine; -- LawrenceMat
+
+
+Define HToricMat(A)
+  Col0:= NewList(NumRows(A), 0);
+  Row1:= NewList(NumCols(A)+1, 1);
+  M := ConcatHor(A, ColMat(Col0));
+  Return ConcatVer(RowMat(Row1), M);
+EndDefine; -- HToricMat
+
+
+Define DeHomog(I, X)
+  Return subst(I, [[X, 1]]);
+EndDefine; -- DeHomog
+
+--------------------------------------------------------------
+------[   CheckInput   ]--------
+
+Define CheckInput(...)
+  X := ARGV[1];
+  If type(X) = MAT Or (type(X) = LIST And type(X[1]) = LIST) Then
+    Return $toric.CheckMat(X);
+  EndIf;
+  If len(ARGV) = 1 Then IndList := []; Else IndList := ARGV[2]; EndIf;
+  If type(X) = IDEAL Then X := gens(X); EndIf;
+  Return $toric.CheckBin(X, IndList);
+EndDefine; -- CheckInput
+
+
+Define CheckMat(M)
+  ErrZeroColumn := "columns must be non-zero";
+  ErrIntMatrix := "entries must be integers";
+  Neg := False;
+  IsZeroCol := NewList(NumCols(M), True);
+  NoUse := 0;
+  For J := 1 To NumRows(M) Do
+    Row := GetRow(M,J);
+    For I := 1 To len(Row) Do
+      If not(IsInteger(ref NoUse, Row[I])) Then error("CheckMat"); EndIf;
+      If Row[I]<>0 Then
+	IsZeroCol[I] := False;
+--	Print Row[I], " ", RingOf(Row[I]), " ";
+	If Row[I]<0 Then Neg := True; EndIf;
+      EndIf;
+    EndFor;
+  EndFor;
+  If True IsIn IsZeroCol Then error(ErrZeroColumn); EndIf;
+  Return Neg;
+EndDefine; -- CheckMat
+
+
+Define CheckBin(BinList, SatIndList)
+  Toric_Binomials :=
+  ": generators must be binomials";
+  Toric_PP :=
+  ": generators must be of type: power-product - power-product";
+  Toric_homogeneous :=
+  ": generators must be homogeneous";
+  Toric_SatIndList :=
+  ": second argument must be a list of indeterminates";
+  P1 := +1; M1 := -1;
+  Foreach B In BinList Do
+    If type(B)<>RINGELEM Or len(B)<>2 Then
+      Return error(sprint(B)+Toric_Binomials);
+    EndIf;
+    If product(coefficients(B))<>M1 Or (LC(B)<>M1 And LC(B)<>P1) Then
+      Return error(sprint(B)+Toric_PP);
+    EndIf;
+    If not(IsHomog(B)) Then
+      Return error(sprint(B)+Toric_homogeneous);
+    EndIf;
+  EndForeach;
+  Foreach X In SatIndList Do
+    If type(X)<>RINGELEM Then Return error(sprint(X)+Toric_SatIndList); EndIf;
+    If len(X)<>1 Then Return error(sprint(X)+Toric_SatIndList); EndIf;
+    If deg(X)<>1 Then Return error(sprint(X)+Toric_SatIndList); EndIf;
+  EndForeach;
+  Return True;
+EndDefine;
+
+
+EndPackage;  -- Package $toric

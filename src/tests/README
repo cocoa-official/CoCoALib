@@ -1,0 +1,34 @@
+README file for the COCOA_ROOT/tests/ directory
+
+Date: 11 February 2005
+
+This directory contains test programs for the CoCoA Library.
+These programs are intended to exercise various aspects of the
+library, and to verify that the expected results are produced.
+The programs are generally neither interesting nor useful; in
+some cases they may deliberately exhibit poor use of the library.
+Good examples of how to use the library are kept in the directory
+COCOA_ROOT/examples/.
+
+To compile and run these tests, execute the command "make check"
+from the COCOA_ROOT directory; you can alternatively simply run
+the command "make" from this directory.
+
+For each test there may be several files:
+  test-XYZ.C    program source in C++
+  test-XYZ.in   input for the test program
+  test-XYZ.out  expected output the test should produce (on stdout)
+  test-XYZ.err  expected output the test should produce (on stderr)
+
+After compilation and execution you may also find these files:
+  test-XYZ       executable corresponding to the source test-XYZ.C
+  test-XYZ.cout  output the program actually produced (on stdout)
+  test-XYZ.cerr  output the program actually produced (on stderr)
+
+These extra files will be present only if the test behaved unexpectedly
+in some way.  Three checks on behaviour are made:
+  * the program must exit with code 0
+  * output on stdout must match that in test-XYZ.out
+  * output on stderr must match that in test-XYZ.err
+If test-XYZ.out does not exist then no output on stdout is expected;
+analogously for test-XYZ.err and stderr.

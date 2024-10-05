@@ -1,0 +1,341 @@
+Package $hilop
+
+Export RingsOf;
+Export DivAlg;
+Export GenRepr;
+Export ReducedGBasisRepr;
+
+Alias 	
+  HL   := $hilop,
+  GB   := $gb,
+  List := $list,
+  Misc := $misc,
+  Op :=   $idealop;
+
+----------------------------------------------------------------------
+Define About()
+  PrintLn "    Version  : CoCoA-4.7.5";
+  PrintLn "    Date     : 25 Sep 2009";
+  PrintLn "    Date     : 18 January 2002";
+  PrintLn "    BugFix   : Err Msg for LT(0)    [ \" \"+Sprint ]";
+  PrintLn "    BugFix   : LT(3) = 1";
+  PrintLn "    BugFix   : total reduction in VectorDivAlg";
+  PrintLn "    SlugFix  : in PolyReducer LPP instead of LT";
+EndDefine;
+----------------------------------------------------------------------
+
+
+-- Define GCD_H(F,G)
+--   NumSteps := 10;
+--   I := ideal(F,G);
+--   $gb.Start_Syz(I);
+--   Repeat
+--    $gb.Steps(I, NumSteps);
+--   Until I.Syz <> Module([[0]]);
+--   A := first(gens(I.Syz));
+--   Return monic(F/A[2]);
+-- EndDefine; -- GCD_H
+
+--------------------------------------------------------------------------------
+Define IsMonPoly(P) Return len(P)<=1; EndDefine;
+
+Define IsMonList(L)
+  While len(L)<>1 Do
+    If not(HL.IsMonPoly(head(L))) Then Return False; EndIf;
+    L:=tail(L);
+  EndWhile;
+  Return HL.IsMonPoly(head(L));
+EndDefine; -- IsMonList
+
+
+-- This procedure returns the ideal of the monomials in I
+-- MonsInIdeal(IDEAL) : Monomial IDEAL
+-- Example
+-- I:=ideal(x*y^3+z^2, y^5-z^3, x*z-y^2-x^3, x^4-x*z^2+y^3);
+-- MonsInIdeal(I);
+-- ideal(z^3, y*z^2, x^2*z^2, x^5*z, x^4*y*z, x^5*y, x^2*y^2*z, x^7, x^4*y^2,
+--       x*y^3*z, y^4*z, x*y^4, x^3*y^3, y^5)
+
+
+-- Define MonsInIdeal(I)
+--   If type(I) <> IDEAL Then error("MonomOfIdeal: Ideal Expected") EndIf;
+--   WW:=[[Cond(II=JJ,2,1)|JJ In 1..(NumIndets()+1)]| II In 1..(NumIndets())];
+--   WW:=concat([NewList(NumIndets()+1,1)],WW);
+--   While not(HL.IsMonList(gens(I))) Do
+--     NewRing:=NewId();
+--     Var(NewRing)::=CoeffRing[x[1..NumIndets()],t], Weights(Head(WW));
+--     WW:=tail(WW);
+--     Using Var(NewRing) Do
+--       I:=homogenized(t,image(I,RMap(AllIndetsCalled("x"))));
+--       I:=ideal(monic(gens(elim(t,I))));
+--     EndUsing;
+--     I:=image(I,RMap(concat(indets(),[1])));
+--     Destroy Var(NewRing); // Obsolescent
+--   EndWhile;
+--   Return I;
+-- EndDefine; -- MonsInIdeal
+
+
+-- Define LCM(X,Y)
+--   G := GCD(X,Y);  -- check compatibility even for the case (0,0)
+--   If G=0 Then Return G; EndIf;  -- return 0 in the correct ring
+--   Return X*(Y/G);
+-- EndDefine; -- LCM
+
+-- Define ModuleColonVector(M,V)
+--   If NumComps(M) <> NumComps(V) Then
+--     error(ERR.BAD_PARAMS,"Ranks not homogeneous")
+--   EndIf;
+--   AuxM := Module(concat([V],M.Gens));
+--   AuxM.SyzCompsNum := 1;
+--   ResM := GB.Syz_Compute(AuxM);
+--   Return ideal(HL.Interreduced(ResM.Gens));
+-- EndDefine;
+
+Define IdealColonIdeal(I,J)
+  G := J.Gens;
+  ResI := HL.Colon(I,head(G));
+  Foreach P In tail(G) Do
+    If ResI <= I Then Return I; EndIf;
+    ResI := HL.Intersection(HL.Colon(I,P),ResI);
+  EndForeach;
+  Return ResI;
+EndDefine;
+
+Define ModuleColonModule(M,N)
+  G := N.Gens;
+  ResI := HL.ModuleColonVector(M,head(G));
+  Foreach V In tail(G) Do
+    ResI := HL.Intersection(HL.ModuleColonVector(M,V),ResI);
+  EndForeach;
+  Return ResI;
+EndDefine;
+
+
+define CheckListOfRingElem(L, R, FnName)
+  foreach x in L do
+    if type(x) <> RINGELEM then error(FnName+": expected list of RINGELEM"); endif;
+    if RingOf(x) <> R then error(FnName+": list contains elements from different rings"); endif;
+  endforeach;
+enddefine; -- CheckListOfRingElem
+  
+define CheckListOfModuleElem(L, M, FnName)
+  foreach x in L do
+    if type(x) <> MODULEELEM then error(FnName+": expected list of MODULEELEM"); endif;
+    if ModuleOf(x) <> M then error(FnName+": list contains elements from different modules"); endif;
+  endforeach;
+enddefine; -- CheckListOfModuleElem
+  
+
+Define DivAlg(X, L)
+  if type(L) <> LIST then error("DivAlg: 2nd arg must be a LIST"); endif;
+  if not(type(X) isin [RINGELEM, MODULEELEM]) then error("DivAlg: 1st arg must be POLY or MODULEELEM"); endif;
+  P := RingOf(X);
+  if not(IsPolyRing(P)) or not(IsField(CoeffRing(P))) then error("DivAlg: args must be polys over a field"); endif;
+  If type(X)=RINGELEM   Then CheckListOfRingElem(L, RingOf(X), "DivAlg"); Return HL.PolyDivAlg(X,L);   EndIf;
+  If type(X)=MODULEELEM Then  CheckListOfModuleElem(L, ModuleOf(X), "DivAlg"); Return HL.ModElDivAlg(X,L);  EndIf;
+EndDefine; -- DivAlg
+
+
+define PolyDivAlg(f, L)
+  -- R := RingElem(RingOf(F), 0); -- so that if rem=0 then it is a poly
+  -- Q := NewList(len(L), R);
+  -- I := HL.PolyReducer(F,L);
+  -- While F<>0 Do
+  --   While I<>0 Do
+  --     Q1 := LM(F)/LM(L[I]);
+  --     F := F - Q1 * L[I];
+  --     Q[I] := Q[I] + Q1;
+  --     I := HL.PolyReducer(F,L);
+  --   EndWhile;
+  --   If F<>0 Then
+  --     R := R + LM(F);
+  --     F := F - LM(F);
+  --     I := HL.PolyReducer(F,L);
+  --   EndIf;
+  -- EndWhile;
+  DivAlgVec := TmpDivAlg(f, L);
+  return record[quotients:=first(DivAlgVec, len(L)),
+		remainder:=DivAlgVec[len(L)+1]];
+enddefine;
+
+
+Define LC_LPP(V)
+  LPPV := LPP(V);
+  Return RingElem(RingOf(LPPV), LC(V)) * LPP(V);
+EndDefine; -- LC_LPP
+  
+Define ModElDivAlg(V, L)
+  Q := NewList(len(L), 0);
+  R := 0*V;
+  Zero := 0*V;
+  I := HL.VectorReducer(V,L);
+  While V<>Zero Do
+    While I<>0 Do
+      Q1 := LC_LPP(V)/LC_LPP(L[I]);
+      V := V - Q1 * L[I];
+      Q[I] := Q[I] + Q1;
+      I := HL.VectorReducer(V,L);
+    EndWhile;
+    If V<>Zero Then
+      R := R + LM(V);
+      V := V - LM(V);
+      I := HL.VectorReducer(V,L);
+    EndIf;
+  EndWhile;
+  Return Record[quotients:=Q, remainder:=R];
+EndDefine;
+
+-- Define PolyReducer(F, L)
+--   If F=0 Then Return 0; EndIf;
+--   For I := 1 To len(L) Do
+--     If IsDivisible(LPP(F),LPP(L[I])) Then Return I; EndIf;
+--   EndFor;
+--   Return 0;   ---- if LT(F) cannot be reduced, it returns 0
+-- EndDefine;
+
+Define VectorReducer(F, L)
+  If F=0*F Then Return 0; EndIf;
+  For I := 1 To len(L) Do
+    If LPosn(F) = LPosn(L[I]) And IsDivisible(LPP(F), LPP(L[I])) Then
+      Return I;
+    EndIf;
+  EndFor;
+  Return 0;   ---- if LT(F) cannot be reduced, it returns 0
+EndDefine;
+
+Define VReducer(V, L)
+  For I := 1 To len(L) Do
+    If LPosn(V) = LPosn(L[I]) And
+      type(LPP(V)/LPP(L[I]))<>RATFUN Then Return I; EndIf;
+  EndFor;
+  Return 0;
+EndDefine; -- VReducer
+
+
+Define IsVLIST(L)
+  If L = [] Then Return True; EndIf;
+  If shape(L)<>NewList(len(L),MODULEELEM) Then Return False; EndIf;
+  If L<>[] And[len(V)|V In L]<>NewList(len(L),len(L[1])) Then Return False; EndIf;
+  Return True;
+EndDefine; -- IsVLIST
+
+Define IsPLIST(L)
+  Return shape(L)=NewList(len(L),RINGELEM);
+EndDefine;
+
+
+
+Define LTList(L) Return [ LT(X) | X In L ]; EndDefine;
+
+
+
+Define RingsOf(X)
+  If type(X) = LIST
+    Then Return MakeSet(ConcatLists([$.RingsOf(Y) | Y In X]));
+  Elif type(X) = INT Then Return [INT];
+  Elif type(X) = RAT Then Return [RAT];
+  Else Return [RingOf(X)];
+  EndIf;
+EndDefine; -- RingsOf
+
+
+-- Define Homogenized(X,O)
+--   If type(O) = LIST Then Return [HL.Homogenized(X,Y) | Y In O];
+--   Elif RingEnv(X)<>RingEnv(O) Then error(ERR.BAD_PARAMS)
+--   EndIf;
+--   Using Var(RingEnv(X)) Do
+--     If type(O) = IDEAL Then Return GB.Homogenized(X,O)
+--     Else Return $builtin.Homogenized(indet(IndetIndex(X)),O)
+--     EndIf;
+--   EndUsing;
+-- EndDefine;
+
+----------------------  Auxiliary functions  ---------------------
+
+
+-- Define DivAux(P,I)
+--   R := P-NF(P,I);
+--   L := $builtin.Concat([R],gens(I));
+--   S := Syz(L); -- is this call to Syz correct???
+--   G := Gens(S);
+--   Foreach V In G Do
+--     C := V[1];
+--     If Deg(C)=0 And C<>0 Then
+--       C := -C;
+--       Return [Div(P,C) | P In Tail(Comps(V))];
+--     EndIf
+--   EndForeach
+-- EndDefine;
+
+
+--Define Div(A,Var B)
+--  If type(A)<=POLY And type(B)=IDEAL Or type(A)=MODULEELEM And type(B)=MODULE Then
+--    Return Comp(GB.NFAndRel(A,B),2)
+--  Elif type(A) = MODULEELEM Then Return A*(1/B)
+--  Else
+--    Catch R := $builtin.Div(Cast(A,INT),Cast(B,INT)) In E EndCatch;
+--    If type(E)=ERROR Then error("Div:arguments must be integers") EndIf;
+--    Return R;
+--  EndIf;
+--EndDefine;
+
+Define GenRepr(A, B)
+  // check input
+  If not(type(B) IsIn [IDEAL,MODULE]) Then
+    error("GenRepr: expected (RINGELEM,IDEAL) or (MODULEELEM,MODULE)");
+  EndIf;
+  If type(B) = IDEAL Then
+    If type(A) IsIn [INT,RAT] Then A := RingElem(RingOf(B), A); EndIf;
+    If type(A) <> RINGELEM Then error("expected (RINGELEM,IDEAL)");EndIf;
+    if IsZero(A) then return NewList(len(gens(B)), zero(RingOf(A))); endif;
+  EndIf;
+  If type(B) = MODULE then
+    if type(A) <> MODULEELEM Then error("GenRepr: expected (MODULEELEM,MODULE)");endif;
+    if IsZero(A) then return NewList(len(gens(B)), zero(ModuleOf(A))); endif;
+  EndIf;
+  // compute
+  If not(A IsIn B) Then Return []; EndIf;
+  return GenReprCompute(A, B);
+EndDefine; -- GenRepr
+
+
+Define GenReprCompute(A, B)
+  GensB := gens(B);
+  if type(B) = IDEAL then
+//    X := ideal(concat([A], [ f in GensB | not(IsZero(f)) ]));
+    L := concat([A], [ f in GensB | not(IsZero(f)) ]);
+    S := GetRows(GensAsRows(syz(L)));
+  else -- MODULE
+    X := submodule(ModuleOf(B), concat([A], [ f in GensB | not(IsZero(f)) ]));
+    S := GetRows(GensAsRows(SyzOfGens(X)));
+  endif;
+  Foreach s In S Do
+    If IsOne(s[1]) Then GR := -1*tail(s); break; EndIf;
+    If IsInvertible(s[1]) Then GR := (-1/s[1])*tail(S); break; EndIf;
+  EndForeach;
+  if not(IsDefined(GR)) then error("GenReprCompute: SERIOUS ERROR"); endif;
+  result := NewList(len(GensB));
+  index := 1;
+  ZeroP := zero(RingOf(A));
+  for i:=1 to len(GensB) do
+    if IsZero(GensB[i]) then
+      result[i] := ZeroP;
+    else
+      result[i] := GR[index];
+      incr(ref index);
+    endif;
+  endfor;
+  return result;
+EndDefine; -- GenReprCompute
+
+define ReducedGBasisRepr(X, I)
+  D := DivAlg(X, ReducedGBasis(I));
+  if not(IsZero(D.remainder)) then error("first arg is not in second arg");endif;
+  return D.quotients;
+enddefine; -- ReducedGBasisRepr
+  
+  
+EndPackage; -- hilop
+
+

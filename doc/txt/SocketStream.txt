@@ -1,0 +1,129 @@
+      SocketStream
+      Copyright (c)  2005,2010  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SocketStream}{John Abbott}
+
+
+
+== User Documentation for SocketStream ==
+%======================================================================
+
+=== General description ===
+%----------------------------------------------------------------------
+
+A ``SocketStream`` is intended to be used for client-server socket
+connections.  The distinction between the two sorts of use is
+made explicit when the socket is created:
+- the server end of a socket is created by specifying the port
+   number on which to listen for connexions
+- the client end of a socket is created by specifying both the
+   machine name and port number to call
+
+
+In both cases the ``SocketStream`` object is an ``iostream``, //i.e.// it supports
+both input and output.  Note that the constructor for a server end
+socket (//i.e.// one with just the port number as argument) will block until
+a connexion is received!
+
+
+=== Example of Basic Use ===
+%----------------------------------------------------------------------
+Here is a simple, and rather silly, example.  The server reads strings,
+and for each string read returns a string being the decimal
+representation of the length of the string received.  Don't forget to
+start the server first, and then run the client (otherwise the client
+will complain about connexion refused).
+
+=== Source for server.C ===
+%----------------------------------------------------------------------
+```
+#include <string>
+#include "CoCoA/SocketStreambuf.C"
+
+int main()
+{
+  CoCoA::SocketStream s(8000); // server socket -- waits for a call
+
+  while (s)
+  {
+    std::string str;
+    s >> str;
+    if (!s) break;
+    std::cout << "Read the string: " << str << std::endl;
+    s << str.size() << std::endl;
+  }
+
+  std::cout << "REACHED EOF -- QUITTING" << std::endl;
+  return 0;
+```
+
+=== Source for client.C ===
+%----------------------------------------------------------------------
+```
+#include <string>
+#include <iostream>
+#include "CoCoA/SocketStreambuf.C"
+
+void process(const std::string& str, std::iostream& s)
+{
+  s << str << endl;
+  std::string result;
+  s >> result;
+  std::cout << '"' << str << "\" transformed into \"" << result << '"' << std::endl;
+}
+
+int main()
+{
+  CoCoA::SocketStream s("point", 8000); // client socket
+  
+  process("String1", s);
+  process("String2", s);
+  process("archeopteryx", s);
+  process("asuccessionofnonwhitespacecharacters", s);
+
+  return 0;
+}
+```
+
+
+== Maintenance notes for the SocketStream source code ==
+%======================================================================
+
+As mentioned below, most of this code was written by copying from other
+reliable sources -- I don't really understand how it all works.  For the
+``streambuf`` code refer to Josuttis's excellent book.  I do not know any
+formal reference for the "low-level" C code which uses the socket
+functions of the C library.
+
+``SocketStreambuf::ourUngetSize`` is a lower bound on how much one can "go
+backwards" using the ``ungetc`` function.
+``SocketStreambuf::ourInputBufferSize`` is the size of the internal input
+byte buffer, so the maximum number of characters which can be read in
+a single call to "recv" is the difference between ``ourInputBufferSize``
+and ``ourUngetSize`` (currently 99996 bytes).
+
+The constructor for a server size ``SocketStream`` internally calls "fork"
+when a connexion is received -- the constructor completes only in the
+child, the parent process waits for further connexions.
+
+
+== Bugs, Shortcomings, etc ==
+%======================================================================
+
+I do not like having to include ``<cstdio>`` just to get the
+preprocessor macro ``EOF``
+
+ERROR HANDLING NEEDS TO BE RECONSIDERED.
+Error handling is probably not correct: too great a tendency to throw
+exceptions instead of simply putting the iostream into an "anomalous
+state".  Not sure what is the accepted C++ approach.
+
+The values for the constants ``SocketStreambuf::ourInputBufferSize``
+and ``SocketStreambuf::ourUngetSize`` are rather arbitrary.
+
+Most of the code has been "ripped off": either from Daniele's C source,
+or from Josuttis's book.  I have felt free to make (wholesale) changes.
+
+Maintainer documentation is largely absent.
+

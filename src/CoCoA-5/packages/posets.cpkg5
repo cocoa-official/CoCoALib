@@ -1,0 +1,276 @@
+Package $posets;
+
+export covers; -- (relP), relP list of pairs
+                           // list of the strict relations in a poset P
+export moebius; -- (relP), relP list of pairs
+export MaxChains; -- (relP), relP list of pairs
+export PosetNRank; -- (relP, N), relP list of pairs, N node
+export PosetRank; -- (relP) relP list of pairs
+export PosetCharPoly; -- (relP), relP list of pairs
+export PosetPoincarePoly; -- (relP), relP list
+export PosetMeet; -- (relP, N, M), relP list of pairs, N, M nodes
+export PosetDual; -- (relP), relP list of pairs
+export PosetJoin; -- (relP, N, M), relP list of pairs, N, M nodes
+
+export IsPosetGraded; -- (relP), relP list of pairs
+export IsLattice; -- (relP), relP list of pairs
+////export ByLength;
+
+Define About()
+  PrintLn "    Authors  : Elisa Palezzato and Michele Torielli";
+  PrintLn "    Version  : CoCoA-5.2.4";
+  PrintLn "    Date     : August 2018";
+EndDefine; -- About
+
+  ----------------------------------------------------------------------
+  -- Exported functions (with input checking)
+  ----------------------------------------------------------------------
+define covers(relP); // list of the strict relations in a poset P
+  if not($arrangements.IsListOfPairs(relP)) then error("The relations in a poset must be a list of pairs"); endif;
+  vertices := sorted(MakeSet(flatten(relP)));
+  P := [];
+  foreach i in vertices do
+    SmallerTheni := [];
+    foreach e in relP do
+      if e[2]=i then
+	append(ref SmallerTheni, e[1]);
+      endif;
+    endforeach;
+    append(ref P, SmallerTheni);
+     if VerbosityLevel() >= 9 then println "Smaller then ",i,", list: " ,P; endif;
+  endforeach;
+  covers := [];  
+  for i:=1 to len(P) do
+    L := [];
+    repeat
+      L := P[i];
+      append(ref P[i], [P[j] | j in P[i]]);
+      P[i] := MakeSet(flatten(P[i]));
+      if VerbosityLevel() >= 9 then println "P[",i,"]: ",P[i]; endif;
+  until P[i]=L;
+    append(ref covers, sorted(MakeSet(flatten(P[i]))));
+  endfor;
+  return covers;
+enddefine; -- covers
+
+
+define moebius(relP); // relP
+  P := covers(relP);
+  mP := [[]| i in 1..len(P)];
+  for i:=1 to len(P) do
+    if P[i]=[] then
+      append(ref mP[i], 1);
+    endif;
+  endfor;
+  for k:=1 to len(P)-1 do
+    for i:=1 to len(P) do
+      if len(P[i])=k then
+	append(ref mP[i], -sum(flatten([mP[j] | j in P[i]])));
+      endif;
+    endfor;
+  endfor;
+  return flatten(mP);
+enddefine; -- moebius
+
+define MaxChains(relP)
+  info := PosetInfo(relP);
+  MChains := [];
+  foreach k in info.roots do
+    MChainsK := [];
+    PChain := [k];
+    MChains:=concat(MChains,MChainsFromK(relP,info.leaves,PChain,MChainsK,k));
+  endforeach;
+  return MChains;
+enddefine; -- MaxChains
+
+define PosetNRank(relP, N)
+  return PosetNRank_rec(relP, N, PosetInfo(relP).roots);
+enddefine; -- PosetNRank
+
+define PosetRank(relP)
+  return(max([len(C)-1|C in MaxChains(relP)]));
+enddefine; -- PosetRank
+
+define PosetCharPoly(relP)
+  if not(IsPosetGraded(relP)) then error("The poset must be graded"); endif;
+  return PosetCharPolyNC(relP);
+enddefine; -- PosetCharPoly
+
+define PosetPoincarePoly(relP)
+  if not(IsPosetGraded(relP)) then error("The poset must be graded"); endif;
+  return PosetPoincarePolyNC(relP);
+enddefine; -- PosetPoincarePoly
+
+define PosetMeet(relP, N, M) // N,M nodes
+  if N=M then return [N]; endif;
+  P := covers(relP);
+  if M isin P[N] then return [M]; endif;
+  if N isin P[M] then return [N]; endif;
+  inters_NM := intersection(P[N],P[M]);
+  if len(inters_NM)<=1 then
+    return inters_NM; 
+  else
+    sublists := [P[i] | i in inters_NM];
+    for i:=1 to len(sublists)-1 do
+      for j:=i+1 to len(sublists) do 
+	if sublists[i]=sublists[j] then
+	  return[];
+	endif;
+      endfor;
+    endfor;
+    ByLength := func(S, T)  return len(S) < len(T); endfunc;
+    return intersection($arrangements.IndicesInList(P, MaxBy(sublists, ByLength)), inters_NM);
+  endif;
+enddefine; -- PosetMeet
+
+define PosetDual(relP)
+  if not($arrangements.IsListOfPairs(relP)) then error("The relations in a poset must be a list of pairs"); endif;
+  return [[pair[2],pair[1]] | pair in relP];   
+enddefine;
+  
+define PosetJoin(relP, N, M) // N,M nodes
+  return PosetMeet(PosetDual(relP), N,M);
+enddefine;
+  
+  ----------------------------------------------------------------------
+  -- Input check
+  ----------------------------------------------------------------------
+  
+define IsPosetGraded(relP)
+  MChains := MaxChains(relP);
+  LenMaxChains := [];
+  foreach chain in MChains do
+    append(ref LenMaxChains, len(chain));
+  endforeach;
+  if len(MakeSet(LenMaxChains))=1 then
+    return true;
+  else return false;
+  endif;
+enddefine; -- IsPosetGraded
+
+define IsLattice(relP)
+  vertices := sorted(MakeSet(flatten(relP)));
+  numvert:=len(vertices);
+  for i:=1 to numvert-1 do
+    for j:=i+1 to numvert do
+      if PosetMeet(relP,i,j)=[] then return false; endif;
+      if PosetJoin(relP,i,j)=[] then return false; endif;
+    endfor;
+  endfor;
+  return true;
+enddefine; -- IsLattice
+
+  ----------------------------------------------------------------------
+  -- Internal functions
+  ----------------------------------------------------------------------
+define PosetInfo(relP)
+  if not($arrangements.IsListOfPairs(relP)) then error("The relations in a poset must be a list of pairs"); endif;
+  heads := MakeSet([k[1] | k in relP]);
+  tails := MakeSet([k[2] | k in relP]);
+  int := intersection(heads,tails);
+  roots := diff(heads, int);
+  leaves := diff(tails, int);
+  return record[leaves := leaves, roots := roots];
+enddefine;
+  
+define PosetCharPolyNC(relP) // NC: No Check (if graded)
+  t := indet(RingQQt(1),1);
+  T1 := CpuTime();
+  info := PosetInfo(relP);
+  rkP := PosetNRank_rec(relP, info.leaves[1], info.roots);
+  P := covers(relP);
+  NumNodes := len(P);
+  mu := moebius(relP);
+  adds := [];
+  if VerbosityLevel()>=10 then
+    println "PosetCharPoly, times 'PosetRank,moebius etc': ", TimeFrom(T1);
+  endif;
+  T2 := CpuTime();
+  for i:=1 to NumNodes do
+    add := mu[i]*t^(rkP-PosetNRank_rec(relP,i,info.roots));
+    append(ref adds, add);
+  endfor;
+  if VerbosityLevel()>=10 then
+    println "PosetCharPoly, times 'PosetNodeRank': ", TimeFrom(T2);
+  endif;
+  chi := sum(adds);
+  if VerbosityLevel()>=10 then
+    println "PosetCharPoly, total time: ", TimeFrom(T1);
+  endif;
+  return chi;
+enddefine; -- PosetCharPolyNC
+  
+define PosetPoincarePolyNC(relP)
+  t := indet(RingQQt(1),1);
+  P := covers(relP);
+  NumNodes := len(P);
+  mu := moebius(relP);
+  adds := [];
+  for i:=1 to NumNodes do
+    add := mu[i]*(-t)^(PosetNRank(relP,i));
+    append(ref adds, add);
+  endfor;
+  pi := sum(adds);
+  return pi;
+enddefine; -- PosetPoincarePolyNC
+  
+define StartWith(relP,i)
+  lista := [];
+  for j:=1 to len(relP) do
+    if relP[j][1]=i then
+      append(ref lista, relP[j]);
+    endif;
+  endfor;
+  return lista;
+enddefine; -- StartWith
+
+  // The function steps gives all the max chains starting with k
+define MChainsFromK(relP, leaves, PChain, MChains, k) 
+  //PChain=PartialChain, MChains=MaximalChains
+  NODES := StartWith(relP, k);
+  foreach node in NODES do
+    if node[2] isin leaves then
+      PChain1 := concat(PChain, [node[2]]);
+      append(ref MChains, PChain1);
+    else
+      PChain2 := concat(PChain, [node[2]]);
+      MChains := MChainsFromK(relP, leaves, PChain2, MChains, node[2]);
+    endif;
+  endforeach;
+  return MChains;
+enddefine; -- MChainsFromK
+
+define ChainsToN(relP, N)
+  i := MakeSet([k[1] | k in relP]);
+  j := MakeSet([k[2] | k in relP]);
+  int := intersection(i,j);
+  roots := diff(i, int);
+  Chains := [];
+  foreach k in roots do
+    ChainsK := [];
+    PChain := [k];
+    Chains := concat(Chains,MChainsFromK(relP,[N],PChain,ChainsK,k));
+  endforeach;
+  return Chains;
+enddefine; -- ChainsToN
+
+define PosetNRank_rec(relP, N, roots)
+  if not(IsPosetGraded(relP)) then error("The poset must be graded"); endif;
+  p_rk := 0;
+  if N isin roots then
+    return p_rk;
+  else
+    for i:=1 to len(relP) do
+      if relP[i][2]=N then
+	pair := relP[i];
+	break;
+      endif;
+    endfor;
+    N := pair[1];
+    p_rk := PosetNRank_rec(relP, N, roots)+1;
+  endif;
+  return p_rk;
+enddefine; -- PosetNRank_rec
+
+			     
+EndPackage;

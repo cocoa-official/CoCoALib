@@ -1,0 +1,75 @@
+    RingDistMPolyInlPP
+      Copyright (c)  2014 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{empty}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-empty.C ../../examples/index.html#ex-empty.C]
+-
+
+== User documentation ==
+%======================================================================
+
+``RingDistrMPolyInlPP`` implements a ring of distributed multivariate
+polynomials: you may think of the elements as being ordered lists of
+coefficient and power product pairs (with the additional guarantee
+that the coefficients are non-zero, and that the power products are
+all distinct.  The best way to create a ``RingDistrMPolyInlPP`` is to use
+the function ``NewPolyRing_DMPI`` (see [[SparsePolyRing]])
+
+A ``RingDistrMPolyInlPP`` is a concrete instance of a [[SparsePolyRing]].
+
+Internally polynomials have a "compact" representation: the power products
+are held "in-line".  To allow this the [[PPMonoid]] must be of type ``PPMonoidOv``.
+
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+There is a single ctor which is normally called by one of the pseudo-ctors
+called ``NewPolyRing_DMPI``.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+See [[SparsePolyRing]] and [[PolyRing]] for operations.
+
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Most of the real work is delegated to [[DistrMPolyInlPP]]; pratically all
+member fns forward to ``DistrMPolyInlPP``.
+
+Note that the ``PPM`` must be of type ``PPMonoidOv``!
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- January (v0.99531): first documentation
+
+
+
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- Jan (v0.99531): added ability to create a ``RingDistMPolyInlPP`` with
+  specified PPMonoid.
+-
+
+

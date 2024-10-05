@@ -1,0 +1,57 @@
+      SparsePolyOps-RealRadical
+      Copyright (c)  2017 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SparsePolyOps-RealRadical}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-SparsePolyOps2.C ../../examples/index.html#ex-SparsePolyOps2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+There are two functions for polynomials with coefficients in ``RingQQ()``:
+
+- ``HasRealRoot3(f)``  tests quickly and **heuristically** whether ``f`` has real roots; a return result of ``uncertain3`` means ``f`` may or may not have real roots
+- ``RealRadical(f)``  computes a multiple of the real radical of ``f``
+-
+
+
+The function ``HasRealRoot3`` is reliable for univariate polynomials.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Implementation is relatively straightforward.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+It is a shame that ``RealRadical`` has to use factorization; is there a better way?
+
+Perhaps better heuristics for the multivariate case can be added:
+maybe test whether the multivariate can be mapped down to univariate
+with real roots (by setting all-but-1 indets to -1, 0 or +1)?
+
+
+== Main changes ==
+%======================================================================
+
+- **2017**
+ - November (v0.99561): first release
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.
+
+

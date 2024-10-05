@@ -1,0 +1,782 @@
+<html>
+<head>
+<title>CoCoA translation table</title>
+<style type="text/css">
+     body { background: #3cc; }
+     table, a:hover, a.button:hover { background: #188; }
+     table, div {margin-bottom: 6pt; }
+     th { text-align:left}
+     tr.header th { background: #bee;  text-align:center}
+     tr.letter th { background: #add; color: #f00}
+     tr { background: #fff; }
+     td.c4 { color: #fa0; }
+     td.c5 { color: #aaa; font-style:italic; font-size:70%}
+     table.functions tr:nth-child(odd)  { background-color:#fff; }
+     table.functions tr:nth-child(even) { background-color:#ddd; }
+     table.functions tr:hover		{ background-color:#ffb; }
+     table.functions td:first-child { font-size:80%;  font-style:italic;  }
+     table.functions td:first-child.c5 { color: #eee; }
+     table.functions td:first-child + td + td { font-size:60%  }
+     table.functions td:first-child + td + td + td + td { font-size:60%  }
+     a:hover { color: #fff; }
+     p { border: ridge #cdd 1pt;}
+     p:hover { background: #dfd;}
+     h1, h2 { color: red; }
+     h1 { text-align: center; }
+     div, h1, h2
+     {
+       background: white;
+       border: ridge #3cc  2pt;
+       padding: 4pt;
+     }
+
+  .completed { color: #060; font-style: italic; background: #afa; }
+  .active { color: #600; font-weight: bold; background: #faa; }
+  .class { color: #070; font-weight: bold }
+  .file { color: red; }
+  .red { color: red; }
+  .func { color: blue; }
+  .version { color: red; font-weight: bold }
+</style>
+</head>
+<body>
+<a name=top></a>
+<h1>CoCoA-4 -- CoCoA-5 -- CoCoALib<br>Translation Table</h1>
+
+
+<center>
+
+<table cellpadding=2>
+<tr>
+<br><b>pkg</b> = in CoCoA5 package (otherwise in C++)
+<br><b>impr</b> = improved
+<br><b>ren'd</b> = renamed</td>
+
+<td><b>-</b> = no meaning in this context
+<br><b>Tmp</b> = temporary syntax</td>
+
+<td><b>C, C++, STL</b> = from C, C++, STL</td>
+</tr>
+<tr class=header>
+<th colspan=3>
+<a href=#A>A</a> <a href=#B>B</a> <a href=#C>C</a> <a href=#D>D</a>
+<a href=#E>E</a> <a href=#F>F</a> <a href=#G>G</a> <a href=#H>H</a>
+<a href=#I>I</a> <a href=#J>J</a> <a href=#K>K</a> <a href=#L>L</a>
+<a href=#M>M</a> <a href=#N>N</a> <a href=#O>O</a> <a href=#P>P</a>
+<a href=#Q>Q</a> <a href=#R>R</a> <a href=#S>S</a> <a href=#T>T</a>
+<a href=#U>U</a> <a href=#V>V</a> <a href=#W>W</a> <a href=#X>X</a>
+<a href=#Y>Y</a> <a href=#Z>Z</a>
+</th></tr>
+</table>
+
+<table cellpadding=2 class=functions>
+<col style="color: #ffffff" />
+<!-- ===  =============================================== -->
+ <tr class=header><th class="red">CoCoA-4</th>
+  <th class="red" colspan=2>CoCoA-5</th>
+  <th class="red" colspan=2>CoCoALib</th>
+ </tr>
+ <tr class=header><th>name</th>
+   <th>name</th><th><font size="-3">implem.<br>date</font></th>
+   <th>name</th><th><font size="-3">implem.<br>date</font></th>
+</tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=A>AAAAAAAAAAA</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Abs</td> <td>abs</td><td>2010</td> <td>abs</td><td>&lt;2010-10</td></tr>
+<tr><td>Adjoint</td> <td>adj</td><td>2011-02</td> <td>adjoint<br>AdjointByDetOfMinors<br>AdjointByInverse</td><td>&lt;2010-10</td></tr>
+<tr><td>AffHilbert</td> <td>AffHilbertFn</td><td>pkg 2011-04</td> <td></td><td></td></tr>
+<tr><td>AffHilbertSeries<br>AffPoincare</td> <td>AffHilbertSeries</td><td>pkg 2011-04</td> <td></td><td></td></tr>
+<tr><td>Alias</td> <td>alias</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Alias In</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Aliases</td> <td>aliases</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>AllIndetsCalled</td> <td>indets("x",R)</td><td>2010-11<br>ren'd 2013</td> <td>indet myIndets</td><td>2010-11<br>ren'd 2013</td></tr>
+<tr><td>AlmostQR</td> <td>AlmostQR</td><td>pkg 2011-02</td> <td></td><td></td></tr>
+<tr><td>and</td> <td>and</td><td></td> <td>&amp;&amp; (C)</td><td>-</td></tr>
+<tr><td>Append</td> <td>append</td><td>2010</td> <td>PushBack<br>push_back (STL)</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>apply</td> <td>phi(M) [OBS apply(phi, M)]</td><td>2022 2011-02</td> <td>phi(..) [OBS apply]</td><td>2022 &lt;2010-10</td></tr>
+<tr><td>StableBBasisNBM5</td> <td>ApproxPointsNBM</td><td>2013-03</td> <td>NBMTwinFloat</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>ApproxSolve</td> <td>ApproxSolve</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>AreGensMonomial</td> <td>AreGensMonomial</td><td>2011-04</td> <td>AreGensMonomial</td><td>2011-04</td></tr>
+<tr><td class=c5>AreGensSqFreeMonomial</td> <td>AreGensSqFreeMonomial</td><td></td> <td>AreGensSqFreeMonomial</td><td></td></tr>
+<tr><td>Ascii</td> <td>ascii</td><td>2010</td> <td>(C)</td><td>-</td></tr>
+<tr><td class=c5>AsINT</td> <td>AsINT</td><td></td> <td>ConvertTo&lt;int&gt;<br>IsInteger(BigInt,x)</td><td></td></tr>
+<tr><td class=c5>AsRAT</td> <td>AsRAT</td><td></td> <td>IsRational(BigRat,x)</td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=B>BBBBBBBBBBB</a> <a href=#top>(top)</a></th></tr>
+<tr><td class=c5>BaseRing</td> <td>BaseRing</td><td>2011-01</td> <td>BaseRing</td><td>&lt;2010-10</tr>
+<tr><td>BBasis5</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>BettiDiagram</td> <td>BettiDiagram<br>PrintBettiDiagram</td><td>pkg 2014-07</td> <td></td><td></td></tr>
+<tr><td>BettiMatrix</td> <td>BettiMatrix<br>PrintBettiMatrix</td><td>pkg 2014-07</td> <td></td><td></td></tr>
+<tr><td class=c5>BettiNumbers</td> <td>BettiNumbers</td><td></td> <td></td><td></td></tr>
+<tr><td>Bin</td> <td>binomial(INT,INT)<br>Bin generic</td><td>2010<br>pkg 2010-11</td> <td>binomial</td><td>&lt;2010-10</td></tr>
+<tr><td>BinExp</td> <td>BinomialRepr<br>BinomialReprShift</td><td></td> <td></td><td></td></tr>
+<tr><td>Block</td> <td>block</td><td>2010</td> <td>{..} (C)</td><td>&lt;2010-10</td></tr>
+<tr><td>BlockMatrix</td> <td>BlockMat2x2(A,B, C,D)<br>BlockMat</td><td>2011-02<br>pkg 2013-05</td> <td>BlockMat2x2</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>Bool01</td> <td>Bool01</td><td>pkg ?</td> <td></td><td></td></tr>
+<tr><td>Break</td> <td>break</td><td>2010</td> <td>break (C)</td><td>&lt;2010-10</td></tr>
+<tr><td>BringIn</td> <td>BringIn(Obj)<br>BringIn(Ring, Obj)</td><td>2011-03</td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=C>CCCCCCCCCCC</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Call</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>CallOnGroebnerFanIdeals</td> <td>CallOnGroebnerFanIdeals</td><td></td> <td></td><td></td></tr>
+<tr><td>E_</td> <td>CanonicalBasis/gens</td><td>2022 2013-01</td> <td>CanonicalBasis/gens</td><td>2022 &lt;2010-10</td></tr>
+<tr><td class=c5>CanonicalHom</td> <td>CanonicalHom(R,S)</td><td>2011-01</td> <td>CanonicalHom</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>CanonicalRepr </td> <td>CanonicalRepr</td><td></td> <td>CanonicalRepr</td><td></td></tr>
+<tr><td class=c5>ChainCanonicalHom</td> <td>(Tmp)ChainCanonicalHom</td><td>2011-02</td> <td>TmpChainCanonicalHom</td><td>2011-02</td></tr>
+<tr><td>CartesianProduct<br>CartesianProductList</td> <td>CartesianProduct<br>CartesianProductList<br> >< </td><td>BI</td> <td>-</td><td>-</td></tr>
+<tr><td>Cast</td> <td>AsINT, GetRows, GensAsCols,..</td><td></td> <td>convert, ..</td><td>-</td></tr>
+<tr><td class=c5>ceil</td> <td>ceil(x)</td><td>2010</td> <td>ceil</td><td>&lt;2010-10</td></tr>
+<tr><td>CFApprox</td> <td>CFApprox</td><td>2011-02</td> <td>CFApprox</td><td>2011-02</td></tr>
+<tr><td>CFApproximants</td> <td>CFApproximants</td><td></td> <td>CFApproximants</td><td></td></tr>
+<tr><td>Characteristic</td> <td>characteristic</td><td>2010</td> <td>characteristic</td><td>&lt;2010-10</td></tr>
+<tr><td>CharPoly</td> <td>CharPoly</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td class=c5>ChebyshevPoly</td> <td>ChebyshevPoly</td><td>2017</td> <td>ChebyshevPoly</td><td>2017</td></tr>
+<tr><td>CheckArgTypes</td> <td>CheckArgTypes</td><td>2014-07</td> <td>-</td><td>-</td></tr>
+<tr><td>Ciao</td> <td>ciao</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Clear<!-- NOT IN WORDLIST --></td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>ClearDenom</td> <td>ClearDenom</td><td>2011-03</td> <td>ClearDenom<br>myClearDenom</td><td>2011-03</td></tr>
+<tr><td>Close</td> <td>close</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>CloseLog</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<!-- <tr><td>CoCoA-4 mode</td> <td></td><td></td> <td></td><td></td></tr> -->
+<tr><td>CocoaLimits<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>CocoaPackagePath</td> <td>CocoaPackagePath</td><td>2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>codomain</td> <td>codomain(phi)</td><td>2011-02</td> <td>codomain</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>CoeffEmbeddingHom</td> <td>CoeffEmbeddingHom(Kx)</td><td>2011-01</td> <td>CoeffEmbeddingHom</td><td>&lt;2010-10</td></tr>
+<tr><td>Coefficients</td> <td>coefficients(F)<br>CoeffListWRT(F,x)</td><td>2011-01</td> <td>CoeffVecWRT(F,x)</td><td>2012-12</td></tr>
+<tr><td class=c5>CoeffListWRT</td> <td>CoeffListWRT</td> <td>2012-12</td> <td>CoeffVecWRT</td><td>2012-12</td></tr>
+<tr><td>CoeffOfTerm</td> <td>CoeffOfTerm(F, T)</td><td>2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>CoeffRing</td> <td>CoeffRing</td><td></td> <td>CoeffRing</td><td></td></tr>
+<tr><td>TypeOfCoeffs<!-- ordine alfabetico CoCoA5 --></td> <td>CoeffRing(R)</td><td>2010-12</td> <td>CoeffRing</td><td>&lt;2010-10</td></tr>
+<tr><td>ColMat</td> <td>ColMat(L)<br>ColMat(R,L)</td><td>pkg 2011-02</td> <td>ColMat</td><td>&lt;2010-10</td></tr>
+<tr><td>Colon</td> <td>colon</td><td>2011-02</td> <td>colon</td><td>&lt;2010-10</td></tr>
+<tr><td>ColumnVectors</td> <td>GensAsCols (similar)</td><td>2013-?</td> <td>GensAsCols</td><td>2013-?</td></tr>
+<tr><td class=c5>CommonDenom</td> <td>CommonDenom(f)</td><td>&lt;2010-10</td> <td>CommonDenom</td><td>&lt;2010-10</td></tr>
+<tr><td>Comp</td> <td>OBSOLETE</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<!-- <tr><td>Comparison Operators</td> <td></td><td></td> <td></td><td></td></tr> -->
+<!-- <tr><td>CompleteToOrd [OBSOLESCENT]</td> <td></td><td></td> <td></td><td></td></tr> -->
+<tr><td>Comps</td> <td>compts<br>Comps</td><td>pkg 2014-03</td> <td></td><td></td></tr>
+<tr><td class=c5>ComputeElimFirst</td> <td>ComputeElimFirst</td><td></td> <td>ComputeElimFirst</td><td></td></tr>
+<tr><td>Concat</td> <td>concat</td><td>2010</td> <td>(STL)</td><td>-</td></tr>
+<tr><td>MatConcatAntiDiag</td> <td>ConcatAntiDiag</td><td>2011-02</td> <td>ConcatAntiDiag</td><td>&lt;2010-10</td></tr>
+<tr><td>MatConcatDiag</td> <td>ConcatDiag</td><td>2011-02</td> <td>ConcatDiag</td><td>&lt;2010-10</td></tr>
+<tr><td>MatConcatHor</td> <td>ConcatHor<br>ConcatHorList</td><td>2011-02</td> <td>ConcatHor</td><td>&lt;2010-10</td></tr>
+<tr><td>ConcatLists</td> <td>ConcatLists</td><td>2010</td> <td></td><td></td></tr>
+<tr><td class=c5>ConcatStrings</td> <td>ConcatStrings</td><td>2022</td> <td>+ (C++)</td><td>-</td></tr>
+<tr><td>MatConcatVer</td> <td>ConcatVer<br>ConcatVerList</td><td>2011-02</td> <td>ConcatVer</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>ConcatHorList</td> <td>ConcatHorList</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>ConcatVerList</td> <td>ConcatVerList</td><td></td> <td></td><td></td></tr>
+<tr><td>Cond<!-- NOT IN WORDLIST --></td> <td>func/if</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>content</td> <td>content(f)</td><td>2010</td> <td>content</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>ContentFreeFactor</td> <td>ContentFreeFactor</td><td></td> <td>ContentFreeFactor</td><td></td></tr>
+<tr><td class=c5>ContentsOfFile</td> <td>ContentsOfFile(s)</td><td>2010</td> <td>(C)</td><td>-</td></tr> 
+<tr><td class=c5>ContentWRT</td> <td>ContentWRT</td><td></td> <td>ContentWRT</td><td></td></tr>
+<tr><td>ContFrac</td> <td>ContFrac</td><td>pkg 2010</td> <td>ContFrac</td><td></td></tr>
+<tr><td>ContFracToRat</td> <td>ContFracToRat</td><td>pkg 2010</td> <td></td><td></td></tr>
+<tr><td>continue</td> <td>continue</td><td></td> <td>continue (C)</td><td></td></tr>
+<tr><td>Contrib</td> <td></td><td></td> <td>// Authors</td><td></td></tr>
+<tr><td>Count</td> <td>count</td><td>pkg 2011-01</td> <td>(STL)</td><td>-</td></tr>
+<tr><td>Set Time</td> <td>CpuTime()</td><td>2011-01</td> <td>CpuTime</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>CRT</td> <td>CRT</td><td></td> <td>CRTMill</td><td></td></tr>
+<tr><td class=c5>CRTPoly</td> <td>CRTPoly</td><td>2016</td> <td>CRTPoly</td><td>2016</td></tr>
+<tr><td>CurrentRing</td> <td>BI CurrentRing (TopLevel var)</td><td>2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td>Types<!-- ordine alfabetico CoCoA5 --></td> <td>CurrentTypes</td><td>2011-02</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>cyclotomic</td> <td>cyclotomic</td><td></td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=D>DDDDDDDDDDD</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Dashes</td> <td>dashes</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td>Date</td> <td>date (no day of week)</td><td>2011-05</td> <td></td><td></td></tr>
+<tr><td>DecimalStr</td> <td>DecimalStr</td><td>pkg 2010</td> <td>- (C?)</td><td>&lt;2010-10</td></tr>
+<tr><td>Define</td> <td>define</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>DefiningIdeal</td> <td>DefiningIdeal(QuotRing)</td><td>2011-04</td> <td>DefiningIdeal</td><td>&lt;2010-10</td></tr>
+<tr><td>Deg</td> <td>deg</td><td>2010-12</td> <td>deg<br>StdDeg</td><td>&lt;2010-10</td></tr>
+<tr><td>Delete<!-- NOT IN WORDLIST --></td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Den</td> <td>den</td><td>2010</td> <td>den</td><td>&lt;2010-10</td></tr>
+<tr><td>DensePoly</td> <td>DensePoly</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>Depth</td> <td>depth (for P, P/I)</td><td></td> <td></td><td></td></tr>
+<tr><td>Der</td> <td>deriv</td><td>2010</td> <td>deriv</td><td>&lt;2010-10</td></tr>
+<tr><td>DerivationAction</td> <td>DerivationAction</td><td>pkg 2011-05</td> <td></td><td></td></tr>
+<tr><td>Describe</td> <td>describe</td><td>2010</td> <td>myOutputSelfLong<br>for ring</td><td></td></tr>
+<tr><td>Destroy<!-- NOT IN WORDLIST --></td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Det</td> <td>det</td><td>2011-02</td> <td>det</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>DetByMinors</td> <td>DetByMinors</td><td>2022</td> <td>DetByMinors</td><td>2022</td></tr>
+<tr><td class=c5>DF</td> <td>DF</td><td></td> <td></td><td></td></tr>
+<tr><td>DiagonalMat</td> <td>DiagMat(L) DiagMat(R,L)</td><td>pkg 2011-02</td> <td>DiagMat</td><td>&lt;2010-10</td></tr>
+<tr><td>Diff</td> <td>diff</td><td>pkg 2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Dim</td> <td>dim</td><td>pkg 2011-04</td> <td>DimQuot</td><td></td></tr>
+<tr><td>Discriminant</td> <td>discriminant</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>Distrib</td> <td>distrib</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td>Div</td> <td>div</td><td>2010</td> <td>int/int (C)</td><td>&lt;2010-10</td></tr>
+<tr><td>DivAlg</td> <td>DivAlg</td><td>2011-03</td> <td>TmpDivAlg</td><td>2022</td></tr>
+<tr><td class=c5>domain</td> <td>domain(phi)</td><td>2011-02</td> <td>domain</td><td>&lt;2010-10</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=E>EEEEEEEEEEE</a> <a href=#top>(top)</a></th></tr>
+<tr><td class=c5>eigenfactors</td> <td>eigenfactors</td><td></td> <td></td><td></td></tr>
+<tr><td>Eigenvectors</td> <td>eigenvectors</td><td>pkg 2014-02</td> <td></td><td></td></tr>
+<tr><td class=c5>ElapsedTime</td> <td>ElapsedTime</td><td>2022</td> <td>ElapsedTime</td><td>2022</td></tr>
+<tr><td>Elim</td> <td>elim</td><td>2011-02</td> <td>myElim (tmp)</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>ElimHomogMat</td> <td>ElimHomogMat</td><td>2012</td> <td>ElimHomogMat</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>ElimMat</td> <td>ElimMat</td><td>2013-02</td> <td>ElimMat</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>EmbeddingHom</td> <td>EmbeddingHom</td><td>2011-01</td> <td>EmbeddingHom</td><td>&lt;2010-10</td></tr>
+<tr><td>EqSet</td> <td>EqSet</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<!-- <tr><td>Equality Test</td> <td></td><td></td> <td></td><td></td></tr> -->
+<tr><td>Equals<!-- NOT IN WORDLIST --></td> <td>equals</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td>EquiIsoDec</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Error</td> <td>error</td><td>2010</td> <td>CoCoA_ERROR</td><td>&lt;2010-10</td></tr>
+<tr><td>Eval</td> <td>eval</td><td>2011-03</td> <td>PolyAlgebraHom</td><td>&lt;2010-10</td></tr>
+<tr><td>EvalBinExp<!-- NOT IN WORDLIST --></td> <td>EvalBinExp</td><td>pkg 2010</td> <td></td><td></td></tr>
+<tr><td>EvalHilbertFn</td> <td>EvalHilbertFn</td><td>pkg 2011-04</td> <td></td><td></td></tr>
+<tr><td class=c5>EvalQuasiPoly</td> <td>EvalQuasiPoly</td><td></td> <td>EvalQuasiPoly</td><td></td></tr>
+<tr><td class=c5>exit</td> <td>exit</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Log</td> <td>exponents</td><td></td> <td>exponents</td><td></td></tr>
+<tr><td>Ext</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>ExternalLibs</td> <td>ExternalLibs</td><td></td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=F>FFFFFFFFFFF</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Factor</td> <td>factor (only on QQ)</td><td>2011-01</td> <td>factor</td><td>&lt;2010-10</td></tr>
+<tr><td>SmoothFactor</td> <td>FactorINT</td><td>2022</td> <td>FactorINT</td><td>2022</td></tr>
+<tr><td>SmoothFactor</td> <td>FactorINT_TrialDiv</td><td>2022</td> <td>FactorINT_TrialDiv</td><td>2022</td></tr>
+<tr><td class=c5>FactorINT_PollardRho</td> <td>FactorINT_PollardRho</td><td>2022</td> <td>FactorINT_PollardRho</td><td>2022</td></tr>
+<tr><td>Fact</td> <td>factorial</td><td>2010</td> <td>factorial</td><td>&lt;2010-10</td></tr>
+<tr><td>FactorMultiplicity</td> <td>FactorMultiplicity</td><td></td> <td>FactorMultiplicity</td><td></td></tr>
+<tr><td>FGLM5</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>fibonacci</td> <td>fibonacci(n)</td><td>2010</td> <td>fibonacci</td><td>&lt;2010-10</td></tr> 
+<tr><td>Fields</td> <td>fields</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>First<br>Head</td> <td>first</td><td>2011-03</td> <td>(STL) front()<br>range constructor</td><td>-</td></tr>
+<tr><td>FirstNonZero</td> <td>FirstNonZero</td><td>2013-02</td> <td>FirstNonZero</td><td>2013-02</td></tr>
+<tr><td>FirstNonZeroPos</td> <td>FirstNonZeroPosn</td><td>2013-02</td> <td>FirstNonZeroPosn</td><td>2013-02</td></tr> 
+<tr><td>Flatten</td> <td>flatten</td><td>pkg 2010-12</td> <td>-</td><td>-</td></tr>
+<tr><td>FloatApprox</td> <td>FloatApprox</td><td>2010</td> <td>FloatApprox</td><td>2014-04</td></tr>
+<tr><td>FloatStr</td> <td>FloatStr</td><td>2011-01</td> <td>- (C?)</td><td>-</td></tr>
+<tr><td class=c5>floor</td> <td>floor(x)</td><td>2010</td> <td>floor</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>FloorLog2, FloorLog10<br>FloorLogBase</td> <td>FloorLog2, FloorLog10<br>FloorLogBase</td><td></td> <td>FloorLog2, FloorLog10<br>FloorLogBase</td><td></td></tr>
+<tr><td class=c5>FloorSqrt</td> <td>FloorSqrt</td><td></td> <td>FloorSqrt</td><td></td></tr>
+<tr><td class=c5>FoldToListInput</td> <td>FoldToListInput</td><td>pkg 2022</td> <td>-</td><td>-</td></tr>
+<tr><td>For</td> <td>for</td><td>2010</td> <td>for (C)</td><td>-</td></tr>
+<tr><td>Foreach</td> <td>foreach</td><td>2010</td> <td>for_each (C)</td><td>-</td></tr>
+<tr><td>Format</td> <td>Format</td><td>pkg 2011-01</td> <td>\t (C)</td><td>-</td></tr>
+<tr><td>Fraction<!-- NOT IN WORDLIST --></td> <td>/ (?)</td><td>2010</td> <td>/</td><td>&lt;2010-10</td></tr>
+<tr><td>AlexanderDual_Frobby5</td> <td>FrbAlexanderDual</td><td>2013-06</td> <td>AlexanderDual(SqFr)<br>FrbAlexanderDual</td><td>2011-07</td></tr>
+<tr><td class=c5>FrbAssociatedPrimes</td> <td>FrbAssociatedPrimes</td><td>2013-06</td> <td>AssociatedPrimesFrobby</td><td>&lt;2010-10</td></tr>
+<tr><td>IrreducibleDecom_Frobby5</td><td>FrbIrreducibleDecomposition</td><td>2013-06</td> <td>IrreducibleDecomposition</td><td>&lt;2010-10</td></tr> 
+<tr><td>MaximalStandardMonomials_Frobby5</td> <td>FrbMaximalStandardMonomials</td><td>2013-06</td> <td>FrbMaximalStandardMonomials</td><td></td></tr>
+<tr><td class=c5>prim</td> <td>prim</td><td>2022</td> <td>prim</td><td>2022</td></tr>
+<tr><td>PrimaryDecomposition_Frobby5</td> <td>FrbPrimaryDecomposition</td><td>2013-06</td> <td>PrimaryDecomposition(SqFr)<br>PrimaryDecompositionFrobby</td><td>2011-07</td></tr>
+<tr><td class=c5>FrobeniusMat</td> <td>FrobeniusMat</td><td>2017</td> <td>FrobeniusMat</td><td>2017</td></tr>
+<tr><td class=c5>FrobeniusNormSq</td> <td>FrobeniusNormSq</td><td>2022</td> <td>FrobeniusNormSq</td><td>2022</td></tr>
+<tr><td class=c5>func</td> <td>func</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Function</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Functions</td> <td>describe (package)</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>FVector</td> <td>FVector</td><td></td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=G>GGGGGGGGGGG</a> <a href=#top>(top)</a></th></tr>
+<tr><td>GB.Complete<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.GetBettiMatrix<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.GetNthSyz<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.GetNthSyzShifts<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.GetRes<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.GetResLen<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.ResReport<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Start_GBasis<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Start_MinGens<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Start_MinSyzMinGens<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Start_Res<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Start_Syz<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Start_SyzMinGens<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Stats<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Step<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GB.Steps<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GBasis</td> <td>GBasis</td><td>2011-02</td> <td>GBasis<br>TidyGens</td><td>2011-02<br>&lt;2010-10</td></tr>
+<tr><td>GBasisTimeout</td> <td>GBasisTimeout</td><td>2017</td> <td>GBasisTimeout</td><td>2017</td></tr>
+<tr><td>GBM</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>GCD</td> <td>gcd</td><td>2010-10<br>impr 2010-02</td> <td>gcd</td><td>&lt;2010-10</td></tr>
+<tr><td>GCDFreeBasis</td> <td>GCDFreeBasis</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>GenericPoints</td> <td>GenericPoints</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td>GenRepr</td> <td>GenRepr for poly</td><td>pkg 2012</td> <td></td><td></td></tr>
+<tr><td>Gens</td> <td>gens</td><td>2011-02</td> <td>gens</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>GensAsCols, GensAsRows</td> <td>GensAsCols, GensAsRows</td><td></td> <td></td><td></td></tr>
+<tr><td>Get</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>GetCol</td> <td>GetCol(M,i)</td><td>2011-02</td> <td>GetCol</td><td></td></tr>
+<tr><td class=c5>GetCols</td> <td>GetCols</td><td></td> <td></td><td></td></tr>
+<tr><td>GetEnv</td> <td>GetEnv</td><td>2010</td> <td>(C)</td><td>-</td></tr>
+<tr><td>GetErrMesg</td> <td>GetErrMesg</td><td>2010</td> <td>GetErrMesg</td><td>2010</td></tr>
+<tr><td class=c5>GetRow</td> <td>GetRow(M,i)</td><td>2011-02</td> <td>GetRow</td><td></td></tr>
+<tr><td>List</td> <td>GetRows</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>GFanContainsPositiveVector</td> <td>GFanContainsPositiveVector</td><td>2016</td> <td>GFanContainsPositiveVector</td><td>2016</td></tr>
+<tr><td class=c5>GFanGeneratorsOfLinealitySpace</td> <td>GFanGeneratorsOfLinealitySpace</td><td>2016</td> <td>GFanGeneratorsOfLinealitySpace</td><td>2016</td></tr>
+<tr><td class=c5>GFanGeneratorsOfSpan</td> <td>GFanGeneratorsOfSpan</td><td>2016</td> <td></td>GFanGeneratorsOfSpan<td>2016</td></tr>
+<tr><td class=c5>GFanGetAmbientDimension</td> <td>GFanGetAmbientDimension</td><td>2016</td> <td>GFanGetAmbientDimension</td><td>2016</td></tr>
+<tr><td class=c5>GFanGetCodimension</td> <td>GFanGetCodimension</td><td>2016</td> <td>GFanGetCodimension</td><td>2016</td></tr>
+<tr><td class=c5>GFanGetDimension</td> <td>GFanGetDimension</td><td>2016</td> <td>GFanGetDimension</td><td>2016</td></tr>
+<tr><td class=c5>GFanGetDimensionOfLinealitySpace</td> <td>GFanGetDimensionOfLinealitySpace</td><td>2016</td> <td>GFanGetDimensionOfLinealitySpace</td><td>2016</td></tr>
+<tr><td class=c5>GFanGetFacets</td> <td>GFanGetFacets</td><td>2016</td> <td>GFanGetFacets</td><td>2016</td></tr>
+<tr><td class=c5>GFanGetImpliedEquations</td> <td>GFanGetImpliedEquations</td><td>2016</td> <td>GFanGetImpliedEquations</td><td>2016</td></tr>
+<tr><td class=c5>GFanGetUniquePoint</td> <td>GFanGetUniquePoint</td><td>2016</td> <td>GFanGetUniquePoint</td><td>2016</td></tr>
+<tr><td class=c5>GFanRelativeInteriorPoint</td> <td>GFanRelativeInteriorPoint</td><td>2016</td> <td>GFanRelativeInteriorPoint</td><td>2016</td></tr>
+<tr><td>Gin, Gin5</td> <td>gin</td><td>pkg 2014-07</td> <td></td><td></td></tr>
+<tr><td>GlobalMemory<!-- Non compare in wordlist --></td> <td>X</td><td>-</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>GradingDim</td> <td>GradingDim(Kx)</td><td>2011-04</td> <td>GradingDim</td><td>&lt;2010-10</td></tr>
+<tr><td>WeightsMatrix<br>WeightsList</td> <td>GradingMat</td><td>2011-04</td> <td>ordering<br>GradingDim</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>graeffe</td> <td>graeffe</td><td>2017</td> <td>graeffe</td><td>2017</td></tr>
+<tr><td class=c5>GraverBasis</td> <td>GraverBasis</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>GroebnerFanIdeals</td> <td>GroebnerFanIdeals</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>GroebnerFanReducedGBases</td> <td>GroebnerFanReducedGBases</td><td></td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=H>HHHHHHHHHHH</a> <a href=#top>(top)</a></th></tr>
+<tr><td class=c5>HadamardBoundSq</td> <td>HadamardBoundSq</td><td>2022</td> <td>HadamardBoundSq</td><td>2022</td></tr>
+<tr><td class=c5>HasGBasis</td> <td>HasGBasis</td><td>2017</td> <td>HasGBasis</td><td>2017</td></tr>
+<tr><td>HColon</td> <td>colon</td><td></td> <td></td><td></td></tr>
+<tr><td>Help<!-- Non compare in wordlist --></td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr> 
+<tr><td class=c5>HermitePoly</td> <td>HermitePoly</td><td>2017</td> <td>HermitePoly</td><td>2017</td></tr>
+<tr><td>HGBM</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>HilbertBasis</td> <td>HilbertBasisKer</td><td>pkg 2011-05</td> <td></td><td></td></tr>
+<tr><td>Hilbert<br>HilbertFn</td> <td>HilbertFn</td><td>pkg 2011-04</td> <td></td><td></td></tr>
+<tr><td class=c5>HilbertMat</td> <td>HilbertMat</td><td>2017</td> <td>HilbertMat</td><td>2017</td></tr>
+<tr><td>HilbertPoly</td> <td>HilbertPoly</td><td>pkg 2011-04</td> <td></td><td></td></tr>
+<tr><td>HilbertSeries<br>Poincare</td> <td>HilbertSeries</td><td>pkg 2011-04</td> <td>HilbertSeriesQuot</td><td>-</td></tr>
+<tr><td>HilbertSeriesMultiDeg<br>PoincareMultiDeg</td> <td>HilbertSeriesMultiDeg</td><td>pkg 2014-07</td> <td></td><td></td></tr>
+<tr><td>HilbertSeriesShifts<br>PoincareShifts</td> <td>HilbertSeriesShifts</td><td>pkg 2014-07</td> <td></td><td></td></tr>
+<tr><td>Homogenized</td> <td>homog</td><td>2011-03</td> <td>homog (RingElem)</td><td>&lt;2010-10</td></tr>
+<tr><td>HVector</td> <td>HVector</td><td>pkg 2011-04</td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=I>IIIIIIIIIII</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Ideal</td> <td>ideal</td><td>2010-02</td> <td>ideal</td><td>&lt;2010-10</td></tr>
+<tr><td>IdealAndSeparatorsOfPoints</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>IdealAndSeparatorsOfProjectivePoints</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>IdealOfGBasis</td> <td>IdealOfGBasis</td><td>2017</td> <td>IdealOfGBasis</td><td>2017</td></tr>
+<tr><td class=c5>IdealOfMinGens</td> <td>IdealOfMinGens</td><td>2017</td> <td>IdealOfMinGens</td><td>2017</td></tr>
+<tr><td>IdealOfPoints</td> <td>IdealOfPoints</td><td>2013</td> <td>IdealOfPoints</td><td>2013</td></tr>
+<tr><td>IdealOfProjectivePoints</td> <td>IdealOfProjectivePoints</td><td>2017</td> <td>IdealOfProjectivePoints</td><td>2017</td></tr>
+<tr><td class=c5>IdentityHom<!-- NOT IN WORDLIST --></td> <td>IdentityHom</td><td>2011-02</td> <td>IdentityHom</td><td>&lt;2010-10</td></tr>
+<tr><td>Identity</td> <td>IdentityMat</td><td>2011-02</td> <td>IdentityMat LexMat</td><td>&lt;2010-10</td></tr>
+<tr><td>If</td> <td>if</td><td>2010</td> <td>if (C)</td><td>&lt;2010-10</td></tr>
+<tr><td>ILogBase</td> <td>ILogBase</td><td>2011-01</td> <td>ILogBase</td><td>2010-12</td></tr>
+<tr><td>Image</td> <td>apply PolyAlgebraHom</td><td>2011-01<br>pkg 2011-01</td> <td>RingHom</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>implicit</td> <td>implicit</td><td></td> <td>ker</td><td>2017</td></tr>
+<tr><td class=c5>ImplicitHypersurface</td> <td>ImplicitHypersurface</td><td></td> <td>SliceCoreQQ<br>SliceCoreModp</td><td></td></tr>
+<tr><td>ImplicitPlot</td> <td>ImplicitPlot</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td>ImplicitPlotOn</td> <td>ImplicitPlotOn</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td class=c5>ImportByRef, ImportByValue</td> <td>ImportByRef, ImportByValue</td><td></td> <td>&amp; (C++)</td><td></td></tr>
+<tr><td>In</td> <td>in</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>incr, decr</td> <td>incr, decr</td><td></td> <td>++/-- (C)</td><td></td></tr>
+<tr><td>Set Indentation</td> <td>indent(L, opt level)</td><td>pkg 2011-02</td> <td></td><td></td></tr>
+<tr><td>Indet</td> <td>indet(PolyRing,i)</td><td>2010-11</td> <td>indet</td><td>&lt;2010-10</td></tr>
+<tr><td>IndetIndex</td> <td>IndetIndex</td><td>2010-11</td> <td>IsIndet(i,pp)<br>IsIndetPosPower(i,exp,pp)</td><td>&lt;2010-10</td></tr>
+<tr><td>IndetName</td> <td>IndetName</td><td>2010-11</td> <td>head(myIndetSymbol(i))</td><td>&lt;2010-10</td></tr>
+<tr><td>Indets</td> <td>indets(PolyRing)</td><td>2010</td> <td>indets</td><td>&lt;2010-10</td></tr>
+<tr><td>IndetInd</td> <td>IndetSubscripts</td><td>2010-11<br>ren'd 2012</td> <td>NumSubscripts(sym)<br>subscript(sym,i)</td><td>&lt;2010-10<br>ren'd 2012</td></tr>
+<tr><td class=c5>IndetSymbols</td> <td>IndetSymbols(PolyRing)</td><td>pkg 2011-04</td> <td>symbols(PPM)</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>InducedHom</td> <td>InducedHom</td><td>2011-02</td> <td>InducedHom</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>InitialIdeal</td> <td>InitialIdeal</td><td></td> <td></td><td></td></tr>
+<tr><td>InputForm</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Insert</td> <td>insert [OBS]</td><td>2010</td> <td>(STL)</td><td>-</td></tr>
+<tr><td>Interpolate</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Interreduce<br>Interreduced</td> <td>interreduce<br>interreduced</td><td>2022 [pkg 2011-04]</td> <td>interreduce</td><td>2022</td></tr>
+<tr><td>Intersection<br>HIntersection</td> <td>intersection<br>intersect</td><td>2011-02</td> <td>intersect</td><td>&lt;2010-10</td></tr>
+<tr><td>IntersectionList<br>HIntersectionList</td> <td>IntersectionList</td><td>pkg 2011-05</td> <td>-</td><td>-</td></tr>
+<tr><td>Inverse</td> <td>inverse</td><td>2011-02</td> <td>inverse<br>InverseByGauss</td><td>&lt;2010-10</td></tr>
+<tr><td>InverseSystem</td> <td>InverseSystem</td><td>pkg 2011-05</td> <td></td><td></td></tr>
+<tr><td>IO.SprintTrunc</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Iroot</td> <td>iroot</td><td>2011-01</td> <td>iroot</td><td>2011-01</td></tr>
+<tr><td>IsAntiSymmetric</td> <td>IsAntiSymmetric</td><td>2011-02</td> <td>IsAntiSymmetric</td><td>2011-02</td></tr>
+<tr><td class=c5>IsCommutative</td> <td>IsCommutative</td><td>2010</td> <td>IsCommutative</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsConstant</td> <td>IsConstant</td><td>2010</td> <td>IsConstant</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsContained</td> <td>IsContained</td><td>2010 2013</td> <td>IsContained</td><td>2010 2013</td></tr>
+<tr><td class=c5>IsCoprime</td> <td>IsCoprime</td><td></td> <td>IsCoprime</td><td></td></tr>
+<tr><td>IsDefined</td> <td>IsDefined</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>IsDiagonal</td> <td>IsDiagonal</td><td>2011-02</td> <td>IsDiagonal</td><td>2011-02</td></tr>
+<tr><td class=c5>IsDivisible</td> <td>IsDivisible</td><td>2010</td> <td>IsDivisible</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsDivisible_AllowFields</td> <td>IsDivisible_AllowFields</td><td>2022</td> <td>IsDivisible_AllowFields</td><td>2022</td></tr>
+<tr><td class=c5>IsElem</td> <td>IsElem</td><td>2010 2013</td> <td>IsElem</td><td>2010 2013</td></tr>
+<tr><td class=c5>IsEmpty</td> <td>IsEmpty</td><td>2022</td> <td>v.empty()</td><td>-</td></tr>
+<tr><td>IsEven<br>IsOdd</td> <td>IsEven<br>IsOdd</td><td>2010</td> <td>IsEven<br>IsOdd</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsFactorClosed</td> <td>IsFactorClosed</td><td></td> <td>IsFactorClosed</td><td></td></tr>
+<tr><td class=c5>IsField</td> <td>IsField</td><td>2010</td> <td>IsField</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsFiniteField</td> <td>IsFiniteField</td><td></td> <td>IsFiniteField</td><td></td></tr>
+<tr><td class=c5>IsFractionField</td> <td>IsFractionField</td><td>2010</td> <td>IsFractionField</td><td>&lt;2010-10</td></tr>
+<tr><td>IsHomog</td> <td>IsHomog</td><td>2010</td> <td>IsHomog</td><td>&lt;2010-10</td></tr>
+<tr><td>IsIn</td> <td>IsIn</td><td>2010</td> <td>IsElem(r,I)</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsIndet</td> <td>IsIndet(ref i,x)</td><td>2010</td> <td>IsIndet</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsInImage</td> <td>IsInImage</td><td></td> <td>IsInImage</td><td>2017</td></tr>
+<tr><td class=c5>IsInjective</td> <td>IsInjective</td><td></td> <td>IsInjective</td><td>2017</td></tr>
+<tr><td>IsInSubalgebra<!-- ordine alfabetico CoCoA5 --></td> <td>PreImage of SubalgebraHom</td><td>2014-07</td> <td></td><td></td></tr>
+<tr><td>IsInRadical</td> <td>IsInRadical</td><td>pkg 2011<br>2017</td> <td>IsInRadical</td><td>2017</td></tr>
+<tr><td>IsNumber</td> <td>IsInteger/IsRational</td><td>2010</td> <td>IsInteger/IsRational</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsIntegralDomain</td> <td>IsIntegralDomain</td><td>2010</td> <td>IsIntegralDomain</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsInvertible</td> <td>IsInvertible</td><td>2010</td> <td>IsInvertible</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsIrred</td> <td>IsIrred</td><td></td> <td>IsIrred</td><td></td></tr>
+<tr><td>IsLexSegment</td> <td>IsLexSegment char0</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td class=c5>IsMaximal</td> <td>IsMaximal</td><td>2017</td> <td>IsMaximal</td><td>2017</td></tr>
+<!-- IsNumber [OBSOLETE], compare come IsInteger, ordine alfabetico CoCoA5 --> 
+<tr><td class=c5>IsMinusOne</td> <td>IsMinusOne</td><td>2010</td> <td>IsMinusOne</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsMonomial<!-- NOT IN WORDLIST --></td> <td>IsMonomial</td><td>2010</td> <td>IsMonomial</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsOne</td> <td>IsOne</td><td>2010</td> <td>IsOne</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsOrderedDomain<!-- NOT IN WORDLIST --></td> <td>IsOrderedDomain</td><td>2010</td> <td>IsOrderedDomain</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsPolyRing</td> <td>IsPolyRing</td><td>2010</td> <td>IsPolyRing</td><td>&lt;2010-10</td></tr>
+<tr><td>IsPositiveGrading</td> <td>IsPositiveGrading(M, opt GrDim)</td><td>2011-05</td> <td>IsPositiveGrading</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsPrimary</td> <td>IsPrimary</td><td></td> <td></td><td></td></tr>
+<tr><td>IsPrime</td> <td>IsPrime</td><td>2010</td> <td>IsPrime</td><td>&lt;2010-10</td></tr>
+<tr><td>IsPPrime</td> <td>IsProbPrime</td><td>2010</td> <td>IsProbPrime</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsPthPower</td> <td>IsPthPower</td><td></td> <td>IsPthPower</td><td></td></tr>
+<tr><td class=c5>IsQQ</td> <td>IsQQ</td><td>2010</td> <td>IsQQ</td><td>&lt;2010-10</td></tr>
+<tr><td>Isqrt</td> <td>isqrt</td><td>2011-01</td> <td>isqrt</td><td>2011-01</td></tr>
+<tr><td>IsServerReady<!-- NOT IN WORDLIST --></td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr> 
+<tr><td class=c5>IsQuotientRing</td> <td>IsQuotientRing</td><td>2010</td> <td>IsQuotientRing</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsRadical</td> <td>IsRadical</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>IsRational</td> <td>IsRational(ref q,x)</td><td>2010</td> <td>IsRational</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsSqFree</td> <td>IsSqFree</td><td></td> <td>IsSqFree</td><td></td></tr>  
+<tr><td>IsStable</td> <td>IsStable char0</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td class=c5>IsStdGraded</td> <td>IsStdGraded</td><td></td> <td>IsStdGraded</td><td></td></tr>
+<tr><td>IsStronglyStable</td> <td>IsStronglyStable char0</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>IsSubset</td> <td>IsSubset</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>IsSurjective</td> <td>IsSurjective</td><td></td> <td>IsSurjective</td><td>2017</td></tr>
+<tr><td>IsSymmetric</td> <td>IsSymmetric</td><td>2011-02</td> <td>IsSymmetric</td><td>2011-02</td></tr>
+<tr><td>IsTerm</td> <td>IsTerm</td><td>2011-01</td> <td>IsMonomial<br>IsOne(LC(.))</td><td>&lt;2010-10</td></tr>
+<tr><td>IsTermOrdering</td> <td>IsTermOrdering</td><td>2011-02</td> <td>IsTermOrdering</td><td>&lt;2010-10</td></tr>
+<tr><td>IsTree5</td> <td></td><td></td> <td>IsTree</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsTrueGCDDomain</td> <td>IsTrueGCDDomain</td><td></td> <td>IsTrueGCDDomain</td><td></td></tr>
+<tr><td>IsZero</td> <td>IsZero</td><td>BI&lt;2010-10</td> <td>IsZero</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsZeroCol</td> <td>IsZeroCol(M,j)</td><td>2011-02</td> <td>IsZeroCol</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsZeroRow</td> <td>IsZeroRow(M,i)</td><td>2011-02</td> <td>IsZeroRow</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsZeroDim</td> <td>IsZeroDim</td><td>2011-02</td> <td>IsZeroDim</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>IsZeroDivisor</td> <td>IsZeroDivisor</td><td>2013-05</td> <td>IsZeroDivisor</td><td>2013-05</td></tr> 
+<tr><td class=c5>IsZZ</td> <td>IsZZ</td><td>2010</td> <td>IsZZ</td><td>&lt;2010-10</td></tr>
+<tr><td>It</td> <td>It</td><td></td> <td>-</td><td>-</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=J>JJJJJJJJJJJ</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Jacobian</td> <td>JacobianMat [jacobian]</td><td>2022 2011-02</td> <td>JacobianMat [jacobian]</td><td>2022 2011-02</td></tr>
+<tr><td class=c5>JanetBasis</td> <td>JanetBasis</td><td></td> <td>JanetBasis</td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=K>KKKKKKKKKKK</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Ker</td> <td>ker</td><td>pkg 2014-07<br>2017</td> <td>ker</td><td>2017</td></tr>
+<tr><td>TensorMat</td> <td>KroneckerProd [TensorMat]</td><td>2022 2011-03</td> <td>KroneckerProd [TensorMat]</td><td>2022 2011-03</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=L>LLLLLLLLLLL</a> <a href=#top>(top)</a></th></tr>
+<tr><td class=c5>LaguerrePoly</td> <td>LaguerrePoly</td><td>2017</td> <td>LaguerrePoly</td><td>2017</td></tr>
+<tr><td>Last</td> <td>last</td><td>2011-03</td> <td>(STL) back() and range constructor</td><td>-</td></tr>
+<tr><td>Latex</td> <td>Latex</td><td>pkg 2010-10</td> <td>-</td><td>-</td></tr>
+<tr><td>LC</td> <td>LC</td><td>2010</td> <td>LC</td><td>&lt;2010-10</td></tr>
+<tr><td>LCM</td> <td>lcm</td><td>2011-01</td> <td>lcm</td><td>&lt;2010-10</td></tr>
+<tr><td>Len</td> <td>len<br>NumTerms<br>NumRows</td><td>2010</td> <td>len<br>NumTerms(poly)<br>NumRows(matrix)</td><td>2011-03</td></tr>
+<tr><td>LexMat</td> <td>LexMat</td><td>2011-03</td> <td>IdentityMat</td><td>&lt;2010-10</td></tr>
+<tr><td>LexSegmentIdeal</td> <td>LexSegmentIdeal(list)</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td class=c5>LF</td> <td>LF</td><td></td> <td>LF</td><td></td></tr>
+<tr><td>LinearSimplify</td> <td>LinearSimplify</td><td>pkg 2013?</td> <td></td><td></td></tr>
+<tr><td>LinKer</td> <td>LinKer</td><td>2012-07</td> <td>LinKer</td><td>2012-07</td></tr>
+<tr><td class=c5>LinKerBasis</td> <td>LinKerBasis</td><td></td> <td>LinKer</td><td></td></tr>
+<tr><td class=c5>LinKerModP</td> <td>LinKerModP</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>LinKerZZ</td> <td>LinKerZZ</td><td>2022</td> <td>LinKerZZ</td><td>2022</td></tr>
+<tr><td>LinSol</td> <td>LinSolve</td><td>2012-04</td> <td>LinSolve</td><td>2012-04</td></tr>
+<tr><td>LM</td> <td>LM</td><td>2010-11</td> <td>monomial(R,LC(f),LPP(f))</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>LogCardinality</td> <td>LogCardinality</td><td></td> <td>LogCardinality</td><td></td></tr>
+<tr><td>LPos</td> <td>LPosn</td><td>2013-01</td> <td>LPosn</td><td>?2011</td></tr>
+<tr><td>LPP</td> <td>LPP</td><td>2010-11</td> <td>LPP</td><td>&lt;2010-10</td></tr>
+<tr><td>LT</td> <td>LT</td><td>2010-11</td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=M>MMMMMMMMMMM</a> <a href=#top>(top)</a></th></tr>
+<tr><td>MakeCheck</td> <td>make check (CoCoA-5 directory)</td><td>2011</td> <td>make check (tests directory)</td><td>&lt;2010-10</td></tr>
+<tr><td>MakeMatByRows<br>MakeMatByCols</td> <td>MakeMatByRows<br>MakeMatByCols</td><td>pkg 2011-02</td> <td></td><td></td></tr>
+<tr><td>MakeSet</td> <td>MakeSet</td><td>pkg 2010-12</td> <td>(STL?)</td><td>-</td></tr>
+<tr><td>LogToTerm</td> <td>MakeTerm(PolyRing, L)</td><td>pkg 2011-01</td> <td>PPMonoidElem ctor</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>MakeTermOrdMat</td> <td>MakeTermOrdMat</td><td>2022</td> <td>MakeTermOrdMat</td><td>2022</td></tr>
+<tr><td>Man<!-- NOT IN WORDLIST --></td> <td>? (question mark)</td><td>2010</td> <td>doc directory</td><td>&lt;2010-10</td></tr>
+<tr><td>MantissaAndExponent</td> <td>MantissaAndExponent10</td><td>2011-01</td> <td>MantissaAndExponent10</td><td>2014-04</td></tr>
+<tr><td class=c5>MantissaAndExponent2</td> <td>MantissaAndExponent2</td><td></td> <td></td><td></td></tr>
+<!-- <tr><td>Manual</td> <td></td><td></td> <td></td><td></td></tr> -->
+<tr><td>MapDown</td> <td>AsINT<br>AsRAT</td><td> 2013</td> <td>ConvertTo&lt;int&gt<br>IsInteger<br>IsRational</td><td></td></tr>
+<tr><td>Mat</td> <td>matrix/mat(L)<br>mat(R, L)</td><td>pkg 2011-02</td> <td>NewDenseMat</td><td>&lt;2010-10</td></tr>
+<tr><td>Max</td> <td>max</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>MaxBy</td> <td>MaxBy</td><td></td> <td></td><td></td></tr>
+<tr><td>MayerVietorisTreeN1</td> <td>MayerVietorisTreeN1</td><td></td> <td>MayerVietorisTreeN1</td><td>&lt;2010-10</td></tr>
+<tr><td>Memory<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Min</td> <td>min</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>MinBy</td> <td>MinBy</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>MinGBoverZZ</td> <td>MinGBoverZZ</td><td>pkg 2022</td> <td></td><td></td></tr>
+<tr><td>MinGens</td> <td>MinGens<br>MinGensGeneral</td><td>2013-06<br>pkg 2014-03</td> <td>MinGens</td><td>2013-06</td></tr>
+<tr><td>Minimalize</td> <td>minimalize</td><td>pkg 2014-03</td> <td></td><td></td></tr>
+<tr><td>Minimalized</td> <td>IdealOfMinGens<br>ModuleOfMinGens</td><td>2014-03</td> <td>IdealOfMinGens<br>ModuleOfMinGens</td><td>2014-03</td></tr>
+<tr><td>MinimalPresentation</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Minors</td> <td>minors</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td class=c5>MinPoly</td> <td>MinPoly</td><td></td> <td>MinPoly<br>MinPolyQuot</td><td></td></tr>
+<tr><td class=c5>MinPolyQuot</td> <td>MinPolyQuot, MinPolyQuotDef, ...</td><td>2017</td> <td>MinPolyQuot, MinPolyQuotDef, ...</td><td>2017</td></tr>
+<tr><td>MinPowerInIdeal</td> <td>MinPowerInIdeal</td><td>pkg 2011<br>2017</td> <td>MinPowerInIdeal</td><td>2017</td></tr>
+<tr><td>MinSyzMinGens<!-- NOT IN WORDLIST --></td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>MinSubsetOfGens</td> <td>MinSubsetOfGens</td><td></td> <td></td><td></td></tr>
+<tr><td>Mod</td> <td>mod</td><td>2010</td> <td>mod<br>%</td><td>&lt;2010-10</td></tr>
+<tr><td>Mod2Rat</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Vector</td> <td>ModuleElem(F,[..])</td><td>2013-01</td> <td>ModuleElem</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>ModuleOf</td> <td>ModuleOf</td><td></td> <td>owner</td><td></td></tr>
+<tr><td>Monic</td> <td>monic</td><td>2011-01</td> <td>monic</td><td>2011-01</td></tr>
+<tr><td>Monomials</td> <td>monomials</td><td>2010-11</td> <td>-</td><td>-</td></tr>
+<tr><td>MonsInIdeal</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>More<!-- NOT IN WORDLIST --></td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>MSatLinSolve</td> <td>MSatLinSolve</td><td></td> <td>MathSAT::LinSolve</td><td></td></tr>
+<tr><td class=c5>MultiplicationMat</td> <td>MultiplicationMat</td><td></td> <td>MultiplicationMat</td><td></td></tr>
+<tr><td>Multiplicity</td> <td>multiplicity</td><td>pkg 2011-04</td> <td>MultiplicityQuot</td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=N>NNNNNNNNNNN</a> <a href=#top>(top)</a></th></tr>
+<tr><td class=c5>NewFractionField</td> <td>NewFractionField</td><td>2010-11</td> <td>NewFractionField</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NewFreeModule</td> <td>NewFreeModule</td><td>2013-01</td> <td>NewFreeModule</td><td>&lt;2010-10</td></tr>
+<tr><td>NewId</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>NewLine</td> <td>NewLine<br>\n</td><td>pkg 2010<br>BI</td> <td>\n (C)</td><td>-</td></tr>
+<tr><td>NewList</td> <td>NewList</td><td>2011-03</td> <td>ctor (STL)</td><td>-</td></tr>
+<tr><td>NewMat</td> <td>NewMat<br>NewDenseMat</td><td>2011-02</td> <td>ctor</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NewMatFilled</td> <td>NewMatFilled</td><td></td> <td></td><td></td></tr>
+<tr><td>Ord</td> <td>NewPolyRing(K,X,ord,GrDim)</td><td>2011-05</td> <td>ordering(PPM)</td><td>&lt;2010-10</td></tr>
+<tr><td>Weights</td> <td>NewPolyRing(K,X,ord,GrDim)</td><td>2011-05</td> <td>NewMatrixOrdering</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NewPositiveMat<!-- NOT IN WORDLIST --></td> <td>-</td><td>-</td> <td>NewPositiveMat</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NewQuotientRing</td> <td>NewQuotientRing</td><td>2011-04</td> <td>NewQuotientRing</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NewRingFp</td> <td>NewRingFp</td><td>2010-12</td> <td>NewRingFp</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NewRingTwinFloat</td> <td>NewRingTwinFloat</td><td></td> <td>NewRingTwinFloat</td><td></td></tr>
+<tr><td class=c5>NewWeylAlgebra</td> <td>NewWeylAlgebra</td><td></td> <td>NewWeylAlgebra</td><td></td></tr>
+<tr><td>NextPrime</td> <td>NextPrime</td><td>2011-01</td> <td>NextPrime</td><td>&lt;2010-10</td></tr>
+<tr><td>NextPPrime</td> <td>NextProbPrime</td><td>2011-01</td> <td>NextProbPrime</td><td>&lt;2010-10</td></tr>
+<tr><td>NF</td> <td>NF</td><td>2011-03</td> <td>NF</td><td>&lt;2010-10</td></tr>
+<tr><td>NFsAreZero</td> <td>OBSOLETE<br>IsContained</td><td>OBSOLETE</td> <td>IsContained</td><td>IsContained</td></tr>
+<tr><td class=c5>NmzComputation</td> <td>NmzComputation</td><td></td> <td>NmzComputation</td><td></td></tr>
+<tr><td class=c5>NmzDiagInvariants</td> <td>NmzDiagInvariants</td><td></td> <td>NmzDiagInvariants</td><td></td></tr>
+<tr><td class=c5>NmzEhrhartRing</td> <td>NmzEhrhartRing</td><td></td> <td>NmzEhrhartRing</td><td></td></tr>
+<tr><td class=c5>NmzFiniteDiagInvariants</td> <td>NmzFiniteDiagInvariants</td><td></td> <td>NmzFiniteDiagInvariants</td><td></td></tr>
+<tr><td class=c5>NmzHilbertBasis</td> <td>NmzHilbertBasis</td><td>2011-07</td> <td>Normaliz::HilbertBasis normalization</td><td>2010-10</td></tr>
+<tr><td class=c5>NmzHilbertBasisKer</td> <td>NmzHilbertBasisKer</td><td>2022</td> <td>Normaliz::HilbertBasis equations</td><td>2010-10</td></tr>
+<tr><td class=c5>NmzIntClosureMonIdeal</td> <td>NmzIntClosureMonIdeal</td><td></td> <td>NmzIntClosureMonIdeal</td><td></td></tr>
+<tr><td class=c5>NmzIntClosureToricRing</td> <td>NmzIntClosureToricRing</td><td></td> <td>NmzIntClosureToricRing</td><td></td></tr>
+<tr><td class=c5>NmzIntersectionValRings</td> <td>NmzIntersectionValRings</td><td></td> <td>NmzIntersectionValRings</td><td></td></tr>
+<tr><td class=c5>NmzNormalToricRing</td> <td>NmzNormalToricRing</td><td>2011-10</td> <td>Normaliz::NormalToricRing</td><td>2011-10</td></tr>
+<tr><td class=c5>NmzSetVerbosityLevel</td> <td>NmzSetVerbosityLevel</td><td>2017</td> <td>Normaliz::SetVerbosityLevel</td><td>2017</td></tr>
+<tr><td class=c5>NmzTorusInvariants</td> <td>NmzTorusInvariants</td><td></td> <td>NmzTorusInvariants</td><td></td></tr>
+<tr><td class=c5>NmzVerbosityLevel</td> <td>NmzVerbosityLevel</td><td></td> <td>NmzVerbosityLevel</td><td></td></tr>
+<tr><td>NonZero</td> <td>NonZero</td><td>pkg 2011-01</td> <td>(STL?)</td><td>-</td></tr>
+<tr><td>Not<br>And<br>Or</td> <td>not<br>and<br>or</td><td>2010</td> <td>!<br>&&<br>|| (C)</td><td>-</td></tr>
+<tr><td>NR</td> <td>NR</td><td>2010-11</td> <td>NR</td><td>&lt;2010-10</td></tr>
+<tr><td>Num</td> <td>num</td><td>2010</td> <td>num</td><td>&lt;2010-10</td></tr>
+<tr><td>NumCols</td> <td>NumCols</td><td>2011-02</td> <td>NumCols</td><td>&lt;2010-10</td></tr>
+<tr><td>NumComps</td> <td>NumCompts</td><td>2013-07</td> <td>NumCompts</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NumDigits<!-- NOT IN WORDLIST --></td> <td>NumDigits</td><td>2010</td> <td>NumDigits</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NumGens</td> <td>NumGens</td><td></td> <td>NumGens</td><td></td></tr>
+  
+<tr><td>NumIndets</td> <td>NumIndets</td><td>2010-11</td> <td>NumIndets</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NumPartitions</td> <td>NumPartitions</td><td></td> <td>NumPartitions</td><td></td></tr>
+<tr><td>NumRows</td> <td>NumRows</td><td>2011-02</td> <td>NumRows</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>NumTerms</td> <td>NumTerms</td><td>2011-03</td> <td>NumTerms</td><td>&lt;2010-10</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=O>OOOOOOOOOOO</a> <a href=#top>(top)</a></th></tr>
+<tr><td class=c5>one</td> <td>one(ring)</td><td>&lt;2010-10</td> <td>one</td><td>&lt;2010-10</td></tr>
+<tr><td>OpenIFile</td> <td></td><td></td> <td>(C++)</td><td>-</td></tr>
+<tr><td>OpenIString</td> <td></td><td></td> <td>(C++)</td><td>-</td></tr>
+<tr><td>OpenLog</td> <td></td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>OpenOFile</td> <td>OpenOFile</td><td>2010</td> <td>(C++)</td><td>-</td></tr>
+<tr><td>OpenOString</td> <td>OpenOString</td><td>?</td> <td>(C++)</td><td>-</td></tr>
+<tr><td>OpenSocket</td> <td></td><td></td> <td>SocketStream</td><td>&lt;2010-10</td></tr>
+<!-- <tr><td class=c5>OperatorNormInfinity</td><td>OperatorNormInfinity</td><td>2011-02</td> <td>OperatorNormInfinity</td><td>&lt;2010-10</td></tr> -->
+<!-- <tr><td class=c5>OperatorNorm1</td><td>OperatorNorm1</td><td>2011-02</td> <td>OperatorNorm1</td><td>&lt;2010-10</td></tr> -->
+<tr><td>Option</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>or</td> <td>or</td><td></td> <td>||</td><td></td></tr>
+<tr><td>OrdMat</td> <td>OrdMat</td><td></td> <td>OrdMat</td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=P>PPPPPPPPPPP</a> <a href=#top>(top)</a></th></tr>
+<tr><td class=c5>PackageOf</td> <td>PackageOf</td><td>2022</td> <td>-</td><td>-</td></tr>
+<tr><td>Packages</td> <td>packages</td><td>pkg 2014-07</td> <td>-</td><td>-</td></tr>
+<tr><td>Panel</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Panels</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Partitions</td> <td>partitions</td><td>pkg 2010-12</td> <td></td><td></td></tr>
+<tr><td>Permutations</td> <td>permutations</td><td>pkg 2010-12</td> <td></td><td></td></tr>
+<tr><td>PerpIdealOfForm</td> <td>PerpIdealOfForm</td><td>pkg 2011-05</td> <td></td><td></td></tr>
+<tr><td>Pfaffian</td> <td>pfaffian</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>PkgName</td> <td>PkgName: useless?</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>PlotPoints</td> <td>PlotPoints</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td>PlotPointsOn</td> <td>PlotPointsOn</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td>Poincare<!-- ordine alfabetico CoCoA5 --></td> <td>HilbertSeries</td><td>pkg 2011-04</td> <td>HilbertNumQuot_C (tmp)<br>HilbertNumQuot (tmp)</td><td>&lt;2010-10</td></tr> 
+<tr><td>PoincareMultiDeg<!-- ordine alfabetico CoCoA5 --></td> <td>HilbertSeriesMultiDeg</td><td>pkg 2014-06</td> <td></td><td></td></tr> 
+<tr><td>PoincareShifts<!-- ordine alfabetico CoCoA5 --></td> <td>HilbertSeriesShifts</td><td>pkg 2014-06</td> <td></td><td></td></tr> 
+<tr><td class=c5>PolyAlgebraHom</td> <td>PolyAlgebraHom</td><td>2011-01</td> <td>PolyAlgebraHom</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>PolyRingHom</td> <td>PolyRingHom</td><td>2011-02</td> <td>PolyRingHom</td><td>&lt;2010-10</td></tr>
+<tr><td>PositiveGrading4<!-- NOT IN WORDLIST --></td> <td>useless?</td><td></td> <td>useless?</td><td></td></tr>
+<tr><td>PowerMod</td> <td>PowerMod</td><td>2010-11</td> <td>PowerMod</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>PreImage</td> <td>preimage0</td><td>2017</td> <td>preimage0</td><td>2017</td></tr>
+<tr><td>PreprocessPts5</td> <td>PreprocessPts</td><td>2013</td> <td>PreprocessAggrAlgm<br>PreprocessGridAlgm<br>PreprocessSubdivAlgm</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>PrevPrime</td> <td>PrevPrime</td><td>2011-01</td> <td>PrevPrime</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>PrevProbPrime</td> <td>PrevProbPrime</td><td>2011-01</td> <td>PrevProbPrime</td><td>&lt;2010-10</td></tr>
+<tr><td>PrimaryDecomposition</td> <td>PrimaryDecomposition<br>PrimaryDecomposition0</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>PrimaryDecompositionCore0</td> <td>PrimaryDecompositionCore0</td><td>2017</td> <td></td><td></td></tr>
+<tr><td class=c5>PrimaryDecompositionGTZ0</td> <td>PrimaryDecompositionGTZ0</td><td></td> <td></td><td></td></tr>
+<tr><td>PrimaryHilbertSeries</td> <td>PrimaryHilbertSeries</td><td>pkg</td> <td></td><td></td></tr>
+<tr><td>PrimaryPoincare</td> <td>[OBSOLESCENT]</td><td>pkg</td> <td></td><td></td></tr>
+<tr><td class=c5>PrimitiveRoot</td> <td>PrimitiveRoot</td><td></td> <td>PrimitiveRoot</td><td></td></tr>
+<tr><td>Print</td> <td>print</td><td>2010</td> <td>cout <<</td><td></td></tr>
+<tr><td>Print On</td> <td>Print On</td><td>2010</td> <td> << </td><td></td></tr>
+<tr><td class=c5>PrintBettiDiagram</td> <td>PrintBettiDiagram</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>PrintBettiMatrix</td> <td>PrintBettiMatrix</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>PrintBettiNumbers</td> <td>PrintBettiNumbers</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>PrintHGIndices<!-- NOT IN WORDLIST --></td> <td>PrintHGIndices</td><td>pkg 2011-02</td> <td>-</td><td>-</td></tr>
+<tr><td>PrintLn</td> <td>println</td><td>2010</td> <td>cout << .. << endl;</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>PrintRes</td> <td>PrintRes</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>PrintSectionalMatrix</td> <td>PrintSectionalMatrix</td><td></td> <td></td><td></td></tr>
+<tr><td>Product</td> <td>product</td><td>2010</td> <td>product</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>protect</td> <td>protect</td><td></td> <td>public (C++)</td><td>-</td></tr>
+<tr><td class=c5>PseudoInverse<!-- NOT IN WORDLIST --></td> <td>PseudoInverse<td>2011-02</td> <td>PseudoInverse</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>PthRoot</td> <td>PthRoot</td><td></td> <td>PthRoot</td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=Q>QQQQQQQQQQQ</a> <a href=#top>(top)</a></th></tr>
+<tr><td>QQ</td> <td>QQ/RingQQ()</td><td></td> <td>RingQQ()</td><td></td></tr>
+<tr><td class=c5>QQEmbeddingHom</td> <td>QQEmbeddingHom</td><td></td> <td>QQEmbeddingHom</td><td></td></tr>
+<tr><td>Quit</td> <td>quit</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>QuotientBasis</td> <td>QuotientBasis</td><td>2011-05</td> <td>QuotientBasis<br>QBGenerator.myQB</td><td>2011-05<br>&lt;2010-10</td></tr>
+<tr><td class=c5>QuotientBasisSorted</td> <td>QuotientBasisSorted</td><td></td> <td>QuotientBasisSorted</td><td></td></tr>
+<tr><td class=c5>QuotientingHom</td> <td>QuotientingHom</td><td></td> <td>QuotientingHom</td><td></td></tr>
+<tr><td>QZP</td> <td></td><td></td> <td></td><td></td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=R>RRRRRRRRRRR</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Radical</td> <td>radical</td><td>pkg 2011-05</td> <td></td><td></td></tr>
+<tr><td>RadicalOfUnmixed</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Rand</td> <td>random</td><td>201?</td> <td>random<br>RandomBoolStream<br>RandomLongStream<br>RandomZZStream</td><td>&lt;2010-10</td></tr>
+<tr><td>Randomize</td> <td></td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Randomized</td> <td></td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>RandomSmallPrime</td> <td>RandomSmallPrime</td><td>2022</td> <td>RandomSmallPrime</td><td>2022</td></tr>
+<tr><td class=c5>RandomSubset</td> <td>RandomSubset</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>RandomSubsetIndices</td> <td>RandomSubsetIndices</td><td></td> <td>RandomSubsetIndices</td><td></td></tr>
+<tr><td class=c5>RandomTuple</td> <td>RandomTuple</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>RandomTupleIndices</td> <td>RandomTupleIndices</td><td></td> <td>RandomTupleIndices</td><td></td></tr>
+<tr><td class=c5>RandomUnimodularMat</td> <td>RandomUnimodularMat</td><td></td> <td>RandomUnimodularMat</td><td></td></tr>
+<tr><td>RationalAffinePoints</td> <td>RationalAffinePoints</td><td>pkg</td> <td></td><td></td></tr>
+<tr><td>RationalProjectivePoints</td> <td>RationalProjectivePoints</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>RationalSolve</td> <td>RationalSolve</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>RatReconstructByContFrac<br>RatReconstructByLattice</td> <td>RatReconstructByContFrac<br>RatReconstructByLattice</td><td></td> <td>RatReconstructByContFrac<br>RatReconstructByLattice</td><td></td></tr>
+<tr><td class=c5>RatReconstructPoly</td> <td>RatReconstructPoly</td><td></td> <td>RatReconstructPoly</td><td></td></tr>
+<tr><td class=c5>RatReconstructWithBounds</td> <td>RatReconstructWithBounds</td><td></td> <td>RatReconstructWithBounds</td><td></td></tr>
+<tr><td>RealRootRefine</td> <td>RealRootRefine</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td>RealRoots</td> <td>RealRoots</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td>RealRootsApprox</td> <td>RealRootsApprox</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td>Record</td> <td>record</td><td>2010</td> <td>class/struct (C++)</td><td>-</td></tr>
+<tr><td>ReducedGBasis</td> <td>ReducedGBasis</td><td>pkg 2011-05<br>2017</td> <td>ReducedGBasis</td><td>2017</td></tr>
+<tr><td>Var</td> <td>ref<br>Var(str) OBSOLETE</td><td>2010</td> <td>&amp;</td><td></td></tr>
+<tr><td>RefineGCDFreeBasis</td> <td>RefineGCDFreeBasis</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>Reg, Reg5</td> <td>reg</td><td></td> <td></td><td></td></tr>
+<tr><td>RegularityIndex</td> <td>RegularityIndex</td><td>pkg 2011-04</td> <td></td><td></td></tr>
+<tr><td>RelNotes</td> <td>RelNotes</td><td>pkg 2014-03</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>ReloadMan</td> <td>ReloadMan</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Remove</td> <td>remove</td><td>2010</td> <td>remove_if (STL)</td><td>-</td></tr>
+<tr><td>Repeat</td> <td>repeat</td><td>2010</td> <td>do (C++)</td><td>-</td></tr>
+<tr><td>Res</td> <td>res<br>PrintRes</td><td>pkg 2014-04</td> <td></td><td></td></tr>
+<tr><td>Seed</td> <td>reseed</td><td>2017</td> <td>Random*Stream ctor</td><td>&lt;2010-10</td></tr>
+<tr><td>Reset</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>ResetPanels</td><td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Resultant</td> <td>resultant</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>Return</td> <td>return</td><td>2010</td> <td>return (C)</td><td>-</td></tr>
+<tr><td>Reverse<br>Reversed</td> <td>reverse<br>reversed</td><td>2011-02</td> <td>reverse_iterator (STL)</td><td>-</td></tr>
+<tr><td>RevLexMat</td> <td>RevLexMat</td><td>2011-03</td> <td>NewDenseMatRevLex</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>rgin</td> <td>rgin</td><td></td> <td></td><td></td></tr>
+<tr><td>Ring</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Poly</td> <td>RingElem</td><td>2011-02</td> <td>RingElem ctors</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>RingElemList</td> <td>RingElemList</td><td>2022</td> <td>RingElemVec</td><td>2022</td></tr>
+<tr><td>RingEnv</td> <td>RingOf</td><td>2011-03</td><td>owner<br>RingOf</td><td>&lt;2010-10<br>2014-07</td></tr>
+<tr><td>RingEnvs</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>rgin</td> <td>rgin</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>RingID</td> <td>RingID</td><td></td> <td>RingID</td><td></td></tr>
+<tr><td class=c5>RingOf</td> <td>RingOf</td><td></td> <td>RingOf/owner</td><td></td></tr>
+<tr><td class=c5>RingQQ</td> <td>RingQQ()</td><td>2011-05</td> <td>RingQQ()</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>RingQQt</td> <td>RingQQt</td><td></td> <td>RingQQt</td><td></td></tr>
+<tr><td>RingEnvSet</td> <td>RingsOf</td><td>2011-01</td> <td>HasUniqueOwner</td><td>2009</td></tr>
+<tr><td class=c5>RingZZ</td> <td>RingZZ()</td><td>2011-05</td> <td>RingZZ()</td><td>&lt;2010-10</td></tr>
+<tr><td>Rank</td> <td>rk</td><td>2011-03</td> <td>rk (matrix)</td><td>&lt;2010-10</td></tr>
+<tr><td>RMap</td> <td>PolyAlgebraHom</td><td>2011-01<br>pkg 2011-01</td> <td>RingHom</td><td>&lt;2010-10</td></tr>
+<tr><td>RootBound</td> <td>RootBound</td><td>pkg 2011-01</td> <td></td><td></td></tr>
+<tr><td class=c5>RootBoundTransform</td> <td>RootBoundTransform</td><td>2022-03</td> <td>RootBoundTransform</td><td>2022-03</td></tr>
+<tr><td class=c5>round</td> <td>round</td><td>2010</td> <td>round</td><td>&lt;2010-10</td></tr>
+<tr><td>RowMat</td> <td>RowMat(L) RowMat(R,L)</td><td>pkg 2011-02</td> <td>RowMat</td><td>&lt;2010-10</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=S>SSSSSSSSSSS</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Saturation<br>HSaturation</td> <td>saturate</td><td>2011-03</td> <td>ComputeSaturation (tmp)</td><td>&lt;2010-10</td></tr>
+<tr><td>ScalarProduct</td> <td>ScalarProduct</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>ScientificStr</td> <td>ScientificStr</td><td></td> <td>ScientificStr</td><td></td></tr>
+<tr><td class=c5>SectionalMatrix</td> <td>SectionalMatrix</td><td></td> <td></td><td></td></tr>
+<tr><td>SeparatorsOfPoints</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>SeparatorsOfProjectivePoints</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Set<br>Unset</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>SetCol</td> <td>SetCol(M,i,v)</td><td>2011-02</td> <td>SetCol</td><td></td></tr>
+<tr><td class=c5>SetRow</td> <td>SetRow(M,i,v)</td><td>2011-02</td> <td>SetRow</td><td></td></tr>
+<tr><td class=c5>SetStackSize</td> <td>SetStackSize</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>SetVerbosityLevel</td> <td>SetVerbosityLevel</td><td></td> <td>SetVerbosityLevel</td><td></td></tr>
+<tr><td>Shape</td> <td>shape</td><td>pkg 2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Sign</td> <td>sign</td><td>2010</td> <td>sign</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>SimplestBinaryRatBetween</td> <td>SimplestBinaryRatBetween</td><td></td> <td>SimplestBinaryRatBetween</td><td></td></tr>
+<tr><td class=c5>SimplestRatBetween</td> <td>SimplestRatBetween</td><td></td> <td>SimplestRatBetween</td><td></td></tr>
+<tr><td class=c5>SimplexInfo</td> <td>SimplexInfo</td><td>pkg</td> <td></td><td></td></tr>
+<tr><td class=c5>SimplicialHomology</td> <td>SimplicialHomology</td><td>pkg</td> <td></td><td></td></tr>
+<tr><td>Size</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>Skip</td> <td>skip</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>SmallestNonDivisor</td> <td>SmallestNonDivisor</td><td>2017</td> <td>SmallestNonDivisor</td><td>2017</td></tr>
+<tr><td>SmoothFactor</td> <td>SmoothFactor (see FactorINT)</td><td>2011-01</td> <td>SmoothFactor (see FactorINT)</td><td>&lt;2010-10</td></tr>
+<tr><td>Sort</td> <td>sort</td><td>pkg 2011-01</td> <td>mySort<br>sort (STL)</td><td>&lt;2010-10</td></tr>
+<tr><td>SortBy</td> <td>SortBy</td><td>pkg 2011-02</td> <td>sort (STL)</td><td>&lt;2010-10</td></tr>
+<tr><td>Sorted</td> <td>sorted</td><td>pkg 2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td>SortedBy</td> <td>SortedBy</td><td>pkg 2011-02</td> <td>-</td><td>-</td></tr>
+<tr><td>Source</td> <td>source</td><td>2010</td> <td>include (C)</td><td></td></tr>
+<tr><td class=c5>SourceRegion</td> <td>SourceRegion</td><td></td> <td>include (C)</td><td>-</td></tr>
+<tr><td>Spaces</td> <td>spaces</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>Sprint</td> <td>sprint</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>SqFreeFactor</td> <td>SqFreeFactor</td><td></td> <td>SqFreeFactor</td><td></td></tr>
+<tr><td>StableBBasis5</td> <td></td><td></td> <td>SOITwinFloat</td><td>&lt;2010-10</td></tr>
+<tr><td>StableIdeal</td> <td>StableIdeal</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td class=c5>StagedTrees</td> <td>StagedTrees</td><td></td> <td></td><td></td></tr>
+<tr><td>StarPrint<br>StarSprint</td> <td>OBSOLETE</td><td>OBSOLETE</td> <td>-</td><td>-</td></tr>
+<tr><td>Starting</td> <td>starting</td><td>pkg 2011-04</td> <td>-</td><td>-</td></tr>
+<tr><td>StdBasis</td> <td>StdBasis</td><td></td> <td></td><td></td></tr>
+<tr><td>DegLexMat</td> <td>StdDegLexMat</td><td>2011-03</td> <td>StdDegLexMat</td><td>2011-03</td></tr>
+<tr><td>DegRevLexMat</td> <td>StdDegRevLexMat</td><td>2011-03</td> <td>DegRevLexMat</td><td>2011-03</td></tr>
+<tr><td>StronglyStableIdeal</td> <td>StronglyStableIdeal</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>SubalgebraMap<br>SubalgebraRepr</td> <td>SubalgebraHom<br>preimage0</td><td>2017</td> <td></td><td></td></tr>
+<tr><td>Submat</td> <td>submat</td><td>2011-03</td> <td>submat</td><td>&lt;2010-10</td></tr>
+<tr><td>Module</td> <td>submodule<br>SubmoduleRows<br>SubmoduleCols</td><td>2013-01</td> <td>submodule<br>SubmoduleRows<br>SubmoduleCols</td><td>&lt;2010-10<br>2013-01<br>2013-06</td></tr>
+<tr><td class=c5>SubmoduleOfMinGens</td> <td>SubmoduleOfMinGens</td> <td>2017</td> <td>SubmoduleOfMinGens</td><td>2017</td></tr>
+<tr><td>Subsets</td> <td>subsets</td><td>pkg 2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Subst</td> <td>[PolyAlgebraHom]<br>Subst</td><td>2011-01<br>pkg 2011-01</td> <td>RingHom</td><td>RingHom</td></tr>
+<tr><td class=c5>substring</td> <td>substring</td><td>2022</td> <td>str.substr(first-1, length) (C++)</td><td>&lt;2010-10</td></tr>
+<tr><td>Sum</td> <td>sum</td><td>2010</td> <td>sum</td><td>&lt;2010-10</td></tr>
+<tr><td>Support</td> <td>support</td><td>2010-11</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>swap</td> <td>swap</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>SwapCols</td> <td>SwapCols(M,i,j)</td><td>2012-04</td> <td>SwapRows(M,i,j)</td><td>2012-04</td></tr>
+<tr><td class=c5>SwapRows</td> <td>SwapRows(M,i,j)</td><td>2012-04</td> <td>SwapRows(M,i,j)</td><td>2012-04</td></tr>
+<tr><td>Sylvester</td> <td>sylvester</td><td>pkg 2011-03</td> <td></td><td></td></tr>
+<tr><td>x[N..M]</td> <td>SymbolRange("x",N,M)</td><td>2012-01</td> <td>SymbolRange</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>SymmetricPolys</td> <td>SymmetricPolys</td><td></td> <td></td><td></td></tr>
+<tr><td>Syz</td> <td>syz</td><td>2014</td> <td>ComputeSyz (tmp)</td><td>&lt;2010-10</td></tr>
+<tr><td>SyzMinGens</td> <td class=c5>OBSOLETE</td><td></td> <td></td><td></td></tr>
+<tr><td>SyzOfGens</td> <td>SyzOfGens</td><td>2013-03</td> <td>SyzOfGens</td><td>2013-03</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=T>TTTTTTTTTTT</a> <a href=#top>(top)</a></th></tr>
+<tr><td>Tag</td> <td>tag</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Tagged</td> <td>tagged</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Tail</td> <td>tail</td><td>pkg 2011-03</td> <td>(STL)</td><td>-</td></tr>
+<tr><td class=c5>TgCone</td> <td>TgCone</td><td>pkg 2013-05</td> <td>-</td><td>-</td></tr>
+<tr><td>Thm.Prove</td> <td>ThmProve</td><td>pkg 2022</td> <td></td><td></td></tr>
+<tr><td class=c5>TimeFrom</td> <td>TimeFrom</td><td></td> <td>CpuTime()-t0</td><td></td></tr>
+<tr><td class=c5>TimeOfDay</td> <td>TimeOfDay</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>TmpChainCanonicalHom</td> <td>TmpChainCanonicalHom</td><td></td> <td>TmpChainCanonicalHom</td><td></td></tr>
+<tr><td class=c5>TmpNBM</td> <td>TmpNBM</td><td></td> <td>TmpNBM</td><td></td></tr>
+<tr><td class=c5>TopLevel</td> <td>TopLevel</td><td></td> <td>(global variable)</td><td></td></tr>
+<tr><td class=c5>TopLevelFunctions</td> <td>TopLevelFunctions</td><td>2011-01</td> <td>-</td><td>-</td></tr>
+<tr><td>Toric</td> <td>toric</td><td>2011-05</td> <td>BinSequentialToric<br>MatSequentialToric</td><td>2011-05</td></tr>
+<tr><td>Transposed</td> <td>transposed</td><td>2011-02</td> <td>transpose</td><td>&lt;2010-10</td></tr>
+<tr><td>Catch</td> <td>try/UponError</td><td>2010</td> <td>try/catch (C++)</td><td>&lt;2010-10</td></tr>
+<tr><td>Tuples</td> <td>tuples</td><td>pkg 2010-12</td> <td>-</td><td>-</td></tr>
+<tr><td class=c5>Tutorial</td> <td>Tutorial</td><td></td> <td>examples dir</td><td></td></tr>
+<!-- <tr><td class=c5>Tutorial-01: manual</td> <td>Tutorial-01: manual</td><td></td> <td></td><td></td></tr> -->
+<!-- <tr><td class=c5>Tutorial-02: variables, assignment</td> <td>Tutorial-02: variables, assignment</td><td></td> <td></td><td></td></tr> -->
+<!-- <tr><td class=c5>Tutorial-03: arithmetic operators</td> <td>Tutorial-03: arithmetic operators</td><td></td> <td></td><td></td></tr> -->
+<!-- <tr><td class=c5>Tutorial-04: printing</td> <td>Tutorial-04: printing</td><td></td> <td></td><td></td></tr> -->
+<!-- <tr><td class=c5>Tutorial-05: lists</td> <td>Tutorial-05: lists</td><td></td> <td></td><td></td></tr> -->
+<!-- <tr><td class=c5>Tutorial-06: rings, polynomials, use command</td> <td>Tutorial-06: rings, polynomials, use command</td><td></td> <td></td><td></td></tr> -->
+<!-- <tr><td class=c5>Tutorial-11: homomorphisms</td> <td>Tutorial-11: homomorphisms</td><td></td> <td></td><td></td></tr> -->
+<tr><td>Type</td> <td>type</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>TypeOfCoeffs<!-- ordine alfabetico CoCoA5 --></td> <td>CoeffRing(R)</td><td>2010-12</td> <td>CoeffRing</td><td>&lt;2010-10</td></tr>
+<tr><td>Types<!-- ordine alfabetico CoCoA5 --></td> <td>CurrentTypes</td><td>2011-02</td> <td>-</td><td>-</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=U>UUUUUUUUUUU</a> <a href=#top>(top)</a></th></tr>
+<tr><td>UnivariateIndetIndex</td> <td>UnivariateIndetIndex</td><td>pkg 2011-01</td> <td>(IsIndet)</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>UniversalGBasis</td> <td>UniversalGBasis</td><td></td> <td></td><td></td></tr>
+<tr><td class=c5>unprotect</td> <td>unprotect</td><td></td> <td>private (C++)</td><td>-</td></tr>
+<tr><td>Unset</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<tr><td>Untagged</td> <td>untagged</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Use</td> <td>use</td><td>2010</td> <td>-</td><td>-</td></tr>
+<tr><td>Using<!-- NOT IN WORDLIST --></td> <td>OBSOLETE</td><td>OBSOLETE</td> <td>-</td><td>-</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=V>VVVVVVVVVVV</a> <a href=#top>(top)</a></th></tr>
+<!-- <tr><td>valuation [OBSOLETE]</td> <td></td><td></td> <td></td><td></td></tr> -->
+<tr><td class=c5>VerbosityLevel</td> <td>VerbosityLevel</td><td>2017</td> <td>VerbosityLevel</td><td>2017</td></tr>
+<tr><td class=c5>VersionInfo</td> <td>VersionInfo</td><td></td> <td>version<br>BuildInfo.C</td><td></td></tr>
+<tr><td>Vector<!-- ordine alfabetico CoCoA5 --></td> <td>ModuleElem(F,[..])</td><td>2013-01</td> <td>ModuleElem</td><td>&lt;2010-10</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=W>WWWWWWWWWWW</a> <a href=#top>(top)</a></th></tr>
+<tr><td>MDeg</td> <td>wdeg</td><td>2011-01</td> <td>wdeg</td><td>&lt;2010-10</td></tr>
+<tr><td>While</td> <td>while</td><td>2010</td> <td>while (C)</td><td>-</td></tr>
+<tr><td>WithoutNth</td> <td>WithoutNth</td><td>pkg 2011-01</td> <td>(STL?)</td><td>-</td></tr>
+<tr><td>WLog</td> <td class=c5>OBSOLETE</td><td></td> <td>-</td><td>-</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=X>XXXXXXXXXXX</a> <a href=#top>(top)</a></th></tr>
+<tr><td>XelMat</td> <td>XelMat</td><td>2011-03</td> <td>NewDenseMatXel</td><td>2011-03</td></tr>
+<!-- ======== --> <tr class=letter><th colspan=5><a name=Z>ZZZZZZZZZZZ</a> <a href=#top>(top)</a></th></tr>
+<tr><td>NewVector</td> <td>zero(M)</td><td>2013-01</td> <td>zero</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>zero</td> <td>zero(ring)</td><td>2010</td> <td>zero</td><td>&lt;2010-10</td></tr>
+<tr><td class=c5>ZeroMat</td> <td>ZeroMat(R, NR, NC)</td><td>2011-03</td> <td>ZeroMat</td><td>&lt;2010-10</td></tr>
+<tr><td>ZPQ</td> <td></td><td></td> <td></td><td></td></tr>
+<tr><td>ZZ</td> <td>ZZ</td><td></td> <td>RingZZ()</td><td></td></tr>
+</table>
+</center>
+<body>
+<html>

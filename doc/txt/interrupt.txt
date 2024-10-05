@@ -1,0 +1,106 @@
+    interrupt
+      Copyright (c)  2015-2017  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{interrupt}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-interrupt1.C ../../examples/index.html#ex-interrupt1.C]
+- [ex-interrupt2.C ../../examples/index.html#ex-interrupt2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+CoCoALib offers a simple mechanism for "handling signals" (//i.e.//
+detecting and reacting to interrupt signals such as "control-C" on Linux).
+If you do not know anything about "interprocess signals", you can
+safely skip this manual entry.
+
+Since CoCoALib is a software library, it does not change any existing
+signal handlers unless you tell to do so explicitly.
+
+There are two parts to the signal handling mechanism in CoCoALib:
+- create a [[SignalWatcher]] RAII object; this will take note when a signal of the specified type is received
+- call the 1-ary procedure ``CheckForInterrupt`` (which takes a string literal indicating the "context" of the call) to check whether a signal has been noted by a [[SignalWatcher]]; if so, it will throw an exception of type ``CoCoA::InterruptedBySignal``; if no signal has been noted, ``CheckForInterrupt`` does nothing (hopefully quickly).
+
+
+Normally it makes sense to call ``CheckForInterrupt`` only inside
+loops which may take a long time to complete.  Unless you want the
+program to exit when a signal is detected, you must somewhere catch
+any ``CoCoA::InterruptedBySignal`` object thrown by
+``CheckForInterrupt`` and then handle it as you want.
+
+Alternatively you can call the low-level function ``GetAndResetSignalReceived``
+(see [[SignalWatcher]]).  It returns an ``int`` which is 0 if no signal is
+waiting to be handled; otherwise it returns the signal number.  This lets you
+do more sophisticated signal handling, but is more onerous than ``CheckForInterrupt``.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+There is just one class, ``InterruptReceived`` (which is derived from
+the CoCoALib class [[exception]]).  It serves as a base class for the exceptions
+potentially thrown by a call to ``CheckForInterrupt``.
+
+- ``InterruptReceived(const char* const context)`` -- the argument should be a concise description of where the exception was thrown from (usually just the name of the function which called ``CheckForInterrupt``)
+-
+
+
+=== Query ===[queries]
+%----------------------------------------------------------------------
+
+- ``CheckForInterrupt(const char* const context)`` -- does nothing unless a signal has arrived or timeout has occurred (in which case it throws an exception)
+-
+
+``CheckForInterrupt`` first checks whether a signal has arrived; if
+so, it throws an exception of type ``InterruptedBySignal``.  If no
+signal has arrived, it then checks whether timeout has occurred; if
+so, an exception of type ``InterruptedByTimeout`` is thrown.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+
+The implementation is quite simple.
+
+Being a library CoCoALib sets no signal handlers unless explicitly
+told to do so, and for "cleanliness" the handlers are set and reset
+(to the previous value) using scoped "RAII objects" (called
+[[SignalWatcher]]).
+
+The function ``CheckForInterrupt`` is very simple, and should be quick
+when no signal has been detected.  It is not inline because I do not
+think it needs to be.
+
+The ``InterruptReceived`` is derived from ``CoCoA::exception``; the exception
+subobject contains the message "External interrupt", and the context
+string (which was given to the call to ``CheckForInterrupt``, and
+which should indicate the location of that call).
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+I've no idea what happens in multithreaded execution.
+
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- July (v0.99554): major redesign (to restore previous handlers automatically)
+
+**2016**
+- November (v0.99544): added field to store the triggering signal.
+
+
+**2015**
+- May (v0.99536): first release
+
+

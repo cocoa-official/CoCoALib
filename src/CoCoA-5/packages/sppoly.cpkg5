@@ -1,0 +1,109 @@
+Package $sppoly -- Sparse Polynomials
+
+Export PolyToSPPoly;
+-- Export SPPolyToPoly;
+
+
+Define About()
+  PrintLn "    Authors: A.M.Bigatti, A.Capani";
+  PrintLn "    Date:    8 October 2004";
+  PrintLn "    Fix: fixed printout of multivariate series with negative weights";
+EndDefine;
+
+Define Man()
+  PrintLn "    Functions to interpret a polynomial with integer or rational";
+  PrintLn "    coefficients in another ring (extension of \"Image\")";
+  PrintLn;
+  PrintLn "    > EXAMPLES <";
+  PrintLn;
+  PrintLn "    Alias SP := $sppoly; -- suggested alias for this package";
+  PrintLn;
+  PrintLn "    Use R ::= QQ[x,y];";
+  PrintLn "    X := SP.PolyTo(1/2 x - y);";
+  PrintLn "    Use S ::= ZZ/(5)[a,b];";
+  PrintLn "    SP.ToPoly(X);";
+EndDefine; -- Man
+
+--------------------------------------------------------------
+-- TAG "SpPoly"; -- [Sp]arse [Poly]nomial
+
+-- TYPE SpPoly := LIST(Term); --> TAGGED "SpPoly"
+--      Term   := [COEFF, PP];
+--      COEFF  := {INT, RAT};
+--      PP     := LIST(INT);
+
+Define Deg(SP)
+  Return max([ sum(M.PP) | M In untagged(SP) ]);
+EndDefine; -- Deg
+
+Define ToRAT(X)
+  If not(IsRational(ref Q, X)) Then error("Not rational"); EndIf;
+  Return Q;
+EndDefine; -- ToRAT
+
+Define PolyToSPPoly(P)
+  Return tagged([Record[coeff:=ToRAT(LC(M)), PP:=exponents(M)] | M In monomials(P)], "SpPoly");
+EndDefine; -- PolyToSPPoly
+
+-- Define SPPolyToPoly(Kx, SP)
+--   Return sum([ M.coeff*MakeTerm(Kx, M.PP)  | M In untagged(SP)]);
+-- EndDefine; -- SPPolyToPoly
+
+-- Define ToHVec(SpP)
+--   If untagged(SpP)=[] Then Return []; EndIf;
+--   HV := NewList($.Deg(SpP)+1, 0);
+--   Foreach M In untagged(SpP) Do HV[sum(M.PP)+1] := M.coeff; EndForeach;
+--   Return HV;
+-- EndDefine;
+
+--------[   pretty printing   ]--------
+
+Define Tagged(X, T)
+  Return tagged(X, T);  // CoCoA-5 builtin "tagged" for packages
+EndDefine; -- Tagged
+
+Define PrintFirstCoeff(D, C, PrintOne)
+  If C < 0 Then Print " - " On D; C := -C; EndIf;
+  If PrintOne Or C<>1 Then  Print C On D; Return true;  EndIf;
+  Return false;
+EndDefine;
+
+Define PrintCoeff(D, C, PrintOne)
+  If C > 0 Then Print " + " On D; EndIf;
+  Return $.PrintFirstCoeff(D, C, PrintOne);
+EndDefine;
+
+Define Print_SpPoly(D, SpP)
+//  TopLevel CurrentRing;
+  SpP := untagged(SpP);
+  If SpP=[] Then Print "0" On D;
+  Else
+  -- HEAD --
+    M1 := SpP[1];  PP := M1.PP;
+    QQt := RingQQt(len(PP));
+    If PP=0*PP Then
+      NoUse := PrintFirstCoeff(D, M1.coeff,True);
+    Else
+      IsCoeffPrinted := PrintFirstCoeff(D, M1.coeff,False);
+      If IsCoeffPrinted Then Print "*" On D; EndIf;
+      Print MakeTerm(QQt, PP) On D;
+    EndIf;
+  -- TAIL --
+    Foreach M In tail(SpP) Do
+      PP := M.PP;
+      If PP=0*PP Then
+        NoUse := $.PrintCoeff(D, M.coeff,True);
+      Else
+        IsCoeffPrinted := $.PrintCoeff(D, M.coeff,False);
+	If IsCoeffPrinted Then Print "*" On D; EndIf;
+        Print MakeTerm(QQt, PP) On D;
+      EndIf;
+    EndForeach;
+  EndIf;
+EndDefine; -- Print_SpPoly
+
+----------------------------------------------------------------------
+PrintTagged := Record[SpPoly := $.Print_SpPoly];
+
+EndPackage; -- Package $sppoly
+

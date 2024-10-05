@@ -1,0 +1,29 @@
+NmzComputation;
+
+use QQ[x,y,z];
+
+sorted(NmzNormalToricRing([x^3, x^2*y, y^3]));
+sorted(NmzIntClosureToricRing([x^3, x^2*y, y^3]));
+sorted(NmzIntClosureMonIdeal([x^3, x^2*y, y^3, x*y^2]));
+sorted(NmzIntClosureMonIdeal([x^3, x^2*y, y^3, x*y^2],z));
+sorted(NmzEhrhartRing([x^3, x^2*y, y^3, x*y^2],z));
+
+// testing HilbertSeries and QuasiPolynomial
+M := mat(ZZ, [ [0,  2,  1], [0, -2,  3], [2, -2,  3] ]);
+InhomIneqInput := record[ inhom_inequalities := M, grading := mat([[1,0]]) ];
+InhomIneq := NmzComputation(InhomIneqInput, ["HilbertSeries"]);
+HS := InhomIneq.HilbertSeries;
+HQ := InhomIneq.HilbertQuasiPolynomial;
+HS;
+HQ;
+EvalQuasiPoly(HQ,0);
+EvalQuasiPoly(HQ,151);
+
+// test period > 1
+Cinput := record[integral_closure := M, grading := mat([[1,1,1]]) ];
+C := NmzComputation(Cinput, ["HilbertSeries"]);
+C.HilbertSeries;
+CHQ := C.HilbertQuasiPolynomial;
+CHQ;
+EvalQuasiPoly(CHQ,0);
+EvalQuasiPoly(CHQ,151);

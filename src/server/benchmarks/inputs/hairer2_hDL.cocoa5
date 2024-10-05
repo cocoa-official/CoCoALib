@@ -1,0 +1,94 @@
+<Greetings>
+  CoCoAServer?
+  version  1.03
+  nolimits
+  example_name  hairer2_hDL
+</Greetings>
+
+<operation> ideal_groebner </operation>
+<number_arguments> 2 </number_arguments>
+
+<polynomial_ring>
+    name ServerOutputRing
+  <coefficient_ring>
+    characteristic 32003
+  </coefficient_ring>
+
+  <indeterminates>
+    number_indets 14
+    number_params 0
+  </indeterminates>
+
+  <ordering_grading>
+    ordering_type   graded_lexicographic
+  </ordering_grading>
+
+</polynomial_ring>
+
+<polynomial_list>
+11
+
+5
+1   0 0 0 1 0 0 0 0 0 0 0 0 0 0  
+1   0 0 0 0 1 0 0 0 0 0 0 0 0 0  
+1   0 0 0 0 0 1 0 0 0 0 0 0 0 0  
+1   0 0 0 0 0 0 1 0 0 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 1  
+ 
+4
+1   0 0 1 0 0 0 0 0 0 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 0 0 0 1 0 0 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 1 0 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 1 0  
+ 
+3
+1   0 1 0 0 0 0 0 0 0 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 0 1 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 0 0 1 0 0 0 0  
+ 
+2
+1   1 0 0 0 0 0 0 0 0 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 1 0 0 0 0 0 0  
+ 
+4
+2   1 0 0 0 0 1 0 0 0 0 0 0 0 0  
+2   0 1 0 0 1 0 0 0 0 0 0 0 0 0  
+2   0 0 1 1 0 0 0 0 0 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 2  
+ 
+4
+6   1 0 0 1 0 0 0 0 0 0 0 1 0 0  
+6   1 0 0 0 1 0 0 0 0 1 0 0 0 0  
+6   0 1 0 1 0 0 0 0 0 0 0 0 1 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 3  
+ 
+4
+3   2 0 0 0 0 1 0 0 0 0 0 0 0 0  
+3   0 2 0 0 1 0 0 0 0 0 0 0 0 0  
+3   0 0 2 1 0 0 0 0 0 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 3  
+ 
+2
+24   1 0 0 1 0 0 0 0 0 1 0 0 1 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 4  
+ 
+4
+8   1 1 0 0 1 0 0 0 0 1 0 0 0 0  
+8   1 0 1 1 0 0 0 0 0 0 0 1 0 0  
+8   0 1 1 1 0 0 0 0 0 0 0 0 1 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 4  
+ 
+4
+12   2 0 0 1 0 0 0 0 0 0 0 1 0 0  
+12   2 0 0 0 1 0 0 0 0 1 0 0 0 0  
+12   0 2 0 1 0 0 0 0 0 0 0 0 1 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 4  
+ 
+4
+4   3 0 0 0 0 1 0 0 0 0 0 0 0 0  
+4   0 3 0 0 1 0 0 0 0 0 0 0 0 0  
+4   0 0 3 1 0 0 0 0 0 0 0 0 0 0  
+-1   0 0 0 0 0 0 0 0 0 0 0 0 0 4  
+ 
+</polynomial_list>
+

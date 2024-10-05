@@ -1,0 +1,69 @@
+      HomomorphismOps
+      Copyright (c)  2017 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{HomomorphismOps}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-empty.C ../../examples/index.html#ex-empty.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers some functions for working with homomorphisms between
+(quotients of) polynomial algebras.
+
+
+
+=== Queries and views ===[queries]
+%----------------------------------------------------------------------
+Let ``phi`` be a [[RingHom]] from ``R`` to ``S`` where both rings are
+either polynomial rings or quotients of polynomial rings.
+- ``IsInjective(phi)`` -- ``true`` iff ``phi`` is injective
+- ``IsSurjective(phi)`` -- ``true`` iff ``phi`` is surjective
+- ``IsInImage(phi,y)`` -- ``true`` iff ``y`` is in the image of ``phi``
+-
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+Let ``phi`` be a [[RingHom]] from ``R`` to ``S`` where both rings are
+either polynomial rings or quotients of polynomial rings.
+- ``ker(phi)`` -- computes the kernel of ``phi`` as an ideal in ``R``
+- ``preimage(phi,y)`` -- computes an element ``x`` of ``R`` such that ``phi(x) = y``; throws an exception if ``y`` is not in the image of ``phi``
+- ``preimage0(phi,y)`` -- computes an element ``x`` of ``R`` such that ``phi(x) = y``;  returns ``zero(domain(phi))`` if ``y`` is not in the image of ``phi``
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The centrepiece is the structure ``RichRingHom`` which contains several
+components useful for actually doing the computation.  In particular,
+all operations require computation in a new ring ``RS`` which contains "orthogonal"
+copies of the polynomial rings in ``R`` and ``S``  There are natutal homomorphisms
+from ``RS`` to ``R`` and from ``S`` into ``RS``.
+
+The hope is that this structure will be memorized inside the ``RingHom``
+object so that it does not need to be recomputed.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Maintainer doc is very incomplete.  The algorithms are not especially
+hard, but they are also not so simple.  Reference to K+R book?
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- July (v0.99556): first release  (ported from CoCoA-5 package)
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

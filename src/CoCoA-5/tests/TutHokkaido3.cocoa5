@@ -1,0 +1,304 @@
+------------------------------------------------------------------------
+-- TUTORIAL 3
+------------------------------------------------------------------------
+
+-- HYPERPLANE ARRANGEMENTS
+
+------------------------------------------------------------------------
+// What is a hyperplane arrangement?
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- A HYPERPLANE ARRANGEMENT A in a vector space of dimension l (K^l)
+-- is a finite collection of linear subspaces of dimension l-1.
+
+
+-- EXAMPLES
+-- (A1)
+//               |     |  /
+//        _______|_____|/_______
+//               |    /|
+//               |  /  | 
+//        _______|/____|________
+//              /|     | 
+//            /  |     |
+
+-- (A2)
+//             \    |    / 
+//               \  |  / 
+//            _____\|/______
+//                 /|\ 
+//               /  |  \ 
+//             /    |    \
+
+------------------------------------------------------------------------
+// How do we represent such object in CoCoA?
+------------------------------------------------------------------------
+
+---> In CoCoA we represent an arrangement as the list of the defining equations of its hyperplanes
+
+-- To define this object we need variables and so we need a polynomial ring
+use S ::= QQ[x,y];  -- l = 2
+
+A1 := [x,y,x-1,y-1,x-y]; A1;
+A2 := [x,y,x-y,x+y]; A2;
+
+-- An arrangement can be used also with its defining equation:
+Q_A1 := product([x,y,x-1,y-1,x-y]); Q_A1;
+Q_A2 := product(A2); Q_A2;
+
+
+------------------------------------------------------------------------
+// How to check properties? We heard about central/essential arrangements...
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- An arrangement A is CENTRAL if every hyperplane of A contains the origin.
+
+-- From the algebra point of view, if A is central, then every hyperplane
+-- of A is defined by a homogeneous equation.
+
+? IsArrCentral
+
+-- What do you expect from the picture?
+
+IsArrCentral(A1);
+IsArrCentral(A2);
+
+
+-- DEFINITION:
+-- An arrangement A in K^l is ESSENTIAL if
+-- there exists X in L(A) such that rank(X) = l.
+
+-- From the algebra point of view, if A is essential, then exists an ideal
+-- I = ideal(H_1,..,H_r) that is zero-dimensional.
+
+------------------------------------------------------------------------
+-- RECALL:
+-- If I is an ideal of S, then the following facts are equivalent:
+-- I is ZERO-DIMENSIONAL
+-- the Krull dimension of S/I is zero
+-- the geometric locus defined by I is a set of points
+-- the K-dimension of S/I is finite
+------------------------------------------------------------------------
+
+-- EXERCISE:
+-- Try to write the funcion IsArrEssential.
+-- HINT: see
+? IsZeroDim
+
+
+------------------------------------------------------------------------
+// How are related arrangements and posets?!
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- The POSET OF INTERSECTION L(A) of an arrangement A is the set of all
+-- nonempty intersections of hyperplanes of A, including the whole space.
+-- On L(A) we have a partial order given by reverse inclusion, i.e.
+-- X < Y iff Y is contained in X.
+
+-- PROPERTIES:
+-- L(A) is graded with rank(X) = codim(X).
+-- L(A) has a unique minimal element, i.e. the whole space.
+-- If A is central, then L(A) has a unique maximum element.
+-- If A is central, then L(A) is a lattice.
+
+
+L1 := ArrLattice(A1); L1;
+IsLattice(L1);
+IsPosetGraded(L1);
+
+L2 := ArrLattice(A2); L2;
+IsLattice(L2);
+IsPosetGraded(L2);
+
+-- ArrLattice(A) is sometimes hard to read.
+-- How to read the elements of L(A) as ideals?
+
+ArrFlats(A1);
+indent(ArrFlats(A1));
+ArrFlats(A2);
+indent(ArrFlats(A2));
+
+
+-- DEFINITION (check Tutorial 2):
+-- The MOEBIUS function of L(A) is a function mu defined recursively by:
+-- mu(V) = 1, for V the total space
+-- mu(X) = -sum[mu(Y) | for all Y such that  Y < X]
+
+moebius(L1);
+moebius(L2);
+
+
+-- EXERCISE:
+-- If in Tutorial 2 you constructed the function myMoebius, check if
+-- it coincides with the CoCoA function moebius creating some new
+-- examples of arrangements.
+
+------------------------------------------------------------------------
+// Which invariants can we compute about arrangements?
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- The POINCARE' POLYNOMIAL of an arrangement A is the polynomial in QQ[t] 
+-- defined by pi(A,t) = sum[mu(X)*(-t)^(rank(X)) | X IsIn L(A)].
+
+pi_A1 := ArrPoincarePoly(A1); pi_A1;
+pi_A2 := ArrPoincarePoly(A2); pi_A2;
+
+
+-- DEFINITION:
+-- The CHARACTERISTIC POLYNOMIAL of an arrangement A is the polynomial
+-- in QQ[t] defined by
+-- chi(A, t) = t^(l)*pi(A, −t^(−1)) = sum[ mu(X)*t^(dim(X)) | X in L(A)]
+
+chi_A1 := ArrCharPoly(A1); chi_A1;
+ArrCharPoly(A2);
+
+
+-- DEFINITION:
+-- The TUTTE POLYNOMIAL of an arrangement A the polynomial
+-- in QQ[t[1..2]] defined by
+-- T_A(t[1], t[2]) = sum[(t[1]-1)^(rk(A)−rk(B))*(t[2]-1)^(#(B)−rk(B)) | IsSubset(B,A) and B central],
+-- where rk(A) = PosetRank(ArrLattice(A))
+
+use S ::= QQ[x,y,z];
+
+A := [x -y,  x -z,  y -z];
+T_A := ArrTuttePoly(A); T_A;
+
+-- EXERCISE:
+-- The Tutte and the characteristic polynomials are related by
+-- chi(A, t) = (−1)^(rk(A))*t^(#(A)−rk(A))*T_A(1-t, 0).
+-- Test this equality for three new examples.
+
+---> In CoCoA these two polynomials are defined in different rings
+
+// use:
+R := RingOf(T_A);
+P := RingOf(chi_A1);
+t := indet(P,1);
+psi := CanonicalHom(BaseRing(R),P);
+phi := PolyRingHom(R, P, psi, [1-t,0]);
+
+
+------------------------------------------------------------------------
+// What can we compute "geometrically"?
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- The operation of CONING allows to transform any arrangement in K^l with
+-- n hyperplanes into a central arrangement with n + 1 hyperplanes in K^(l+1).
+
+A1;
+use R ::= QQ[x,y,z]; -- l = 3  
+A_1 := [x,y,x-1,y-1,x-y]; A_1;
+---> CoCoA treats A1 and A_1 as different objects
+// A1 = A_1; --> !!! ERROR !!! A1 and A_1 are in different rings
+-- notice that to do the cone we need an additional variable
+coneA1 := ArrCone(A_1,z); coneA1;
+
+A_2 := [x,y,x-y,x+y]; A_2;
+coneA2 := ArrCone(A_2,z); coneA2;
+
+------------------------------------------------------------------------
+-- EXERCISE:
+-- Check the following equality for three new arrangements
+-- pi(coneA,t) = (t+1)*pi(A,t)
+------------------------------------------------------------------------
+
+// use:
+pi_coneA1 := ArrPoincarePoly(coneA1); pi_coneA1;
+// pi_coneA1 = (1+t)*pi_A1; --> !!! ERROR !!! t is not defined
+RingOf(pi_A1);
+t := indet(RingOf(pi_A1),1);
+pi_coneA1 = (1+t)*pi_A1;
+
+pi_coneA2 := ArrPoincarePoly(coneA2); pi_coneA2;
+pi_coneA2 = (1+t)*pi_A2;
+
+
+-- THEOREM:
+-- If A is a real arrangement then
+-- abs(eval(ArrCharPoly(A),-1)) = NumChambers(A)
+-- NumChabers(A) = #{C | C connected component of K^l\A}
+
+-- If A is a real arrangement then
+-- abs(eval(ArrCharPoly(A),1)) = NumBChambers(A)
+-- NumBChabers(A) = #{C | C bounded connected component of K^l\A}
+
+
+-- (A1)
+//               |     |  /
+//        _______|_____|/_______
+//               |    /|
+//               |  /  | 
+//        _______|/____|________
+//              /|     | 
+//            /  |     |
+
+
+NumChambers(A1);
+eval(ArrCharPoly(A1),[-1]);
+
+RingOf(It);
+// abs(eval(ArrCharPoly(A1),[-1])); --> !!! ERROR !!! QQ[t] is not ordered
+
+// abs(eval(ArrCharPoly(A1),[-1])) = NumChambers(A1); --> !!! ERROR !!! 
+
+define myNumChambers(A)
+  p := ArrCharPoly(A);
+  eval := PolyAlgebraHom(RingOf(p), RingQQ(), [-1]);
+  return abs(eval(p));
+enddefine; -- myNumChambers
+
+define myNumBChambers(A)
+  p := ArrCharPoly(A);
+  eval := PolyAlgebraHom(RingOf(p), RingQQ(), [1]);
+  return abs(eval(p));
+enddefine; -- myNumBChambers
+
+-- (A2)
+//             \    |    / 
+//               \  |  / 
+//            _____\|/______
+//                 /|\ 
+//               /  |  \ 
+//             /    |    \
+
+myNumChambers(A2);
+myNumBChambers(A2);
+
+
+-- DEFINITIONS:
+-- The DELETION of A w.r.t. H is A\H.
+
+-- For any X in ArrLattice(A), the subarrangement A_X of A is
+-- A_X = [ H in A | IsSubset(X,H) ].
+-- The RESTRICTION of A to X is the arrangement A^X in X
+-- A^X = [ X ∩ H | H in (A \ A_X) and (X ∩ H) <> empty ].
+
+use S ::= QQ[x,y,z];
+A := [x -y,  x +y,  x -z,  x +z,  y -z,  y +z];
+
+DelA := ArrDeletion(A,x-y); DelA;
+RestrA := ArrRestriction(A,x-y); RestrA;
+
+
+
+-- THEOREM:
+-- The characteristic polynomial chi satisfies the following recursive relation
+-- chi(A, t) = chi(A\H , t) - chi(A^H , t)
+
+ArrCharPoly( A ) = ArrCharPoly( DelA ) - ArrCharPoly( RestrA );
+
+
+-- EXERCISE:
+-- Check on three new examples that the Poincare polynomial pi satisfies 
+-- the following recursive relation
+-- pi(A, t) = pi(A\H , t) + t*pi(A^H , t)
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+

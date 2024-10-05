@@ -1,0 +1,29 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+	<file>images/CoCoALogo-icon.png</file>
+	<file>qxs/cocoa5.qnfa</file>
+	<file>images/applications-graphics.png</file>
+	<file>images/document-new.png</file>
+	<file>images/document-open.png</file>
+	<file>images/document-save-as.png</file>
+	<file>images/document-save.png</file>
+	<file>images/go-jump.png</file>
+	<file>images/go-last.png</file>
+	<file>images/go-next.png</file>
+	<file>images/go-top.png</file>
+	<file>images/go-up.png</file>
+	<file>images/preferences-desktop-font.png</file>
+	<file>images/preferences-desktop-keyboard-shortcuts.png</file>
+	<file>images/preferences-system.png</file>
+	<file>images/preferences-system-windows.png</file>
+	<file>images/process-stop.png</file>
+	<file>images/system-log-out.png</file>
+	<file>images/utilities-system-monitor.png</file>
+	<file>images/utilities-terminal.png</file>
+	<file>images/dialog-information.png</file>
+	<file>images/help-browser.png</file>
+	<file>images/emblem-system.png</file>
+</qresource>
+</RCC>
+

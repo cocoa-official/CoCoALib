@@ -1,0 +1,128 @@
+      ServerOp
+      Copyright (c)  2007 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ServerOp}{Anna Bigatti}
+
+
+== User documentation ==
+%======================================================================
+
+=== Outline ===
+%----------------------------------------------------------------------
+
+``ServerOpBase`` is the **abstract class** for an object representing
+an operation of the CoCoAServer.  A concrete class must implement
+these functions (see below for a detailed description):
+```
+    ServerOpBase(const LibraryInfo& lib)
+    void myOutputSelf(std::ostream&) const
+    void myReadArgs(std::istream& in)
+    void myCompute()
+    void myWriteResult(std::ostream&) const
+    void myClear()
+```
+
+The **concrete classes** representing the actual CoCoALib operations
+and their registrations are implemented in RegisterServerOps.C.  See
+[[RegisterServerOps]] for the registration procedure.
+
+
+==== Data members ====
+
+The class should have as data members the input ``myIn..`` and output
+variables ``myOut..`` for the main function called by ``myCompute()``.
+
+For example the class ``IdealGBasis`` has:
+```  PolyList myInPL, myOutPL;
+
+For data types **without a void constructor** use ``auto_ptr``, for example
+the class ``IdealElim`` has:
+```  auto_ptr<PPMonoidElem> myInElimPPPtr;
+
+which is initialized in ``IdealElim::myReadArgs``
+```  myInElimPPPtr.reset(new PPMonoidElem(t));
+
+
+==== LibraryInfo ====
+A ``LibraryInfo`` is a set of information common to a group of
+operations.  The **CoCoAServer** prints the list of loaded
+(sub)libraries at startup.
+```
+  LibraryInfo(const std::string& name,
+              const std::string& version,
+              const std::string& group);
+```
+Example of definition of the function identifying a (sub)library:
+```
+  // sublibrary of CoCoALib for groebner related operations
+  // by M.Caboara
+  const ServerOpBase::LibraryInfo& CoCoALib_groebner()
+  {
+    static ServerOpBase::LibraryInfo UniqueValue("CoCoALib",
+                                                 BuildInfo::version,
+                                                 "groebner");
+    return UniqueValue;
+  }
+```
+
+=== Virtual functions ===
+%----------------------------------------------------------------------
+
+==== myCompute ====
+This function should be just a straight call to a CoCoALib function,
+in particular with neither reading nor printing,
+using as input the class members called ``myIn..`` and storing
+the result into the data members called ``myOut..``, for example
+``` void myCompute() { ComputeGBasis(myOutPL, myInPL); }
+
+==== myReadArgs ====
+Read from GlobalInput, and store the arguments into ``myIn..``.
+In general this is the only //difficult// function.
+
+
+==== myWriteResult ====
+Print the result(s) (myOut..) in CoCoA-4 language assigning
+it into the CoCoA4 global variable whose name is stored in ``VarName4``.
+For //non-standard// output just remember it simply is CoCoA-4 language,
+for example:
+```
+  void MVTN1::myWriteResult(std::ostream& out) const
+  {
+    out << ourVarName4 << " := [];";
+    for (unsigned int i=0; i<myOutPP.size(); ++i)
+      out<< "Append(" << ourVarName4<< ", " << PP(myOutPP[i]) << ");" <<endl;
+  }
+```
+-- add example for "Record[..];" output from ApproxBBasis --
+
+
+==== myClear ====
+Reset all data members to //0//.
+Right now (April 2007) it is only for //cleaning// the object right
+after it has been used, in future it might be called to //reuse// the
+object several times.
+
+=== Debugging the server ===
+%----------------------------------------------------------------------
+
+If a function called by CoCoA-4 needs to be debugged this is the
+procedure to avoid dealing with sockets and fork under gdb.
+- create from CoCoA-4 the input file ``~/tmp/CoCoA4Request.cocoa5``:
+```
+  $cocoa5.Initialize();
+  MEMORY.PKG.CoCoA5.PrintOnPath := GetEnv("HOME")+"/tmp";
+  MyFun5(X);
+```
+- In shell:
+```
+  src/server/CoCoAServer -d < ~/tmp/CoCoA4Request.cocoa5
+```
+- In gdb:
+```
+  file src/server/CoCoAServer
+  r -d < ~/tmp/CoCoA4Request.cocoa5
+  break CoCoA::error
+```
+-
+% last "-" guarantees the proper closing of the unnumbered list

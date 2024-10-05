@@ -1,0 +1,268 @@
+------------------------------------------------------------------------
+-- TUTORIAL 2
+------------------------------------------------------------------------
+
+-- POSETS
+
+------------------------------------------------------------------------
+// What is a poset?
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- A PARTIALLY ORDERED SET P (or simply POSET) is a set
+-- with a partial order "<" such that
+-- 1) t < t for all t in P
+-- 2) if t < s and s < t, then t = s
+-- 3) if t < s and s < u, then t < u
+
+
+-- EXAMPLE:
+-- (P1)
+//           5
+//          / \   
+//         3   4
+//          \ /
+//           2
+//           |
+//           1
+
+------------------------------------------------------------------------
+// How do we represent such object in CoCoA?
+------------------------------------------------------------------------
+
+-- (1) A poset can be represented with a list P of lists where
+-- P[i] is the list of all elements smaller than the node i (<i)
+
+P1 := [[],           // < 1
+       [1],          // < 2
+       [1, 2],       // < 3
+       [1, 2],       // < 4
+       [1, 2, 3, 4]  // < 5
+       ];
+---> Assignment does not print
+
+P1; ---> same as "print P1;"
+indent(P1);
+
+
+-- (2) A poset can be represented with a list relP of lists/pairs 
+-- representing strict connections/relations between elements of the poset.
+
+relP1 := [[1,2],   // {1,2} such that 1 < 2
+	  [2,3],   // {2,3} such that 2 < 3
+	  [2,4],   // {2,4} such that 2 < 4
+	  [3,5],   // {3,5} such that 3 < 5
+	  [4,5]];  // {4,5} such that 4 < 5
+
+
+-- The two representations above are "equivalent".
+
+P1 = covers(relP1);
+
+---> In CoCoA we use the symbol "=" to check equalities and ":=" to define objects.
+
+
+-- EXAMPLE:
+-- (P2)
+//          7
+//          |\   6
+//        3 4 \ /
+//         \|  5
+//          2
+//          |
+//          1
+
+P2 := [[],             // < 1
+       [1],            // < 2
+       [1,  2],        // < 3
+       [1,  2],        // < 4
+       [],             // < 5
+       [5],            // < 6
+       [1,  2,  4,  5] // < 7
+       ];
+P2;
+
+relP2 := [[1,2],   // {1,2} such that 1 < 2
+	  [2,3],   // {2,3} such that 2 < 3
+	  [2,4],   // {2,4} such that 2 < 4
+	  [4,7],   // {4,7} such that 4 < 7
+	  [5,7],   // {5,7} such that 5 < 7
+	  [5,6]];  // {5,6} such that 5 < 6
+
+P2 = covers(relP2);
+
+
+-- EXERCISE  (not easy...):
+-- Can you write a function that takes as input relP and returns P?
+-- (Assume that a poset has a unique minimum)
+
+------------------------------------------------------------------------
+-- REMARK:
+-- In general, we prefer the second representation, for the following reasons:
+-- it is more compact
+-- it does not contain the empty list
+-- it makes perfect sense also with symbols and not only numbers in fact
+-- we can denote the nodes "a","b"... but be carefull!
+------------------------------------------------------------------------
+
+
+-- We define a function that computes all comparable pairs, i.e. all pairs {a,b}
+-- of elements of the poset such that a < b or b < a.
+
+define ComparablePairs(P)
+  N := len(P);
+  equalities := [[i,i] | i in 1..N];
+  -- In line below  P[i] >< [i]   is the same as   CartesianProduct(P[i], [i])
+  inequalities := ConcatLists([P[i] >< [i] | i in 1..N]);
+  return concat(equalities, inequalities);
+enddefine; -- ComparablePairs
+
+CompP1 := ComparablePairs(P1); CompP1;
+CompP2 := ComparablePairs(P2); CompP2;
+
+
+------------------------------------------------------------------------
+// How do we check if a pair is in one of the lists above?
+------------------------------------------------------------------------
+
+? isin
+[5,6] IsIn CompP1;
+[5,6] isin CompP2;
+// Here I check that an element belongs to a set 
+
+? IsSubset
+IsSubset([[5,6]], CompP1);
+IsSubset([[5,6]], CompP2);
+// Here I check that a set is contained in another set
+
+
+
+-- DEFINITION:
+-- A CHAIN is a poset where any 2 elements are comparable.
+
+-- A chain in a poset is MAXIMAL if it is not contained in a larger chain.
+
+MaxChains(relP1);
+MaxChains(relP2);
+
+
+
+-- DEFINITIONS:
+-- The LENGHT of a chain C is #C-1.
+
+-- The RANK of a poset is the maximum lenght of its chains.
+
+-- We define a function that computes the rank of a poset
+
+define myPosetRank(relP)
+  MaxCh := MaxChains(relP);
+  return max( [len(C)-1 | C in MaxCh] );
+enddefine; -- myPosetRank
+
+myPosetRank(relP1);
+myPosetRank(relP2);
+
+
+------------------------------------------------------------------------
+// How to check properties?
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- A poset is GRADED if all maximal chains have the same lenght.
+
+IsPosetGraded(relP1);
+IsPosetGraded(relP2);
+
+
+-- DEFINITION:
+-- If a poset is graded, there is a well defined RANK FUNCTION on it such that
+-- (1) rank(t)=0 if t is a minimal element
+-- (2) rank(t)=rank(s)+1 if s < t and there is no u such that s < u < t
+
+PosetNRank(relP1,1);
+PosetNRank(relP1,2);
+PosetNRank(relP1,5);
+
+
+
+------------------------------------------------------------------------
+// Which operations can we do on a poset?
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- The DUAL of a poset is a poset on the same set but with reversed relations
+
+
+--           P1       dual of P1
+
+//           5             1
+//          / \            |
+//         3   4           2
+//          \ /           / \
+//           2           3   4
+//           |            \ /
+//           1             5
+
+
+dual_relP1 := PosetDual(relP1); dual_relP1;
+covers(dual_relP1);
+
+dual_relP2 := PosetDual(relP2); dual_relP2;
+covers(dual_relP2);
+
+
+
+-- DEFINITIONS:
+-- The MEET of two elements of a poset is a greatest lower bound.
+-- If it exists, it is unique.
+
+-- The JOIN of two elements of a poset is a least upper bound.
+-- If it exists, it is unique.
+
+
+PosetMeet(relP1, 3, 4);
+PosetJoin(relP1, 3, 4);
+
+PosetMeet(relP2, 5, 4);
+PosetJoin(relP2, 3, 6);
+
+
+
+------------------------------------------------------------------------
+// Special kind of posets
+------------------------------------------------------------------------
+
+-- DEFINITION:
+-- A LATTICE is a poset for which every pair of elements has a join and a meet.
+-- Every lattice has a unique minimum and a unique maximum element.
+
+IsLattice(relP1);
+IsLattice(relP2);
+
+
+
+-- DEFINITION:
+-- The MOEBIUS function of a poset is a function mu defined recursively by:
+-- mu(t,t) = 1 for all t
+-- mu(s,t) = - sum[mu(s,u) | for all u such that  s <= u < t]
+
+
+
+-- EXERCISE
+-- Can you write a CoCoA function myMoebius that computes mu?
+
+? sum
+
+
+-- EXERCISE
+-- Define a new poset on {1,2,...,n} (n<100....) and compute its dual.
+-- Compute their rank (are they equal?), their lists of maximal chains.
+-- Check if they are graded and if they are lattices.
+
+
+-- EXERCISE
+-- Show that a poset and its dual have the same rank. Show that one is graded
+-- or a lattice if and only if the other is.
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------

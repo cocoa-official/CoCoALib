@@ -1,0 +1,163 @@
+      symbol
+      Copyright (c)  2005,2007,2008,2012,2014,2015 John Abbott and Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{symbol}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-symbol1.C       ../../examples/index.html#ex-symbol1.C]
+- [ex-symbol2.C       ../../examples/index.html#ex-symbol2.C]
+- [ex-PPMonoidElem1.C ../../examples/index.html#ex-PPMonoidElem1.C]
+- [ex-PolyRing2.C     ../../examples/index.html#ex-PolyRing2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+``symbol`` is short for //Symbolic Name//.  A value of type ``symbol``
+represents a //variable name// possibly with some integer subscripts
+attached.  Its primary use is for input and output of polynomials: the
+name of each indeterminate in a [[PolyRing]] is a ``symbol``, similarly
+for a [[PPMonoid]].
+
+A ``symbol`` value has two components:
+- **head** -- a string starting with a letter followed by letters, digits and ``_``s
+              (**note** no other characters allowed)
+- **subscripts** -- a (possibly empty) vector of machine integers
+-
+
+Examples of ``symbol``s are: (in standard printed forms)
+ | ``x``, ``X``, ``alpha``, ``z_alpha``, ``x[2]``, ``gamma[-2,3,-9]``
+
+It is also possible to create **anonymous symbols**:
+they are useful for building (//temporary//) polynomial extensions of
+unknown coefficient rings (which may contain any symbol) to guarantee
+no name conflicts.
+- **head** -- is the //empty// string
+- **subscripts** -- exactly one subscript
+-
+Each newly created anonymous symbol has a subscript strictly greater
+than that of any previous anonymous symbol.  For better readability,
+an anonymous symbol prints out as a **hash sign** followed by the
+subscript: //e.g.// ``#[12]``
+
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+Let
+``head`` be a ``std::string``,
+``ind``, ``ind1``, ``ind2``, ``n`` machine integers,
+``inds`` a ``std::vector<long>``.
+
+- ``symbol(head)`` -- a ``symbol`` with no subscripts
+- ``symbol(head, ind)`` -- a ``symbol`` with a single subscript
+- ``symbol(head, ind1, ind2)`` -- a ``symbol`` with a two subscripts
+- ``symbol(head, inds)`` --  a ``symbol`` with the given subscripts
+- ``NewSymbol()`` -- a new anonymous symbol (printed form is like this ``#[12]``)
+-
+
+==== Creating a vector of symbols ====
+%----------------------------------------------------------------------
+Several polynomial ring pseudo-constructors expect a ``vector`` of
+``symbol``s to specify the names of the indeterminates.  There are
+several convenience functions for constructing commonly used
+collections of ``symbol``s.
+
+- ``symbols(str)`` -- create a ``vector<symbol>`` containing comma-separated symbols in ``str``
+- ``SymbolRange(hd, lo, hi)`` -- create vector of
+                              ``hd[lo]``, ``hd[lo+1]``, ... ``hd[hi]``.
+                      Note that these symbols each have just a single subscript
+- ``SymbolRange(sym1, sym2)`` -- create vector of //cartesian product// of the
+                      subscripts, e.g. given ``x[1,3]`` and ``x[2,4]`` produces
+                                ``x[1,3]``, ``x[1,4]``, ``x[2,3]``, ``x[2,4]``
+- ``NewSymbols(n)`` -- create vector of ``n`` new anonymous symbols
+-
+
+=== Operations on symbols ===[operations]
+%----------------------------------------------------------------------
+Let ``sym``, ``sym1``, and ``sym2`` be objects of type ``symbol``
+- ``head(sym)``       --  head of ``sym`` as a const ref to ``std::string``
+- ``NumSubscripts(sym)`` --  number of subscripts ``sym`` has (0 if sym has no subscripts)
+- ``subscript(sym, n)``  --  gives ``n``-th subscript of ``sym``
+- ``cmp(sym1, sym2)`` --  <0, =0, >0 according as ``sym1`` < = > ``sym2``
+                          (for more info see Maintainer section)
+
+- ``sym1 <  sym2`` -- comparisons defined in terms of ``cmp``
+- ``sym1 <= sym2`` -- ...
+- ``sym1 >  sym2`` -- ...
+- ``sym1 >= sym2`` -- ...
+- ``sym1 == sym2`` -- ...
+- ``sym1 != sym2`` -- ...
+
+- ``out << sym``   -- print ``sym`` on ``out``
+- ``in  >> sym``   -- read a symbol into ``sym`` (but also see Bugs section)
+                  (expected format is x, y[1], z[2,3], etc.)
+-
+
+==== Operations on vectors of symbols ====
+%----------------------------------------------------------------------
+- ``AreDistinct(vecsyms)`` -- true iff all symbols are distinct
+- ``AreArityConsistent(vecsyms)`` -- true iff all symbols with the same head
+                                     have the same arity
+-
+
+=== Other operations ===
+%----------------------------------------------------------------------
+- ``symbol::IsValidHead(str)`` -- determine whether the ``string`` is a valid head
+- ``symbol::IsValidFirstChar(ch)`` -- determine whether the ``char`` is a valid first char of a head
+-
+
+
+== Maintainer documentation for symbol ==
+%======================================================================
+
+**Note:** I have used ``MachineInt`` as the type for fn args containing
+index values because it is //safer//, and I believe that the run-time
+penalty is unimportant.  This is a considered exception to the guideline
+which says to use ``long`` for indexes.
+
+I have decided **not** to allow //big integers// as subscripts because I don't
+see when it could ever be genuinely useful.
+
+
+The implementation is extremely simple.  Efficiency does not seem to be
+important (//e.g.// ``symbols`` and ``SymbolRange`` copy the vector upon returning).
+The implementation of ``SymbolRange`` is mildly delicate when we have to make
+checks to avoid integer overflow -- see comments in the code.
+
+To make "anonymous" symbols I opted to use a **private ctor** which
+accepts just a single subscript; this ctor is called only by ``NewSymbol``
+and ``NewSymbols``.
+
+The printing fn (``myOutputSelf``) has to check for an empty head, and if
+found it prints the string in ``AnonHead``.
+
+We believe a total ordering on ``symbol``s could be useful; for instance,
+if someone wants to make a ``std::map`` using ``symbol``s.  Currently the
+total order is //Lex on the heads then lex on the subscript vectors//; this
+is simple, and is probably fast enough.
+
+The function ``symbol::myInput`` is a stop-gap implementation.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+The member function ``myInput`` handles white space wrongly.  For CoCoALib
+whitespace is space, TAB, or backslash-newline; newline without backslash
+is not considered white space.
+
+In redmine 747 there is a suggestion to allow ``symbol("x[1,2]")``;
+we decided (2016-02-01) to postpone extending ``symbol`` in this way.
+
+It might be nice to have a function which returns the vector of subscripts
+of a name.
+
+I wonder what sending a ``symbol`` on an OpenMath channel would mean
+(given that OpenMath is supposed to preserve semantics, and a symbolic
+name is by definition devoid of semantics).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

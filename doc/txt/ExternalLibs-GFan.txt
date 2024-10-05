@@ -1,0 +1,90 @@
+      ExternalLibs-GFan
+      Copyright (c)  2015 Anna Bigatti, Anders Nedergaard Jensen
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ExternalLibs-GFan}{Anna Bigatti, Anders Nedergaard Jensen}
+
+
+== User documentation ==
+%======================================================================
+
+**GFan** is a tool for computations in ....
+
+Here we should include the manual for the gfanlib flags/functions,
+...
+
+=== Examples ===
+- [ex-GFan1.C ../../examples/index.html#ex-GFan1.C]
+
+
+=== Download and compile Gfan ===
+
+ | [**gfan** website http://home.math.au.dk/jensen/software/gfan/gfan.html]
+ | [**cdd** website http://www.inf.ethz.ch/personal/fukudak/cdd_home/]
+
+==== Compile cdd ====
+if you are using a local installation of gmp, compile like this
+FATTO
+```
+./configure CFLAGS="-I/PATH/gmp  -L/PATH/gmp/.libs"
+make
+sudo make install
+```
+
+for local installation (not so sure...)
+```
+./configure prefix="/PATH/cddlib-0.94j" CFLAGS="-I/PATH/gmp  -L/PATH/gmp/.libs"
+make
+make install
+```
+
+For compatibility with GFan, header files should be (as they did in a
+previous version of cdd) in ``include/cdd/``:
+```
+cd /usr/local/include
+mkdir cdd
+sudo mv cdd*.h setoper.h splitmix64.h   cdd
+```
+
+==== Now compile gfanlib: ====
+```
+export CPPFLAGS="-I/usr/local/include/cdd"
+./configure
+```
+I get
+``` configure: WARNING: cdd.h: present but cannot be compiled
+and also
+``` ./configure: line 4526: ./config.status: Permission denied
+but does not seem to matter!  Keep going!
+```
+make
+```
+
+=== Compile CoCoALib with libgfan ===
+
+Then configure and compile **CoCoALib** typing
+``` 
+cd CoCoALib-0.99
+./configure --with-libgfan=<PATH>/libgfan.a --with-libcddgmp=<PATH>/libcddgmp.a
+make
+```
+
+== Maintainer documentation ==
+%======================================================================
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+
+
+
+== Main changes ==
+%======================================================================
+
+**2015**
+- September: first inclusion
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

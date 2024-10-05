@@ -1,0 +1,122 @@
+      PolyRing
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{PolyRing}{John Abbott}
+
+
+
+=== Examples ===[examples]
+%----------------------------------------------------------------------
+- [ex-PolyRing1.C ../../examples/index.html#ex-PolyRing1.C]
+- [ex-PolyRing2.C ../../examples/index.html#ex-PolyRing2.C]
+- [ex-PolyIterator1.C ../../examples/index.html#ex-PolyIterator1.C]
+- [ex-PolyIterator2.C ../../examples/index.html#ex-PolyIterator2.C]
+- [ex-PolyInput1.C ../../examples/index.html#ex-PolyInput1.C]
+- [ex-factor1.C ../../examples/index.html#ex-factor1.C]
+-
+
+== User documentation for PolyRing ==
+%======================================================================
+
+PolyRing is an abstract class (inheriting from [[ring]]) representing
+rings of polynomials with coefficients in a commutative [[ring]] ``R``.
+
+The polynomials may be (dense) univariate or (sparse) multivariate.
+
+See [[RingElem PolyRing]] for operations on its elements, but
+only a few operations are available at this level of abstraction:
+see [[RingElem SparsePolyRing]] or [[RingElem DenseUPolyRing]] for more
+operations on polynomials of [[SparsePolyRing]] or [[DenseUPolyRing]].
+
+
+=== Pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+There are several functions to create polynomial rings: see
+- [[SparsePolyRing constructors]] for the sparse implementation and
+- [[DenseUPolyRing constructors]] for the dense (univariate) implementation.
+-
+
+
+- ``PolyRing(R)`` -- sort of downcast the ring ``R`` to a poly ring;
+will throw an ``ErrorInfo`` object with code ``ERR::NotPolyRing`` if needed.
+-
+
+
+=== Queries and views ===[query]
+%----------------------------------------------------------------------
+Let ``R`` be an object of type [[ring]].
+- ``IsPolyRing(R)`` -- ``true`` if ``R`` is actually ``PolyRing``
+- ``PolyRingPtr(R)`` -- pointer to impl of ``R`` (for calling mem fns);
+will throw an ``ErrorInfo`` object with code ``ERR::NotPolyRing`` if needed
+-
+
+=== Operations on a PolyRing ===[operations]
+%----------------------------------------------------------------------
+In addition to the standard [[ring operations]], a [[PolyRing]] may be
+used in other functions.
+
+Let ``P`` be an object of type ``PolyRing``.
+
+- ``NumIndets(P)``      -- the number of indeterminates in ``P``
+- ``CoeffRing(P)``      -- the ring of coefficients of ``P``
+- ``indets(P)``         -- a const std::vector of [[RingElem]]s whose i-th
+                        element is the i-th indeterminate in ``P``
+- ``indets(P, str)``    -- a std::vector of [[RingElem]]s with all 
+                        indeterminates in ``P`` whose head is the string ``str``
+- ``indet(P,i)``        -- the ``i``-th indet of ``P`` as a [[RingElem]]
+- ``IndetPower(P,i,n)`` -- the ``n``-th power of the ``i``-th indet of ``P`` as a [[RingElem]]
+-
+
+=== Homomorphisms ===[homomorphisms]
+%----------------------------------------------------------------------
+
+Let ``P`` be an object of type ``PolyRing``.
+Let ``R`` be an object of type [[ring]].
+
+: ``CoeffEmbeddingHom(P)``
+  -- the homomorphism which maps ``CoeffRing(P)`` into ``P``
+: ``PolyRingHom(P, R, CoeffHom, IndetImages)``
+  -- the homomorphism from ``P`` to ``R`` which maps the coeffs using ``CoeffHom``, and
+  maps the k-th indet into ``IndetImages[k]``
+: ``EvalHom(P, IndetImages)``
+  -- the evaluation homomorphism from ``P`` to ``CoeffRing(P)`` which is the identity
+  on the coeffs, and maps the kth indet into ``IndetImages[k]``
+: ``PolyAlgebraHom(P, R, IndetImages)``
+%   -- must have ``CoeffRing(P)`` = ``R``  or  ``CoeffRing(P)`` = ``CoeffRing(R)``
+  -- this is the identity on coeffs, and maps the k-th indet into ``IndetImages[k]``
+
+
+== Maintainer documentation for PolyRing ==
+%======================================================================
+
+The hard part has been deciding which member functions should be in
+``PolyRingBase`` and which should be in less abstract classes.  If you
+want to modify the code here, you should probably also look at
+``SparsePolyRing`` and ``DUPolyRing``  before messing with the code!
+
+The implementations in ``PolyRing.C`` are all very simple: they just conduct
+some sanity checks on the function arguments before passing them to the
+``PolyRing`` member function which will actually do the work.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+What precisely should the //fancy// version of deriv do?
+What are permitted values for the second arg?  Must coeff=1?
+What if the second arg does not have precisely one term?
+
+The range of member functions on RawValues is rather a hotch-potch.
+Hopefully, experience and use of the code will bring some better order
+to the chaos.
+
+Verify the true need for ``myRemoveBigContent``, ``myMulByCoeff``,
+``myDivByCoeff``.  If the coeff ring has zero divisors then
+``myMulByCoeff`` could change the structure of the poly!
+
+**Maintainer doc is largely absent.**
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

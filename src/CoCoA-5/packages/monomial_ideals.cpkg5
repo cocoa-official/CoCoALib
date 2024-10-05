@@ -1,0 +1,376 @@
+package $monomial_ideals
+
+export gin;
+export rgin;
+export IsStable;
+export IsStronglyStable;
+export IsLexSegment;
+export LexSegmentIdeal;
+export StronglyStableIdeal;
+export StableIdeal;
+-- export AlexanderDual;
+-- export SqFrPrimaryDecomposition;
+
+define About()
+  PrintLn "    KeyWords : Gin, Borel, Stable, StronglyStable, LexSegment";
+  PrintLn "    Author   : A.M.Bigatti";
+  PrintLn "    Version  : CoCoA 4.7";
+  PrintLn "    Date     : 23 March 2007";
+enddefine; -- About
+
+-----------------------------------------------------------------------
+
+define rgin(I)
+  order := "DRL";
+  return GinCommon(I, order);
+EndDefine; -- rgin
+
+define gin(I, opt flag1)
+  vrb := false;
+  order := "ord";
+  if IsDefined(flag1) then
+    if flag1 = "verbose" then vrb := true;
+    elif flag1 = "drl" then order := "DRL";
+    else error("optional argument must be \"drl\"");
+    endif;
+  endif;
+// if IsMonomial(I) and IsStronglyStable(I) then return I; endif;
+  if vrb then
+    GinV1 := "`gin(\"verbose\")' is obsolescent (from CoCoA-5.1.5)";
+    GinV2 := "use `SetVerbosityLevel(50);  gin(I);' instead.";
+    VL := VerbosityLevel();
+    SetVerbosityLevel(50);
+    G := GinCommon(I, order);
+    SetVerbosityLevel(VL);
+    PrintLn "\n--> WARNING: ",GinV1,"\n--> WARNING: ",GinV2;
+    return G;
+  endif;
+  return GinCommon(I, order);
+EndDefine; -- gin
+
+  
+----------------------------------------------------------------------
+-- Define AlexanderDual(X)
+-- Define SqFrPrimaryDecomposition(I)
+----------------------------------------------------------------------
+
+define LexSegmentIdealPPList(PPList)
+  TopLevel QQ;
+  P := RingOf(PPList[1]);
+  Borel_Aux_Ring ::= QQ[x[1..NumIndets(P)]], DegLex;
+  OldNw := PolyAlgebraHom(P, Borel_Aux_Ring, indets(Borel_Aux_Ring));
+  NwOld := PolyAlgebraHom(Borel_Aux_Ring, P, indets(P));
+  GB := GBasis(ideal(support(sum([$.LexSegmentPP_Lex(OldNw(PP)) | PP in PPList ]))));
+  return ideal(NwOld(GB));
+enddefine; -- LexSegmentIdeal
+
+
+define LexSegmentDegLexRing(LexSRing, HF, MaxDegGens) // CurrentRing MUST have DegLex
+  P := LexSRing;
+  if characteristic(P) <> 0 then error("Not yet implemented for finite characteristic");endif;
+  I := ideal(P,[]);
+  N := NumIndets(P);
+  D := 0;
+  HF_D := 1;
+  while true do
+    if D > 0 then
+      NumComplMultiples := BinExp(HF_D, D, 1, 1);
+    else
+      NumComplMultiples := NumIndets(P);
+    endif;
+    incr(ref D);
+    HF_D := AsINT($hp.EvalHilbertFn(HF, D));
+    NumLexGens := NumComplMultiples - HF_D;
+    if D > MaxDegGens and NumLexGens = 0 then return I; endif;
+    L := first(support(DensePoly(P, D)), binomial(N+D-1, D)-HF_D);
+    I := I + ideal(P, last(L, NumLexGens));
+  endwhile;
+enddefine; -- LexSegmentDegLexRing
+
+
+define LexSegmentIdealHF(I)
+  P := RingOf(I);
+  if I = ideal(one(P)) then return I;  endif;
+  HF := HilbertFn(P/I);
+  MaxDegGens := max([deg(F) | F in gens(I)]);
+  CR := CoeffRing(P);
+  LexSRing ::= CR[x[1..NumIndets(P)]], DegLex;
+  I := $.LexSegmentDegLexRing(LexSRing, HF, MaxDegGens);
+  I := ideal(RingOf(I), [g In gens(I) | g<>0]);  // just to remove 0's
+  return Image(I, RMap(indets(P)));
+enddefine; -- LexSegment
+
+
+define LexSegmentIdeal(X)
+  if type(X) = IDEAL then
+    return $.LexSegmentIdealHF(X);
+  elif $.IsMonomial(X) then
+    return $.LexSegmentIdealPPList(X);
+  endif;
+  error("LexSegmentIdeal: expected ideal or list of power-products");
+enddefine; -- LexSegmentIdeal
+
+
+define StronglyStableIdeal(PPList)
+  TopLevel QQ;
+  if PPList=[] then return true; endif;
+  P := RingOf(PPList[1]);
+  if not($.IsMonomial(PPList)) then
+    error("StronglyStableIdeal: expected list of power-products");
+  endif;
+  if characteristic(P)=0 then
+    L := interreduced(support(sum([ $.BorelPP0(PP) | PP in PPList ])));
+  else
+    error("Not yet implemented for finite characteristic");
+  endif;
+  Return ideal(support(sum(L))); // To sort the list
+enddefine; -- StronglyStableIdeal
+
+
+define StableIdeal(PPList)
+  TopLevel QQ;
+  if PPList=[] then return true; endif;
+  P := RingOf(PPList[1]);
+  if not($.IsMonomial(PPList))
+    then error("Stable: expected list of power-products");
+  endif;
+  if characteristic(P)=0 then
+    L := interreduced(support(sum([ $.StablePP0(PP) | PP in PPList ])));
+  else
+    error("Not yet implemented for finite characteristic");
+  endif;
+  return ideal(support(sum(L))); // To sort the list
+enddefine; -- StableIdeal
+
+
+define IsLexSegment(I)
+  IsLexSegmentErr := "IsLexSegment: monomial ideal expected";
+  if not($.IsMonomial(I)) then error(IsLexSegmentErr); endif;
+  P := RingOf(I);
+  R := CoeffRing(P);
+  Borel_Aux_Ring ::= R[x[1..NumIndets(P)]], Lex;
+  phi := PolyAlgebraHom(P, Borel_Aux_Ring, indets(Borel_Aux_Ring));
+  return $.IsLexSegment_Lex(ideal(phi(gens(I))));
+enddefine; -- IsLexSegment
+
+
+define IsStronglyStable(I)
+  TopLevel QQ;
+  P := RingOf(I);
+  IsStronglyStableErr := "IsStronglyStable: monomial ideal expected";
+  if not($.IsMonomial(I)) then error(IsStronglyStableErr); endif;
+  B := gens(I);
+  if characteristic(P)=0 then
+    return $.IsBorel0(I);
+  else
+    error("Not yet implemented for finite characteristic");
+  endif;
+enddefine; -- IsBorel
+
+
+define IsStable(I)
+  TopLevel QQ, ZZ;
+  IsStableErr := "IsStable: monomial ideal expected";
+  P := RingOf(I);
+  if not($.IsMonomial(I)) then error(IsStableErr); endif;
+  S := gens(I);
+  if characteristic(P)=0 then
+    return $.IsStable0(I);
+  else
+    error("Not yet implemented for finite characteristic");
+  endif;
+enddefine; -- IsStable
+
+
+define StronglyStableGens(I)
+  TopLevel QQ;
+  P := RingOf(I);
+  B := gens(I);
+  if characteristic(P)=0 then
+    return $.BorelGens0(I);
+  else
+    error("Not yet implemented for finite characteristic");
+  endif;
+enddefine; -- StronglyStableGens
+
+
+//--------------------[ Auxiliary Gin ]--------------------
+
+define RandIdeal(I, range)
+  IsVERBOSE := IsVERBOSE_func("RandIdeal");
+  P := RingOf(I);
+//  S := [ indet(P,1) + sum([ random(-range,range)*Y | Y in first(indets(P),i-1)],0)  // horribly slow!!!
+  S := [ sum([ random(-range,range)*Y | Y in first(indets(P),i)])
+	| i in 1..NumIndets(P)];
+--   S := [ indet(P,1)+sum([ random(-range,range)*indet(P,j) | j in 2..i],0)
+-- 	| i in 1..NumIndets(P)];
+  if IsVERBOSE(50) then print "change coord = "; indent(S); endif;
+  return ideal([ eval(G, S) | G in gens(I)]);
+enddefine; -- RandIdeal
+
+
+define TryPrecisions(ref precision, I, DRLFlag)
+  IsVERBOSE := IsVERBOSE_func("TryPrecisions");
+  P := RingOf(I);
+  while true do
+    if IsVERBOSE(50) then
+      println "-- trying with FloatPrecision ", precision;
+    endif;
+    if DRLFlag = "ord" then
+      RRx := NewPolyRing(NewRingTwinFloat(precision),
+			 SymbolRange("x",1,NumIndets(P)),
+			 OrdMat(P),
+			 GradingDim(P));
+    elif DRLFlag = "DRL" then
+      RRx := NewPolyRing(NewRingTwinFloat(precision),
+			 SymbolRange("x",1,NumIndets(P)));
+    else
+      error("unrecognized " + DRLFlag);
+    endif;
+    phi := PolyRingHom(P, RRx,
+		       CanonicalHom(RingQQ(),CoeffRing(RRx)),
+		       indets(RRx));
+    try
+      X := LT(ideal(phi(gens(I))));
+      phi := "delete";
+      return [ MakeTerm(P,exponents(LT(f))) | f in gens(X) ];
+    uponerror E do
+      if "insufficient precision" IsIn GetErrMesg(E) then
+	precision := precision * 2;
+      else
+	return E;
+      endif;
+    endtry;
+  endwhile;
+enddefine; -- TryPrecisions
+
+
+define TryGin(I, range, N, DRLFlag)
+  precision := 64;
+  L := TryPrecisions(ref precision, RandIdeal(I, range), DRLFlag);
+  for K := 2 to N do
+    if not(EqSet(TryPrecisions(ref precision, RandIdeal(I,range), DRLFlag), L)) then
+      return [];
+    endif;
+  endfor;
+  return L;
+enddefine; -- TryGin
+
+
+define GinCommon(I, DRLFlag)
+  IsVERBOSE := IsVERBOSE_func("GinCommon");
+  P := RingOf(I);
+  if not(IsQQ(CoeffRing(P))) then error("CoeffRing must be QQ"); endif;
+  while true do
+    L := TryGin(I, 10^6, 2, DRLFlag);
+//    L := TryGin(I, 2, 2, DRLFlag); -- for testing
+    if L=[] and IsVerbosePrint(51) then 
+      println "---- Not Equal! Trying again...";
+    endif;
+    if L<>[] then return ideal(P,L); endif;
+  endwhile;  
+enddefine; -- GinCommon
+  
+
+//--------------------[ auxiliary ]--------------------//
+
+define IsMonomial(X)
+  TopLevel IsMonomial;  -- for ringelems
+  if type(X)=RINGELEM then return IsMonomial(X); endif;
+  if type(X)=IDEAL then
+    Gs := [ G in gens(X) | not(IsZero(G)) ];
+    return not(false IsIn [ IsMonomial(G) | G in Gs ]);
+  endif;
+  if type(X) IsIn [INT, RAT] then return true; endif;
+  if type(X)=LIST then
+    foreach El in X do
+      if not($.IsMonomial(El)) then return false; endif;
+    endforeach;
+    return true;
+  endif;
+  error("IsMonomial: POLY, LIST or IDEAL expected");
+enddefine;
+
+-- it assumes ordering is Lex or DegLex
+define LexSegmentPP_Lex(PP)
+  TopLevel CurrentRing;
+  F := DensePoly(RingOf(PP), deg(PP));
+  return sum([ T in support(F) | PP = T or PP < T ]);
+enddefine; -- LexSegmentPP_Lex
+
+
+-- it assumes ordering is Lex or DegLex
+define IsLexSegment_Lex(I)
+  LS := gens(I);
+  while LS<>[] do
+    PP := min(LS);
+    LSPP := $.LexSegmentPP_Lex(PP);
+    if not(LSPP IsIn I) then  return false;  endif;
+    LS := diff(LS, support(LSPP));
+  endwhile;
+  return true;
+enddefine; -- IsLexSegment_Lex
+
+
+-- it assumes Characteristic = 0
+define BorelPP0(PP)
+  L := exponents(PP);
+  P := RingOf(PP);
+  return product([ sum(first(indets(P),I))^L[I] | I in 1..NumIndets(P)]);
+enddefine; -- BorelPP0
+
+
+-- it assumes Characteristic = 0
+define StablePP0(PP)
+  P := RingOf(PP);
+  if PP = indet(P,1)^deg(PP) then return PP; endif;
+  L := exponents(PP);
+  MaxI := max([ I in 1..NumIndets(P) | L[I]<>0 ]);
+  LMaxI := L[MaxI];
+  OneStep := (PP/indet(P,MaxI)^(LMaxI-1)) * sum(first(indets(P),MaxI))^(LMaxI-1);
+  return OneStep + $.StablePP0( (PP/indet(P,MaxI)^LMaxI) * indet(P,MaxI-1)^LMaxI );
+enddefine;
+
+
+-- it assumes Characteristic = 0
+define IsBorel0(I)
+  B := gens(I);
+  while B<>[] do
+    PP := min(B);
+    BPP := $.BorelPP0(PP);
+    if not(BPP IsIn I) then return false; endif;
+    B := diff(B, support(BPP));
+  endwhile;
+  return true;
+enddefine; -- IsBorel0
+
+
+-- it assumes Characteristic = 0
+define IsStable0(I)
+  S := gens(I);
+  while S<>[] do
+    PP := min(S);
+    SPP := $.StablePP0(PP);
+    if not(SPP IsIn I) then return false; endif;
+    S := diff(S, support(SPP));
+  endwhile;
+  return true;
+enddefine; -- IsStable0
+
+
+-- it assumes Characteristic = 0
+define BorelGens0(I)
+  B := gens(I);
+  MinGens := [];
+  while B<>[] do
+    PP := min(B);
+    append(ref MinGens, PP);
+    BPP := $.BorelPP0(PP);
+    if not(BPP IsIn I) then error("BorelGens: input is not Borel"); endif;
+    B := diff(B, support(BPP));
+  endwhile;
+  return MinGens;
+enddefine; -- BorelGens
+
+
+endpackage;

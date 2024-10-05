@@ -1,0 +1,797 @@
+Package $misc
+
+--Export Bin;
+Export E_;
+Export max;
+Export min;
+Export shape;
+Export subst;
+--Export image;
+
+Alias
+  Misc 	:= $misc;
+
+---------------------------------------------------------------
+
+Define About()
+  PrintLn "    Version : CoCoA 4.2";
+  PrintLn "    Date    : 6 November 2002";
+  PrintLn "    Changes : fixed Sum (was too slow before)";
+EndDefine; -- About
+
+
+-----[ Strings ]-----------------------------------------------
+
+-----[ Math ]--------------------------------------------------
+// Begin MAX
+Define E_(I,A)
+  error("E_(i,F) obsolete: please use \"gens(FreeModule)[index]\"");
+--   --If not(shape([I,A]) IsIn [[INT,INT],[INT,MODULE]]) Then PrintLn("Bad Parameters") EndIf;
+--   If type(A)=MODULE Then Rank:=len(head(gens(A)));
+--   Else Rank:=A; -- type(A)=INT
+--   EndIf;
+--   V:=NewList(Rank,Poly(0));
+--   V[I]:=Poly(1);
+--   Return Vector(V);
+EndDefine; -- E_
+// End MAX
+
+
+Define ZeroVector(N)  -- N is a MODULE or INT
+  If type(N)=MODULE Then NC := NumComps(N);
+  Else NC := AsINT(N);
+  EndIf;
+  Return Vector(NewList(NC,0));
+EndDefine; -- ZeroVector
+
+
+Define PrintVector(V)
+  V := Cast(V, MODULEELEM); -- this will give an error if the cast fails
+  I := 1; While I<=len(V) And V[I]=0 Do incr(ref I); EndWhile;
+  If I>len(V) Then
+    Print "ZeroVector(",len(V),")";
+  Else
+    Print "(",V[I],")*E_(",I,",",len(V),")";
+  EndIf;
+  For J := I+1 To len(V) Do
+    If V[J]<>0 Then
+      Print " + (",V[J],")*E_(",J, ",",len(V),")";
+    EndIf;
+  EndFor;
+EndDefine; -- PrintVector
+
+
+-- Define Rank(...)
+--   N:=ARGV[1];
+--   If type(N) = MAT Then
+--     If IsSubset(flatten(list(shape(N))), [INT,RAT])
+--       And characteristic()<>0 Then
+--       Using QQt Do Return Rank(N); EndUsing;
+--     EndIf;
+--     N := Module(N);
+--   EndIf;
+--   If len(ARGV)=2 Then NumSteps:=ARGV[2] Else NumSteps:=10 EndIf;
+--   Return Misc.RRank(N,NumSteps)
+-- EndDefine; -- Rank
+
+
+Define RRank(Ref M, NumSteps)
+  --Print ".";
+  If M=Module([[0]]) Then Return 0; EndIf;
+  $gb.Start_Syz(M);
+  Repeat
+    $gb.Steps(M,NumSteps);
+  Until not(ComputationInProgress(M)) Or M.Syz<>Module([[0]]);
+  If M.Syz<>Module([[0]]) Then
+    GenToKill:=FirstNonZeroPos(head(gens(M.Syz)));
+    NewGens := gens(M); remove(ref NewGens, GenToKill);
+    M:=Module(NewGens);
+    Return Misc.RRank(M,NumSteps);
+  Else
+    If M.Syz=Module([[0]]) Then
+      Return len(gens(M));
+    Else
+      Return len(gens(M))-1;
+    EndIf;
+  EndIf;
+EndDefine; -- RRank
+
+
+Define Concat(...)
+  If len(ARGV) = 0 Then Return []; EndIf;
+  Types := MakeSet([type(X) | X In ARGV]);
+  If not(Types IsIn [[LIST], [MODULEELEM]]) Then
+    error("Concat: args must be lists or vectors");
+  EndIf;
+  If Types = [MODULEELEM] Then
+    Return $.ConcatVectors(ARGV);
+  EndIf;
+  L := ARGV[1];
+  For I := 2 To len(ARGV) Do
+    L := concat(L,ARGV[I]);
+  EndFor;
+  Return L;
+EndDefine; -- Concat
+
+
+Define ConcatVectors(VL)
+  N := sum([len(V) | V In VL]);
+  Ans := NewList(N);
+  I := 1;
+  Foreach V In VL Do
+    Foreach Entry In V Do
+      Ans[I] := Entry;
+      incr(ref I);
+    EndForeach;
+  EndForeach;
+  Return Vector(Ans);
+EndDefine; -- ConcatVectors
+
+
+Define IsHomog_Module(M)
+  If Misc.IsHomog(gens(M)) Then Return True; EndIf;
+//  OldFlag := Option(FullRed);
+//  Set FullRed;
+  Result := Misc.IsHomog(ReducedGBasis(M)); -- hoping the PP order is good!!
+//  If OldFlag = False Then Unset FullRed; EndIf;
+  Return Result;
+EndDefine; -- IsHomog_Module
+
+
+Define IsHomog(...)
+  If len(ARGV)=1 Then
+    X := ARGV[1];
+    If X = [] Then Return True; EndIf;
+    If type(X) IsIn [IDEAL, MODULE] Then Return Misc.IsHomog_Module(X); EndIf;
+    If type(X) = LIST Then
+      Return MakeSet([$builtin.IsHomog(Y)|Y In X]) = [True];
+    Else Return $builtin.IsHomog(X);
+    EndIf;
+  Elif len(ARGV)<>2 Then error("IsHomog: 1 or 2 arguments");
+  EndIf;
+  -- len(ARGV)=2
+  Sh := ARGV[1]; X := ARGV[2];
+  If type(Sh)<>TAGGED("shifts") Then
+    error("IsHomog: first argument must be Shifts([...])");
+  EndIf;
+  Sh := untagged(Sh);
+  If RINGELEM IsIn shape(Sh) Then
+    For I := 1 To len(Sh) Do  If Sh[I]=0 Then Sh[I]:=1; EndIf  EndFor;
+  Else
+    Idt := indet(1);
+    For I := 1 To len(Sh) Do  Sh[I]:=Idt^(-Sh[I]);  EndFor;
+  EndIf;
+  If type(X)=LIST Then Return MakeSet([Misc.IsVectHomog(Sh,Y)|Y In X]) = [True];
+  Elif type(X)=MODULEELEM Then Return Misc.IsVectHomog(Sh,X);
+  Else Return error("IsHomog: second argument must be MODULEELEM or MODULEELEM-LIST");
+  EndIf;
+EndDefine; -- IsHomog
+
+Define IsVectHomog(Sh, V)
+  Return $builtin.IsHomog(Vector([ Sh[I]*V[I] | I In 1..len(Sh)]));
+EndDefine; -- IsVectHomog
+
+-- Define Shifts(S)
+--   If type(S) = MODULE Or type(S) = MODULEELEM Then
+--     A := S.Shifts;
+--     If A = Null Then A := NewList(NumComps(S),Poly(1)) EndIf;
+--   Else
+--     A := S;
+--     If A = Null Then A := NewList(NumComps(S),Poly(1)) EndIf;
+--   EndIf;
+--   X := [type(Y) = POLY Or Y <= 0 | Y In A];
+--   If MakeSet(X) <> [True] Then
+--     error(ERR.BAD_PARAMS,"(integer shifts MUST be <= 0)");
+--   Else Return Tagged(A,"shifts");
+--   EndIf;
+-- EndDefine; -- Shifts
+
+
+Define Module(...)
+  If len(ARGV) = 0 Then Return $builtin.Module([]);
+  Else
+    S := ARGV[1];
+    If type(S) = TAGGED("shifts") Then
+      L := tail(ARGV);
+      If len(L) = 1 Then G := L[1]; Else G := L; EndIf;
+      Return $builtin.Module(S,G);
+    Else
+      L := ARGV;
+      S := MakeSet([type(X) | X In L]);
+      If RINGELEM IsIn S Then
+	error("Module: polynomial gens are ambiguous: please use [] or Vector()");
+      EndIf;
+      If INT IsIn S Then
+	error("Module: integer gens are ambiguous: please use [] or Vector() in this generator list ", sprint(L));
+      EndIf;
+      If len(L) = 1 Then G := L[1]; Else G := L; EndIf;
+      Return $builtin.Module(G);
+    EndIf;
+  EndIf;
+EndDefine; -- Module
+
+
+-- Define ideal(...)
+--   If len(ARGV) = 0 Then Return Cast(Module([[0]]),IDEAL) EndIf;
+--   If len(ARGV) > 1 Or type(ARGV[1]) <= POLY Then Return ideal(ARGV); EndIf;
+--   X := ARGV[1];
+--   T := type(X);
+-- --  If T = ERROR Then Return ARGV[1]; EndIf;
+--   If T = IDEAL Then Return X; EndIf;
+--   If T = MODULE Then Return Cast(X, IDEAL); EndIf;
+--   If T = LIST Then
+--     If X <> [] And
+--       MakeSet([type(F) <= POLY | F In X]) <> [True] And
+--       MakeSet([type(F) | F In X]) <> [MODULEELEM] Then
+--       error("Ideal: bad parameters");
+--     EndIf;
+--     RE := Diff(RingEnvSet(X), [""]);
+--     If RE = [] Then Return Cast(Module([[F] | F In X]), IDEAL); EndIf;
+--     Return Var(RE[1])::Cast(Module([[F] | F In X]), IDEAL);
+--   EndIf;
+--   Return error("Ideal: bad parameter");
+-- EndDefine; -- Ideal
+
+-- Define PolyBin(A,B)
+--   Return product([A-J | J In 0..(B-1)])/factorial(B);
+-- EndDefine; -- PolyBin
+
+-- Define Bin(N,K)
+--   TopLevel ERR;
+--   If type(N) = INT And type(K) = INT Then Return binomial(N,K); EndIf;
+--   If type(N) = RAT And den(N) = 1 Then N := num(N); EndIf;
+--   If type(K) = RAT And den(K) = 1 Then K := num(K); EndIf;
+--   If type(K) <> INT Then
+--     error("Bin: Second argument must be an integer");
+--   EndIf;
+--   If K < 0 Then Return 0; EndIf;
+--   If type(N)=RINGELEM Then Return Misc.PolyBin(N,K);
+-- //  Elif IsNumber(N) Then Return Misc.PolyBin(N,K); // ????????????
+--   Else error(ERR.BAD_PARAMS);
+--   EndIf;
+-- EndDefine; -- Bin
+
+
+-------------------------------
+
+Define NumComps(X)
+  TopLevel ERR;
+  T := type(X);
+  If T = MODULEELEM Then Return len(X);
+  Elif T = MODULE Then Return X.NumComps;
+  Elif T = IDEAL Then Return 1;
+  Elif T = TAGGED("Quotient") Then Return Misc.NumComps(untagged(X));
+  EndIf;
+  Return error(ERR.BAD_PARAMS);
+EndDefine; -- NumComps
+
+
+-------------------------------
+
+Define Comps(V)
+  TopLevel ERR;
+  If type(V) <> MODULEELEM Then error(ERR.BAD_PARAMS);
+  Else Return [ V[I] | I In 1..Misc.NumComps(V) ];
+  EndIf;
+EndDefine; -- Comps
+
+-------------------------------
+
+-- The "old" Sum routine; good for short lists, and lists of integers.
+Define SequentialSum(L)
+  TopLevel ERR;
+  If type(L) <> LIST Then error(ERR.BAD_PARAMS); EndIf;
+  If len(L)=0 Then Return 0; EndIf;
+  S := head(L);
+  Foreach X In tail(L) Do
+    S := S + X;
+  EndForeach;
+  Return S;
+EndDefine; -- SequentialSum
+
+
+-- -- This version is faster for summing monomials (but a bit slower for lists of integers)
+-- Define Sum(L)
+--   TopLevel ERR;
+--   If type(L) <> LIST Then error(ERR.BAD_PARAMS); EndIf;
+--   While len(L) > 10 Do  -- the limit of 10 is not wholly arbitrary, it seems fastest.
+--     LenL := len(L);
+--     L2 := [];
+--     For I := 3 To LenL Step 3 Do
+--       append(ref L2, L[I-2]+L[I-1]+L[I]);
+--     EndFor;
+--     If Mod(LenL, 3) = 1 Then append(ref L2, Last(L)); EndIf;
+--     If Mod(LenL, 3) = 2 Then append(ref L2, L[LenL-1]+Last(L)); EndIf;
+--     L := L2;
+--   EndWhile;
+--   Return Misc.SequentialSum(L);
+-- EndDefine; -- Sum
+
+-------------------------------
+
+-- Define Product(L)
+--   TopLevel ERR;
+--   If type(L) <> LIST Then error(ERR.BAD_PARAMS); EndIf;
+--   If len(L)=0 Then Return 1; EndIf;
+--   S := 1;
+--   Foreach X In L Do
+--     S := S * X;
+--   EndForeach;
+--   Return S;
+-- EndDefine; -- Product
+
+
+-------------------------------
+
+Define max(...)
+  If len(ARGV) <> 1 Then Return max(ARGV); EndIf;
+  L := ARGV[1];
+  If len(L)=0 Then error("max: empty list"); EndIf;
+  M := L[1];
+  Foreach X In L Do
+    If X > M Then M := X; EndIf;
+  EndForeach;
+  Return M;
+EndDefine; -- Max
+
+-------------------------------
+
+Define min(...)
+  If len(ARGV) <> 1 Then Return min(ARGV); EndIf;
+  L := ARGV[1];
+  If len(L)=0 Then error("Min: empty list"); EndIf;
+  M := L[1];
+  Foreach X In L Do
+    If X < M Then M := X; EndIf;
+  EndForeach;
+  Return M;
+EndDefine; -- Min
+
+-------------------------------
+--- THIS IS ALL WRITTEN IN C NOW (FEB 1999, JAA & MAX)
+--- -- Monomials(P:POLY) returns the list of the monomials of P
+--- Define Monomials(P)
+---   If not(type(P) <= POLY) Then Return ERR.EXPECTED_POLY EndIf;
+---   If P=0 Then Return [0] EndIf;
+---   L := NewList(len(P));
+---   For I := 1 To len(P) Do
+---     M := LC(P)$builtin.LT(P);
+---     L[I] := M;
+---     P := P-M;
+---   EndFor;
+---   Return L;
+--- EndDefine;
+--- Support(P) := [LT(M)|M In Monomials(P)];
+
+-------------------------------
+-- Auxiliary (see Coefficients)
+
+Define CoeffList(F,X)
+  DegFx := deg(F,X);
+  CL := NewList(DegFx + 1);
+  For I := 1 To len(CL) Do
+    C := NR(F,[X^I]);
+    CL[DegFx-I+2] := C/X^(I-1);
+    F := F - C;
+  EndFor;
+  Return CL;
+EndDefine; -- CoeffList
+
+
+-------------------------------
+
+-- -- Coefficients(P:POLY) returns the list of the coefficients of P
+-- -- Coefficients(P:POLY,X:INDET) returns the list of the coefficients
+-- -- of P w.r.t. the indeterminate X
+-- -- Coefficients(P:POLY,L:LIST) returns the list of the coefficients
+-- -- w.r.t a given list of power products
+-- Define Coefficients(...)
+--   If len(ARGV)=1 Then Return $builtin.Coefficients(ARGV[1]); EndIf;
+--   If len(ARGV) <> 2 Then
+--     error("Usage: Coefficients(P:POLY) or Coefficients(P:POLY,X:INDET) or Coefficients(P:POLY,L:LIST)");
+--   EndIf;
+--   If type(ARGV[2]) = LIST Then
+--     -- the check below excludes (vector, list of vector terms) but the code
+--     -- would allow it (as far as I can tell).  Would it be useful?
+--     If len([X In ARGV[2] | not(X = 1 Or IsTerm(X))]) > 0 Then
+--       error("Coefficients: second argument must be a list of terms or an indeterminate");
+--     EndIf;
+--     Return [CoeffOfTerm(Poly(PP), ARGV[1]) | PP In ARGV[2]];
+--   EndIf;
+--   Return Misc.CoeffList(ARGV[1],ARGV[2]); -- CoeffList checks that ARGV[2] is OK
+-- EndDefine; -- Coefficients
+
+
+-------------------------------
+
+Define RelDeg(F,X)
+  I := IndetIndex(X);
+  Return max([exponents(LPP(T))[I] | T In support(F)]);
+EndDefine; -- RelDeg
+
+
+-- Deg(P:POLY) returns the degree of P
+-- Deg(P:POLY,X:INDET) returns the degree of P w.r.t. the indeterminate X
+-- Define Deg(...)
+--   TopLevel ERR;
+--   X := ARGV[1];
+--   If not( type(X)<=POLY Or type(X)<=MODULEELEM ) Then
+--     error("Deg: first argument must be POLY or MODULEELEM");
+--   EndIf;
+--   If X = X*0 Then error("Deg of zero is not defined") EndIf;
+--   If type(X) <= POLY Then X := Poly(X); EndIf;
+--   If len(ARGV)=1 Then Return $builtin.Deg(X)
+--   Elif len(ARGV)=2 Then Return Misc.RelDeg(X,ARGV[2])
+--   Else error(ERR.BAD_PARAMS_NUM);
+--   EndIf;
+-- EndDefine; -- Deg
+
+
+-- Define MDeg(X)
+--   If not( type(X)<=POLY Or type(X)=MODULEELEM ) Then
+--     error("MDeg: argument must be POLY or MODULEELEM");
+--   EndIf;
+--   If X = X*0 Then error("MDeg of zero is not defined") EndIf;
+--   If type(X)<POLY Then Return 0 EndIf;
+--   Return $builtin.MDeg(X)
+-- EndDefine; -- MDeg
+
+
+-------------------------------
+
+-- Define CoeffOfTerm(T,P)
+--   If type(T) < POLY Then T := Poly(T); EndIf;
+--   If type(P) < POLY Then P := Poly(P); EndIf;
+--   If shape([T,P]) IsIn [[POLY,POLY],[MODULEELEM,MODULEELEM]] Then
+--     If type(T)=MODULEELEM And len(T)<>len(P) Then
+--       error("CoeffOfTerm: vector ranks are different");
+--     EndIf;
+--     If IsTerm(T) Then
+--       Return $builtin.CoeffOfTerm(P,T)
+--     Else
+--       error("CoeffOfTerm: first argument must be a term");
+--     EndIf;
+--   EndIf;
+--   error("CoeffOfTerm: (Term,Poly) or (Term,Vector) expected");
+-- EndDefine; -- CoeffOfTerm
+
+
+-----[ Other ]-------------------------------------------------------
+
+-- Define ResetPanelGENERAL()
+--   Set Echo := False;
+--   Set Timer := False;
+--   If DebugVersion() Then Set Memory := False EndIf;
+--   Set Trace := False;
+--   Set Indentation := False;
+--   Set TraceSources := False;
+--   Set SuppressWarnings := False;
+--   Set ComputationStack := False;
+-- EndDefine; -- ResetPanelGENERAL
+
+
+-- Define ResetPanelGROEBNER()
+--   Set Sugar := True;
+--   Set FullRed := True;
+--   Set SingleStepRed := False;
+--   Set Verbose := False;
+-- EndDefine; -- ResetPanelGROEBNER
+
+
+-- Define ResetPanels()
+--   Misc.ResetPanelGENERAL();
+--   Misc.ResetPanelGROEBNER();
+-- EndDefine; -- ResetPanels
+
+
+-- Define Reset()
+--   Misc.ResetPanels();
+--   Seed(0)
+-- EndDefine; -- Reset
+
+
+Define IsElementOf(X,L)
+  If type(L) <= MODULE Then
+    Return IsZero(NF(X,L));
+  Else
+    Return (X IsIn L);
+  EndIf;
+EndDefine; -- IsIn
+
+
+Define Subst3(E,X,F) Return Misc.Subst2_top(E,[[X,F]]); EndDefine;
+
+Define Subst2_top(E,S)
+  S := [P In S | P[1]<>P[2]];
+  If len(S)=0 Then Return E; EndIf;
+  Return Misc.Subst2(E,S);
+EndDefine; -- Subst2_top
+
+
+Define Subst2(E,S)
+  If RATFUN IsIn flatten(shape(S)) Then
+    SNum := [ [X[1], num(X[2])] | X In S];
+    SDen := concat([ [X[1], den(X[2])] | X In S],
+		   [ [X,1] | X In diff(Indets(), [Y[1]|Y In S])]);
+    Return Misc.Subst2RatFun(E,SNum,SDen);
+  Else
+    Return Misc.Subst2Poly(E,S);
+  EndIf;
+EndDefine; -- Subst2
+
+
+-- Define Subst2RatFun(E,SNum,SDen)
+--   T := type(E);
+--   If T IsIn [INT, RAT] Then Return E; EndIf;
+--   If T=POLY Then Return Misc.SubstPolyRF(E,SNum,SDen); EndIf;
+--   If T=RATFUN Then Return
+--     Misc.SubstPolyRF(E.Num,SNum,SDen)/Misc.SubstPolyRF(E.Den,SNum,SDen)
+--   EndIf;
+--   If T=LIST Then Return [Misc.Subst2RatFun(X,SNum,SDen)|X In E] EndIf;
+--   If T=MAT Then Return Mat([Misc.Subst2RatFun(X,SNum,SDen)|X In E]) EndIf;
+--   If T=MODULEELEM Then Return Vector(Misc.Subst2RatFun(Comps(E),SNum,SDen)) EndIf;
+--   If T=IDEAL Then Return ideal(Misc.Subst2RatFun(gens(E),SNum,SDen)) EndIf;
+--   If T=MODULE Then Return Module(Misc.Subst2RatFun(gens(E),SNum,SDen)) EndIf;
+--   Return error("Illegal call to Subst");
+-- EndDefine; -- Subst2RatFun
+
+
+Define SubstPolyRF(P,SNum,SDen)
+  Return sum([ LC(M)*SubstPoly(M,SNum)/SubstPoly(M,SDen) | M In monomials(P)]);
+EndDefine; -- SubstPolyRF
+
+
+Define Subst2Poly(E,S)
+  T := type(E);
+  If T IsIn [INT, RAT] Then Return E; EndIf;
+  If T IsIn [RINGELEM, MAT] Then Return SubstApply(E,S); EndIf;
+  If T=MODULEELEM Then Return Vector(ModuleOf(E),Misc.Subst2Poly(Comps(E),S)); EndIf;
+  If T=IDEAL Then Return ideal(RingOf(E),Misc.Subst2Poly(gens(E),S)); EndIf;
+  If T=MODULE Then Return Module(ModuleOf(E),Misc.Subst2Poly(gens(E),S)); EndIf;
+  If T=LIST Then Return [Misc.Subst2Poly(X,S)|X In E]; EndIf;
+//  If T=RATFUN Then Return SubstPoly(E.Num,S)/SubstPoly(E.Den,S) EndIf;
+  Return error("Illegal call to Subst");
+EndDefine; -- Subst2Poly
+
+Define SubstApply(F, S)
+  NYI := "Not yet implemented for this kind of ring";
+  NotInd := "Not an indet";
+  R := RingOf(F);
+  If IsPolyRing(R) Then
+    IndetImages := indets(R);
+    Foreach X In S Do
+      if RingOf(X[1])<>R then error(sprint(X[1])+" is not an element of domain"); endif;
+      IndetImages[IndetIndex(X[1])] := X[2];
+    EndForeach;
+    Phi := PolyAlgebraHom(R,R,IndetImages);
+  Elif IsFractionField(R) Then
+    Kx := BaseRing(R);
+    If not(IsPolyRing(Kx)) Then error(NYI); EndIf;
+    IndetImages := EmbeddingHom(R)(indets(Kx));
+    Foreach X In S Do
+      If den(X[1]) <> 1 Then error(NotInd); EndIf;
+      if RingOf(X[1])<>R then error("indet not in domain"); endif;
+      IndetImages[IndetIndex(num(X[1]))] := X[2];
+    EndForeach;
+    CoeffHom := CanonicalHom(Kx,R)(CanonicalHom(CoeffRing(Kx),Kx));
+    Phi := InducedHom(R, PolyRingHom(Kx,R,CoeffHom,IndetImages));
+    CoeffHom := "clear";
+  Elif IsQuotientRing(R) Then
+    Kx := BaseRing(R);
+    If not(IsPolyRing(Kx)) Then error(NYI); EndIf;
+    IndetImages := CanonicalHom(Kx,R)(indets(Kx));
+    Foreach X In S Do
+      IndetImages[IndetIndex(CanonicalRepr(X[1]))] := X[2];
+    EndForeach;
+    CoeffHom := CanonicalHom(Kx,R)(CanonicalHom(CoeffRing(Kx),Kx));
+    Phi := InducedHom(R, PolyRingHom(Kx,R,CoeffHom,IndetImages));
+    CoeffHom := "clear";
+  Else
+    error(NYI);
+  EndIf;
+  Return Phi(F);
+EndDefine; -- SubstPoly
+
+
+Define subst(...)
+  TopLevel ERR;
+--  Help "Subst({POLY,LIST,MAT,MODULEELEM,IDEAL,MODULE},SUBST) or Subst(EXPR,X,POLY)";
+--   If not(NoMoreThanOneRing(ARGV)) Then
+--     Return error("Illegal call to Subst");
+--   EndIf;
+  N:=len(ARGV);
+  If N=2 Then Return Misc.Subst2_top(ARGV[1],ARGV[2]); EndIf;
+  If N=3 Then Return Misc.Subst3(ARGV[1],ARGV[2],ARGV[3]); EndIf;
+  Return error(ERR.BAD_PARAMS_NUM);
+EndDefine; -- Subst
+
+
+-------------------------------
+
+Define MapPolyList(L, FromRing, ML)
+  Return [$builtin.Map(X, FromRing, RingEnv(), ML) | X In L];
+EndDefine; -- MapPolyList
+
+Define MapVectorList(L, FromRing, ML)
+  Return [Vector([$builtin.Map(Y, FromRing, RingEnv(), ML) | Y In X]) | X In L];
+EndDefine; -- MapVectorList
+
+Define ImagePolyList(L, Phi)
+  if L=[] then return L; endif;
+  FromRing := owner(L[1]);
+  ToRing := owner(untagged(Phi)[1]);
+  NFrom := NumIndets(FromRing);
+  If NFrom <> len(untagged(Phi)) Then
+    error("Image: RMap has " + sprint(len(untagged(Phi)))
+	  + " image(s), domain has " + sprint(NFrom)
+	  + " indeterminate(s)");
+  EndIf;
+  PhiHom := PolyAlgebraHom(FromRing, ToRing, untagged(Phi));
+  Return [PhiHom(X) | X In L];
+EndDefine; -- ImagePolyList
+
+
+-- Define ImagePolyList(L, Phi)
+-- //  Print "calling ImagePolyList..."; // just to check CoCoAServer passes by
+--   FromRing := RingEnv(L[1]);
+--   NFrom := NumIndets(Var(FromRing));
+--   If NFrom <> len(Untagged(Phi)) Then
+--     error("Image: RMap has " + Sprint(len(Untagged(Phi)))
+-- 	  + " image(s), domain has " + Sprint(NFrom)
+-- 	  + " indeterminate(s)")
+--   EndIf;
+--   RL := $hilop.ListRingEnv(Untagged(Phi));
+--   If RL <> "" Then  Phi := [Poly(F) | F In Untagged(Phi)];  EndIf;
+--   Using Var(RingEnv(Phi[1])) Do
+--     NTo := NumIndets();
+--     D := Diff(Untagged(Phi), [1]);
+--     If IsSubset(D, Indets()) And MakeSet(D)=D Then
+--       MapList := NewList(NTo, 0);
+--       For I := 1 To NFrom Do
+-- 	If Phi[I]<>1 Then MapList[IndetIndex(Phi[I])]:=I EndIf;
+--       EndFor;
+--       Return Misc.MapPolyList(L, FromRing, MapList)
+--     EndIf;
+--     If NFrom <= NTo Then
+--       ML := Concat(1..NFrom, NewList(NTo-NFrom, 0));
+--       Y := Misc.MapPolyList(L, FromRing, ML);
+--       Y := Subst(Y, [[Indet(I), Phi[I]] | I In 1..NFrom]);
+--     Else
+--       RE := RingEnv();
+--       Using Var(FromRing) Do
+-- 	ML := Concat(1..NTo, NewList(NFrom-NTo, 0));
+-- 	Phi := Misc.MapPolyList(Var(RE)::[Poly(X)|X In Phi], RE, ML);
+-- 	L := Subst(L, [[Indet(I), Phi[I]] | I In 1..(len(Phi))]);
+--       EndUsing;
+--       Y := Misc.MapPolyList(L, FromRing, 1..NTo);
+--     EndIf;
+--     Return Y;
+--   EndUsing;
+-- EndDefine; -- ImagePolyList
+
+
+-- Define ImageVectorList(L, Phi)
+--   FromRing := RingEnv(L[1]);
+--   NFrom := NumIndets(Var(FromRing));
+--   If NFrom <> len(Untagged(Phi)) Then
+--     error("Image: RMap has " + Sprint(len(Untagged(Phi)))
+-- 	  + " image(s), domain has " + Sprint(NFrom)
+-- 	  + " indeterminate(s)")
+--   EndIf;
+--   RL := $hilop.ListRingEnv(Untagged(Phi));
+--   If RL <> "" And RL <> RingEnv() Then
+--     error("Image: RMap must be defined in the codomain " + RingEnv())
+--   EndIf;
+--   NTo := NumIndets();
+--   D := Diff(Untagged(Phi), [1]);
+--   If IsSubset(D, Indets()) And MakeSet(D)=D Then
+--     MapList := NewList(NTo, 0);
+--     For I := 1 To NFrom Do
+--       If Phi[I]<>1 Then MapList[IndetIndex(Phi[I])]:=I EndIf;
+--     EndFor;
+--     Return Misc.MapVectorList(L, FromRing, MapList)
+--   EndIf;
+--   If NFrom <= NTo Then
+--     ML := Concat(1..NFrom, NewList(NTo-NFrom,0));
+--     Y := Misc.MapVectorList(L, FromRing, ML);
+--     Y := Subst(Y, [[Indet(I), Phi[I]] | I In 1..NFrom]);
+--   Else
+--     RE := RingEnv();
+--     Using Var(FromRing) Do
+--       ML := Concat(1..NTo, NewList(NFrom-NTo, 0));
+--       Phi := Misc.MapPolyList(Var(RE)::[Poly(X)|X In Phi], RE, ML);
+--       L := Subst(L, [[Indet(I), Phi[I]] | I In 1..(len(Phi))]);
+--     EndUsing;
+--     Y := Misc.MapVectorList(L, FromRing, 1..NTo);
+--   EndIf;
+--   Return Y;
+-- EndDefine; -- ImageVectorList
+
+
+-- Define Map(E,R1,R2,L)
+--   -- E, an object
+--   -- R1, R2 strings, the names of the domain and codomain
+--   -- L = [N1,...,Nn] list of integers ...
+--   If len(L) <> NumIndets(Var(R2)) Then ERR.BAD_PARAMS EndIf;
+--   T := type(E);
+--   If T=POLY Then Return $builtin.Map(E,R1,R2,L) EndIf;
+--   If T=LIST Then Return [Misc.Map(X,R1,R2,L)|X In E] EndIf;
+--   If T=MAT Then Return Mat([Misc.Map(X,R1,R2,L)|X In E]) EndIf;
+--   If T=MODULEELEM Then
+--     E1 := Misc.Map(Comps(E),R1,R2,L);
+--     Return Var(R2) :: Vector(E1)
+--   EndIf;
+--   If T=IDEAL Then
+--     E1 := Misc.Map(E.Gens,R1,R2,L);
+--     Return Var(R2) :: ideal(E1)
+--   EndIf;
+--   If T=MODULE Then
+--     E1 := Misc.Map(E.Gens,R1,R2,L);
+--     Return Var(R2) :: Module(E1)
+--   EndIf;
+--   If len(Tag(E))>0 Then Return Tagged(Misc.Map(Untagged(E),R1,R2,L),Tag(E)) EndIf;
+--   Return E;
+-- EndDefine; -- Map
+
+
+-------------------------------
+
+Define BuildRecord(Ns, Os)
+  R := Record[];
+  For I := 1 To min(len(Ns),len(Os)) Do
+    R[Ns[I]] := Os[I];
+  EndFor;
+  Return R;
+EndDefine; -- BuildRecord
+
+
+
+-----[ Types ]----------------------------------------------------
+
+Define shape(V)
+  If type(V) = LIST Then Return [ shape(X) | X In V ]; EndIf;
+  If type(V) = RECORD Then
+    R := Record[];
+    Foreach F In fields(V) Do
+      R[F] := shape(V[F]);
+    EndForeach;
+    Return R;
+  EndIf;
+  Return type(V);
+EndDefine; -- shape
+
+
+Define IsSubShapeOfSome(S,Shapes)
+  Foreach Shape In Shapes Do
+    If Misc.IsSubShape(S,Shape) Then Return True; EndIf;
+  EndForeach;
+  Return False;
+EndDefine; -- IsSubShapeOfSome
+
+
+Define IsSubShape(S1,S2)
+  TopLevel ERR;
+  T1 := type(S1);
+  If S2 = "ANY" Then Return True;
+  Elif T1 = LIST And S2 = LIST Then Return True;
+  Elif T1 = RECORD And S2 = RECORD Then Return True;
+  Elif T1 <> type(S2) Then Return False;
+  Elif T1 = LIST Then
+    If len(S1) <> len(S2) Then
+      Return False;
+    Else
+      For I := 1 To len(S1) Do
+	If not(IsSubShape(S1[I],S2[I])) Then Return False; EndIf;
+	Return True;
+      EndFor;
+    EndIf;
+  Elif T1 = RECORD Then
+    If not(IsSubset(fields(S1),fields(S2))) Then Return False;
+    Else Return MakeSet([IsSubShape(S1[F],S2[F]) | F In fields(S1)])=[True];
+    EndIf;
+  Elif T1 <> TYPE Then error(ERR.BAD_PARAMS);
+  Else Return S1 <= S2;
+  EndIf;
+EndDefine; -- IsSubShape
+
+EndPackage;

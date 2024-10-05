@@ -1,0 +1,84 @@
+      MatrixSpecial
+      Copyright (c)  2011,2016,2017  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{MatrixSpecial}{Anna Bigatti}
+
+
+
+== User documentation for MatrixSpecial ==
+%======================================================================
+
+=== Examples ===
+
+=== Special Matrices ===
+%----------------------------------------------------------------------
+
+% ==== Jacobian Matrix ====
+
+- ``JacobianMat(f, indets)`` --
+  where ``f`` (polynomials) and ``indets`` (indeterminates) are
+  vectors of [[RingElem]], all belonging to the same [[PolyRing]].
+  The (i,j)-th element of the Jacobian matrix is defined as the
+  derivative of i-th function with respect to the j-th indeterminate.
+
+  Throws if both ``f`` and ``indets`` are empty
+  (cannot determine the [[ring]] for constructing the 0x0 [[matrix]]).
+
+- ``JacobianMat(f)`` --
+  Jacobian matrix with respect to all indets in the ring.
+
+
+% ==== Tensor Product of matrices ====
+
+- ``TensorMat(A, B)`` --
+  where ``A`` and ``B`` are matrices with the same BaseRing.
+ | a_11 B | a_12 B | ... | a_1c B |
+ | a_21 B | a_22 B | ... | a_2c B |
+ |        |        | ... |        |
+ | a_r1 B | a_r2 B | ... | a_rc B |
+
+- ``LawrenceMat(A)`` --
+  Lawrence lifting of the ``matrix``  ``A``.
+ | A | 0 |
+ | I | I |
+
+- ``SylvesterMat(f,g,x)`` -- create Sylvester matrix for polys ``f`` and ``g`` w.r.t. indeterminate ``x``
+
+- ``HilbertMat(n)`` -- create an ``n``-by-``n`` matrix over ``QQ`` whose ``(i,j)`` entry is 1/(i+j-1)
+
+- ``RandomUnimodularMat(R,n,niters)`` -- create a random matrix with integer entries and determinant +1 or -1; last arg ``niters`` is optional (it defaults to ``25*n``).
+
+- ``RandomSparseNonSing01Mat(R,n)`` -- create a random sparse non-singular (0,1) matrix of size ``n``-by-``n``
+
+
+== Maintainer documentation ==
+%======================================================================
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Many special matrices are not yet implemented: (from the source file)
+- VandermondeMatrix
+- HessianMatrix
+- HilbertInverseMatrix
+- ToeplitzMatrix
+- WronskianMatrix
+
+
+== Main changes ==
+%======================================================================
+
+**2016**
+- November (v0.99544): added ``RandomUnimodularMat``
+
+
+**2011**
+- February (v0.9942): first release (``jacobian``)
+- March (v0.9943): added ``TensorMat``
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

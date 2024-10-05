@@ -1,0 +1,296 @@
+      random
+      Copyright (c)  2011-2013 John Abbott, Anna M. Bigatti; code by John Abbott
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{random}{code: John Abbott; doc: John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-RandomSource1.C ../../examples/index.html#ex-RandomSource1.C]
+- [ex-RandomSource2.C ../../examples/index.html#ex-RandomSource2.C]
+- [ex-RandomLong1.C ../../examples/index.html#ex-RandomLong1.C]
+- [ex-RandomBool1.C ../../examples/index.html#ex-RandomBool1.C]
+- [ex-RandomBigInt1.C ../../examples/index.html#ex-RandomBigInt1.C]
+-
+
+Here is a typical example of how to use a ``RandomSeqLong``; note that
+we create the generator **before** entering the loop, then **inside** the
+loop we use the function ``NextValue`` to get 100 successive random values
+(between -9 and 9) from the generator:
+```
+  RandomSeqLong rnd(-9,9);
+  for (int i=0; i < 100; ++i)
+    cout << NextValue(rnd) << endl;
+```
+
+== User documentation ==
+%======================================================================
+
+Below, in [[random RandomSourceOperations]] we list these handy
+functions for generating random values:
+ | ``RandomBool()``, ``RandomLong(lo, hi)``, ``RandomBigInt(lo, hi)``
+they are probably just what you want in a simple program,
+**but using them will make your code thread-unsafe**
+(which is quite acceptable in a small program for personal use).
+
+For a **thread-safe** solution you should create your own 
+//random generator//.
+If you just want to generate many random values of the
+same type, you should consider using one of the three specialized
+random sequence generators (which are faster than the more general ``RandomSource``):
+
+- The class ``RandomSeqLong`` is for representing generators of
+  (independent) uniformly distributed random integers (``long``)
+  in a given range; the range is specified when creating the generator
+  (and cannot later be changed).
+
+- The class ``RandomSeqBigInt`` is for representing generators of
+  (independent) uniformly distributed random integers ([[BigInt]]) in
+  a given range; the range is specified when creating the generator
+  (and cannot later be changed).
+
+- The class ``RandomSeqBool`` models a binary random variable (with
+  independent ``bool`` samples, each having 50% probability of being
+  //true// and 50% of being //false//).
+
+- The class ``RandomSource`` is for representing general sources of
+  (pseudo-)randomness: you can use it to produce random ``bool``, 
+  ``long``, and ``BigInt`` values.
+
+
+There are also ``RandomNBitPrime`` and ``RandomSmallPrime`` in [[NumTheory]].
+
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+
+All constructors have an optional argument which is the initial
+//seed// -- it determines the initial state of the generator.  If you
+do not give a seed, the default is ``0``.
+
+If you create several random sequence generators of the same kind and with the same
+seed, they will each produce **exactly the same sequence of values**.
+If you want to obtain different results each time a program is run,
+you can seed the generator with the system time (//e.g.// by supplying
+as argument ``time(0)``); this is likely desirable unless you're
+trying to debug a randomized algorithm.
+
+For ``RandomSource`` there is also the ``reseed`` function documented
+below (see [[random reseed]]).
+
+==== RandomSource ====
+
+   | ``RandomSource()``    | seeded with ``0`` |
+   | ``RandomSource(n)``   | seeded with ``n`` |
+
+For convenience, there is a global ``RandomSource`` object (belonging to
+[[GlobalManager]]); you can get a reference to it by calling
+``GlobalRandomSource()``, **but using it will make your code thread-unsafe**.
+
+==== RandomSeqXXXX ====
+
+There are two families of constructors.
+
+Constructors with default seed (0):
+
+ | ``RandomSeqBigInt(lo,hi)``    | seeded with ``0``        |
+ | ``RandomSeqLong(lo,hi)``      | seeded with ``0``        |
+ | ``RandomSeqBool()``           | seeded with ``0``        |
+
+
+Constructors with given (small integer) seed:
+
+ | ``RandomSeqBigInt(lo,hi, n)`` | seeded with ``abs(n)``   |
+ | ``RandomSeqLong(lo,hi, n)``   | seeded with ``abs(n)``   |
+ | ``RandomSeqBool(n)``          | seeded with ``abs(n)``   |
+
+Each ``RandomSeqBigInt`` (or ``RandomSeqLong``) will produce (pseudo)
+random values uniformly distributed in the range from ``lo`` to ``hi``
+(with both extremes included).  An ``ERR::BadArg`` exception is thrown
+if ``lo > hi``; the case ``lo == hi`` is allowed.
+
+=== RandomSource Operations ===[RandomSourceOperations]
+%----------------------------------------------------------------------
+These are the most convenient functions for generating random values;
+but they use ``GlobalRandomSource``, so they are **thread-unsafe**:
+- ``RandomBool()`` -- returns ``true`` with probability 50%
+- ``RandomBiasedBool(P)`` -- returns ``true`` with probability ``P`` (a ``double`` between 0 and 1)
+- ``RandomLong(lo, hi)`` -- in range ``lo``..``hi`` (both ends included)
+- ``RandomBigInt(lo, hi)`` -- in range ``lo``..``hi`` (both ends included)
+- ``RandomSmallPrime(N)`` -- generate a random prime up to ``N``; error if ``N < 2`` or ``N >= 2^31``.
+-
+
+A cleaner way is to pass as an argument the specific ``RandomSource``
+object to be used (in these examples we call it ``RndSrc``):
+- ``RandomBool(RndSrc)``
+- ``RandomLong(RndSrc, lo, hi)`` -- in range ``lo``..``hi`` (both ends included)
+- ``RandomBigInt(RndSrc, lo, hi)`` -- in range ``lo``..``hi`` (both ends included)
+-
+
+==== Reseed ====[reseed]
+
+A ``RandomSource`` object may be reseeded at any time; immediately after reseeding
+it will generate the same random sequence as a newly created ``RandomSource``
+initialized with that same seed.  The seed must be an integer value.
+- ``reseed(RndSrc, seed)``
+-
+
+**Note about thread-safety:** the various operations on a fixed
+``RandomSource`` object are not thread-safe; to achieve thread safety, you
+should use //different objects in different threads//.  In particular, it is
+best not to use ``GlobalRandomSource()`` in a multi-threaded environment.
+
+
+=== RandomSeqXXXX Operations ===[RandomSeqXXXXOperations]
+
+Once you have created a ``RandomSeqXXXX`` you may perform the following
+operations on it:
+- ``*rnd``             -- get the current value of rnd (as a boolean).
+- ``++rnd``            -- advance to next value of rnd.
+- ``rnd++``            -- advance to next value of rnd **INEFFICIENTLY**.
+- ``NextValue(rnd)``   -- advance and then return new value; same as *++rnd
+- ``out << rnd``       -- print some information about rnd.
+- ``rnd.myIndex()``    -- number of times rnd has been advanced,
+                          (same as the number of random bools generated).
+
+Note that a ``RandomSeqXXXX`` supports input iterator syntax.
+
+Moreover, for ``RandomSeqBool`` there is a special function
+- ``NextBiasedBool(RndBool, P)`` --  use several samples from ``RndBool`` to produce a boolean with probability ``P`` of being
+                       true; may consume many values from ``RndBool`` but on average consumes less than 2 values per call.
+-
+
+You may assign or create copies of ``RandomSeqXXXX`` objects; the copies
+acquire the complete state of the original, so will go on to produce exactly
+the same sequence of values as the original will produce.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+==== RandomSource ====
+
+The impl is mostly quite straightforward since almost all the work is
+done by GMP.
+
+``RandomLong(RndSrc, lo, hi)`` is a bit messy for two reasons:
++ CoCoALib uses signed longs while GMP uses unsigned longs;
++ the case when (``lo,hi``) specify the whole range of representable
+      longs requires special handling.
++
+
+==== RandomSeqLong  and  RandomSeqBigInt ====
+
+The idea is very simple: use the pseudo-random number generator of GMP
+to generate a random machine integer in the range 0 to ``myRange-1``
+(where ``myRange`` was set in the ctor to be ``1+myUpb-myLwb``) and
+then add that to ``myLwb``.  The result is stored in the data member
+``myValue`` so that input iterator syntax can be supported.
+
+There are two //non essential// data members: ``mySeed`` and ``myCounter``.
+I put these in to help any poor blighter who has to debug a randomized
+algorithm, and who may want to //fast forward// the random sequence to
+the right place.
+
+The data member ``myState`` holds all the state information used by the GMP
+generator.  Its presence makes the ctors, dtor and assignment messier than
+they would have been otherwise.
+
+The advancing and reading member functions (//i.e.// ``operator++`` and ``operator*``)
+are inline for efficiency, as is the ``NextValue`` function.
+
+``myGetValue`` is a little messy because the value generated by the GMP function
+``gmp_urandomm_ui`` cannot generate the full range of ``unsigned long`` values.
+Instead I have to call ``gmp_urandomb_ui`` if the full range is needed.
+
+The data members ``myLwb``, ``myUpb`` and ``myRange`` are morally constant,
+but I cannot make them ``const`` because I wanted to allow assignment of
+``RandomSeqLong`` objects.
+
+
+
+==== RandomSeqBool ====
+
+The idea is very simple: use the pseudo-random number generator of GMP
+to generate a random integer, and then give out the bits of this
+integer one at at time; when the last bit has been given out, get a
+new random integer from the GMP generator.  The random integer is kept
+in the data member ``myBuffer``, and ``myBitIndex`` is used to read
+the bits one at a time.
+
+The condition for refilling ``myBuffer`` is when the index goes beyond
+the number of bits held in ``myBuffer``.
+
+``myFillBuffer`` also sets the data member ``myBitIndex`` to zero; it
+seemed most sensible to do this here.
+
+The function ``prob`` is nifty; if you think about it for a moment, it
+is obviously right (and economical on random bits).  It would be
+niftier still if the probability were specified as an ``unsigned long``
+-- on a 64-bit machine this ought to be sufficient for almost
+all purposes.  If the requested probability is of the form N/2^k for
+some odd integer N, then the average number of bits consumed by
+``prob`` is 2-2^(1-k), which always lies between 1 and 2.  If the
+requested probability is 0 or 1, no bits are consumed.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+The printing function gives only partial information; //e.g.// two ``RandomSource`` objects
+with different internal states might be printed out identically.
+
+The implementation simply calls the GMP pseudo-random generator; this generator
+is deterministic (so always produces the same sequence), but if you change
+versions of GMP, the sequence of generated values may change.  You will have
+to read the GMP documentation to know more.
+
+**Discarded idea:** have a ctor which takes a ref to a ``RandomSource``,
+and which uses that to obtain randomness.  I discarded the idea because of
+the risks of an **invisible external reference** (//e.g.// a dangling reference,
+or problems in multithreaded code).  Instead of passing a reference to a
+``RandomSource`` to the ctor, you can use the ``RandomSource`` to create an initial
+seed which is handed to the ctor -- this gives better separation.
+
+Why can ``RandomSource`` be seeded with a ``BigInt`` but the others not?
+Does anyone really care?
+
+=== Doubts common to RandomSeqBigInt, RandomSeqBool, RandomSeqLong  ===
+
+It might be neater to put ``++myCounter`` inside ``myGenValue``, though
+this would mean that ``myCounter`` gets incremented inside the ctor.
+
+Should ``NextValue`` advance **before** or **after** getting the value?
+
+Is the information printed by ``myOutputSelf`` adequate?  Time will tell.
+
+
+Is there a better way of writing the four ctors (for ``RandomSeqBigInt``)
+without repeating many lines of essentially identical source code?
+
+Are there too many inline fns?  Is run-time speed so important here?  How
+many algorithms really consume millions of random bits/numbers?  Surely the
+computations on the random values should exceed the cost of generating
+them, shouldn't they?
+
+
+== Main changes ==
+%======================================================================
+
+- **December 2012 (v0.9953)**
+ - major rewriting: now all classes are defined in one single file
+   ``random.[HC]``
+ - some classes and functions have been renamed:
+   ``RandomXXXXSource`` to ``RandomSeqXXXX``, and ``sample`` to ``NextValue``
+ - documentation is unified in ``random.txt``
+- **October 2012 (v0.9952)**
+ - clarified doc; added comments about thread-safety.
+- **February 2011 (v0.9949)**
+ - removed ``RandomLong(src)`` (//i.e.// with no range)
+ - added ``RandomBool()``, ``RandomLong(lo,hi)``, ``RandomBigInt(lo,hi)``
+          (//i.e.// with no ``RandomSource``)
+- **April 2011 (v0.9943)** first release
+-
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,57 @@
+      GPoly
+      Copyright (c)  2006 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{GPoly}{Anna Bigatti}
+
+== User documentation for the class GPoly ==
+%======================================================================
+
+This part should be written by Massimo Caboara
+
+
+== Maintainer documentation for the class GPoly ==
+%======================================================================
+
+Also this part should be written by Massimo Caboara, but, as I am
+the author and maintainer of the reduction code, I write some notes
+here.
+
+A GPoly contains some member fields which often depend solely on the
+field myPolyValue: myLen, myWDeg, myLPPwMask, myComponent
+After a reduction we change the value of myPolyValue and the above
+fields can be updated accordingly calling:
+ myUpdateLenLPPDegComp();
+NB: if myPolyValue is 0 the fields myWDeg, myLPPwMask, myComponent are
+unreliable (intrinsicly undefined).
+
+=== Old logs ===
+%----------------------------------------------------------------------
+
+==== GPoly.H ====
+```
+ // Revision 1.14  2006/03/21 13:41:52  cocoa
+ // -- changed: removed typedef before enum CoeffEncoding::type
+```
+==== reduce.C ====
+```
+ // Revision 1.20  2006/05/02 14:38:15  cocoa
+ // -- changed "and,or,not" to "&&,||,!" because of M$Windoze (by M.Abshoff)
+ //
+ // Revision 1.19  2006/04/27 13:35:57  cocoa
+ // -- reverted: using CmpLPP no faster that comparing LPP()
+ //
+ // Revision 1.18  2006/04/27 11:32:03  cocoa
+ // -- improved myReduceTail using CmpLPP
+ //
+ // Revision 1.17  2006/04/12 17:00:20  cocoa
+ // -- changed: myReduceTail does nothing if ( LPP(*this) < LPP(g) )
+ //     ==>  great speedup on 6x7-4_h
+ //
+ // Revision 1.12  2006/03/17 18:17:16  cocoa
+ // -- changed: use of ReductionCog for reduction (major cleanup)
+ //
+ // Revision 1.5  2004/03/04 11:38:28  cocoa
+ // -- updated code for Borel reductors:
+ //    "reduce" first checks for myBorelReductors and updates them when needed
+```

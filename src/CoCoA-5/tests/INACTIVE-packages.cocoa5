@@ -1,0 +1,56 @@
+aliases();
+
+Alias Ciccio := $bar;
+
+Alias qui := $qui, quo := $quo, qua := $qua;
+
+aliases();
+
+Package $foo
+	Export FooTagged, FooUntagged, FooTag, P;
+	Alias Pluto := $bar;
+	Define FooTagged(X, T) return FTd(X, T); EndDefine
+	Define FTd(X, T) return tagged(X, T); EndDefine
+	Define FooUntagged(X, T) return $.FU(X); EndDefine
+	Define FU(X, T) return untagged(X); EndDefine
+	Define FooTag(X) return $foo.FT(X); EndDefine
+	Define FT(X) return tag(X); EndDefine
+	Define P(X)
+		Ciccio.P(X);
+		//Print "Aliases in $foo: ";
+		//aliases();
+		Pluto.Whatever();
+	EndDefine
+	PrintTagged := Record[
+		aaa := func(os, v) PrintLn PkgName()+"-custom print of ", v on os; endfunc,
+		bbb := True
+	];
+EndPackage
+
+Package $bar
+	Define P(X)
+		PrintLn X;
+		//Print "Aliases in $bar: ";
+		//aliases();
+	EndDefine
+	Define Whatever() EndDefine
+EndPackage
+
+PrintLn FooTagged(1, "aaa");
+P(FooTagged(2, "aaa"));
+
+PrintLn "Expecting a WARNING ($TL-tagged without custom print fn-proc)";
+P(tagged(3, "aaa"));
+
+PrintLn "Defining the $TL custom print fn-proc";
+PrintTagged := Record[ bbb := func(os, v) PrintLn PkgName()+"-custom print of ", v On os; endfunc ];
+
+P(tagged(4, "bbb"));
+
+PrintLn "Expecting a WARNING ($foo custom print fn-proc is actually a BOOL)";
+P(FooTagged(5, "bbb"));
+
+PrintLn "Expecting $foo.a -->", tag(FooTagged(1, "a"));
+PrintLn "Expecting a -->", FooTag(FooTagged(1, "a"));
+
+Describe $foo;

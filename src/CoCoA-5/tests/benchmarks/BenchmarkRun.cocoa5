@@ -1,0 +1,52 @@
+K := NewZZmod(32003);
+
+AllTests := [];
+
+source "BenchmarkSrc.cocoa5";
+PrintLn "--  Finished reading BenchmarkSrc.cocoa5\n";
+
+
+-- Define BenchmarkMan()
+--   PrintLn "
+-- -- run like this:
+--   BenchmarkCheckDir();
+--   Info := record[];                    RunTests(AllTests, Info);
+--   Info := Record[O:=\"DegLex\"];        RunTests(AllTests, Info);
+--   Info := Record[Char:=0];              RunTests(AllTests, Info);
+--   Info := Record[Char:=0, O:=\"DegLex\"];  RunTests(AllTests, Info);
+-- -- To create just one test:
+--   Info := Record[Char:=101, O:=\"Lex\", Homogenize:=False];
+--     RunTests([T In AllTests | T.Name=\"GraphCol1\"], Info);
+-- -- default values:
+-- Info := Record(Char:=32003, O:=\"DegRevLex\", Homogenize:=True);
+-- ";
+-- EndDefine; -- BenchmarkMan
+
+
+TimeLimit := 50;
+
+SortBy(ref AllTests, func(a, b) return a.TimeFp < b.TimeFp; endfunc);
+
+foreach T in AllTests do
+  print   "  char ", characteristic(K);
+  print "  ", format(T.Name, 12);
+  try
+    t0 := CpuTime();
+    GB := GBasis_timeout(T.I, TimeLimit);
+    print   "  len ", format(len(GB),4);
+    if len(GB)=T.len32003 then OK := ""; else OK := "!!"; endif;
+    print format(OK,3);
+    print "  time ", format(TimeFrom(t0), 7);
+    if T.TimeFp <> 0 then
+      print format(round(100*AsRAT(TimeFrom(t0))/T.TimeFp)-100, 6), "%";
+    endif;
+    PrintLn;
+  UponError E Do
+    if "Computation exceeded given time limit" isin GetErrMesg(E) then
+      println "  timeout ", TimeLimit;
+      if T.TimeFp>0 and AsRAT(TimeFrom(t0)) > 1.1*T.TimeFp then	print "  !!"; endif;
+    else
+      println "  ", GetErrMesg(E);
+    endif;
+  endtry;
+endforeach;

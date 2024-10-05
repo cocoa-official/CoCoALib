@@ -1,0 +1,329 @@
+      NumTheory
+      Copyright (c)  2009,2012-2013,2016-2018,2021,2022  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{NumTheory}{John Abbott}
+
+
+== User documentation ==
+%======================================================================
+
+=== Generalities ===
+%----------------------------------------------------------------------
+
+The functions in the ``NumTheory`` file are predominantly basic
+operations from number theory.  Most of the functions may be
+applied to machine integers or big integers (//i.e.// values of
+type [[BigInt]]).  Please recall that computational number theory is
+not the primary remit of CoCoALib, so do not expect to find a
+complete collection of operations here -- you would do better to
+look at Victor Shoup's NTL (Number Theory Library), or PARI/GP,
+or some other specialized library/system.
+
+See also [[BigIntOps]] for very basic arithmetic operations on integers,
+and [[BigRat]] for very basic arithmetic operations on rational numbers.
+
+
+=== Examples ===[examples]
+- [ex-NumTheory1.C ../../examples/index.html#ex-NumTheory1.C]
+-
+
+=== The Functions Available For Use ===
+%----------------------------------------------------------------------
+
+Several of these functions give errors if they are handed unsuitable values:
+unless otherwise indicated below the error is of type ``ERR::BadArg``.
+All functions expecting a modulus will throw an error if the modulus is
+less than 2 (or an ``unsigned long`` value too large to fit into a ``long``).
+
+
+====GCD, LCM, etc.====
+
+The main functions available are:
+- ``gcd(m,n)`` computes the non-negative gcd of ``m`` and ``n``.  If both args are machine integers, the result is of type ``long`` (or error if it does not fit); otherwise result is of type [[BigInt]].
+- ``IsCoprime(m,n)`` returns ``true`` iff ``abs(gcd(m,n)) == 1``
+- ``ExtGcd(a,b,m,n)`` computes the non-negative gcd of ``m`` and ``n``; also sets ``a`` and ``b`` so that ``gcd = a*m+b*n``.  If ``m`` and ``n`` are machine integers then ``a`` and ``b`` must be of type (signed) ``long``.  If ``m`` and ``n`` are of type [[BigInt]] then ``a`` and ``b`` must also be of type [[BigInt]].  The cofactors ``a`` and ``b`` satisfy ``abs(a) <= abs(n)/2g`` and ``abs(b) <= abs(m)/2g`` where ``g`` is the gcd (inequalities are strict if possible).  Error if ``m=n=0``.
+- ``InvMod(r,m)`` computes the least positive inverse of ``r`` modulo ``m``; throws error (``ERR::DivByZero``) if the inverse does not exist.  Throws error (``ERR::BadModulus``) if ``m < 2`` (or too big for ``long``).  Result is of type ``long`` if ``m`` is a machine integer; otherwise result is of type [[BigInt]].
+- ``InvMod(r,m, RtnZeroOnError)`` same as ``InvMod(r,m)`` except that it returns 0 if the inverse does not exist; ``RtnZeroOnError`` comes from an enum.
+- ``InvModNoArgCheck(r,m)`` computes the least positive inverse of ``r`` modulo ``m``; **ASSUMES** ``0 <= r < m`` and ``2 <= m <= MaxLong``; result is a ``long``.  Throws error ``ERR::DivByZero`` if ``gcd(r,m)`` is not 1.
+- ``lcm(m,n)`` computes the non-negative lcm of ``m`` and ``n``.  If both args are machine integers, the result is of type ``long``; otherwise result is of type [[BigInt]].  Gives error ``ERR::ArgTooBig`` if the lcm of two machine integers is too large to fit into a ``long``.
+
+
+There is a class called ``CoprimeFactorBasis_BigInt`` for computing a coprime
+factor basis of a set of integers:
+- ``CoprimeFactorBasis_BigInt()``  default ctor; base is initially empty.
+- ``CFB.myAddInfo(n)``  use also the integer ``n`` when computing the factor base.
+- ``CFB.myAddInfo(v)``  use also the elements of ``std::vector<long> v`` or ``std::vector<BigInt> v`` when computing the factor base.
+- ``FactorBase(CFB)``  returns the factor base obtained so far (as ``vector<BigInt>``).
+-
+
+====Prime generation and tests====
+
+These functions are in ``NumTheory-prime``.  The functions
+``NextPrime``, ``PrevPrime``, ``RandomNBitPrime`` and ``RandomSmallPrime`` each produce a
+result of type ``SmallPrime`` (essentially a ``long`` which is known
+to be prime).
+
+- ``eratosthenes(n)`` build ``vector<bool>`` sieve of Eratosthenes up to ``n``; entry ``k`` corresponds to integer ``2*k+1``; max valid index is ``n/2``
+- ``EratosthenesRange(lo, hi)`` build ``vector<bool>`` sieve of Eratosthenes from ``lo`` up to ``hi``; if ``lo`` is odd, it is replaced by ``lo+1``; similarly for ``hi``.  In returned vector entry ``k`` corresponds to integer ``lo+2*k``; max valid index is ``(hi-lo)/2``
+- ``IsPrime(n)`` tests the positive number ``n`` for primality (may be **very slow** for larger numbers).  Gives error if ``n <= 0``.
+- ``IsProbPrime(n)`` tests the positive number ``n`` for primality (fairly fast for large numbers, but in very rare cases may falsely declare a number to be prime).  Gives error if ``n <= 0``.
+- ``IsProbPrime(n,iters)`` tests the positive number ``n`` for primality; performs ``iters`` iterations of the Miller-Rabin test (default value is 25).  Gives error if ``n <= 0``.
+- ``NextPrime(n)`` and ``PrevPrime(n)`` compute next or previous positive prime (fitting into a machine ``long``).  ``NextPrime`` returns 0 if no next "small" prime exists; ``PrevPrime`` throws ``OutOfRange`` if arg is less than 3.  Both throw ``BadArg`` if ``n < 0``.
+- ``RandomSmallPrime(N)`` -- generate a (uniform) random prime **from 5 up to ``N``;** error if ``N < 5`` or ``N >= 2^31``.  Result is of type ``SmallPrime`` (essentially a ``long``).
+- ``RandomNBitPrime(N)`` -- generate a (uniform) random prime in range ``2^(N-1)`` to ``2^N``; error if ``N < 10`` or ``N >= 31``.  Result is of type ``SmallPrime`` (essentially a ``long``).
+- ``NextProbPrime(N)`` and ``PrevProbPrime(N)`` compute next or previous positive probable prime (uses ``IsProbPrime``).  ``PrevProbPrime`` throws ``OutOfRange`` error if ``0 <= N < 3``.  Both throw ``BadArg`` error if ``N < 0``.
+- ``NextProbPrime(N,iters)`` and ``PrevProbPrime(N,iters)`` compute next or previous positive probable prime (uses ``IsProbPrime`` with second arg ``iters``).  ``PrevProbPrime`` throws ``OutOfRange`` error if ``0 <= N < 3``.  Both throw ``BadArg`` error if ``N < 0``.
+
+
+There are also **iterators for generating primes** (or almost primes) in increasing order:
+- ``PrimeSeq()``  the sequence of primes starting with 2.
+- ``PrimeSeq1ModN(n)``  the sequence of primes 1 modulo ``n``
+- ``PrimeSeqForCRT()``  a sequence of primes starting with some "large" value, and going upwards.
+- ``FastFinitePrimeSeq()``  a sequence containing all primes up to some limit (much faster than ``PrimeSeq``); limit is given by mem fn ``myLastPrime``.
+- ``FastMostlyPrimeSeq()``  a sequence containing all primes and a few composites (much faster than ``PrimeSeq``).
+- ``NoSmallFactorSeq()``  a sequence of positive integers which have no small factors.
+
+
+If ``pseq`` is one of these iterator objects then
+- ``*pseq`` gives the current prime in the sequence (as a value of type ``SmallPrime``, or of type ``long`` for ``FastMostlyPrimeSeq`` and ``NoSmallFactorSeq``)
+- ``++pseq`` advances 1 step along the sequence
+- ``IsEnded(pseq)``  returns ``true`` if the end of the sequence has been reached
+- ``CurrPrime(pseq)`` same as ``*pseq`` (only for ``PrimeSeq`` and ``PrimeSeqForCRT``)
+- ``NextPrime(pseq)``  advances 1 step along the sequence, and returns the new "current prime" (only for ``PrimeSeq`` and ``PrimeSeqForCRT``)
+- ``pseq.JumpTo(n)``  advance to ``n`` or beyond (will rewind if ``n`` is smaller than current value)
+
+
+====Factorization====
+
+- ``factor(n)`` finds the complete factorization of ``n``; **factors not necessarily in increasing order!**   If ``n`` has large prime factors, ``factor`` **TIMES OUT**, and some factors may be composite!
+- ``factor_TrialDiv(n,limit)`` finds small prime factors of ``n`` (up to & including the specified ``limit``); result is a ``factorization`` object.  Gives error if ``limit`` is not positive or too large to fit into a ``long``.  See also ``MultiplicityOf2`` in [[BigIntOps]].
+- ``factor_PollardRho(n,niters)`` attempt to find a (single) factor of ``n`` (not nec. prime) using at most ``niters`` iterations; returns "empty" factorization if no factor was found; factor found may not be prime.
+- ``AllFactors(n)`` a ``vector<long>`` containing all positive factors of ``n`` [in increasing order]; error if ``n <= 0``
+- ``SumOfFactors(n,k)`` compute sum of ``k``-th powers of positive factors of ``n``
+- ``SmallestNonDivisor(n)``  finds smallest (positive prime) non-divisor of ``n``; if ``n=0`` throws ``ERR::NotNonZero``.
+- ``IsSqFree(n)`` returns ``true`` if ``n`` is square-free, otherwise ``false``; for ``BigInt`` result is a [[bool3]]
+- ``FactorMultiplicity(b,n)`` find largest ``k`` such that ``power(b,k)`` divides ``n`` (error if ``b < 2`` or ``n`` is zero)
+- ``CoprimeFactor(N,b)``  effectively ``N/gcd(N,power(b,INFINITY))``; for the "odd part" just compute ``CoprimeFactor(N,2)``
+
+
+====Pollard Rho Sequence====
+
+- ``PollardRhoSeq(N, start, incr)``  create a sequence starting from ``start`` and with increment ``incr``
+- ``PRS.myAdvance(k)`` advance the sequence by ``k`` steps
+- ``GetFactor(PRS)`` returns a factor of ``N`` (may be 1 or ``N``)
+- ``GetNumIters(PRS)`` returns number of steps/iters performed
+
+
+====Other Functions on Integers====
+
+- ``EulerTotient(n)`` computes Euler's //totient// function of the positive number ``n`` (//i.e.// the number of integers up to ``n`` which are coprime to ``n``, or the degree of the ``n``-th cyclotomic polynomial).  Gives error if ``n <= 0``.
+- ``InvTotientBound(n)`` -- returns a ``BigInt`` representing an upper bound for the inverse ``EulerTotient`` of ``n`` -- using OEIS sequence A355667.
+- ``InvTotientBound_ulong(n)`` -- returns an ``unsigned long`` representing an upper bound for the inverse ``EulerTotient`` of ``n``
+- ``InvTotientBoundUpto(n)`` -- returns a ``BigInt`` representing an upper bound for the inverse ``EulerTotient`` of all ``k <= n`` -- related to OEIS sequence A355667.
+- ``InvTotient(n)`` -- returns a ``vector<long>`` containing all possible preimages of ``n``.
+- ``InvTotient(n, InvTotientMode::SqFreePreimages)`` -- returns a ``vector<long>`` containing all possible square-free preimages of ``n``.
+- ``MoebiusFn(n)`` computes the Moebius function value of the positive number ``n`` (//i.e.// the sum of the primitive ``n``-th roots of unity).  Gives error if ``n <= 0``.
+- ``PrimitiveRoot(p)`` computes the least positive primitive root for the positive prime ``p``.  Gives error if ``p`` is not a positive prime.  **WARNING** May be **very slow** for large ``p`` (because it must factorize ``p-1``).
+- ``KroneckerSymbol(res,mod)``  (test if ``res`` is a quadratic residue) computes the Kronecker symbol, generalization of Jacobi symbol, generalization of Legendre symbol
+- ``MultiplicativeOrderMod(res,mod)`` computes multiplicative order of ``res`` modulo ``mod``.  Throws error ``ERR::BadArg`` if ``mod < 2`` or ``gcd(res,mod)`` is not 1.
+- ``PowerMod(base,exp,modulus)``  computes ``base`` to the power ``exp`` modulo ``modulus``; result is least non-negative residue.  If ``modulus`` is a machine integer then the result is of type ``long`` (or error if it does not fit), otherwise the result is of type [[BigInt]].  Gives error if ``modulus <= 1``.  Gives ``ERR::DivByZero`` if ``exp`` is negative and ``base`` cannot be inverted.  If ``base`` and ``exp`` are both zero, it produces 1.
+- ``BinomialRepr(N,r)`` produces the repr of ``N`` as a sum of binomial coeffs with "denoms" ``r, r-1, r-2, ...``
+
+
+====Functions on Rationals====
+
+- ``SimplestBigRatBetween(A,B)`` computes the simplest rational between ``A`` and ``B``
+- ``SimplestBinaryRatBetween(A,B)`` computes the simplest binary rational between ``A`` and ``B``; result is a rational of form N*2^k where the integer N is minimal.
+
+
+====Continued Fractions====
+
+Several of these functions give errors if they are handed unsuitable values:
+unless otherwise indicated below the error is of type ``ERR::BadArg``.
+
+Recall that any real number has an expansion as a **continued fraction**
+(//e.g.// see Hardy & Wright for definition and many properties).  This expansion
+is finite for any rational number.  We adopt the following conventions which
+guarantee that the expansion is unique:
+- the last partial quotient is greater than 1 (except for the expansion of integers <= 1)
+- only the very first partial quotient may be non-positive.
+
+
+For example, with these conventions the expansion of -7/3 is (-3, 1, 2).
+
+The main functions available are:
+- ``ContFracIter(q)`` constructs a new continued fraction iterator object
+- ``IsEnded(CFIter)`` true iff the iterator has moved past the last //partial quotient//
+- ``IsFinal(CFIter)`` true iff the iterator is at the last //partial quotient//
+- ``quot(CFIter)`` gives the current //partial quotient// as a [[BigInt]] (or throws ``ERR::IterEnded``)
+- ``*CFIter`` gives the current //partial quotient// as a [[BigInt]] (or throws ``ERR::IterEnded``)
+- ``++CFIter`` moves to next //partial quotient// (or throws ``ERR::IterEnded``)
+
+- ``ContFracApproximant()`` for constructing a rational from its continued fraction quotients
+- ``CFA.myAppendQuot(q)`` appends the quotient ``q`` to the continued fraction
+- ``CFA.myRational()`` returns the rational associated to the continued fraction
+
+- ``CFApproximantsIter(q)`` constructs a new continued fraction approximant iterator
+- ``IsEnded(CFAIter)`` true iff the iterator has moved past the last "partial quotient"
+- ``*CFAIter`` gives the current continued fraction approximant as a [[BigRat]] (or throws ``ERR::IterEnded``)
+- ``++CFAIter`` moves to next approximant (or throws ``ERR::IterEnded``)
+
+- ``CFApprox(q,eps)`` gives the simplest cont. frac. approximant to ``q`` with relative error at most ``eps``
+
+
+====Chinese Remaindering -- Integer Reconstruction====
+
+CoCoALib offers the class ``CRTMill`` for reconstructing an integer from
+several residue-modulus pairs via Chinese Remaindering.  At the moment the
+moduli from distinct pairs must be coprime.
+
+The operations available are:
+- ``CRTMill()`` ctor; initially the residue is 0 and the modulus is 1
+- ``CRT.myAddInfo(res,mod)`` give a new residue-modulus pair to the ``CRTMill`` (error if ``mod`` is not coprime to all previous moduli)
+- ``CRT.myAddInfo(res,mod,CRTMill::CoprimeModulus)`` give a new residue-modulus pair to the ``CRTMill`` asserting that ``mod`` is coprime to all previous moduli --  ``CRTMill::CoprimeModulus`` is a constant
+- ``CombinedResidue(CRT)`` the combined residue with absolute value less than or equal to ``CombinedModulus(CRT)/2``
+- ``CombinedModulus(CRT)`` the product of the moduli of all pairs given to the mill
+
+
+====Rational Reconstruction====
+
+CoCoALib offers two heuristic methods for reconstructing rationals from
+residue-modulus pairs; they have the same user interface but internally one
+algorithm is based on continued fractions while the other uses lattice
+reduction.  The methods are heuristic, so may (rarely) produce an incorrect
+result.
+
+**NOTE** the heuristic requires the (combined) modulus to be a certain
+amount larger than strictly necessary to reconstruct the correct
+answer (assuming perfect bounds are known).  In practice, this means
+that **the methods always fail if the combined modulus is too small**.
+
+The constructors available are:
+- ``RatReconstructByContFrac()`` ctor for continued fraction method mill log-epsilon equal to 20
+- ``RatReconstructByContFrac(LogEps)`` ctor for continued fraction method mill with given log-epsilon (must be at least 3)
+- ``RatReconstructByLattice(SafetyFactor)`` ctor for lattice method mill with given ``SafetyFactor`` (0 --> use default)
+
+
+The operations available are:
+- ``reconstructor.myAddInfo(res,mod)`` give a new residue-modulus pair to the reconstructor
+- ``IsConvincing(reconstructor)`` gives ``true`` iff the mill can produce a //convincing// result
+- ``ReconstructedRat(reconstructor)`` gives the reconstructed rational (or an error if ``IsConvincing`` is not true).
+- ``BadMFactor(reconstructor)`` gives the "bad factor" of the combined modulus.
+
+
+There is also a function for deterministic rational reconstruction which
+requires certain bounds to be given in input.  It uses the continued fraction
+method.
+
+- ``RatReconstructWithBounds(e,P,Q,res,mod)`` where ``e`` is upper bound for number of "bad" moduli, ``P`` and ``Q`` are upper bounds for numerator and denominator of the rational to be reconstructed, and ``(res[i],mod[i])`` is a residue-modulus pair with distinct moduli being coprime.
+
+
+== Maintainer Documentation ==
+%======================================================================
+
+- Correctness of ``ExtendedEuclideanAlg`` is not immediately clear,
+because the cofactor variables could conceivably overflow -- in fact
+this cannot happen (at least on a binary computer): for a proof see
+Shoup's book //A Computational Introduction to Number Theory and Algebra//,
+in particular Theorem 4.3 and the comment immediately following it.  There is
+just one line where a harmless "overflow" could occur -- it is commented in
+the code.
+
+- I have decided to make ``ExtGcd`` give an error if the inputs are both zero
+because this is an exceptional case, and so should be handled specially.  I
+note that ``mpz_exgcd`` accepts this case, and returns two zero cofactors; so if we
+decide to accept this case, we should do the same -- this all fits in well with
+the (reasonable/good) principle that "zero inputs have zero cofactors".
+
+-  Several functions are more complicated than you might expect because I wanted them
+to be correct for all possible machine integer inputs (//e.g.// including the
+most negative ``long`` value).
+
+- In some cases the function which does all the work is implemented as a file
+local function operating on ``unsigned long`` values: the function should
+normally be used only via the "dispatch" functions whose args are of type
+[[MachineInt]] or [[BigInt]].
+
+
+- The fns for primes (testing and generating) are in the file ``NumTheory-prime``.
+
+- The impl of ``eratosthenes`` is fairly straightforward given that I chose
+to represent only odd numbers in the table: the ``k``-th entry corresponds
+to the integer ``2*k+1``.  Overflow cannot occur: recall that the table
+size is at most half the biggest ``long``.  I'm hoping that C++11 will
+avoid the cost of copying the result upon returning.  Anyway, I think the
+code is a decent compromise between readability, speed and space efficiency.
+The impl of ``EratosthenesRange`` is similar but the table covers just
+the given range (only odd numbers are represented; index 0 corresponds to
+smallest odd integer greater than or equal to the start of the range).
+
+
+- The "prime sequence" classes are a bit messier than I'd like.
+It was delicate getting correct the switch-over from one technique to the
+other (in those classes where 2 techniques were used).  The limit of 23
+for ``NoSmallFactorSeq`` is somewhat arbitrary.  Not sure the code is
+32-bit safe.
+
+
+- The continued fraction functions are all pretty simple.  The only tricky
+part is that the "end" of the ``ContFracIter`` is represented by both
+``myFrac`` and ``myQuot`` being zero.  This means that a newly created
+iterator for zero is already ended.
+
+- ``CFApproximantsIter`` delegates most of the work to ``ContFracIter``.
+-
+
+== Bugs, Shortcomings, etc. ==
+%======================================================================
+
+- Several functions return ``long`` values when perhaps ``unsigned long``
+would possibly be better choice (since it offers a greater range, and
+in the case of ``gcd`` it would permit the fn to return a result always,
+rather than report "overflow").  The choice of return type was dictated
+by the coding conventions, which were in turn dictated by the risks of nasty
+surprises to unwary users unfamiliar with the foibles of unsigned values in C++.
+
+- ``NextPrime`` has dodgy semantics: what happens when the end of the
+iterator is reached?  In fact, all the non-finite "prime seq" iterators
+do not handle end-of-iterator properly!
+
+- Should there also be procedural forms of functions which return [[BigInt]] values?
+(//e.g.// gcd, lcm, InvMod, PowerMod, and so on).  (2016-06-27 this will probably become irrelevant when using "move" semantics in C++11).
+
+- Certain implementations of ``PowerMod`` should be improved (//e.g.// to use
+``PowerModSmallModulus`` whenever possible).  Is behaviour for 0^0 correct?
+
+- ``KroneckerSymbol`` I have chosen to make available just ``KroneckerSymbol``
+rather than the more widely-known ``LegendreSymbol`` because GMP makes
+Kronecker available, and it is always defined; whereas
+``LegendreSymbol`` would have to check that its 2nd arg is a prime
+(which would dominate the cost of the call)
+
+- ``LucasTest`` should produce a certificate, and be made publicly accessible.
+
+- How should the cont frac iterators be printed out???
+
+- ``ContFracIter`` could be rather more efficient for rationals having
+very large numerator and denominator.  One way would be to compute with
+num and den divided by the same large factor (probably a power of 2),
+and taking care to monitor how accurate these "scaled" num and den are.
+I'll wait until there is a real need before implementing (as I expect
+it will turn out a bit messy).
+
+- ``CFApproximantsIter::operator++()`` should be made more efficient.
+-
+
+== Main changes ==
+%======================================================================
+
+**2022**
+- Feb (v0.99720):
+ - ``SmoothFactor`` has been renamed ``factor_TrialDiv``
+ - added ``factor_PollardRho``
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.
+

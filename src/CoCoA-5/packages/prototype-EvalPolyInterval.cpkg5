@@ -1,0 +1,109 @@
+Package $EvalPolyAtInterval_prototype
+
+Export EvalPolyAtInterval;
+
+
+Define About()
+  PrintLn "    Author: J Abbott";
+  PrintLn "    Date: 28 June 2018";
+  PrintLn "    Comment: First prototype for SC-square";
+EndDefine;
+-----------------------------------------------------------------------------
+
+// Not really quick, just "quick to write the code"
+define EvalPolyAtIntvl_basic(f, A,B)
+  // assume deg(f) > 1
+  if A < 0 and B > 0 then
+    intvl1 := EvalPolyAtIntvl_basic(f, A,0);
+    intvl2 := EvalPolyAtIntvl_basic(f, 0,B);
+    return [min(intvl1[1], intvl2[1]), max(intvl1[2], intvl2[2])];
+  endif;
+  d := deg(LPP(f));
+  coeff := AsRAT(LC(f));
+  valA := coeff*A^d;
+  valB := coeff*B^d;
+  upb := max(valA, valB);
+  lwb := min(valA, valB);
+  foreach m in tail(monomials(f)) do
+    d := deg(LPP(m));
+    coeff := AsRAT(LC(m));
+    valA := coeff*A^d;
+    valB := coeff*B^d;
+    this_upb := max(valA, valB);
+    this_lwb := min(valA, valB);
+    upb := upb + this_upb;
+    lwb := lwb + this_lwb;
+  endforeach;
+  return [lwb, upb];
+enddefine; -- EvalPolyAtIntvl_basic
+
+
+define EvalPolyAtInterval(f, A,B)
+  if not(type(A) isin [INT,RAT]) or not(type(B) isin [INT,RAT]) then
+    error("Args 2 and 3 must be INT or RAT");
+  endif;
+  if A > B then error("interval must be non-empty"); endif;
+  if type(f) <> RINGELEM then error("Expected (polynomial) RingElem"); endif;
+  P := RingOf(f);
+  if not(IsPolyRing(P)) then error("Expected (polynomial) RingElem"); endif;
+
+  // Elim triv cases f = const (handle 0 and non-0 separately)
+  if f=0 then return [0,0]; endif;
+  if deg(f) = 0 then val := AsRAT(LC(f)); return [val,val]; endif;
+
+  j := UnivariateIndetIndex(f);
+  if j = 0 then error("Polynomial must be univariate"); endif;
+  x := indet(P,j);
+  ValA := AsRAT(subst(f,x, A));
+  if A = B then return [ValA, ValA]; endif;
+  // Here we know that A < B
+  ValB := AsRAT(subst(f,x, B));
+  if ValA > ValB then UPB := ValA; LWB := ValB;
+  else UPB := ValB; LWB := ValA; endif;
+
+  f1 := deriv(f,x);
+  while IsDivisible(f1, x-A) do f1 := f1/(x-A); endwhile;
+  while IsDivisible(f1, x-B) do f1 := f1/(x-B); endwhile;
+  g := gcd(f,f1);
+
+  if deg(g) > 0 then
+  // f has some repeated roots...
+
+  // Next block just checks whether HasRealRootInInterval(g, [A,B])
+  radf := f/g;
+  FactorBase := CoprimeFactorBasis([g, radf]); // base will be square-free
+  RadGCD := gcd(radf, g);
+  GCDFacs := [h in FactorBase | IsDivisible(RadGCD, h)];
+  RR := [];
+  foreach fac in GCDFacs do
+    -- if HasRealRootInInterval(fac, A,B) then
+    --   LWB := min(LWB, 0);
+    --   UPB := max(UPB, 0);
+    --   break;
+    -- endif;
+    RR := concat(RR, RealRoots(fac, 1, [A,B]));
+  endforeach;
+  // If there is a common real root in [A,B] then...
+  if RR <> [] then
+    LWB := min(LWB, 0);
+    UPB := max(UPB, 0);
+  endif;
+  endif;
+  
+  // Now deal with the other real roots of deriv in [A,B]...
+  while deg(g) > 0 do
+    f1 := f1/g;
+    g := gcd(f1,f);
+  endwhile;
+  RR := RealRoots(f1, 10^(-10), [A,B]);
+  foreach root in RR do
+    val := EvalPolyAtIntvl_basic(f, root.inf, root.sup);
+    UPB := max(UPB, val[2]);
+    LWB := min(LWB, val[1]);
+  endforeach;
+  return [LWB,UPB];
+enddefine; -- EvalPolyAtInterval
+
+
+------------------------------------------------------------------
+EndPackage; -- end of package $EvalPolyAtInterval_prototype

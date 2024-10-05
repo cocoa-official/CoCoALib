@@ -1,0 +1,123 @@
+%------------------------------------------------------------
+== HOW TO WRITE AN ENTRY IN CoCoAHelp.xml ==
+%------------------------------------------------------------
+
+=== Command ===
+
+place the command in alphabetical order with this structure
+```
+<command>
+  <title>xxx</title>
+  <short_description>xxx yyy zzz</short_description>
+<syntax>
+xxx(L:<type>LIST</type>): <rtn>LIST</rtn>
+xxx(L:<type>LIST</type>, N:<type>INT</type>): <rtn>OBJECT</rtn>
+</syntax>
+<description>
+Xxx y zzz wwwww ...
+<example>
+/**/ INPUT1
+OUTPUT1
+/**/ INPUT2
+OUTPUT2
+</example>
+</description>
+<keys>
+  <key>xxab</key>
+  <key>xyab</key>
+</keys>
+<seealso>
+  <see>xxxxaab</see>
+  <see>xxxbbccc</see>
+</seealso>
+</command>
+```
+
+When called the first time CoCoA-5 reads the whole file and stores the fields
+in title, keys, syntax.
+The search for the required entry is done using this table (in C++).
+
+Then rereads the file to get and print the entry:
+so, if you make a change in CoCoAHelp.xml in the description or example
+it will work without reloading the manual,
+and if you make a change in CoCoAHelp.xml in the title (new entry) or in
+syntax, or search keys, you will need to call ``ReloadMan();`` for it to
+work.
+
+- order is not important (well, not much) but consistency help maintanance
+- put no extra spaces in syntax and example because they are verbatim
+-
+
+== keys and seealso ==
+
+These two lists are optional.
+
+``keys'' are the search keys used by the manual within a running CoCoA
+(it is a simple substring check in the list of the keys).
+For each entry, the title is automatically a search key; it is added to the
+keys list, even when the keys list has not been explicitely defined. 
+
+``seealso'' are the entries which are closely related (case sensitive).
+
+== Other tags ==
+
+//How to show types of arguments and returned value?//
+Within ``<syntax>..</syntax>'':
+``<type>xxx</type>`` for arguments
+``<rtn>title</rtn>`` for returned value
+
+
+//What font should one use when referring to params in the description?//
+``<tt>...</tt>``
+Also code snippets should be between tt's.
+But not for types, they are already uppercase, and usually appear in groups,
+so both typing the tt's and reading the quotes would be too heavy.
+
+//What font should one use when writing a formula in the description?//
+``<formula>...</formula>``
+This is mainly for avoiding TeX problems (e.g. when using a ``_''),
+and also to get a better look in the pdf version.
+
+
+//How to make links to another entry?//
+``<ttref>entry</ttref>`` for commands   and
+``<ref>title</ref>``     for other sections
+ (case sensitive)
+
+//How to emphasize text?//
+``<em>..</em>''  is the best way to have a homogeneous look.
+However ``<i>..</i>'', ``<b>..</b>''  are both available for special applications.
+
+//How to write ``i.e.'' and ``e.g.''?//
+``<ie/>''
+``<eg/>''
+
+
+==== FULL EXAMPLE ====
+```
+<!-- ===  COMMAND  =============================================== -->
+<command>
+  <title>IsElem</title>
+  <short_description>checks if A is an element of B</short_description>
+<syntax>
+IsElem(A: <type>RINGELEM</type>, B: <type>IDEAL</type>): <rtn>BOOL</rtn>
+IsElem(A: <type>MODULEELEM</type>, B: <type>MODULE</type>): <rtn>BOOL</rtn>
+</syntax>
+<description>
+This function tests whether <tt>A</tt> is an element of <tt>B</tt>.
+Same as the command <ttref>IsIn</ttref>, but works on fewer types: it
+is in CoCoA-5 for compatibility with the C++ function in CoCoALib.
+<example>
+/**/  use QQ[x,y,z];
+/**/  IsElem(x, ideal(x+y, x-y));
+true
+
+/**/  x IsIn ideal(x+y, x-y);
+true
+</example>
+</description>
+<seealso>
+  <see>IsIn</see>
+</seealso>
+</command>
+```

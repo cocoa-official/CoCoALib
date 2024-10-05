@@ -1,0 +1,146 @@
+      BigInt
+      Copyright (c)  2005,2007,2010,2011,2018  John Abbott  and Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{BigInt}{John Abbott}
+
+
+== Examples ==
+%======================================================================
+- [ex-BigInt1.C   ../../examples/index.html#ex-BigInt1.C]
+- [ex-BigInt2.C   ../../examples/index.html#ex-BigInt2.C]
+- [ex-BigInt3.C   ../../examples/index.html#ex-BigInt3.C]
+- [ex-GMPAllocator1.C   ../../examples/index.html#ex-GMPAllocator1.C]
+- [ex-GMPAllocator2.C   ../../examples/index.html#ex-GMPAllocator2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+**IMPORTANT NOTE:**
+- **see [[BigIntOps]] for basic operations on values of type ``BigInt``**
+- **see [[NumTheory]] for more advanced operations**
+-
+
+=== Generalities ===
+%----------------------------------------------------------------------
+
+The class ``BigInt`` is intended to represent integers of practically
+unlimited range.  CoCoALib relies on an external library for handling big
+integers: currently it is based on GMP, the **//GNU multiple precision//**
+library.  This CoCoALib code simply forms the interface to the underlying
+big integer library.
+
+Computations with ``BigInt`` values do not suffer from overflow, but
+they are significantly slower than with machine integers.  All
+``BigInt`` values are stored on the heap.
+
+It is important not to confuse values of type ``BigInt`` with values of type
+[[RingElem]] which happen to belong to the ring [[RingZZ]].  In summary, the
+operations available for [[RingElem]] are those applicable to elements of
+any ordered commutative ring, whereas the range of operations on ``BigInt``
+values is wider (since we have explicit knowledge of the type).
+
+See [[BigRat]] for representing and handling rational numbers.
+
+
+=== The Functions Available For Use ===
+%----------------------------------------------------------------------
+
+==== Constructors ====
+
+ A value of type ``BigInt`` may be created from:
+- ``BigInt()``  the value is zero
+- ``BigInt(n)``  where ``n`` is a machine integer
+- ``BigInt(N)``  where ``N`` is another value of type ``BigInt`` (its value is copied)
+- ``BigIntFromString(str)`` where ``str`` a string containing the decimal digits (optionally preceded by a minus sign); leading and trailing whitespace is allowed
+- ``BigIntFromMPZ(ptr)``  where ``ptr`` is a GMP ``mpz_t`` value
+-
+
+Note that we use pseudo-ctors for constructing from a ``string`` or an ``mpz_t`` (this is to avoid problems of ambiguity with ``BigInt(0)`` since ``0`` can be viewed in C++ as a null-pointer).
+
+Note: No direct constructor for creating a ``BigInt`` from a ``char*`` is
+provided, however C++ will automatically convert a ``char*`` into a
+``std::string``, so you can still use a C-string if you want.
+
+
+
+==== Operations ====[operations]
+
+**IMPORTANT NOTE**
+- **see [[BigIntOps]] for basic operations on values of type ``BigInt``**
+- **see [[NumTheory]] for more advanced operations**
+-
+
+
++ Functions violating encapsulation
+  - ``mpzref(n)``  -- this gives a (const) reference to the ``mpz_t``
+                      value inside a ``BigInt`` object.
+                      You should use this accessor very sparingly (but
+                      it is handy for calling GMP functions directly).
+
+
+
+== Maintainer Documentation ==
+%======================================================================
+
+The implementation is structurally very simple, just rather long and
+tedious.  The value of a ``BigInt`` object is represented as an ``mpz_t``;
+this is a private data member, but to facilitate interfacing with code
+which uses ``mpz_t`` values directly I have supplied the two functions
+called ``mpzref`` which allow access to this data member.
+
+The output function turned out to be trickier than one might guess.
+Part of the problem was wanting to respect the ``ostream`` settings.
+
+Of course, input is a mess.  Nothing clever here.
+
+Check also the documentation for [[MachineInt]] to understand how
+that class is used.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Currently functions which return ``BigInt`` values will copy the result (upon
+each return) -- an attempt to avoid the waste with proxy classes caused a
+problem see [test-bug4.C  ../../src/tests/test-bug4.C]  Move semantics in C++11 should solve this.
+
+The official GMP interface (``mpz_class``) is certainly more efficient;
+should CoCoALib eventually switch to using ``mpz_class``?
+It seems most unlikely that GMP will be displaced from its
+position as the foremost library for big integer arithmetic, so
+such explicit dependence on it should not matter.
+
+No bit operations: bit setting and checking, and/or/xor/not.
+
+The code is long, tedious and unilluminating.  Are there any volunteers
+to improve it?
+
+
+== Main changes ==
+%======================================================================
+
+**2018**
+- April:
+ - removed ctors from ``string`` and ``mpq_t``; replaced them by pseudo-ctors.
+   This means that ``BigInt(0)`` now works as expected (previously it worked
+   thanks to a dodgy hack).
+-
+
+**2012**
+- May (v0.9951):
+ - moved common operations on [[BigInt]] and [[MachineInt]]
+   together into ``IntOperations``
+-
+
+**2011**
+- August (v0.9950):
+ - class ``ZZ`` renamed into ``BigInt``:
+   avoid confusion with [[RingZZ]] and its name in CoCoA system
+ - ``random`` has changed (was ``random(lo,hi)``): see [[random]]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.
+

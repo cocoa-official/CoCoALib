@@ -1,0 +1,69 @@
+      SparsePolyOps-eval
+      Copyright (c)  2023 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SparsePolyOps-eval}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-SparsePolyOps-eval.C ../../examples/index.html#ex-SparsePolyOps-eval.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers one class, and several functions for evaluating a
+univariate polynomial with integer coefficients at an integer or
+rational point.  The class is more efficient when evaluating at
+several points.
+
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``f`` be a ``RingElem`` whose value is a univariate polynomial
+with integer coefficients.  Let ``EUP`` be an object of type ``EvalUPoly``.
+In all cases the return value is of type ``BigInt``.
+
+- ``EvalUPoly(f)``  -- returns an ``EvalUPoly`` object suitable for evaluating ``f`` at integer/rational points
+- ``EUP(a)``        -- returns ``f(a)``
+- ``EUP(n,d)``      -- returns **numerator** of ``f(n/d)``, namely ``d^deg(f)*f(n/d)``; 
+-
+
+If evaluation at just a single point is needed then the following functions
+are suitable for this purpose:
+- ``EvalAt(f, a)``  -- returns ``f(a)``, evaluation at the integer ``a``
+- ``EvalAt(f,n,d)`` -- returns ``d^deg(f) * f(n/d)``, **numerator** of evaluation at the rational ``n/d``
+-
+
+**NOTE** For evaluation at 0 consider using the function ``ConstantCoeff`` instead.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The implementation uses internally a "binary condensation" method.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Is the name ``EvalAt`` a good one?  I'm not sure.
+
+Why is there no fn which lets me specify a rational point via ``BigRat``?
+
+The current impl does not work for polynomials with non-integer rational
+coeffs which have integer values at every integer point (such as
+(1/2)*x^2+(1/2)*x+1).  Workaround: the caller must clear the denominator,
+to obtain integer coeffs, then evaluate, then divide by scale factor used.
+
+
+== Main changes ==
+%======================================================================
+
+**2023**
+- December (v0.99821): first release
+-
+

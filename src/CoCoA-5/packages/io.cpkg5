@@ -1,0 +1,79 @@
+-- io.cpkg : 0.1 : Input/Output package
+--------------------------------------------------------------
+
+Package $io
+
+Export format;
+Export SprintTrunc;
+
+--------------------------------------------------------------
+
+Define Print_Aliases(L)
+  -- L := Untagged(L);
+  If L=[] Then Return; EndIf;
+  S := max([len(X[1])|X In L]);
+  Foreach X In L Do
+    PrintLn;
+    Sp := spaces(S-len(X[1]));
+    Print X[1],Sp," = ",X[2];
+  EndForeach;
+EndDefine;
+
+-- Define Cterm(O)
+--   D := $.OpenOStringCterm("");
+--   Print O On D;
+--   S := Cast(D,STRING);
+--   Close(D);
+--   Return S;
+-- EndDefine;
+
+
+define SprintTrunc(obj,trunc)
+  S := sprint(obj);
+  if len(S) > trunc then  return sum([S[i] | i in 1..trunc])+"...";
+  else  return S;
+  endif;
+enddefine; -- SprintTrunc
+
+
+Define format(O,L) Return $.FormatString(sprint(O),L); EndDefine;
+
+Define FormatString(S,L)
+  If L-len(S) >= 0 Then Return spaces(L-len(S)) + S; Else Return S; EndIf;
+EndDefine; -- FormatString
+
+
+
+Define Print_Table(Headings, Spaces, Rows) -- TODO: Check
+-- Rows is a list of Rows
+-- Each row is a list of integers
+  If len(Spaces) < len(Headings) Then
+    Spaces := Spaces + NewList(len(Headings)-len(Spaces),0);
+  EndIf;
+  Spaces := [ max(Spaces[I], len(Headings[I])) | I In 1..len(Headings) ];
+  Dashes := sum(NewList(sum(Spaces)+len(Spaces)-1,"-"));
+  PrintLn Dashes;
+  For C := 1 To len(Headings) Do
+    Print spaces(max(Spaces[C]-len(Headings[C]),0));
+    Print Headings[C]," ";
+  EndFor;
+  PrintLn;
+  PrintLn Dashes;
+  For R := 1 To NumCols(Rows) Do
+    For C := 1 To len(Spaces) Do
+      Print $.format(sprint(Rows[R,C]),Spaces[C])," ";
+    EndFor;
+    PrintLn;
+  EndFor;
+  PrintLn Dashes;
+EndDefine;
+
+//Define Tagged(O,T) Return Tagged(O,"a"+"."+T); EndDefine;
+  
+-- Define Print_Matrix(M)
+--   N := NumRows(M);
+--   $.Print_Table(NewList(N,""), NewList(N,4), M);
+-- EndDefine;
+
+EndPackage; -- Package
+

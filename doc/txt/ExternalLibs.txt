@@ -1,0 +1,62 @@
+      ExternalLibs
+      Copyright (c)  2017 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ExternalLibs}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-ExternalLibs1.C ../../examples/index.html#ex-ExternalLibs1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+CoCoALib can use various "external libraries" to extend the range
+of functions it offers.  The function ``ExternalLibs`` produces a
+list of the external libraries which have been compiled into
+CoCoALib.  Note that the GMP library is obligatory, and so will
+always appear in the list.
+
+
+=== Operations ===[operations]
+There is just one function
+- ``ExternalLibs()`` produces a read-only ``vector<ExternalLibInfo>``
+
+
+Each entry in the vector corresponds to a single external library.
+The ``ExternalLibInfo`` struct contains 3 fields (all have type ``std::string``):
+- ``myName`` the name of the external library
+- ``myVersion`` the version "number" if available (or "UNKNOWN")
+- ``myWebsite`` the URL of the main web-site for the library
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The implementation is not so pretty: it depends on the preprocessor
+flags set in the file ``PREPROCESS_DEFNS.H``.  The library name is
+the name I usually use when refering to the library.  The version
+number is whatever the library makes available (otherwise just the
+string "UNKNOWN").  The URL was typed in by hand.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Some of the information about the library has been typed in manually.
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- April (v0.99950): first release
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

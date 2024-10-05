@@ -1,0 +1,166 @@
+package $RationalPoints;
+
+export RationalSolve;
+export RationalSolveHomog;
+//export RationalAffinePoints;
+//export RationalProjectivePoints;
+
+
+// Check PolyList is suitable; if not throw error.  Returns nothing.
+define RationalSolveArgCheck(PolyList, FnName)
+  if type(PolyList) <> LIST then
+    error(FnName+": arg must be list of polys");
+  endif;
+  if MakeSet([type(g) | g in PolyList]) <> [RINGELEM] then
+    error(FnName+": arg must be list of polys");
+  endif;
+  if len(MakeSet([RingOf(g) | g In PolyList])) <> 1 then
+    error(FnName+": defining polys must be in the same ring");
+  endif;
+  if not(IsPolyRing(RingOf(PolyList[1]))) then
+    error(FnName+": arg must be a list of polys");
+  endif;
+  if FindIndets(PolyList) = [] then
+    error(FnName+": polys must be non-constant");
+  endif;
+enddefine; -- RationalSolveArgCheck
+
+
+define EveryElemOf(L, HasProperty)
+  foreach x in L do
+    if not(HasProperty(x)) then return false; endif;
+  endforeach;
+  return true;
+enddefine; -- EveryElemOf
+
+
+define FindIndets(L) // Assumes L non-empty list of polys from same ring
+  prod := IndetsProd(L);//lcm([IndetsProd(f) | f in L]);
+  P := RingOf(L[1]);
+  return [x in indets(P) | deg(prod,x) > 0];
+enddefine; -- FindIndets
+
+
+//-------------------------------------------------------
+// Affine case
+
+define RationalSolve(PolyList)
+  RationalSolveArgCheck(PolyList, "RationalSolve");
+  return RationalAffinePoints(PolyList); // called fn checks for 0-dim
+enddefine; -- RationalSolve
+
+
+define RationalAffinePoints(PolyList)
+  TopLevel IsHomog;
+//SUPERFLUOUS  RationalSolveArgCheck(PolyList, "RationalAffinePoints");
+  ListX := FindIndets(PolyList); // will be non-empty since we've checked PolyList
+  P := RingOf(PolyList[1]);
+  SurplusIndets := diff(indets(P), ListX);
+////println "surplus = ", SurplusIndets;
+  J := ideal(PolyList)+ideal(P,SurplusIndets);
+  if not(IsZeroDim(J)) then
+    if not(IsFiniteField(CoeffRing(P))) then
+      // Try to give helpful error mesg:
+      if EveryElemOf(PolyList, IsHomog) then
+	error("RationalAffinePoints: system is not 0-dim, but is homogeneous -- perhaps try RationalSolveHomog?");
+      else
+	error("RationalAffinePoints: system is not 0-dimensional");
+      endif;
+    endif;
+    q := characteristic(P)^LogCardinality(CoeffRing(P));
+    rad := radical(LT(J));
+    ExtraPolys := [X^q - X | X in indets(P) and not(X isin rad)]; // some may be redundant
+/// println "Adding ExtraPolys = ", ExtraPolys;
+    PolyList := concat(PolyList, ExtraPolys);
+  endif;
+  pts := RationalAffinePointsLoop(PolyList, ListX);
+  return record[indets := ListX, AffinePts := pts];
+enddefine; -- RationalAffinePoints
+
+
+define RationalAffinePointsLoop(PolyList, ListX)
+  if len(ListX)=1 then return [[Z] | Z in RationalRoots(gcd(PolyList))]; endif;
+  P := RingOf(PolyList[1]);
+  pts := [];
+  X := first(ListX);
+  RemainingX := tail(ListX);
+//  rad := radical(LT(ideal(PolyList)));
+///  println "X=",X, "   rad=",rad, "  PolyList=",PolyList;
+//  if not(X isin rad) then
+//    MinPoly := zero(P);
+//  else
+    MinPoly := MinPolyQuot(X, ideal(PolyList), X);
+//  endif;
+///  println "MinPoly=",MinPoly;
+  foreach val in RationalRoots(MinPoly) do
+///    println "Doing ",X," = ",val;
+    SubspacePts := RationalAffinePointsLoop(subst(PolyList, X, val), RemainingX);
+    if SubspacePts <> [] then
+      pts := concat(pts, [concat([val], SubspacePt) | SubspacePt in SubspacePts]);
+    endif;
+  endforeach;
+  return pts;
+enddefine; -- RationalAffinePointsLoop
+
+define RootOfLinear(f)
+  if NumTerms(f) = 1 then return zero(RingOf(f)); endif;
+  phi := CoeffEmbeddingHom(RingOf(f));
+  return (LM(f) - f)/phi(LC(f));
+enddefine; -- RootOfLinear
+
+
+define RationalRoots(f)
+  // Allow f=0 if char > 0: roots are then all field elems
+  if f = 0 then P := RingOf(f); X := indet(P,1); q := characteristic(P)^LogCardinality(CoeffRing(P)); f := X^q-X; endif;
+  LinearFacs := [g in factor(f).factors | deg(g) = 1];
+  return [RootOfLinear(g) | g in LinearFacs];
+enddefine; -- RationalRoots
+
+
+//-------------------------------------------------------
+// Homog case
+
+define RationalSolveHomog(PolyList)
+  RationalSolveArgCheck(PolyList, "RationalSolveHomog");
+  if false isin [IsHomog(f) | f in PolyList] then
+    error("RationalSolveHomog: input polys are not homogeneous");
+  endif;
+  return RationalProjectivePoints(PolyList);
+enddefine; -- RationalSolveHomog
+
+
+define RationalProjectivePoints(PolyList)
+// SUPERFLUOS  RationalSolveArgCheck(PolyList, "RationalProjectivePoints");
+//  if not(IsHomog(PolyList)) then
+//    error("RationalProjectivePoints: generators must be homogeneous");
+//  endif;
+  ListX := FindIndets(PolyList);
+  if len(ListX) < 2 then error("RationalSolveHomog: the polynomials must involve at least 2 indeterminates"); /* ???ERROR??? */ return record[indets := ListX, ProjectivePts := []]; endif;
+  P := RingOf(PolyList[1]);
+  SurplusIndets := diff(indets(P), ListX);
+  if not(IsFiniteField(CoeffRing(P))) and
+    not(IsZeroDim(ideal(PolyList)+ideal(P,SurplusIndets)+ideal(ListX[1]-1))) then
+    error("RationalProjectivePoints: homog system is not 1-dimensional");
+  endif;
+
+  pts := RationalProjectivePointsLoop(PolyList, ListX);
+  return record[indets := ListX, ProjectivePts := pts];
+enddefine; -- RationalProjectivePoints
+
+define RationalProjectivePointsLoop(PolyList, ListX)
+  // Handle simple case when ListX contains just 1 indet
+  if len(ListX)=1 then
+    if [f in PolyList | f <> 0] = [] then return [[1]];
+    else return [];
+    endif;
+  endif;
+  // We get here only when ListX contains more than 1 indet.
+  P := RingOf(PolyList[1]);
+  X := first(ListX);
+  RemainingX := tail(ListX);
+  pts0 := [concat([0], SubspacePt) | SubspacePt in RationalProjectivePointsLoop(subst(PolyList,X,0), RemainingX)];
+  pts1 := [concat([1], AffPt) | AffPt in RationalAffinePointsLoop(subst(PolyList, X, 1), RemainingX)];
+  return concat(pts0, pts1);
+enddefine; -- RationalProjectivePointsLoop
+
+endpackage;

@@ -1,0 +1,74 @@
+// Define F(Opt A, B) // error
+// Define F(Opt A, Opt B) 
+Define F(A, Opt B) 
+	Print "A=", A;
+	If (IsDefined(B)) Then
+		Print " And B=", B;
+	EndIf
+	PrintLn;
+EndDefine
+
+// F(); // error
+// F(1);
+// F(1, 2);
+// F(1, 2, 3); // error
+
+//Define G(Foo, ...) // error
+//Define G(..., Foo) // error
+Define G(...) 
+	PrintLn "ARGV=", ARGV;
+	// ARGV := 7; // error
+	F(...);
+EndDefine
+
+//G(); // error
+//G(1);
+//G(1, 2);
+//G(1, 2, 3); // error
+//G(Ref 1); // error
+
+// Define H(Opt X1, Ref X2, Opt X3) // error 
+// Define H(Opt X1, Opt Ref X2, Opt X3) // error
+Define H(Opt X1, Opt X2, Opt X3) 
+	If IsDefined(X3) Then
+		Return G(X1, X2, X3);
+	Elif IsDefined(X2) Then
+		Return G(X1, X2)
+	Elif IsDefined(X1) Then
+		Return G(X1)
+	Else	
+		Return G()
+	EndIf
+EndDefine
+
+// H(); // error
+// H(1);
+// H(1, 2);
+// H(1, 2, 3); // error 
+
+Define J(Opt Fun, Opt Arg)
+	//Print ARGV; // error
+	Fun(Arg);
+EndDefine
+
+// J(G); // error
+// J(G, True);
+// J(J, J); // error (subtle one: the nested invocation misses a parameter)
+// J(1, 2, 3); // error
+// J(...); // error
+
+-- Define K()
+-- 	ARGV := [True];
+-- 	G(...); // must fail because ARGV is fake
+-- EndDefine
+
+// K(); // error
+
+
+-- Define G(...) 
+-- 	//PrintEnv(...);
+-- 	//append(...);
+-- 	//Return factorial(...);
+-- 	return ConcatLists(ARGV);
+-- EndDefine
+

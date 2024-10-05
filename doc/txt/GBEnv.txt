@@ -1,0 +1,109 @@
+      GBEnv
+      Copyright (c)  2010 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{GBEnv}{Anna Bigatti}
+
+
+== User documentation ==
+%======================================================================
+This class contains some information needed for the computation of
+a GBasis (with Buchberger's algorithm)
+
+At the moment the file contains instead the class ``GRingInfo`` which
+was defined in ``TmpGPoly.H``
+
+One idea to unify the class of ideals in [[SparsePolyRing]] is to make
+an abstract ``GBMill`` as a base for the the operation on ideals
+(toric, squarefree, ideals of points,..)  For //standard// ideals the
+key for the (GB)operations is computing with Buchberger algorithm,
+therefore the ``BuchbergerMill`` should inherit from ``GBMill``.
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+As //one class should do one thing// ``GRingInfo`` and ``GReductor``
+should reorganized and split into ``GBEnv``, ``GBInfo``, and
+``GBMill``.
+
+**Mill**: //A building equipped with machinery for processing raw materials into finished products//
+
+
+=== GBEnv will know ===
+the environment for the arithmetics, that is:
+- the ``SparsePolyRing`` involved
+- the ``DivMaskRule``
+- the ``PPMonoid`` for ``LPPForDiv``
+- the ``ring`` of coefficients (field or FrFldOfGCDDomain)
+- if it represents a module computation
+- the "module/ring" embeddings (or GBHom ???)
+- ---> inheritance for the module case?
+
+
+==== Notes ====
+Embeddings/deembeddings are now in TmpGReductor: they embed
+polynomials and ModuleElems into [[GPoly]]s therefore cannot directly
+be GBEnv member functions (i.e. GBEnv would need GPoly forward
+declaration or .H inclusion)
+
+Should embeddings/deembeddings be a class on their own?
+or just functions in a file on their own?
+or where?
+
+The main difference between ring and module computations is in
+considering the component in ``IsDivisibleFast``.  How to balance
+efficiency and inheritance?  (The other difference is in making pairs
+of polynomials with the same component)
+
+
+=== GBInfo will know ===
+**constant** ``GBEnv`` and the flags related with the algorithm:
+- if the input was homogeneous (for interreduction?)
+- alg homog/aff/sat/hdriven...
+- the kind of sugar function to use
+- active criteria (Weyl/module).  Now ``GBCriteria`` is in ``GReductor``
+- ...
+
+
+=== GBMill/BuchbergerMill (?) will know -- was GReductor ===
+**constant** ``GBInfo`` and the "frozen computation":
+- the input polynomials
+- list of pairs
+- list of reducers
+- list for output
+- reducing SPolynomial (or atomic ???)
+- stats
+- ...
+
+
+==== Some general notes ====
+
+Partial steps for the conversion of the current code:
++ use member function in ctor for common assignments (done)
++ transform functions with ``GRingInfo`` as argument into GRingInfo
+    member functions (wip)
+
+
+Good to know:
++ reduce.C uses only "env" info from ``GRI.``
++ GRingInfo has many fields, completely unused in the basic case (ie
+    GB for polys).  Some are set with a default value which is
+    different for some "concrete classes" (eg modules, operation specific)
++ SPoly creates a GPoly with "env" info, only sugar needs "mill";
+  in fact the constructor for GPoly needs "mill" only for sugar:
+  we can make an "undefined" sugar to be set later on.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+Everything so far is just work in progress.
+
+
+== Main changes ==
+%======================================================================
+
+**2010**
+- moved definition of class ``GRingInfo`` into ``GBEnv.H,C``
+

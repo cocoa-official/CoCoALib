@@ -1,0 +1,564 @@
+Package $hp -- Hilbert-Poincare Series
+
+export AffHilbertFn;
+export AffHilbertSeries;
+export EvalHilbertFn;
+export HilbertFn;
+export HilbertPolyPkg;
+export HilbertSeries;
+export HilbertSeriesMultiDeg;
+export HilbertSeriesShifts;
+export RegularityIndex;
+export dim;
+export multiplicity;
+export TaggedHilbertFn;
+export TaggedHilbertSeries;
+//export HVectorPkg;
+//export HilbertSeriesMultiDeg;
+
+Define About()
+  PrintLn "    Author:  A.M.Bigatti";
+EndDefine; -- About
+
+--------------------------------------------------------------
+
+-- TAG
+--  TagForPSeries();
+--  TagForHilbertFn();
+--     "HSDen";   --  [H]ilbert [S]eries [Den]ominator
+-- TYPE PSeries := [SpPoly,HSDen];      --> TAGGED "PSeries"
+--      Hilbert := [INT,..,INT,SpPoly]  --> TAGGED "HilbertFn"
+--      HSDen   := LIST(SpPP);          --> TAGGED "HSDen"
+
+
+Define AffHilbertSeries(M)
+  If type(M) = RING Then
+    If   IsPolyRing(M) Then return AffHilbertSeries(M/ideal(M,[]));
+    Elif IsQuotientRing(M) Then P := BaseRing(M);
+    Else error("PolyRing or QuotientRing expected");
+    EndIf;
+  Else P := RingOf(M);
+  EndIf;
+--   If GradingDim(P)>1 Then
+--     error("Grading must be a positive ZZ-grading: "+Sprint(W));
+--   EndIf;
+  If not(IsStdGraded(P)) Then error("Ring must be standard graded"); EndIf;
+  If type(M) = RING Then --> IsQuotientRing(M)
+    PS := PoincareQuotient(LT(DefiningIdeal(M)));
+  Else
+    PS := HilbertSeries(LT(M));
+  EndIf;
+  NewDenFactors := untagged(HSDen(PS));
+  append(ref NewDenFactors.multiplicities, 1);
+  append(ref NewDenFactors.factors, 1-indet(RingQQt(1),1));
+  Return $.Make(untagged(PS).num, NewDenFactors);
+EndDefine; -- AffHilbertSeries
+
+
+Define PoincareQuotient(I)
+  return TaggedHilbertSeries(HilbertSeriesQuot(I));
+EndDefine; -- PoincareQuotient
+
+
+Define HilbertSeries(X)
+  If type(X) = RING Then
+    If IsPolyRing(X) Then
+      return PoincareQuotient(ideal(X,[]));
+    Elif IsQuotientRing(X) Then
+      return PoincareQuotient(DefiningIdeal(X));
+    EndIf;
+  Elif type(X) = IDEAL Then
+    R := RingOf(X);
+    F0 := HilbertNumQuot(ideal(R,[]));
+    FX := HilbertNumQuot(X);
+    If RingOf(F0) = RingOf(FX) Then
+      F := F0-FX;
+    Else
+      F := F0 - PolyAlgebraHom(RingOf(FX), RingOf(F0), indets(RingOf(F0)))(FX);
+    EndIf;
+    return PSeries(F, DenMake(R));
+  Elif type(X) = MODULE Then
+    return HilbertSeriesModule(X);
+  EndIf;
+  error("RING, IDEAL, or MODULE expected");
+EndDefine; -- HilbertSeries
+
+  
+Define HilbertSeriesShifts(M, ShiftsList)  // M: MODULE
+  If type(M) <> MODULE Then error("MODULE expected"); EndIf;
+  NC := NumCompts(M);
+  If len(ShiftsList)<>NC Then
+    error("ShiftsList has wrong length");
+  EndIf;
+  F := NewFreeModule(RingOf(M), ColMat(ShiftsList));
+  M := SubmoduleRows(F, GensAsRows(M));
+  return HilbertSeriesModule(M);
+EndDefine; -- HilbertSeriesShifts
+
+
+Define HilbertSeriesModule(M)
+  If not(IsHomog(M)) Then
+    PrintLn "WARNING! HilbertPoincare input not homogeneous: computing LT...";
+  EndIf;
+  P := RingOf(M);
+  F := ModuleOf(M); -- the FreeModule
+  ShiftsList := [ shifts(F)[i,1] | i in 1..NumCompts(F)];
+  LT_Ideals := [ ideal(RingOf(M), row) | row in GetRows(GensAsCols(LT(M))) ];
+  PSs  := [ HilbertSeries(I) | I In LT_Ideals ];
+  Den := untagged(HSDen(first(PSs)));
+  t := indet(RingQQt(1), 1);
+  PN := sum([t^(ShiftsList[i])*untagged(PSs[i]).num | i in 1..len(PSs)]);
+  return PSeries(PN, Den);
+EndDefine; -- HilbertSeriesModule
+
+
+Define HilbertFn(...)
+  If len(ARGV)=1 Then
+    return $.PSerToHilbert(HilbertSeries(ARGV[1]));
+  Else
+    return $.PSerToHilbert(HilbertSeries(ARGV[1]),ARGV[2]);
+  EndIf;
+EndDefine; -- Hilbert
+
+  
+Define AffHilbertFn(...)
+  If len(ARGV)=1 Then
+    return $.PSerToHilbert(AffHilbertSeries(ARGV[1]));
+  Else
+    return $.PSerToHilbert(AffHilbertSeries(ARGV[1]),ARGV[2]);
+  EndIf;
+EndDefine; -- Hilbert
+
+	
+Define HilbertPolyPkg(Q)
+  QQt := RingQQt(1);
+  return $.PSerToHilbertPoly(HilbertSeries(Q));
+EndDefine;
+
+
+Define HVectorPkg(Q)  return $.PSerHVector(HilbertSeries(Q)); EndDefine;
+
+Define multiplicity(M)
+  If type(M) = RING Then
+    If IsPolyRing(M) Then
+      return 1;
+    Elif IsQuotientRing(M) Then
+      P := BaseRing(M);
+      If not(IsStdGraded(P)) Then
+	R := NewPolyRing(CoeffRing(P), SymbolRange("dim_indet",1,NumIndets(P)));
+	phi := PolyAlgebraHom(P, R, indets(R));
+	return multiplicity(R/ideal(phi(gens(DefiningIdeal(M)))));
+      EndIf;
+      If IsHomog(DefiningIdeal(M)) Then
+	return MultHom(M);
+      Else
+	return MultAff(M); EndIf;
+    Else
+      MultErr := "Not defined for this type of ring"; error(MultErr);
+    EndIf;
+  EndIf;
+  If IsHomog(M) Then
+    return MultHom(M);
+  Else
+    return MultAff(M);
+  EndIf;
+EndDefine; -- multiplicity
+
+
+-- Define MultHom(M) return $.PSerMultiplicity(HilbertSeries(M)); EndDefine;
+Define MultHom(M) return MultiplicityQuot(DefiningIdeal(M)); EndDefine;
+Define MultAff(M) return $.PSerMultiplicity(AffHilbertSeries(M)); EndDefine;
+
+Define dim(M)
+  If type(M) = RING Then
+    If IsPolyRing(M) Then return NumIndets(M); EndIf;
+    if not(IsQuotientRing(M)) then error("Not defined for this type of RING"); endif;
+    --> QuotientRing
+    P := BaseRing(M);
+    I := DefiningIdeal(M);
+    If not(IsStdGraded(P)) Then
+      If HasGBasis(I) Then I := LT(I); EndIf;
+      R := NewPolyRing(CoeffRing(P), SymbolRange("dim_indet",1,NumIndets(P)));
+      return dim(R/ideal(PolyAlgebraHom(P,R,indets(R))(gens(I))));
+    EndIf;
+    If IsHomog(I) Then return DimHom(M); Else return DimAff(M); EndIf;
+  EndIf;
+  --> module
+  If IsHomog(M) Then return DimHom(M); Else return DimAff(M); EndIf;
+EndDefine;
+
+
+define DimHom(M) return DimQuot(DefiningIdeal(M)); enddefine;
+define DimAff(M) return DimQuot(LT(DefiningIdeal(M))); enddefine;
+
+
+Define RegularityIndex(X)
+  If tag(X) = TagForPSeries() Then return $.PSerRegularityIndex(X); EndIf;
+  If tag(X) = TagForHilbertFn() Then return $.HFRegularityIndex(X); EndIf;
+  RegularityIndexERR := sprint(type(TaggedHilbertSeries(0))) +
+	" or " +  sprint(type(TaggedHilbertFn(0))) + " expected";
+  error(RegularityIndexERR);
+EndDefine; -- RegularityIndex
+
+-------------------------------
+
+Define PSerHVector(PSer)
+  return ToHVec(untagged(HSSimplified(PSer)).num);
+EndDefine;
+
+Define PSerDim(PSer)
+  return sum(untagged(HSDen(HSSimplified(PSer))).multiplicities);
+EndDefine;
+
+Define PSerMultiplicity(PSer)
+  return sum($.PSerHVector(PSer));
+EndDefine;
+
+-------------------------------
+
+Define HSDen(PSer)
+  return tagged(untagged(PSer).DenFactors,"HSDen");
+EndDefine; -- Den
+
+Define Make(N, HSDen)
+  P := RingOf(N);
+  If P<>RingQQt(NumIndets(P)) Then
+    QQt := RingQQt(NumIndets(P));
+    N := PolyAlgebraHom(P, QQt, indets(QQt))(N);
+  EndIf;
+  return TaggedHilbertSeries(record[num:=N, DenFactors:=HSDen]);
+EndDefine; -- Make
+
+Define IsStandard(PSer)
+  return $.DenIsStandard(untagged(PSer).DenFactors);
+EndDefine; -- IsStandard
+
+Define DenMakeStandard(N)
+//  return NewList(N,[1]);
+  QQt := RingQQt(1);
+  return Record[multiplicities := [N],
+		factors := [1-indet(QQt,1)],
+		RemainingFactor := one(QQt)];
+EndDefine; -- DenMakeStandard
+
+Define DenMake(P)
+  If IsStdGraded(P) Then return DenMakeStandard(NumIndets(P)); EndIf;
+//  return [ wdeg(x) | x In indets(P)];
+  QQt := RingQQt(GradingDim(P));
+  return Record[multiplicities := NewList(NumIndets(P),1),
+		factors := [1 - MakeTerm(QQt, wdeg(x)) | x In indets(P)],
+		RemainingFactor := one(QQt)];
+EndDefine; -- DenMake
+
+Define HSDenToPoly(Kx, PSer)
+//  return product([1-MakeTerm(Kx, PP) | PP In untagged(HSDen(PSer))]);
+  Factors := untagged(HSDen(PSer)).factors;
+  Exp := untagged(HSDen(PSer)).multiplicities;
+  QQt := RingOf(Factors[1]);
+  phi := PolyAlgebraHom(QQt, Kx, indets(Kx));
+  return product([(phi(Factors[i]))^Exp[i] | i In 1..len(Factors)]);
+EndDefine; -- HSDenToPoly
+
+Define HSNumToPoly(Kx, PSer)
+  QQt := RingOf(untagged(PSer).num);
+  return PolyAlgebraHom(QQt, Kx, indets(Kx))(untagged(PSer).num);
+EndDefine; -- HSNumToPoly
+
+Define ToRatFun(FrFld, PSer)
+  N := HSNumToPoly(BaseRing(FrFld), PSer);
+  D := HSDenToPoly(BaseRing(FrFld),PSer);
+  phi := EmbeddingHom(FrFld);
+  return phi(N)/phi(D);
+EndDefine; -- ToRatFun
+-------------------------------
+
+Define PSeries(P, DenExp_Or_Den)
+  If type(DenExp_Or_Den)=INT Then
+    DenExp := DenExp_Or_Den;
+    If DenExp<0 Then error("PSeries: Expected non-negative INT"); EndIf;
+    Den := $.DenMakeStandard(DenExp);
+  Else
+    Den := DenExp_Or_Den;
+  EndIf;
+  return $.Make(P, Den);
+EndDefine;
+
+-------------------------------
+
+Define HSSimplified(PSer)
+  QQt := RingQQt(1);
+  If not($.IsStandard(PSer)) Then
+    error("HSSimplified: Operator not available for non-standard HPSeries");
+  EndIf;
+  If IsZero(untagged(PSer).num) Then return
+    $.Make(zero(QQt), $.DenMakeStandard(0));
+  EndIf;
+  t := indet(QQt, 1);
+  HPNum    := untagged(PSer).num;
+//  HPDenExp := len(untagged(HSDen(PSer)));
+  HPDenExp := sum(untagged(PSer).DenFactors.multiplicities);
+  While IsDivisible(HPNum, 1-t) Do
+    HPNum    := HPNum/(1-t);
+    HPDenExp := HPDenExp - 1;
+  EndWhile;
+  return $.Make(HPNum, $.DenMakeStandard(HPDenExp));
+EndDefine;
+
+-------------------------------
+
+Define DenIsStandard(HSDen)
+  fact := 1-indet(RingOf(HSDen.RemainingFactor),1); // 1-t
+  Foreach f In HSDen.factors Do
+    If f<>fact Then return false; EndIf;
+  EndForeach;
+  return True;
+EndDefine; -- DenIsStandard
+
+--------------------------------
+--<<   Hilbert Functions    >>--
+--------------------------------
+
+Define PSerToHilbert(...)
+  TopLevel ERR;
+  If len(ARGV) = 2 Then
+    return $.EvalHilbertFn(ARGV[1],ARGV[2]);
+  Elif
+    len(ARGV) = 1 Then
+    return $.PSerToHilbertFn(ARGV[1]);
+  Else error(ERR.BAD_PARAMS_NUM, ": 1 or 2 expected (Hilbert)");
+  EndIf;
+EndDefine;
+
+-------------------------------
+
+Define AuxHilbertPoly(HSSimplifiedPS)
+  SPS := untagged(HSSimplifiedPS);
+  If IsZero(SPS.num) Then return 0; EndIf;
+  HV  := ToHVec(SPS.num);
+  DIM := sum(SPS.DenFactors.multiplicities);
+  return sum([HV[I]*binomial(indet(RingQQt(1),1)+DIM-I,DIM-1) | I In 1..len(HV)]);
+EndDefine; -- AuxHilbertPoly
+
+
+Define PSerToHilbertPoly(PS)
+  QQt := RingQQt(1);
+  SPS := $.HSSimplified(PS);
+  If untagged(HSDen(SPS)).factors = [] Then return 0; EndIf;
+  return $.AuxHilbertPoly(SPS);
+EndDefine; -- PSerToHilbertPoly
+
+
+define ToHVec(f)
+  If IsZero(f) Then return []; EndIf;
+  t := indet(RingOf(f),1);
+  return [AsINT(n) | n in coefficients(f, [t^i | i In 0..deg(f)])];
+enddefine;
+
+
+Define PSerToHilbertFn(PS)
+  QQt := RingQQt(1);
+  If IsZero(untagged(PS).num) Then return TaggedHilbertFn([ [], 0]); EndIf;
+  SPS := untagged(HSSimplified(PS));
+//  DIM := len(untagged(HSDen(SPS)));
+  DIM := sum(SPS.DenFactors.multiplicities);
+  HV := ToHVec(SPS.num);
+  If DIM=0 Then return TaggedHilbertFn([HV,0]); EndIf;
+  REG := len(HV)-DIM;
+  If REG > 0 Then
+    TrBins := concat( NewList(REG-1,0),
+                   [$.TruncBin(I,DIM-1) | I In (DIM-1)..(DIM+REG)]);
+    HF1 :=[sum([HV[I]*TrBins[N-I+REG+1] | I In 1..(N+1)]) | N In 0..(REG-1)];
+  Else
+    HF1 := [];
+  EndIf;
+  return TaggedHilbertFn([HF1, PSerToHilbertPoly(SPS)]);
+EndDefine; -- PSerToHilbertFn
+
+
+Define PSerRegularityIndex(PS)
+  QQt := RingQQt(1);
+  If IsZero(untagged(PS).num) Then return 0; EndIf;
+  SPS := untagged(HSSimplified(PS));
+  DIM := sum(SPS.DenFactors.multiplicities);
+  HV := ToHVec(SPS.num);
+  return len(HV)-DIM;
+EndDefine; -- PSerRegularityIndex
+
+
+Define EvalHilbertFn(X, N)
+  TopLevel ERR;
+  QQt := RingQQt(1);
+  t := RingElem(QQt, "t");
+  If tag(X)=TagForHilbertFn() Then
+    If N<len(untagged(X)[1]) Then return untagged(X)[1,N+1];
+    Else
+      return AsINT(eval(untagged(X)[2], [RingElem(QQt,N)]));
+    EndIf;
+  EndIf;
+  If tag(X)=TagForPSeries() Then
+    If IsZero(untagged(X).num) Then return 0; EndIf;
+    If $.IsStandard(X) Then     //  standard grading
+      SPS := untagged(HSSimplified(X));
+      HV  := ToHVec(SPS.num);
+      DIM := sum(SPS.DenFactors.multiplicities);
+      If DIM = 0 Then
+	If 0<=N And N<len(HV) Then return HV[N+1]; Else return 0; EndIf;
+      EndIf;
+      return sum([HV[I]*$.TruncBin(N+DIM-I,DIM-1) | I In 1..len(HV)]);
+    EndIf;
+    // univariate and not standard
+    HPDen := untagged(X).DenFactors; //untagged(HSDen(X));
+//    If len(HPDen[1]) = 1 Then
+    If NumIndets(RingOf(HPDen.factors[1])) = 1 Then
+      TruncDen := 1;
+      For i := 1 To len(HPDen.factors) Do
+	w := deg(HPDen.factors[i]);
+	For j:=1 To HPDen.multiplicities[i] Do
+	  TruncDen := TruncDen * sum([t^(k*w) | k in 0..div(N, w)]);
+	  TruncDen := NR(TruncDen, [t^(N+1)]);
+	EndFor;
+      EndFor;
+      TruncNum := NR(untagged(X).num, [t^(N+1)]);
+      TruncHF := NR(TruncNum * TruncDen, [t^(N+1)]);
+      RatResult := CoeffOfTerm(TruncHF, t^N);
+      return AsINT(RatResult);
+    EndIf;
+  EndIf;
+  error(ERR.BAD_PARAMS, "(EvalHilbertFn)");
+EndDefine; -- EvalHilbertFn
+
+
+Define HFRegularityIndex(HF)
+  HFSmall := untagged(HF)[1];
+  HPoly := untagged(HF)[2];
+  For D := len(HFSmall)-1 To 0 Step -1 Do
+    If HFSmall[D+1] <> eval(HPoly, [D]) Then return D+1; EndIf;
+  EndFor;
+  If HPoly = 0 Then error("cannot compute RegularityIndex for 0 function"); EndIf;
+  DD := -1;
+  While True Do
+    If eval(HPoly, [DD])<>0 Then return DD+1; EndIf;
+    DD := DD-1;
+  EndWhile;
+  return 0;
+EndDefine; -- HFRegularityIndex
+
+
+------[   pretty printing   ]--------
+
+Define Tagged(X,T)
+  -- make sanity checks
+  return tagged(X, T);
+EndDefine;
+
+
+Define TaggedHilbertFn(X)
+  -- make sanity checks
+  return tagged(X, TagForHilbertFn());
+EndDefine;
+
+Define TaggedHilbertSeries(X)
+  -- make sanity checks
+  return tagged(X, TagForPSeries());
+EndDefine;
+
+Define TagForHilbertFn() return "HilbertFn"; EndDefine;
+Define TagForPSeries() return "PSeries"; EndDefine;
+
+
+Define Print_HSDen(D, HSDen)
+  Factors := untagged(HSDen).factors;
+  Exp := untagged(HSDen).multiplicities;
+  HSRing := RingOf(untagged(HSDen).RemainingFactor);
+  L := len(Factors);
+  If $.DenIsStandard(HSDen) Then
+    Print "(1-",indet(HSRing, 1),")" On D;
+    If sum(Exp)<>1 Then  Print "^", sum(Exp) On D; EndIf
+  Else
+    If L<>1 Then  Print "( " On D;  EndIf;
+    Print "(1-", LT(Factors[1]), ")" On D;
+    If Exp[1]<>1 Then Print "^", Exp[1] On D; EndIf;
+    For i := 2 To len(Factors) Do
+      Print "*(1-", LT(Factors[i]), ")" On D;
+      If Exp[i]<>1 Then Print "^", Exp[i] On D; EndIf;
+    EndFor;
+    If L<>1 Then  Print " )" On D;  EndIf;
+  EndIf;
+EndDefine;
+
+
+Define Print_PSeries(D, PSer)
+  QQt := RingQQt(1);
+  If $.IsStandard(PSer) Then
+    PSer := $.HSSimplified(PSer);
+  Else
+    PrintLn "---  Non-simplified HilbertPoincare' Series  ---" On D;
+  EndIf;
+  SpPolyNum := $sppoly.PolyToSPPoly(untagged(PSer).num);
+  SpPolyNum := $sppoly.Tagged(reversed(untagged(SpPolyNum)),"SpPoly");
+  Print "(", SpPolyNum, ")" On D;
+  HP_Den := untagged(PSer).DenFactors;
+  If len(untagged(HP_Den).factors)>0 Then Print " / ", tagged(HP_Den, "HSDen") On D;  EndIf;
+EndDefine; -- Print_PSeries
+
+Define Print_HilbertFn(D, HF)
+  For I:=1 To len(HF[1]) Do PrintLn "H(",I-1,") = ",HF[1,I] On D; EndFor;
+  Print "H(t) = ", HF[2], "   for t >= ", len(HF[1]) On D;
+EndDefine;
+
+
+Define TruncBin(A,B)
+  If A<B Or B<0 Then return 0; EndIf;
+  return binomial(A,B);
+EndDefine; -- TruncBin
+
+------[ Hilbert multideg ]-----------------------------------------------
+
+Define HilbertSeriesMultiDeg(QR, WM)
+  return $hp.PoincareMultiDeg(QR, WM);
+EndDefine;
+
+Define PoincareMultiDeg(QR, WM)
+  If type(QR) <> RING And not(IsQuotientRing(QR)) Then
+    error("First argument must be a quotient ring", QR);
+  EndIf;
+  P := BaseRing(QR);
+  If type(WM) <> MAT Then
+    error("Second argument must be a matrix", WM);
+  EndIf;
+  If NumCols(WM) <> NumIndets(P) Then
+    error("Wrong number of weights:" + sprint(NumCols(WM)) + " " + sprint(NumIndets(P)), WM);
+  EndIf;
+  K := CoeffRing(P);
+  M := MakeTermOrd(WM);
+  AuxRing := NewPolyRing(K, SymbolRange("x",1,NumCols(M)), M, NumRows(WM));
+  phi := PolyAlgebraHom(P, AuxRing, indets(AuxRing));
+  PS := HilbertSeries(AuxRing/ideal(phi(gens(DefiningIdeal(QR)))));
+  return PS;
+EndDefine; -- PoincareMultiDeg
+
+
+-- EXAMPLES
+-- Use R ::= QQ[x,y,z];
+-- //PoincareMultideg(ideal(indets())^2, LexMat(NumIndets()));
+
+-- WM := mat([[1,0,0],[1,-1,0]]);
+-- PoincareMultiDeg(R/ideal(indets())^2, WM);
+
+-- WM := mat([[1,0,0],[-1,1,1]]);
+-- PoincareMultiDeg(R/ideal(0), WM);
+
+-- WM := mat([[1,7,0],[0,-5,1]]);
+-- PositiveGrading(WM);
+
+------[ end of Hilbert multideg ]-------------------------------------------
+
+----------------------------------------------------------------------
+PrintTagged := Record[
+		      PSeries := $.Print_PSeries,
+		      HSDen := $.Print_HSDen,
+		      HilbertFn := $.Print_HilbertFn
+		      ];
+
+EndPackage; -- Package $hp
+

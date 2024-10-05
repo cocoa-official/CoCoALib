@@ -1,0 +1,95 @@
+      DenseMatrix
+      Copyright (c)  2005,2008  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{DenseMatrix}{John Abbott}
+
+
+
+
+== User documentation for dense matrices (and DenseMatImpl) ==
+%======================================================================
+
+A normal user should never need to know about the class DenseMatImpl; see
+below for notes aimed at library maintainers.
+
+An dense martrix object is a matrix represented in the most natural
+way: as a //2-dimensional array// of its entries.  For instance a
+DenseMat of 4 rows and 3 columns will contain 12=4x3 entries.
+Contrast this with the a ``SparseMatrix`` where the values (and
+positions) of only the non-zero entries are recorded.
+
+To create a ``DenseMat`` you need to specify its ring R and dimensions
+(``r`` rows and ``c`` columns).  By default the matrix is filled with
+zeroes; alternatively the entries may be initialized from a ``vector``
+of ``vector``.
+```
+  NewDenseMat(R, r, c)    -- an r-by-c matrix filled with zero(R)
+  NewDenseMat(R, VV)      -- a matrix whose (i,j) entry is VV[i][j]
+  NewDenseMatTranspose(R, VV)  -- a matrix whose (i,j) entry is VV[j][i]
+```
+
+
+To create a copy of a matrix, MatrixView, ConstMatrixView use the call
+```  NewDenseMat(M);
+
+Currently a ``DenseMat`` has no special operations in addition to those
+for a general [[matrix]].  Here is a brief summary of those operations
+```
+  BaseRing(M)        -- the ring to which the matrix entries belong
+  NumRows(M)         -- the number of rows in M (may be zero)
+  NumCols(M)         -- the number of columns in M (may be zero)
+
+  cout << M          -- print out the value of the matrix
+
+  M(i,j)             -- a copy of entry (i,j) in the matrix
+  SetEntry(M,i,j,value)  -- set entry (i,j) of matrix M to value
+```
+
+
+== Maintainer documentation for the class DenseMatImpl ==
+%======================================================================
+
+The implementation is really quite straightforward (apart from keeping
+proper track of ``RingElemRawPtr``s when exceptions may occur).
+
+``DenseMatImpl`` is a concrete class derived from ``MatrixBase`` (see
+[[matrix]]).  As such it supplies definitions for all pure virtual
+functions.
+``DenseMatImpl`` represents the value of a matrix as an object of type
+```   vector< vector<RingElemRawPtr> >
+The convention used is that the outer vector has an entry for each row,
+and each inner vector contains the values of that row.  The indices of
+a matrix entry correspond directly to the ``vector<>`` indices needed to
+get at the value of that entry.  The advantage of using a vector of
+vector is that resizing is relatively simple (compared to mapping the
+entries into a single vector whose length is equal to the total number
+of matrix entries).
+
+Note that each entry in a ``DenseMatImpl`` is a ``RingElemRawPtr``, so
+care must be taken to handle exceptions in a way which doesn't leak
+memory.
+
+A ``DenseMatImpl`` object keeps explicit track of its own size (in the data
+members ``myNumRows`` and ``myNumColumns``).  This makes life easier when
+handling matrices one of whose dimensions is zero.  The space overhead
+should normally be utterly negligible.
+
+Member functions accepting indices use CoCoA_ASSERT to check the
+validity of the index values.  This is useful during debugging but
+should cost nothing when compiled with debugging turned off.
+
+
+== Bugs and Shortcomings ==
+%======================================================================
+
+Using ``RingElemRawPtr`` may not have been my brightest idea (because
+it becomes hard to make all functions fully exception clean).
+
+The pseudo-ctor from vector of vector should probably be a template fn;
+this would offer better flexibility to the user (e.g. could initialize
+from a vector of vector of int).
+
+This is a first implementation: simplicity was paramount, efficiency
+disregarded.
+

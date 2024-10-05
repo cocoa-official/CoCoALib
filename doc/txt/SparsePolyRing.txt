@@ -1,0 +1,170 @@
+      SparsePolyRing
+      Copyright (c)  2005,2007,2018  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SparsePolyRing}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-PolyRing1.C ../../examples/index.html#ex-PolyRing1.C]
+- [ex-PolyRing2.C ../../examples/index.html#ex-PolyRing2.C]
+- [ex-PolyIterator1.C ../../examples/index.html#ex-PolyIterator1.C]
+- [ex-PolyIterator2.C ../../examples/index.html#ex-PolyIterator2.C]
+- [ex-PolyInput1.C ../../examples/index.html#ex-PolyInput1.C]
+- [ex-NF.C ../../examples/index.html#ex-NF.C]
+-
+
+== User documentation for SparsePolyRing ==
+%======================================================================
+
+``SparsePolyRing`` is an abstract class (inheriting from [[PolyRing]])
+representing rings of polynomials; in particular, rings of sparse
+multivariate polynomials (//i.e.// written in a **sparse representation**)
+with a special view towards computing Groebner bases and other related
+operations.  This means that the operations offered by a
+``SparsePolyRing`` on its own values are strongly oriented towards those
+needed by Buchberger's algorithm.
+
+A polynomial is viewed abstractly as a formal sum of ordered terms
+(with default ordering //StdDegRevLex//).  Each term is a formal
+product of a non-zero coefficient (belonging to the coefficient [[ring]]),
+and a power product of indeterminates (belonging to the [[PPMonoid]] of
+the polynomial ring).  The ordering is determined by the [[PPOrdering]]
+on the power products: distinct terms in a polynomial have distinct power
+products.  The zero polynomial is conceptually the formal sum of no terms;
+all other polynomials have a //leading term// being the one with the largest
+power product (``PPMonoidElem``) in the given ordering.
+
+See [[RingElem SparsePolyRing]] for operations on its elements.
+
+
+=== Pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+Currently there are three functions to create a polynomial ring:
+:  ``NewPolyRing(CoeffRing, IndetNames)``
+    -- This creates a sparse polynomial ring with coefficients in ``CoeffRing``
+    and having indeterminates whose names are given in ``IndetNames`` (which
+    is of type ``vector<symbol>``).  The PP ordering is ``StdDegRevLex`` (with
+    indet(j) > indet(j+1) for each j).
+:  ``NewPolyRing(CoeffRing, IndetNames, ord)``
+    -- This creates a sparse polynomial ring with coefficients in ``CoeffRing``
+    and having indeterminates whose names are given in ``IndetNames`` (which
+    is of type ``vector<symbol>``).  The PP ordering is given by ``ord``
+    (a [[PPOrdering]] or [[PPOrdering PPOrderingCtor]]).
+:  ``NewPolyRing(CoeffRing, PPM)``
+    -- This creates a sparse polynomial ring with coefficients in ``CoeffRing`` and
+    with power products in ``PPM`` which is a power product monoid which specifies
+    how many indeterminates, their names, and the ordering on them.
+:  ``SparsePolyRing(R)``
+    -- sort of downcast the ring ``R`` to a sparse poly ring;
+will throw an ``ErrorInfo`` object with code ``ERR::NotSparsePolyRing`` if needed.
+:
+
+
+In place of ``NewPolyRing`` you may use ``NewPolyRing_DMPI``; this creates a
+sparse poly ring which uses a more compact internal representation (which probably
+makes computations slightly faster), but it necessarily uses a ``PPMonoidOv`` for
+the power products.  There is also ``NewPolyRing_DMPII`` which uses a still more
+compact internal representation, but which may be used only when the coefficients
+are in a small finite field and the power products are in a ``PPMonoidOv``.
+
+
+=== Query and cast ===[query]
+%----------------------------------------------------------------------
+Let ``R`` be an object of type [[ring]].
+- ``IsSparsePolyRing(R)`` -- ``true`` if ``R`` is actually ``SparsePolyRing``
+- ``SparsePolyRingPtr(R)`` --  pointer to impl of ``R`` (for calling mem fns);
+will throw an ``ErrorInfo`` object with code ``ERR::NotSparsePolyRing`` if needed
+-
+
+
+=== Operations on a SparsePolyRing ===
+%----------------------------------------------------------------------
+In addition to the standard [[PolyRing operations]], a
+``SparsePolyRing`` may be used in other functions.
+
+Let ``P`` be an object of type ``SparsePolyRing``.
+
+- ``PPM(P)``         -- the PPMonoid of ``P``.
+- ``OrdMat(P)``      --   a matrix defining the term ordering on ``P``.
+- ``GradingDim(P)``  -- the dimension of the grading on ``P`` (may be 0).
+- ``GradingMat(P)``  --  the matrix defining the grading on ``P``
+- ``RandomLinearForm(P, N)``  -- produce a non-zero random linear form from ``P`` with coeffs at most ``N``
+-
+
+=== Operations with SparsePolyIters ===
+%----------------------------------------------------------------------
+A ``SparsePolyIter`` (class defined in SparsePolyRing.H) is a way to
+iterate through the summands in the polynomial without knowing the
+(private) details of the concrete implementation currently in use.
+
+See also the functions ``coefficients``, ``CoefficientsWRT``,
+``CoeffVecWRT`` in [[RingElem]].
+
+Let ``f`` denote a non-const element of P.
+Let ``it1`` and ``it2`` be two ``SparsePolyIter``s running over the same polynomial.
+
+- ``BeginIter(f)`` -- a ``SparsePolyIter`` pointing to the first term in ``f``.
+- ``EndIter(f)``   -- a ``SparsePolyIter`` pointing to one-past-the-last term
+                      in ``f``.
+
+
+**Changing the value of ``f`` invalidates all iterators over ``f``.**
+
+- ``coeff(it1)``    -- read-only access to the coeff of the current term
+- ``PP(it1)``       -- read-only access to the pp of the current term
+- ``++it1``         -- advance ``it1`` to next term, return new value of ``it1``
+- ``it1++``         -- advance ``it1`` to next term, return copy of old value of ``it1``
+- ``it1 == it2``    -- true iff ``it1`` and ``it2`` point to the same term;
+                      throws ``CoCoA::ErrorInfo`` with code
+                      ``ERR::MixedPolyIters``
+                      if ``it1`` and ``it2`` are over different polys.
+- ``it1 != it2``    -- same as ``!(it1 == it2)``
+- ``IsEnded(it1)``  -- true iff ``it1`` is pointing at the one-past-the-last term
+
+
+==== Examples ====
+- [ex-PolyIterator1.C ../../examples/index.html#ex-PolyIterator1.C]
+- [ex-PolyIterator2.C ../../examples/index.html#ex-PolyIterator2.C]
+
+
+== Maintainer documentation for SparsePolyRing ==
+%======================================================================
+
+The exact nature of a //term// in a polynomial is hidden from public view:
+it is not possible to get at any term in a polynomial by any publicly
+accessible function.  This allows wider scope for trying different
+implementations of polynomials where the //terms// may be represented in
+some implicit manner.  On the other hand, there are many cases where
+an algorithm needs to iterate over the terms in a polynomial; some of
+these algorithms are //inside// PolyRing (i.e. the abstract class offers
+a suitable interface), but many will have to be //outside// for reasons
+of modularity and maintainability.  Hence the need to have //iterators//
+which run through the terms in a polynomial.
+
+The implementations in SparsePolyRing.C are all very simple: they just conduct
+some sanity checks on the function arguments before passing them to the
+PolyRing member function which will actually do the work.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Too many of the iterator functions are inline.  Make them out of line, then
+use profiler to decide which should be inline.
+
+``PushFront`` and ``PushBack`` do not verify that the ordering criteria are
+satisfied.
+
+Verify the true need for ``myContent``, ``myRemoveBigContent``, ``myMulByCoeff``,
+``myDivByCoeff``, ``myMul`` (by pp).  If the coeff ring has zero divisors then
+``myMulByCoeff`` could change the structure of the poly!
+
+Verify the need for these member functions:
+myIsZeroAddLCs, myMoveLMToFront, myMoveLMToBack, myDeleteLM, myDivLM,
+myCmpLPP, myAppendClear, myAddClear, myAddMulLM,
+myReductionStep, myReductionStepGCD, myDeriv.
+
+Should there be a RingHom accepting IndetImage (in case of univariate polys)?
+

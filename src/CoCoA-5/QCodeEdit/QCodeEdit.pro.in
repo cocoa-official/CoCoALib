@@ -1,0 +1,108 @@
+
+TEMPLATE = lib
+TARGET = qcodeedit
+DESTDIR = .
+DEPENDPATH += . document images qnfa snippets widgets
+INCLUDEPATH += . document widgets qnfa snippets
+CONFIG += qt release warn_off thread
+###CONFIG += qt release warn_off staticlib thread
+#CONFIG += qt debug warn_off staticlib thread
+QT += xml webkitwidgets printsupport
+UI_DIR = 
+MOC_DIR = .build
+OBJECTS_DIR = .build
+DEFINES += QNFA_BUILD QCE_EXPORT=""
+
+# Input
+HEADERS += qce-config.h \
+           qcodecompletionengine.h \
+           qcodeedit.h \
+           qeditor.h \
+           qeditorfactory.h \
+           qeditorinputbinding.h \
+           qeditorinputbindinginterface.h \
+           qeditsession.h \
+           qformat.h \
+           qformatfactory.h \
+           qformatscheme.h \
+           qlanguagedefinition.h \
+           qlanguagefactory.h \
+           qlinemarksinfocenter.h \
+           qpanellayout.h \
+           qreliablefilewatch.h \
+           document/qdocument.h \
+           document/qdocument_p.h \
+           document/qdocumentbuffer.h \
+           document/qdocumentcommand.h \
+           document/qdocumentcursor.h \
+           document/qdocumentcursor_p.h \
+           document/qdocumentline.h \
+           document/qdocumentline_p.h \
+           document/qdocumentsearch.h \
+           qnfa/light_vector.h \
+           qnfa/qnfa.h \
+           qnfa/qnfadefinition.h \
+           snippets/qsnippet.h \
+           snippets/qsnippet_p.h \
+           snippets/qsnippetbinding.h \
+           snippets/qsnippetedit.h \
+           snippets/qsnippetmanager.h \
+           snippets/qsnippetpatternloader.h \
+           widgets/qcalltip.h \
+           widgets/qeditconfig.h \
+           widgets/qfoldpanel.h \
+           widgets/qformatconfig.h \
+           widgets/qgotolinedialog.h \
+           widgets/qgotolinepanel.h \
+           widgets/qlinechangepanel.h \
+           widgets/qlinemarkpanel.h \
+           widgets/qlinenumberpanel.h \
+           widgets/qpanel.h \
+           widgets/qsearchreplacepanel.h \
+           widgets/qsimplecolorpicker.h \
+           widgets/qstatuspanel.h
+FORMS += snippets/snippetedit.ui \
+         widgets/editconfig.ui \
+         widgets/formatconfig.ui \
+         widgets/gotoline.ui \
+         widgets/gotolinedialog.ui \
+         widgets/searchreplace.ui
+SOURCES += qcodecompletionengine.cpp \
+           qcodeedit.cpp \
+           qeditor.cpp \
+           qeditorfactory.cpp \
+           qeditorinputbinding.cpp \
+           qeditsession.cpp \
+           qformatscheme.cpp \
+           qlanguagedefinition.cpp \
+           qlanguagefactory.cpp \
+           qlinemarksinfocenter.cpp \
+           qpanellayout.cpp \
+           qreliablefilewatch.cpp \
+           document/qdocument.cpp \
+           document/qdocumentbuffer.cpp \
+           document/qdocumentcommand.cpp \
+           document/qdocumentcursor.cpp \
+           document/qdocumentline.cpp \
+           document/qdocumentsearch.cpp \
+           qnfa/qnfa.cpp \
+           qnfa/qnfadefinition.cpp \
+           qnfa/xml2qnfa.cpp \
+           snippets/qsnippet.cpp \
+           snippets/qsnippetbinding.cpp \
+           snippets/qsnippetedit.cpp \
+           snippets/qsnippetmanager.cpp \
+           widgets/qcalltip.cpp \
+           widgets/qeditconfig.cpp \
+           widgets/qfoldpanel.cpp \
+           widgets/qformatconfig.cpp \
+           widgets/qgotolinedialog.cpp \
+           widgets/qgotolinepanel.cpp \
+           widgets/qlinechangepanel.cpp \
+           widgets/qlinemarkpanel.cpp \
+           widgets/qlinenumberpanel.cpp \
+           widgets/qpanel.cpp \
+           widgets/qsearchreplacepanel.cpp \
+           widgets/qsimplecolorpicker.cpp \
+           widgets/qstatuspanel.cpp
+RESOURCES += images/Edyuk.qrc

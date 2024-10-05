@@ -1,0 +1,113 @@
+Package $taylor;  -- Taylor Series
+
+Export TaylorExp;
+Export TaylorLog;
+Export TaylorSin;
+Export TaylorCos;
+Export TaylorArcSin;
+Export TaylorArcCos;
+Export PiApprox;
+
+----------------------------------------------------------------------
+-- n>=1 iterations; n<1 precision ?
+-- n := 10; DecimalStr(TaylorSin(TaylorArcSin(0.347612347612, n), n), 10);
+-- n := 20; X := 1.23456789; DecimalStr(TaylorSin(X,n)^2 + TaylorCos(X,n)^2, 10);
+-- n := 20; X := 1.23456789; DecimalStr(TaylorLog(TaylorExp(X,n), n), 10);
+-- n := 20; X := 1.23456789; DecimalStr(TaylorExp(TaylorLog(X,n),n), 10);
+----------------------------------------------------------------------
+PackageGlobal_Trunc := 10;
+PackageGlobal_Pi := 3.14159265358979323846264338327950288419716939937510;--50dig
+
+Define PiApprox(Opt Trunc)
+  If not(IsDefined(Trunc)) Then Return $.PackageGlobal_Pi; EndIf;
+  If Trunc < 1 Then Trunc := -ILogBase(Trunc,10); EndIf;
+  If Trunc > 50 Then error("Pi: only up to 50 decimal digits"); EndIf;
+  Return round($.PackageGlobal_Pi * 10^Trunc)/10^Trunc;
+EndDefine; -- PiApprox
+
+
+Define TaylorBound(Mn, r, n)
+  -- Cauchy's estimate: Mn >= |f^(n+1)(x)|
+  Return (Mn * r^(n+1)) / factorial(n+1);
+EndDefine; -- TaylorBound
+
+
+Define TaylorExp(X, Opt Trunc)
+  If not(IsDefined(Trunc)) Then Trunc := $.PackageGlobal_Trunc; EndIf;
+  If Trunc >=1 Then NumIter := Trunc;
+  Else
+    error("approximation control not yet implemented");    
+  EndIf;
+  L := [(X^n)/factorial(n) | n In 0..NumIter];
+  Return Sum(L);
+EndDefine; -- Exp
+
+
+Define TaylorLog(X, Opt Trunc)
+  If not(IsDefined(Trunc)) Then Trunc := $.PackageGlobal_Trunc; EndIf;
+    If X<0 Then error("Log(0)"); EndIf;
+  If X>1 Then Return -TaylorLog(1/X, Trunc); EndIf;
+  If Trunc >=1 Then NumIter := Trunc;
+  Else
+    error("approximation control not yet implemented");    
+  EndIf;
+  L := [((-1)^(n+1)*(X-1)^n)/n | n In 1..NumIter];
+  Return Sum(L);
+EndDefine; -- Log
+
+
+Define TaylorSin(X, Opt Trunc)
+  If Abs(X) > PiApprox(50) Then error("Input between -pi and pi"); EndIf;
+  If not(IsDefined(Trunc)) Then Trunc := $.PackageGlobal_Trunc; EndIf;
+  If Trunc >=1 Then
+    NumIter := Div(Trunc-1, 2);
+  Else
+    NumIter := 1;
+    While Trunc <= TaylorBound(1, X, NumIter*2+1) Do
+      incr(ref NumIter);
+    EndWhile;
+  EndIf;
+  L := [((-1)^n*X^(2*n+1))/factorial(2*n+1) | n In 0..NumIter];
+  Return Sum(L);
+EndDefine; -- Sin
+
+
+Define TaylorCos(X, Opt Trunc)
+  If not(IsDefined(Trunc)) Then Trunc := $.PackageGlobal_Trunc; EndIf;
+  If Trunc >=1 Then
+    NumIter := Div(Trunc, 2);
+  Else
+    NumIter := 1;
+    While Trunc <= TaylorBound(1, X, NumIter*2) Do
+      incr(ref NumIter);
+    EndWhile;
+  EndIf;
+  L := [((-1)^n*X^(2*n))/factorial(2*n) | n In 0..NumIter];
+  Return Sum(L);
+EndDefine; -- Cos
+
+
+Define TaylorArcSin(X, Opt Trunc)
+  If not(IsDefined(Trunc)) Then Trunc := $.PackageGlobal_Trunc; EndIf;
+  If Trunc >=1 Then
+    NumIter := Div(Trunc-1, 2);
+  Else
+    Error("Taylor: approximation control not yet implemented");    
+  EndIf;
+  L := [(X^(2*n+1) * factorial(2*n))/(4^n * factorial(n)^2 * (2*n+1)) | n In 0..NumIter];
+  Return Sum(L);
+EndDefine; -- ArcSin
+
+
+Define TaylorArcCos(X, Opt Trunc)
+  If not(IsDefined(Trunc)) Then Trunc := $.PackageGlobal_Trunc; EndIf;
+  arcsin := TaylorArcSin(X, Trunc);
+  If Trunc >=1 Then
+    Return PiApprox(NumDigits(Den(arcsin),10))/2 - arcsin;
+  Else
+    Return PiApprox(Trunc)/2 - arcsin;
+  EndIf;
+EndDefine; -- ArcSin
+
+
+EndPackage;

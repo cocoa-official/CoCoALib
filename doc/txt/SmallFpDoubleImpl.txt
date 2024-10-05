@@ -1,0 +1,88 @@
+      SmallFpDoubleImpl
+      Copyright (c)  2005,2010-2013  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SmallFpDoubleImpl}{John Abbott}
+
+
+
+== User documentation for SmallFpDoubleImpl ==
+%======================================================================
+
+The class ``SmallFpDoubleImpl`` is a very low level implementation class
+for fast arithmetic in a small, prime finite field.  It is **not intended**
+for use by casual CoCoALib users, who should instead see the documentation
+in [[QuotientRing]] (in particular the function ``NewZZmod``), or possibly
+the documentation in [[RingFp]], [[RingFpLog]], and [[RingFpDouble]].
+
+Compared to [[SmallFpImpl]] the main difference is an implementation
+detail: values are represented as ``double``s -- on 32-bit computers this
+allows a potentially usefully greater range of characteristics at a
+probably minor run-time cost.
+
+**All operations** on values must be effected by calling member functions
+of the ``SmallFpDoubleImpl`` class.  Here is a brief summary.
+```
+  SmallFpDoubleImpl::IsGoodCtorArg(p);   // true iff ctor SmallFpDoubleImpl(p) will succeed
+  SmallFpDoubleImpl::ourMaxModulus();    // largest permitted modulus
+  SmallFpDoubleImpl ModP(p, convention); // create SmallFpDoubleImpl object
+  long n;
+  BigInt N;
+  BigRat q;
+  SmallFpImpl::value_t a, b, c;
+
+  ModP.myModulus();         // value of p (as a long)
+
+  ModP.myReduce(n);         // reduce mod p
+  ModP.myReduce(N);         // reduce mod p
+  ModP.myReduce(q);         // reduce mod p
+
+  ModP.myExport(a);         // returns a preimage (of type long) according to symm/non-neg convention.
+
+  ModP.myNegate(a);         // -a mod p
+  ModP.myAdd(a, b);         // (a+b)%p;
+  ModP.mySub(a, b);         // (a-b)%p;
+  ModP.myMul(a, b);         // (a*b)%p;
+  ModP.myDiv(a, b);         // (a*inv(b))%p;  where inv(b) is inverse of b
+  ModP.myPower(a, n);       // (a^n)%p;  where ^ means "to the power of"
+  ModP.myIsZeroAddMul(a,b,c) // a = (a+b*c)%p; result is (a==0)
+
+```
+For ``myExport`` the choice between least non-negative and symmetric
+residues is determined by the convention specified when constructing
+the ``SmallFpDoubleImpl`` object.  This convention may be either
+``GlobalSettings::SymmResidues`` or
+``GlobalSettings::NonNegResidues``.
+
+
+== Maintainer documentation for SmallFpDoubleImpl ==
+%======================================================================
+
+Most functions are implemented inline, and no sanity checks are
+performed (except when ``CoCoA_DEBUG`` is enabled).  The constructor
+does do some checking.  The basic idea is to use the extra precision
+available in ``double``s to allow larger prime finite fields than are
+permitted when 32-bit integers are used for all arithmetic.  If fast
+64-bit arithmetic becomes widespread then this class will probably
+become obsolete (unless you have a very fast floating point coprocessor?).
+
+``SmallFpDoubleImpl::value_t`` is simply ``double``.  Note that the
+values are always non-negative integers with maximum value less than
+``myModulusValue``; //i.e.// each residue class is represented
+(internally) by its least non-negative member.
+
+
+To avoid problems with overflow the constructor checks that all
+integers from 0 to p*p-p can be represented exactly.  We need to allow
+numbers as big as p*p-p so that ``myIsZeroAddMul`` can be implemented easily.
+
+It is not strictly necessary that ``myModulusValue`` be prime, though division
+becomes only a partial map if ``myModulusValue`` is composite.  I believe it is
+safest to insist that ``myModulusValue`` be prime.
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+The implementation is simplistic -- I wanted to dash it off quickly
+before going on holiday :-)

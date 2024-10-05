@@ -1,0 +1,248 @@
+Package $CoLA; -- function for Commutative and Linear Algebra
+
+export MinMult;
+export AlgMult;
+export BigKer;
+export BigKerBasis;
+export GeoMult;
+export MultiplicationMat;
+export BMForMat;
+export BBasis;
+export EvalPolyInMatList;
+  
+  ----------------------------------------------------------------------
+  -- Exported functions (with input checking)
+  ----------------------------------------------------------------------
+
+define BigKer(A)
+  dim := NumCols(A);
+  PowA := A;
+  repeat
+    LK := LinKer(PowA);
+    if dim = NumCols(LK) then return LK; endif;
+    dim := NumCols(LK);
+    PowA := PowA * A;
+  endrepeat;
+enddefine; -- BigKer
+
+define BigKerBasis(A)
+  return GetCols(BigKer(A));
+enddefine; -- BigKerBasis
+
+  
+-- Define BBasis(I, QB2)
+--   If not(IsZeroDim(I)) Then error("ideal must be 0-dimensional"); EndIf;
+--   QB := QuotientBasis(I);
+--   BC := BaseChange(I,QB2);
+--   B := ComputeBorder(QB2, []);
+--   BB := [];
+--   append(ref BB, [pp-RowMat(coefficients(NF(pp,I), QB))*BC|pp In B]);
+--   Return BB;
+-- EndDefine; -- BBasis
+
+Define BBasis(I, QB2)
+  If not(IsZeroDim(I)) Then error("ideal must be 0-dimensional"); EndIf;
+  QB := QuotientBasis(I);
+  BC := BaseChange(I, GetRow(mat([QB2]), 1));
+  Bordo := ComputeBorder(QB2, []);
+  BB := [];
+  R := RingOf(QB2[2]);
+  -- coda := [GetRow(mat(R,RowMat(coefficients(NF(pp,I), QB))*BC)*mat(R, ColMat(QB2)),1)|pp In B];
+  -- append(ref BB, [pp-coda|pp In B]);
+  For i := 1 To len(Bordo) Do
+    pp := Bordo[i];
+    A := NF(pp,I);
+    B := coefficients(A, QB);
+    C := inverse(BC)*ColMat(B);
+    D := mat(R, RowMat(QB2))*mat(R, C);
+    E := GetRow(D,1);
+    append(ref BB, pp-E[1]);
+  EndFor;
+  Return BB;
+EndDefine; -- BBasis
+
+Define MinMult(A,z)
+  mi := factor(MinPoly(A,z));
+  Return Record[factors := mi.factors, multiplicities := mi.multiplicities];
+EndDefine; -- MinMult
+
+Define AlgMult(A,z)
+  chi := factor(CharPoly(A,z));
+  Return Record[factors := chi.factors, multiplicities := chi.multiplicities];
+EndDefine; -- AlgMult
+
+Define GeoMult(A,z)
+  If RingOf(A)<>RingOf(z) Then
+    error("arguments must be in the same ring (...)");
+  EndIf;
+  mi := factor(MinPoly(A,z));
+  GeoMult := [];
+  For i := 1 To len(mi.factors) Do
+    L := CoeffListWRT(mi.factors[i], z);
+    Val := sum([L[j]*A^(j-1)| j In 1..len(L)]);
+    K := NewFractionField(RingOf(Val));
+    append(ref GeoMult, NumCols(LinKer(mat(K,Val))));
+  EndFor;
+  Return record[factors := mi.factors, multiplicities := GeoMult];
+EndDefine; -- GeoMult
+
+
+Define MultiplicationMat(X, I, opt QB2)
+  if type(X)=IDEAL then
+    PrintLn "--> WARNING syntax change:";
+    PrintLn "--> use `MultiplicationMat(f, I)' or `MultiplicationMat(f, I, QB)'";
+    swap(ref I, ref X);
+  endif;
+  R := RingOf(I);
+  If R<>RingOf(X) Then error("arguments must be in the same ring"); EndIf;
+  If IsZeroDim(I) = false Then error("ideal must be 0-dimensional"); EndIf;
+  QB := QuotientBasis(I);
+  cols := [ coefficients(NF(X*T,I), QB) |  T in QB ];
+  M := transposed(mat(cols));
+  if not(IsDefined(QB2)) then 
+    return M; //record[mat:=M, QB:=QB];
+  endif;
+//  QB2 := GetRow(mat([QB2]), 1); // ingegnoso ;-)
+  QB2 := [ RingElem(R, T) | T In QB2 ]; // checks every T is in R
+  BC := BaseChange(I,QB2);
+///  return record[mat:=inverse(BC)*M*BC, QB:=QB2];
+  return inverse(BC)*M*BC;
+EndDefine; -- MultiplicationMat
+
+
+Define BMForMat(...)
+  // matrici moltiplicazione => matrici commutative: CONTROLLARE!
+  if not(len(ARGV)=1 or len(ARGV)=2) then error("1 or 2 arguments"); endif;
+  If len(ARGV) = 1 then Matrices := ARGV[1];  EndIf;
+  If len(ARGV) = 2 then Matrices := ARGV[2];  P := ARGV[1]; EndIf;
+  --check that all matrices belong to the same ring
+  K := RingOf(Matrices[1]);
+  S := NumRows(Matrices[1]);
+  N := len(Matrices);
+  Foreach M in Matrices Do
+    If RingOf(M)<>K Then error("All matrices must be in the same ring"); EndIf;
+    If NumRows(M)<>NumCols(M) Then error("Matrices must be square"); EndIf;
+    if NumRows(M)<>S then error("All matrices must have the same size"); endif;
+  EndForeach;
+  --check that the list of matrices is not empty
+  //If IsEmpty(Matrices) Then Return ideal(1); EndIf;
+  --check that all matrices commute
+  For i:=1 To N Do
+    Mi := Matrices[i];
+    For j:=i To N Do
+      Mj := Matrices[j];
+      If not(IsZero(Mi*Mj-Mj*Mi)) Then error("Matrices must commute"); EndIf;
+    EndFor;
+  EndFor;
+  if len(ARGV) = 1 then P ::= K[z[1..N]];
+  else
+    if K<>CoeffRing(P) or NumIndets(P)<len(Matrices) then
+      error("K<>CoeffRing(P) or NumIndets(P)<len(Matrices)");
+    endif;
+  endif;
+  -- end of input checking
+  -- Initializing ...
+  phi := CoeffEmbeddingHom(P);
+  QB := [one(P)];   -- generalized Quotient Basis
+  PPToAvoid := [];
+  Border := ComputeBorder(QB, PPToAvoid);
+  A := ColMat(K, flatten(GetRows(IdentityMat(K, S))));
+  GB := [];
+
+  -- MAIN LOOP
+  While Border <> [] Do
+    -- PrintLn "-------------------------------------------------------";
+    -- PrintLn "Quotient Basis= ",QB;
+    PP := Border[1];
+    -- PrintLn "List of power products= ", Border;
+    -- PrintLn "Next PP: ", PP;
+    -- Compute the matrix corresponding to PP, view it as a vector
+    -- and solve the LS problem
+    L := exponents(PP);
+    MPP := product([Matrices[i]^L[i] | i In 1..N]);
+    B := ColMat(K, flatten(GetRows(MPP)));
+    Alpha := LinSolve(A,B);
+    If (Alpha = ZeroMat(K, 0, 0)) Then
+      append(Ref QB, PP);
+      A := ConcatHor(A, B);
+    Else
+      append(Ref PPToAvoid, PP);
+      append(Ref GB, PP - sum([phi(Alpha[i][1])*QB[i] | i In 1..len(QB)]));
+    EndIf;
+    Border := ComputeBorder(QB, PPToAvoid);
+  EndWhile;
+  Return Record[GB := GB, QB := QB];
+EndDefine; -- BMForMat
+
+  ----------------------------------------------------------------------
+  -- Internal functions (no input check)
+  ----------------------------------------------------------------------
+Define BaseChange(I,QB2)
+  GB := ReducedGBasis(I);
+  QB := QuotientBasis(I);
+  M := transposed(mat([coefficients(NF(T, I), QB) | T In QB2]));
+  If det(M)=0 then error ("list must be a quotient basis"); EndIf;
+  Return M; --mat(RingOf(I),M);
+EndDefine; -- BaseChange
+
+  
+Define ComputeBorder(QB, PPToAvoid)
+  P := RingOf(QB[1]);
+  X := indets(P);
+  I := ideal(P, PPToAvoid);
+  Border := MakeSet(flatten([[PP*x | x In X] | PP In QB], 1));
+  Border := diff(Border, QB);
+  Border := [PP In Border | not(PP IsIn I)];
+  sort(Ref Border);
+  Return Border;
+EndDefine; -- ComputeBorder
+
+
+define EvalPolyInMatList(f, M)
+  ResM := ZeroMat(RingOf(M[1]), NumRows(M[1]), NumCols(M[1]));
+  foreach summand in monomials(f) do
+    d := exponents(LPP(summand));
+    ResM := ResM
+    + LC(summand) * product([ M[i]^d[i] | i in 1..len(M)]);
+  endforeach;
+  return ResM;
+enddefine; -- EvalPolyInMatList
+
+define EvalPolyAtMat(f, M)
+  // M is a LIST of MAT
+  // Assume all matrices are square over same ring
+  // Assume num of matrices equals number of indets in RingOf(f)
+  if type(f) <> RINGELEM or not(IsPolyRing(RingOf(f))) then
+    error("EvalPolyAtMat: arg1 must be a polynomial");
+  endif;
+  P := RingOf(f);
+  nvars := NumIndets(P);
+  if type(M) <> LIST or MakeSet([type(N) | N in M]) <> [MAT] then
+    error("EvalPolyAtMat: arg2 must be a list of matrices");
+  endif;
+  if len(M) <> nvars then error("EvalPolyAtMat: matrix list must have length equal to number of indets"); endif;
+  d := NumRows(M[1]);
+  if MakeSet([NumRows(N) | N in M]) <> [d] or MakeSet([NumCols(N) | N in M]) <> [d] then
+    error("EvalPolyAtMat: matrices must all be square and of same size");
+  endif;
+  R := RingOf(M[1]);
+  sz := NumRows(M[1]);
+  ans := ZeroMat(R, sz,sz);
+  foreach m in monomials(f) do
+    ProdOfMat := LC(m)*IdentityMat(R, sz);
+    exps := exponents(m);
+    for i := 1 to nvars do
+      if exps[i] = 0 then continue; endif; // avoid pointless mult by identity matrix
+      ProdOfMat := ProdOfMat * M[i]^exps[i];
+    endfor;
+    ans := ans+ProdOfMat;
+  endforeach;
+  return ans;
+enddefine; -- EvalPolyAtMat
+
+  
+  ----------------------------------------------------------------------
+  -- Input check
+  ----------------------------------------------------------------------
+
+EndPackage;

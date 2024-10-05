@@ -1,0 +1,62 @@
+      PPMonoidHom
+      Copyright (c)  2010,2012  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{PPMonoidHom}{John Abbott}
+
+
+
+== User documentation for the class PPMonoidHom ==
+%======================================================================
+
+The class ``PPMonoidHom`` is used for representing homomorphisms between
+``PPMonoid``s.  Each indeterminate in the domain monoid maps into an
+element of the codomain (//i.e.// a power product).
+
+=== Examples ===[examples]
+- [ex-PPMonoidHom.C ../../examples/index.html#ex-PPMonoidHom1.C]
+-
+
+=== Functions for PPMonoidHoms ===
+%----------------------------------------------------------------------
+
+Here is a list of the (pseudo-)ctors for ``PPMonoidHom``
+- ``IdentityHom(PPM)`` the identity
+- ``GeneralHom(PPM, images)`` where ``images`` is a ``vector`` of ``PPMonoidElem`` whose //i//-th entry is the image of the //i//-th indet in ``PPM``
+- ``RestrictionHom(PPM, IndetIndexes)`` where ``IndetIndexes`` is a vector of indices of the indets which map to themselves, the others map to 1.
+
+
+The ``PPMonoidHom`` object may be applied to a value by using normal
+function call syntax: for instance
+```
+   PPMonoidElem t =  ...;
+   PPMonoidHom phi = ...;
+   cout << "phi applied to t gives " << phi(t) << endl;
+```
+
+
+Given a ``PPMonoidHom`` you can find out its domain and codomain:
+ |  ``domain(phi)``   | the domain of ``phi`` as a ``PPMonoid``   |
+ |  ``codomain(phi)`` | the codomain of ``phi`` as a ``PPMonoid`` |
+
+
+
+== Library Contributor Documentation ==
+%======================================================================
+
+
+
+== Maintainer documentation for PPMonoid, PPMonoidElem, and PPMonoidBase ==
+%======================================================================
+
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Add some more special cases: //e.g.// permutations of the indets, and
+the "identity" between PPMonoids which differ only in their orderings.
+
+Should we allow partial homs? //e.g.// one which maps ``x^2`` to ``y``
+(so odd powers of ``x`` have no image).

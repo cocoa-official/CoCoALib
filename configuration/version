@@ -1,0 +1,13 @@
+##################################################################
+# Version information: major, minor, and patch level;
+# major just counts upwards
+# minor should be two digits (from 00 to 99)
+# patch should be 3 digits (from 000 to 999); last digit ZERO means stable release.
+# The values must be positive integers (without any whitespace before or after).
+
+VER_MAJ=0
+VER_MIN=99
+VER_PATCH=855
+
+# Note this file is read by the main configure script (via the "source" command);
+# it is also read by the scripts for making releases (in src/CoCoA-5/release-files/)

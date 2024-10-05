@@ -1,0 +1,82 @@
+      VectorOps
+      Copyright (c)  2005,2009,2014,2021  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{VectorOps}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-VectorOps1.C ../../examples/index.html#ex-VectorOps1.C]
+-
+
+
+== User Documentation ==
+%======================================================================
+
+The file offers a few handy functions on standard C++ containers
+(principally ``vector`` and ``list``).
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+- ``out << L``  output elements of ``L`` (as comma separated list in square brackets)
+- ``concat_copy(v1, v2)``  append entries of ``v2`` onto end of ``v1``
+- ``concat_move(v1, v2)``  append entries of ``v2`` onto end of ``v1``; empties ``v2``!!
+- ``product(L)``  returns the product of the entries of ``L``; gives error
+if ``L`` is empty.
+- ``sum(L)``  returns the sum of the entries of ``L``; gives error
+if ``L`` is empty.
+- ``HasUniqueOwner(L)`` returns true if the entries of ``L`` all have the
+same owner; gives error if ``L`` is empty.
+- ``LexCmp3(begin1,end1, begin2,end2)`` do a 3-way lex comparison; returns
+<0,=0,>0 according as first seq is <,=,> second seq.  Uses ``cmp`` between
+elements, and assumes ``cmp`` returns <0,=0,>0.
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The output functions are specifically only for ``vector`` and ``list``;
+I cannot make it more general without ambiguities arising.
+
+The implementations of the printing functions could hardly be simpler.
+The only "clever" part is the fn ``OutputRange`` which actually does the work.
+
+Implemented as template code in the header file.
+The implementation is slightly indirect to allow use of ``std::for_each``
+(also so that would work with lists/vectors/etc)
+
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+OutputRange is publicly visible, but is not intended for public use.
+
+Impl of ``sum`` and ``product`` is a bit too complicated.
+Need a template expert to clean it.
+
+Perhaps add also a ``LexCmp3`` that takes complete containers?
+Currently it is "STL compatible" (which I think is usually awkward).
+It would make the calls in ``symbol.C`` neater!
+
+Activate the commented out template fn ``cmp``?
+The type ``int`` seemed the most natural choice for the return value of this
+three-way comparison functions (though ``signed char`` would be big enough).
+The implementation assumes that ``operator<`` is defined; this decision was
+inspired by assumptions made by various STL functions.  The types of the
+arguments may be different as this is probably be more convenient for the
+user.  Obviously the generic definition given here can be overridden by
+more efficient specific definitions for certain argument types.
+
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- July (v0.99534): merged io.H and UtilsTemplate.H into this file
+- May (v0.99533): removed InputFailCheck (it was rather pointless)
+                  moved GlobalOutput etc to file server/GlobalIO.H

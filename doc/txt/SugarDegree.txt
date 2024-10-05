@@ -1,0 +1,64 @@
+      SugarDegree
+      Copyright (c)  2009 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SugarDegree}{Anna Bigatti}
+
+
+== User documentation ==
+%======================================================================
+
+Abstract class for implementing several kinds of //sugar//:
+- homogenous case (= the degree)
+- non graded case (using StdDeg)
+- graded case (using wdeg)
+- non graded case and saturating algorithm
+- graded case and saturating algorithm
+
+=== Pseudo constructors ===
+
+- ``NewStdSugar(ConstRefRingElem f);``
+- ``NewStdSugarNoIdx(ConstRefRingElem f, long PosIndet);``
+- ``NewStdSugarSat(ConstRefRingElem f);``
+- ``NewStdSugarNoIdxSat(ConstRefRingElem f, long PosIndet);``
+
+- ``NewWSugar(ConstRefRingElem f);``
+- ``NewWDeg1CompTmp(ConstRefRingElem f);`` -- temporary: only for testing
+- ``NewWSugarConst(ConstRefRingElem f);``  -- stays constant in myUpdate
+- ``NewWSugarSat(ConstRefRingElem f);``
+
+There is also an "empty" constructor for when you don't have yet
+enough information to choose the kind of sugar.  However it does
+require the ``uninitialized`` marker to make sure you know you have an
+uninitialized sugar!
+- ``sugar(uninitialized);``
+
+
+=== Member functions ===
+
+Warning! The following throw an error if the wrong type of value is asked!
+- ``const degree& myWSugar() const =0;`` -- only if impl stores this value
+- ``long myStdSugar() const =0;`` -- only if impl stores this value
+
+Warning! The following throw an error if the sugar is not initializes!
+- ``void myMul(ConstRefPPMonoidElem pp) =0;`` -- sugar after multiplying by pp
+- ``void myUpdate(ReductionCog F, const GPoly& g);`` -- sugar after reducing F by g
+- ``void myUpdate(ConstRefPPMonoidElem CofactorPP, const GPoly& g) =0;`` -- sugar after adding pp*g
+- ``int myCmp(const SugarDegreeBase& s) const =0;``  -- this <=> s ? <0,=0,>0
+- ``std::ostream& myOutput(std::ostream& out) const =0;``
+
+
+=== Non member functions ===
+
+- ``bool IsInitialized(const SugarDegree& sd);``
+- ``std::ostream& operator<<(std::ostream& out, const SugarDegree& s);``
+
+== Maintainer documentation ==
+%======================================================================
+
+Work in progress
+
+Sugar has not been properly tested on modules
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================

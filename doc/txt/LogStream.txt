@@ -1,0 +1,58 @@
+      LogStream
+      Copyright (c)  2017 John Abbott, Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{LogStream}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-LogStream1.C ../../examples/index.html#ex-LogStream1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+CoCoALib offers its own "log output stream" for logging messages
+(see for instance [[obsolescent]].  By default this is ``std::cout``
+but it may be set to any other stream (_e.g._ ``std::clog``).
+
+NOTE: internally the implementation uses a global variable, so multi-threaded
+applications should be careful about using ``LogStreamForThisBlock``.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+- ``LogStream()``  returns the current CoCoA "log stream" (as a ref to ``std::ostream``)
+- ``LogStreamForThisBlock BlockName(out)``  sets the CoCoA "log stream" (global var) to be ``out`` (of type ``std::ostream``) for this code block; it restores previous stream upon exiting the block.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The implementation could hardly be simpler.
+
+The global variable is a pointer because references cannot be reseated in C++
+(so it would be impossible to implement ``mySetLogStreamPtr``).
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Should the default CoCoA "log stream" be ``std::cout`` or ``std::clog``?
+``std::cout`` is probably easier to deal with for non-expert users
+(_e.g._ when redirecting output to a file).
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- April (v0.99560): revised interface for changing log stream in a block
+- March (v0.99560): first release
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

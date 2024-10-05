@@ -1,0 +1,146 @@
+      MachineInt
+      Copyright (c)  2007-2010,2015,2020  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{MachineInt}{John Abbott}
+
+
+
+== User documentation for MachineInt ==
+%======================================================================
+
+The class ``MachineInt`` is intended to help you write functions which
+accept arguments whose type is a machine integer (see **Why?** below).
+We recommend that you use ``MachineInt`` only to specify function
+argument types; other uses may result in disappointing performance.
+
+You cannot perform arithmetic directly with values of type ``MachineInt``.
+The primary operations are those for extracting a usable value from a
+``MachineInt`` object:
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+Arithmetic directly with ``MachineInt`` values is not possible.  The
+value(s) must be converted to ``long`` or ``unsigned long`` before
+operating on them.
+
+
+
+=== Queries and views ===[queries]
+%----------------------------------------------------------------------
+- ``IsZero(n)``  -- true iff ``n`` is zero
+- ``IsOne(n)``  -- true iff ``n`` is one
+- ``IsMinusOne(n)``  -- true iff ``n`` is minus one
+- ``IsNegative(n)``   -- true iff ``n`` is negative,
+                   if false the value can be extracted as an ``unsigned long``,
+                   if true the value can be extracted as a ``signed long``
+- ``IsSignedLong(n)`` -- true iff ``n`` can be extracted as a ``signed long``
+- ``AsUnsignedLong(n)`` -- extract ``n`` as an ``unsigned long`` -- see NOTE!
+- ``AsSignedLong(n)`` -- extract ``n`` as a ``signed long`` -- see NOTE!
+- ``IsInRange(lo,x,hi)`` -- true iff ``lo`` <= ``x`` <= ``hi``
+- ``negate(n)``  -- return ``-n`` as an ``unsigned long`` (valid only if ``IsNegative(n)``)
+- ``uabs(n)``   -- return ``abs(n)`` as an ``unsigned long``
+-
+
+=== NOTE: converting to long or unsigned long ===
+%----------------------------------------------------------------------
+You should not call ``AsUnsignedLong`` if the value is negative, nor should
+you call ``AsSignedLong`` if the value is large and positive --- currently, an
+error is signalled only if debugging is active.  Here's an outline of the
+recommended usage:
+```
+void SomeProcedure(const MachineInt& n)
+{
+  if (IsNegative(n))
+  {
+    const long N = AsSignedLong(n);
+    ...
+  }
+  else // n is non-negative
+  {
+    const unsigned long N = AsUnsignedLong(n);
+    ...
+  }
+}
+```
+
+
+
+=== Why? ===
+%----------------------------------------------------------------------
+The class ``MachineInt`` was created in an attempt to circumvent C++'s
+innate automatic conversions between the various integral types; most
+particularly the silent conversion of negative signed values into unsigned
+ones (which necessarily changes the value).
+
+Various C++ programming style guides recommend avoiding unsigned integer
+types.  Unfortunately values of such types appear frequently as the
+result of various counting functions in the STL.  So it is somewhat
+impractical to avoid unsigned values completely.
+
+The class ``MachineInt`` employs automatic user-defined conversions to
+force all integral values into the largest integral type, //viz.// ``long`` or
+``unsigned long``.  An extra "sign bit" inside a ``MachineInt`` indicates
+whether the value is negative (//i.e.// must be regarded as a ``signed long``).
+
+Passing an argument as a ``MachineInt`` is surely not as fast as using a
+built in integral type, but should avoid "nasty surprises" which can
+arise with C++'s automatic conversions (//e.g.// a large ``unsigned long`` could
+be viewed as a negative ``long``).
+
+
+== Maintainer documentation for MachineInt ==
+%======================================================================
+
+On the whole everything is very simple; the hard part was establishing a
+reasonable design that interoperates with C++'s overload resolution rules.
+
+An object of type ``MachineInt`` contains two data fields:
+- ``myValue``     -- the original integer value converted to ``unsigned long``
+- ``IamNegative`` -- true iff the original value was (signed and) negative
+
+
+The flag ``IamNegative`` allows the field ``myValue`` to be
+interpreted correctly: if ``IamNegative`` is ``true`` then the correct
+value of ``myValue`` may be obtained by casting it to a (signed)
+``long``; conversely, if ``IamNegative`` is ``false`` then the value
+of ``myValue`` is correct as it stands (//i.e.// as an ``unsigned long``).
+
+Most functions are so simple that an inline implementation is appropriate.
+
+The implementation of the function ``abs`` will work correctly even if
+the value being represented is the most negative ``signed long``.
+Note that the C++ standard allows the system to produce an error when
+negating a ``long`` whose value is the most negative representable
+value; in contrast, operations on ``unsigned long`` values will never
+produce errors (except division by zero).
+
+The impl of ``IsInRange`` is a bit involved; it must avoid overflow,
+and may not assume anything about the internal representations of
+signed and unsigned long values.
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+My biggest doubt is whether this is really the right way to tackle the
+problem of silent automatic conversion between ``long`` and ``unsigned long``.
+Anyway, I'm using it (until a better solution comes along).
+
+Arg validity checking happens only if debugging is active.
+
+This will require changes when ``long long int`` becomes commonplace.
+
+== Main changes ==
+%======================================================================
+
+**2015**
+- October (v0.99540): changed name ``abs`` to ``uabs``; added fn ``negate``.
+
+**2011**
+- November (v0.9949): this class was previously called MachineInteger
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

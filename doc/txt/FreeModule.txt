@@ -1,0 +1,84 @@
+      FreeModule
+      Copyright (c)  2005,2022  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{FreeModule}{John Abbott}
+
+
+
+== Examples ==[examples]
+%======================================================================
+- [ex-module1.C   ../../examples/index.html#ex-module1.C]
+-
+
+== User documentation for the class FreeModule ==
+%======================================================================
+
+For normal use there are only a few functions of interest:
+
+:  ``NewFreeModule(R, NumCompts)``
+    creates an object of type FGModule representing the free module of
+    dimension NumCompts over the ring R.
+
+:  ``FreeModule(M)``
+    where M is a module; if M is genuinely a FreeModule then that FreeModule
+    is returned otherwise an error is generated.
+
+:  ``IsFreeModule(M)``
+    true iff the module M is genuinely a FreeModule.
+
+:  ``CanonicalBasis(M)``
+    returns a read-only ``vector`` whose entry with index ``k``
+    contains the ``k``-th unit vector (all coords 0 except ``k``-th;
+    recall that indexes start from 0).
+    
+
+:  ``NewFreeModule(R, NumCompts, shifts)``
+    creates an object of type FGModule representing the free module of
+    dimension NumCompts over the ring R.  R must be a PolyRing, and
+    shifts is a vector<degree> containing NumCompts elements, the i-th
+    element being the shift applied to degrees of values in the i-th
+    component.  For example: ?????
+
+
+== Maintainer documentation for the classes FreeModule and FreeModuleImpl ==
+%======================================================================
+
+I shall suppose that the maintainer documentation for modules and
+FGModules has already been read and digested.  It could also be helpful
+to have read ring.txt since the "design philosophy" here imitates that
+used for rings.
+
+As one would expect, FreeModule is simple a reference counting smart
+pointer class to a FreeModuleImpl object.
+
+
+FreeModuleImpl turns out to be a little more complex than one might
+naively guess.  The extra complexity arises from two causes: one is
+compatibility with the general structure of modules, and the other is
+that a FreeModule manages the memory used to represent the values of
+ModuleElems belonging to itself.
+
+GradedFreeModuleImpl is derived from FreeModuleImpl and allows
+storing and using ordering and shifts: it requires a SparsePolyRing
+as BaseRing.  It provides these functions for FreeModule:
+```
+  FreeModule NewFreeModule(const ring& P, const ModuleTermOrdering& O);
+  bool IsGradedFreeModule(const module& M);
+```
+The following functions are defined only if FreeModule is implemented as GradedFreeModuleImpl
+```
+  const std::vector<degree>& shifts(const FreeModule& M);
+  const ModuleTermOrdering& ordering(const FreeModule& M);
+  long LPos(const ModuleElem& v);
+  degree wdeg(const ModuleElem& v);
+  int CmpWDeg(const ModuleElem& v1, const ModuleElem& v2);
+  ConstRefPPMonoidElem LPP(const ModuleElem& v);
+  bool IsHomog(const ModuleElem& v);
+```
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Documentation rather incomplete.
+

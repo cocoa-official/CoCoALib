@@ -1,0 +1,46 @@
+<html>
+<head>  <title>Examples</title>  </head>
+
+<body>
+<h1 align=center>CoCoALib Examples</h1>
+
+The programs in this directory form part of the documentation of CoCoALib.
+They are self-explanatory and illustrative; they should be <i>read</i> (rather than
+merely compiled and run).  Each one concentrates on certain features of CoCoALib.
+
+<h3>Where to start</h3>
+
+If you are completely new to the CoCoA Library then you should start
+by looking at these examples which are the simplest and give an idea
+of the "philosophy" behind the CoCoA Library:
+<pre>
+  ex-ring1.C
+  ex-RingQQ1.C
+  ex-RingElem1.C
+</pre>
+
+To compile all the example programs, just issue the command
+<pre>
+  make
+</pre>
+from inside this directory; or the command <tt>make examples</tt> from the COCOA_ROOT directory.
+
+<p>
+You can compile just one example (say <tt>ex-ring1</tt>) by executing:
+<pre>
+  make ex-ring1
+</pre>
+
+
+<h3>Writing Your Own Programs</h3>
+
+An easy way to create your own program using CoCoALib is the following
+<ul>
+  <li>copy <tt>ex-empty.C</tt> into another file, say <tt>prog.C</tt></li>
+  <li> write your code inside the procedure <tt>program</tt> in this copy</li>
+  <li> compile your program with the command <tt>make prog</tt></li>
+  <li> run your program with the command <tt>./prog</tt></li>
+</ul>
+
+<h2>Short Descriptions of the Example Programs</h2>
+

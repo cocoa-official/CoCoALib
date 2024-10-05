@@ -1,0 +1,31 @@
+h1, h2, h3, pre, form {padding: 4pt}
+h1, h2, h3  { margin-top:2pt;  margin-bottom:2pt; }
+
+h1 {  background:#5ee; border: solid #0bb 2pt; }
+h2 {  background:#9f9; border: solid #0bb 1pt; }
+form {  background:#ff9; border: solid #990 1pt; margin: 0pt; text-align:center}
+h3 {  background:#dfd; border: solid #0bb 1pt; }
+h4 {  background:#efe; border: solid #0bb 1pt; }
+pre, code { background:#ffa; font-weight: bold; color: #c00; font-size:125%}
+pre { border: solid #ee9 1pt;
+      margin-left:10%; margin-right:10%; }
+table  { background:#ddd;}
+th { background:#5ee; }
+td { background:#fff; padding:1pt; }
+a:hover { background: #ff0; color: #000; }
+
+div.multicol-index {  border: 1px solid #888; padding: 2pt; background:"white";
+
+  column-count: 4;
+  column-gap: 10px;
+  column-rule: 1px solid #888;
+  
+  -moz-column-count: 4;
+  -moz-column-gap: 10px;
+  -moz-column-rule: 1px solid #888;
+  
+  -webkit-column-count: 4;
+  -webkit-column-gap: 10px;
+  -webkit-column-rule: 1px solid #888;
+  
+  }

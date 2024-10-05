@@ -1,0 +1,23 @@
+-----------------------------------------------------------------------
+-- test-implicit:
+-----------------------------------------------------------------------
+TestCount := 0;
+PrintInfo := false;
+
+define TEST_ASSERT(A,B)
+  toplevel TestCount;
+  toplevel PrintInfo;
+  TestCount := TestCount+1;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B));
+  endif;
+  if PrintInfo then print "."; EndIf;
+enddefine; -- TEST_ASSERT
+
+ImplicitP ::= QQ[x,y,z];
+use ImplicitS ::= QQ[s,t];
+
+TEST_ASSERT(ImplicitHypersurface(ImplicitP, [s^2, (1/44017)*s*t, t^2]),
+	    RingElem(ImplicitP, "y^2 -(1/44017^2)*x*z"));
+TEST_ASSERT(ImplicitHypersurface(ImplicitP, [s^2, (1/44027)*s*t, t^2]),
+	    RingElem(ImplicitP, "y^2 -(1/44027^2)*x*z"));

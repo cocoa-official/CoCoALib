@@ -1,0 +1,88 @@
+      QBGenerator
+      Copyright (c)  2006,2012  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{QBGenerator}{John Abbott}
+
+
+
+== User documentation for QBGenerator ==
+%======================================================================
+
+The name ``QBGenerator`` derives from its intended use as a (monomial)
+//quotient basis generator//, that is a way of generating a factor closed
+(vector space) basis of power products for the quotient of a
+polynomial ring by a zero-dimensional ideal.  It is used in the
+implementation of the **FGLM** and the **Buchberger-Moeller algorithms** -- in
+fact these are really the same algorithm (for computing a Groebner
+basis of an intersection of one or more zero-dimensional ideals).
+
+
+==== Background theory ====[theory]
+%----------------------------------------------------------------------
+
+Let ``P`` denote a polynomial [[ring]] (with coefficients in a field
+``k``), and let ``I`` be a zero-dimensional [[ideal]] in ``P``.  Then
+mathematically the quotient ``P/I`` is a finite dimensional vector space
+over ``k``.  We seek a basis ``QB`` for ``P/I`` which is a **factor closed**
+set of power products; //i.e.// if the power product ``t`` is in ``QB`` then any
+factor of ``t`` is in ``QB`` too.  Groebner basis theory guarantees that such
+bases exist; actually it was first proved by Macaulay (a person, not a
+computer algebra system).
+
+The elements of ``QB`` are determined one at a time, obviously
+starting with the trivial power product, 1.  Moreover, at every stage
+the set of elements in the partially formed ``QB`` is factor closed,
+and this implies that only certain PPs are candidates for being
+adjoined to the ``QB`` (we call these **corners**).  When a new
+element is adjoined to the ``QB`` new elements may appear in the
+//corner set//, these newly adjoined elements form the **new corner set**
+(this is always a subset of the //corner set//, and may be empty).
+
+During the determination of the ``QB``, some power products will be
+discovered which cannot be in the ``QB`` (usually based on the failure of a linear
+independence criterion).  Such PPs form the **avoid set**: the
+``QBGenerator`` will exclude all multiples of all elements of the
+//avoid set// from subsequent consideration.
+
+
+=== Constructors and Pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+- ``QBGenerator(PPM)`` where ``PPM`` is the [[PPMonoid]] in which we shall
+calculate; initially the //quotient basis// is empty, and the //corner set// contains
+just ``1``.
+
+
+=== Operations on QBGenerator ===[operations]
+%----------------------------------------------------------------------
+There are 3 accessor functions, and 2 true operations:
+- ``QBG.myQB()`` gives the current elements of the //quotient basis// (as a
+``vector``) in the order they were added;
+- ``QBG.myCorners()`` gives the current elements of the //corner set// (as a ``list``);
+- ``QBG.myNewCorners()`` gives the newly added elements to the //corner set//
+(as a ``list``);
+- ``QBG.myCornerPPIntoQB(pp)`` move the element ``pp`` of the //corner set//
+into the //quotient basis// (this updates both the //corner set// and the //new corner set//);
+- ``QBG.myCornerPPIntoAvoidSet(pp)``  move the element ``pp`` of the //corner set//
+into the //avoid set// (all multiples of ``pp`` will skipped hereafter).
+
+
+== Maintainer documentation for QBGenerator ==
+%======================================================================
+
+The tricky part was designing a good interface.  The implementations themselves
+are relatively straightforward (and actually contain some useful comments!)
+
+The function ``QBGenerator::myCornerPPIntoQB`` makes local copies of some
+fields to permit full exception safety.  This may adversely affect execution
+speed, but I believe that in the context of FGLM & Buchberger-Moeller the
+slow-down will be negligible //(but I have not actually tested my guess)//.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Class ``QBGenerator`` could offer a ctor which accepts a (good)
+estimate of the dimension of the quotient, //i.e.// final number of
+elements in the QB.  It could use this value to ``reserve`` space for
+``myQBList``.

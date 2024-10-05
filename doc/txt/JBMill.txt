@@ -1,0 +1,175 @@
+      JBMill
+      Copyright (c)  2011-2015  John Abbott,  Anna M. Bigatti  (orig author: Mario Albert)
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{JBMill}{Mario Albert}
+
+
+
+== User documentation for using Janet bases ==
+%======================================================================
+
+The files ``JBDatastructure.H``, ``JBSets.H``, ``JBAlgorithm.H`` and ``JBMill.H`` introduce several classes for computing and working with **Janet basis**.
+The normal user should only use the classes ``Involutive::JBMill`` and ``Involutive::JBMill::Builder`` to interact with Janet bases.
+
+
+=== Computing a Janet basis ===
+%----------------------------------------------------------------------
+
+To compute a Janet basis the user should use the class ``Involutive::JBMill::Builder``. To construct a ``Involutive::JBMill::Builder`` object the user has to use the standard constructor. For configuration of the building process there are several methods:
+
+- ``setInput(v)`` -- ``v`` must be a ``vector<RingElem>``. It sets the generating set of the ideal to ``v``.
+- ``setInput(cBegin, cEnd)`` -- ``cBegin`` and ``cEnd`` must be a ``vector<RingElem>::const_iterator`` and must define a range of ``RingElem``. The method sets the generating set of the ideal to this range.
+- ``setStrategy(strat)`` -- ``strat`` must be a ``Involutive::StrategyFlag``. Possible enums are ``TQDegree``, ``TQBlockHigh``, ``TQBlockLow`` and ``GBCompletion``. It defines the algorithm which should be used to compute a Janet basis. If this method is never called the Builder object uses the ``TQBlockLow`` strategy.
+- ``setInvolutiveCriteria(crits)`` -- ``crits`` must be a ``bitset<3>``. Every bit represents one of the three involutive criteria. If this method is never called the Builder object uses the first two involutive criteria.
+
+The methods are chainable, e.g. the user can do the following: ``builder.setInput(input).setStrategy(Involutive::TQDegree)``. If the user calls a method more than one time only the input of the last method call is taken into account.
+To construct a ``JBMill`` out of a correctly configured builder object ``build`` the user has to use ``JBMill(build)``. If the user does not set a input the construction of a ``JBMill`` will fail.
+
+
+=== Using the JBMill ===
+%----------------------------------------------------------------------
+In the following let ``elem`` be a ``RingElem``.
+
+- ``myReturnJB()`` -- returns the minimal Janet basis as ``vector<RingElem>``
+- ``myReturnGB()`` -- returns the minimal Groebner basis as ``vector<RingElem>``
+- ``myPrintMultVar()`` -- prints the multiplicative variables of every element in the given Janet basis
+- ``myPrintNonMultVar()`` -- prints the nonmultiplicative variables of every element in the given Janet basis
+- ``myMultVars()`` -- compute the multiplicative variables of the given Janet basis. It returns a ``map<PPMonoidElem, vector<bool> >`` where the key is a ``LPP`` of an element in the Janet basis.
+- ``myNonMultVars()`` -- compute the nonmultiplicative variables of the given Janet basis. It returns a ``map<PPMonoidElem, vector<bool> >`` where the key is a ``LPP`` of an element in the Janet basis.
+- ``myNonMultVarsOf(elem)`` -- computes the nonmultiplicative variables of ``elem`` which must be a member of the Janet basis. If not we assume that every variable is nonmultiplicative. It returns a ``vector<bool>``.
+- ``IamPommaretBasis`` -- checks if the Janet basis is also a Pommaret basis. It returns a boolean.
+- ``IamHomogenous`` -- checks if the Janet basis is also homogeneous. It returns a boolean.
+- ``IamMonomialIdeal`` -- checks if the Janet basis is also a monomial ideal. It returns a boolean.
+- ``myStandardRepresentation(elem)`` -- compute the involutive standard representation of ``elem``. It returns ``pair<map<PPMonoidElem, RingElem>, RingElem>``. The first entry of the pair is a map, where the key represents the LPP of an element in the Janet basis and the value the corresponding factor. The second entry of the pair corresponds to the rest.
+- ``myOutputStandardRepresentation(elem)`` -- computes an involutive standard representation of ``elem``.
+- ``myHilbertPol(elem)`` -- ``elem`` must be a single indent. The method computes the Hilbert polynomial of the ideal in terms of ``elem``.
+- ``myHilbertFunc(n)`` -- ``n`` must be a ``BigInt``. The method computes the dimension of P/I in degree ``n``.
+- ``myHilbertSeries(elem)`` -- ``elem`` must be a single indent of a fraction field. The method computes the Hilbert series of the ideal in terms of ``elem``.
+- ``mySyzygy()`` -- Compute the first involutive syzygy and returns a ``FGModule``.
+- ``myDim()`` -- Computes the dimension of P/I.
+- ``myCls(ppelem)`` -- Computes the class of ``ppelem`` which is of type ``PPMonoidElem``. the class starts counting at ``0`` up to ``n - 1``. The cls of ``1`` is ``-1``. It returns a ``long``.
+- ``myMinCls()`` -- Computes the minimal class of all LPP's of the Janet basis as long.
+- ``myMaxCls()`` -- Computes the maximal class of all LPP's of the Janet basis as long.
+- ``myElementsWithClass(InputCls)`` -- Computes all elements of the Janet basis where the class of the LPP is ``InputCls``. ``InputCls`` is a ``long`` and the method returns a ``vector<RingElem>``.
+- ``myComplementaryDecomposition()`` -- Computes the complementary decomposition of I. it returns ``vector<pair<PPMonoidElem, vector<bool> > >``.
+- ``myStandardPairs()`` -- Computes the standard pairs of I. it returns ``vector<pair<PPMonoidElem, vector<bool> > >``.
+- ``myJNormalForm(elem)`` -- Computes the involutive normal form of ``elem`` and returns a ``RingElem``.
+- ``myJDivisor(elem)`` -- Computes the involutive divisor of ``LPP(elem)``. If there is an involutive divisor it returns it as ``RingElem`` if not the method returns ``0``.
+
+
+=== Examples ===
+%----------------------------------------------------------------------
+- [ex-Janet1.C ../../examples/index.html#ex-Janet1.C]
+- [ex-Janet2.C ../../examples/index.html#ex-Janet2.C]
+
+
+
+== Maintainer documentation for JBDatastructure, JBSets, JBAlgorithm, JBMill ==
+%======================================================================
+
+The basic datastructures to deal with Janet basis are implemented in ``JBDatastructure.C``. Everything of the following lives in the namespace ``CoCoA::Involutive``.
+===JanetDatastructure===
+====JanetTriple====
+The ``JanetTriple`` is nothing else than a polynomial with some extra informations.
+In addition to the polynomial ``myPolynom`` it has a data member ``myAncestor`` which is usually the LPP of ``myPolynom`` and the already prolonged variables (``myAlreadyProlongedVars``). If the ``JanetTriple`` arises from a prolongation ``x_i * myP^\prime`` the ancestor is the LPP of ``myP^\prime``.
+
+====JanetNodeBase, JanetLeafNodeImpl, JanetInternalNodeImpl, JanetHandle, JanetTree====
+The ``JanetTree`` is the basic data structure to compute and deal efficiently with a Janet basis.
+It is a binary tree. A Janet tree contains the Janet basis in its leaf nodes.
+Therefore we distinguish between internal nodes (``JanetInternalNodes``) and leaf nodes (``JanetLeafNodes``).
+The tree is designed as a nested set of lists.
+A node basically consists of the distance to the next variable (the distance to next node to the right) and the next degree (the distance to next node to the left).
+An internal node contains a list of ``JanetHandles`` additionally, which represents the following tree to the right.
+A leaf node contains, beside the distance information, a ``JanetTriple``.
+The ``JanetTriple`` is not a direct data member of a leaf node.
+It is stored in a list.
+``JanetLeafNodeImpl`` only gets an iterator from this list.
+The ``JanetHandle`` handles the distinction between the ``JanetLeafNodeImpl`` and the ``JanetInternalNodeImpl`` because a stl-container cannot reasonable handle different classes even if they have the same base class.
+
+=====Problems&Ideals related to JanetNodeBase, JanetLeafNodeImpl, JanetInternalNodeImpl, JanetHandle, JanetTree=====
+The ``JanetTree`` only works with a list of ``JanetTriple``'s. It would be useful if it would work with a list of polynomials as well.
+
+====JanetContainer====
+The last part of the previous paragraph shows a strong connection between the list of ``JanetTriple`` which shall represents the Janet basis and the ``JanetTree`` which is another representation of the Janet basis.
+This could lead to strange situations which has as a consequence invalidate iterators.
+To avoid this during the normal usage of these two datastructure we introduce a ``JanetContainer``.
+``JanetContainer`` couples these two datastructures.
+It contains a list of ``JanetTriple``'s and a ``JanetTree`` which leaf nodes consists of iterators to this list.
+With this coupling the user can deal with a Janet basis safely.
+But for computing a Janet basis we do not use this class for efficiency reasons.
+
+====JanetIterator====
+The task of ``JanetIterator`` is to offer a way to navigate through the ``JanetTree``.
+Basically the ``JanetIterator`` consists of a pointer to the specific ``JanetTree``, pointer to the current in the tree and an iterator to a specific position in this list.
+The ``JanetIterator`` provides access (if possible) to the underlying ``JanetTriple``, provides the possibility to move forward in the tree, provides some informations of the current position in the tree and provides the functionality to add a new node in the ``JanetTree`` behind the current position.
+For knowing the way from the beginning of the tree to the current position it consists of a vector of longs which stores the specific degrees and the current variable.
+
+
+=== JBSets ===
+The most important algorithm to compute Janet basis is the TQ-Algorithm.
+There are two variants of it: the basic TQDegree strategy and the more advanced TQBlock strategy.
+The TQDegree strategy deals with a set T and Q. In short, through the computation the algorithm moves elements mainly from Q to T and vica versa. To deal efficiently with it we introduced the class ``TQSets``. It consists of the sets T (``mySetT``) and Q (``mySetQ``) which are ordered. Both are represented as ``std::multiset``.
+They contain ``JanetTriple`` and ordered by the LPP's of them (Because these LPP's are not unique during the computation we choosing ``std::multiset``).
+The ``JanetTriple``'s are not contained directly in the set T and Q itself, as it is very expensive to move them from one set to the other.
+Therefore there is a third set (``myBasicSet``) which is implemented as list of ``JanetTriple``'s which contains the ``JanetTriple``'s itself.
+The sets T and Q only contain an iterator to a specific position of these sets.
+
+For applying the BlockTQ algorithm we need a third set P (``mySetP``) which is implemented like T and Q. Due to the similarity we introduced a subclass of ``TQSets`` which is called ``TQPSets``. In addition to the new set P it introduces a strategy flag which influences the way how we move elements from Q to P.
+
+In addition to the above mentioned sets ``TQSets`` consists of a ``SparsePolyRing``, a ``ReductionCog`` and a ``bitset<3>`` (``myCriteria``). ``myCriteria`` regulates which involutive criteria shall be applied during the computation. Every bit stands for one single involutive criteria.
+
+====Problems&Ideas related to JBSets====
+Again the construction of the sets T,Q and ``myBasicSet`` is dangerous. There could be invalid iterators in the set T and Q.
+In addition to that it can happen (it really happens!!!!) that we can modify an element in ``myBasicSet`` in such a way that the ordering in T or Q would be change.
+But T and Q does not realizing this change.
+Therefore we getting again an invalid state.
+A solution for the second problem could be to store T and Q simply as a list of iterators of ``JanetTriple``'s and sort the list manually every time we want to have a sorted list. Maybe this solution is even faster than the current one!
+
+=== JBAlgorithm ===
+==== JBAlgorithm ====
+This class provides an interface for computing Janet bases.
+It defines a method to compute a Janet basis for a given input, and a method to get a JanetContainer which should contain the computed Janet basis.
+Also it contains as basic data the polynomial ring and the ``PPMonoid``.
+Every class which computes a Janet basis has to be a subclass of this class.
+
+==== TQAlgorithm ====
+This class is a subclass of ``JBAlgorithm`` but is again purely virtual.
+It acts as an interface for all algorithms which using the TQ strategy.
+In addition to the data members of the base class it defines amongst other things a ``JanetTree`` (``myJTree``).
+All ``TQAlgorithm`` subclasses deal with the class ``TQSets`` or a subclass of it.
+To get a unique access to the specific data member (which is defined in the subclasses) we implemented a purely virtual function ``myGetSets`` which returns a reference to the specific data members.
+With this construction we are able to initialize the specific set in the class ``TQAlgorithm`` via the method ``myInitialization``.
+In addition to that ``TQAlgorithm`` contains a method to return the ideal which is generated by ``1``.
+
+==== DegreeTQ ====
+This class is a subclass of ``TQAlgorithm``. It defines the data member ``mySets`` (a ``TQSets`` instance) additionally. In addition to that it implements the purely virtual methods ``myGetSets`` and ``myComputer``.
+
+==== BlockTQ ====
+This class is a subclass of ``TQAlgorithm``. It defines the data member ``mySets`` (a ``TQPSets`` instance) additionally. In addition to that it implements the purely virtual methods ``myGetSets`` and ``myComputer``.
+
+==== CompletionGB ====
+This class defines another approach to compute Janet basis, than the TQ approach.
+Here we first compute a reduced Groebner basis and complete it to the minimal Janet basis. It is a subclass of ``JBAlgorithm``. The class implements the purely virtual methods ``myComputer`` and ``myOutputResult`` and defines a ``JanetTree`` and a list of ``JanetTriple``'s as data members. In addition to that it implements several methods to compute the completion.
+
+=== JBMill ===
+==== JBMill ====
+This class defines the representation of a Janet basis accessible by the user.
+As data members it contains a ``JanetContainer`` (``myBasis``), a ``SparsePolyRing`` (``myPolyRing``) and a ``PPMonoid`` (``myPPMValue``).
+The class defines several methods to work with the Janet basis. For example the user can compute the multiplicative variables, the Groebner basis or some invariants like the hilbert polynomial.
+In addition to that it acts as a base class for the ``PBMill``, which is the representation of a Pommaret basis.
+
+=====Problems&Ideas related to JBMill=====
+Maybe introduce typedefs or structs for complicated objects like a complementary decomposition.
+Add several methods to check different stability position.
+
+==== JBMill::Builder ====
+This class is designed to construct a Janet basis.
+The goal of this class is to separate the construction of the ``JBMill`` from its representation.
+The 'Gang of Four' (Gamma, Helm, Johnson, Vlissides - Design Patterns) served
+as template for the construction.
+The corresponding pattern is called **Building Pattern**.
+To construct a ``JBMill`` out of the builder object the user can call a constructor of ``JBMill`` with a configured builder object.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

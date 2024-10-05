@@ -1,0 +1,128 @@
+      PPOrdering
+      Copyright (c)  2005,2014,2021,2022  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{PPOrdering}{John Abbott}
+
+
+
+== Examples ==[examples]
+%======================================================================
+- [ex-PPMonoidElem2.C ../../examples/index.html#ex-PPMonoidElem2.C]
+- [ex-OrderingGrading1.C ../../examples/index.html#ex-OrderingGrading1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+An object of the class ``PPOrdering`` represents an //arithmetic// ordering on
+the (multiplicative) monoid of power products, //i.e.// such that the
+ordering respects the monoid operation (//viz.// s < t => r*s < r*t for all
+r,s,t in the monoid).
+
+In CoCoALib orderings and gradings are intimately linked -- for gradings
+see also [[degree]].  If you want to use an ordering to compare power
+products then see [[PPMonoid]].
+
+
+=== Pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+Currently, the most typical use for a ``PPOrdering`` object is as an
+argument to a constructor of a concrete [[PPMonoid]] or [[PolyRing]],
+so see below **Convenience constructors**.
+
+These are the functions which create new ``PPOrdering``s:
+- ``lex(NumIndets)`` -- GradingDim = 0
+- ``xel(NumIndets)`` -- GradingDim = 0
+- ``StdDegLex(NumIndets)`` -- GradingDim = 1
+- ``StdDegRevLex(NumIndets)`` -- GradingDim = 1
+- ``NewMatrixOrdering(OrderMatrix, GradingDim)``
+-
+
+The first three create respectively ``lex``, ``StdDegLex`` and
+``StdDegRevLex`` orderings on the given number of indeterminates.
+Note the use of ``Std`` in the names to emphasise that they are only for
+standard graded polynomial rings (//i.e.// each indet has degree 1).
+
+The last function creates a ``PPOrdering`` given a matrix.  ``GradingDim``
+specifies how many of the rows of ``OrderMatrix`` are to be taken as
+specifying the grading.  Then entries of the given matrix must be integers
+(and the ring must have characteristic zero).
+
+
+==== Convenience constructors ====[PPOrderingCtor]
+%----------------------------------------------------------------------
+
+For convenience there is also the class ``PPOrderingCtor`` which provides
+a handy interface for creating [[PPMonoid]] and [[SparsePolyRing]], so that
+``lex``, ``xel``, ``StdDegLex``, ``StdDegRevLex`` may be used as shortcuts instead
+of the proper constructors, //e.g.//
+```  NewPolyRing(RingQQ(), symbols("a","b","c","d"), lex);
+is the same as
+```  NewPolyRing(RingQQ(), symbols("a","b","c","d"), lex(4));
+
+
+=== Queries ===[queries]
+%----------------------------------------------------------------------
+
+- ``IsStdGraded(PPO)``      -- true iff ``PPO`` is standard graded (or "degree compatible")
+- ``IsLex(PPO)``            -- true iff ``PPO`` is implemented as lex
+- ``IsXel(PPO)``            -- true iff ``PPO`` is implemented as xel
+- ``IsStdDegLex(PPO)``      -- true iff ``PPO`` is implemented as StdDegLex
+- ``IsStdDegRevLex(PPO)``   -- true iff ``PPO`` is implemented as StdDegRevLex
+- ``IsMatrixOrdering(PPO)`` -- true iff ``PPO`` is implemented as MatrixOrdering
+- ``IsTermOrdering(PPO)``   -- true iff ``PPO`` is a term ordering
+-
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+The operations on a ``PPOrdering`` object are:
+- ``out << PPO`` --       output the ``PPO`` object to channel ``out``
+- ``NumIndets(PPO)`` --   number of indeterminates the ordering is intended for
+- ``OrdMat(PPO)`` --   a (constant) matrix defining the ordering
+- ``GradingDim(PPO)`` --  the dimension of the grading associated to the ordering
+- ``GradingMat(PPO)`` --  the matrix defining the grading associated to the ordering
+-
+
+CoCoALib supports graded polynomial rings with the restriction that
+the grading be compatible with the PP ordering: //i.e.// the grading
+comprises simply the first ``k`` entries of the //order vector//.  The
+``GradingDim`` is merely the integer ``k`` (which may be zero if there
+is no grading).
+
+
+A normal CoCoA library user need know no more than this about ``PPOrdering``s.
+CoCoA Library contributors and the curious should read on.
+
+
+
+== Maintainer documentation for PPOrdering ==
+%======================================================================
+
+A ``PPOrdering`` is just a smart pointer to an instance of a class
+derived from ``PPOrderingBase``; so ``PPOrdering`` is a simple
+reference counting smart-pointer class, while ``PPOrderingBase`` hosts
+the intrusive reference count (so that every concrete derived class
+will inherit it).
+
+There are four concrete ``PPOrdering``s in the namespace ``CoCoA::PPO``.  The
+implementations are all simple and straightforward except for the matrix
+ordering which is a little longer and messier but still easy enough to
+follow.
+
+The class ``PPOrderingCtor`` is just a simple "trick" to allow for
+a convenient user interface.  The mem fn ``operator()``, with arg the
+actual number of indets, is used to generate an actual ordering.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+We need better ways to compose ``PPOrderings``, //i.e.// to build new ones
+starting from existing ones.  Max knows the sorts of operation needed
+here.  Something similar to CoCoA4's ``BlockMatrix`` command is needed.
+
+2021-02-21: added ``xel``
+

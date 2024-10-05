@@ -1,0 +1,197 @@
+package $StatTrees;
+
+export StagedTrees;
+export PrintTree;
+export PrintTrees;
+  
+-- export LabelledEventTrees;
+-- export florets;
+-- export PrintTree;
+-- export PrintTrees;
+-- export TreeToPoly;
+-- export AreGoodFlorets;
+-- export OneTree;
+  
+----------------------------------------------------------------------
+
+-- define OneTree(c_T)
+--   return OneTreeRec(support(c_T));
+-- enddefine; -- OneTree
+
+-- define OneTreeRec(mons)
+--   PD := PrimaryDecomposition(ideal(mons));
+--   if len(PD) = 0 then    return [];  endif;
+--   if len(PD) = 1 then    return gens(PD[1]);  endif;
+--   Root := gens(PD[1]); -- finds the shortest one
+--   foreach C in PD do
+--     if len(gens(C))<len(Root) then Comp:=gens(Root); endif;
+--   endforeach;  
+--   L := [ [X, OneTreeRec(diff([T/X | T in mons and IsDivisible(T,X)],[X]))]
+-- 	| X In Root ];
+--   return L;
+-- enddefine; -- OneTree
+
+----------------------------------------------------------------------
+  
+define StagedTrees(c_T)
+  AllT := LabelledEventTrees(c_T);
+  return [T in AllT | AreGoodFlorets(florets(T))];
+enddefine; -- StagedTrees
+
+  
+define LabelledEventTrees(c_T)
+  S := support(c_T);
+  foreach pp in S do
+    if max(exponents(pp))>1 then error("not square-free"); endif;
+  endforeach;
+  try
+    return AllTreesRec(support(c_T));
+  UponError E do /*nothing*/;
+  endtry;
+  return [];
+enddefine; -- AllTrees
+
+
+define AllTreesRec(mons)
+  if mons=[1] then return [[]]; endif;
+  AllTrees := [];
+  foreach X in PrimaryDecomposition(ideal(mons)) do
+    if NumGens(X)=1 then  error("Single branch");  endif;
+    try
+      T := AllTreesFromX(gens(X), mons);
+      AllTrees := concat(AllTrees, T);
+    UponError E do
+      if GetErrMesg(E) isin ["Single branch",
+			     "More than one divisor",
+			     "No subtrees"] then
+	continue;
+      endif;
+      error("unexpected error: "+GetErrMesg(E));
+    endtry;
+  endforeach;
+  if AllTrees = [] then  error("No subtrees");  endif;
+  return AllTrees;
+enddefine; -- AllTreesRec
+  
+
+define AllTreesFromX(X, mons)
+  r := len(X);
+  Ix := [ [ pp in mons | IsDivisible(pp,X[i])] | i in 1..r ];
+  if not(ArePairwiseDisjoint(Ix)) then error("More than one divisor"); endif;
+  T := [ AllTreesRec(Ix[i]/X[i]) | i in 1..r ]; ---> might give error
+  xT := [ [ [X[i],tree] | tree in T[i] ] | i in 1..r ];
+  return CartesianProductList(xT);
+enddefine; -- AllTreesFromX
+  
+
+define ArePairwiseDisjoint(Ix)
+  LL := [ L in Ix | L<>[1] ];
+  for i := 1 to len(LL) do
+    for j := i+1 to len(LL) do
+      if intersection(LL[i], LL[j]) <> [] then return false; endif;
+    endfor;
+  endfor;
+  return true;
+enddefine; -- ArePairwiseDisjoint
+  
+
+----------------------------------------------------------------------
+
+define florets(tree)
+  if tree = [] then return []; endif;
+  if type(tree[1])=RINGELEM then return [tree]; endif;
+  F := [[node[1] | node in tree]];
+  RecFlorets := flatten([ florets(node[2]) | node in tree and len(node)=2], 1);
+  return MakeSet(concat(F, RecFlorets));
+enddefine; -- florets
+
+  
+define AreGoodFlorets(florets)
+  for i := 1 to len(florets) do
+    for j := i+1 to len(florets) do
+      if [ petal in florets[i] | petal isin florets[j] ]<>[] then
+	return false;
+      endif;
+    endfor;
+  endfor;
+  return true;
+enddefine; -- AreGoodFlorets
+
+----------------------------------------------------------------------
+
+-- define PrintTrees(trees)
+--   println "-- number of trees = ", len(trees), " -----------------------";
+--   for i := 1 to len(trees) do
+--     println "-------- tree ",i, " ----------------------------------";
+--     println "-- florets: ", florets(trees[i]);
+--     PrintTreeRec(trees[i], "");
+--     println;
+--   endfor;
+--   println "-------- end trees -------------------------------";
+-- enddefine; -- PrintTrees
+
+
+-- Define PrintNodeAndSubtree(L, spaces)
+--   print spaces, "[", L[1], ", ";
+--   PrintTreeRec(last(L), spaces+"    ");
+--   print "]";
+-- EndDefine; -- PrintNodeAndSubtree
+
+  
+-- Define PrintTreeRec(L, spaces)
+--   if   L=[] then print L;
+--   else
+--     print "[\n";
+--     for i := 1 To len(L)-1 do
+--       PrintNodeAndSubtree(L[i], spaces+"  ");
+--       print ",\n";
+--     EndFor;
+--     PrintNodeAndSubtree(last(L), spaces+"  ");
+--     print " ]";
+--   EndIf;
+--   Return;
+-- EndDefine; -- PrintTreeRec
+
+----------------------------------------------------------------------
+define PrintTrees(trees)
+  println "-- number of trees = ", len(trees), " -----------------------";
+  for i := 1 to len(trees) do
+    println "-------- tree ",i, " ----------------------------------";
+    println "-- florets: ", florets(trees[i]);
+    PrintTree(trees[i], "");
+    println;
+  endfor;
+  println "-------- end trees -------------------------------";
+enddefine; -- PrintTrees
+
+
+define PrintNodeAndSubtree(L, spaces)
+  print spaces, L[1], " ";
+  PrintTree(last(L), spaces+"    ");
+enddefine; -- PrintNodeAndSubtree
+
+  
+define PrintTree(L, opt spaces)
+  if not(IsDefined(spaces)) then spaces := ""; endif;
+  if   L=[] then print "";
+  else
+    print "< \n";
+    for i := 1 To len(L)-1 do
+      PrintNodeAndSubtree(L[i], spaces+" ");
+      print "\n";
+    endfor;
+    PrintNodeAndSubtree(last(L), spaces+" ");
+  endif;
+  return;
+enddefine; -- PrintTree
+
+----------------------------------------------------------------------
+  
+define TreeToPoly(T)
+  if type(T[2])=RINGELEM then return sum(T); endif;
+  return sum([T[i,1]*TreeToPoly(T[i,2]) | i in 1..len(T)]);
+enddefine; -- TreeToPoly
+
+  
+endpackage;
+----------------------------------------------------------------------

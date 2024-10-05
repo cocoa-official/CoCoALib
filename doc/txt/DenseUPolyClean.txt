@@ -1,0 +1,39 @@
+      DenseUPolyClean
+      Copyright (c)  2007 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{DenseUPolyClean}{Anna Bigatti}
+
+
+== User documentation ==
+%======================================================================
+
+Internal implementation for ``RingDenseUPoly``
+
+- ``DenseUPolyRing NewPolyRing_DUP(const ring& CoeffRing)``
+   -- default indet name is x
+- ``DenseUPolyRing NewPolyRing_DUP(const ring& CoeffRing, const symbol& IndetName)``
+- ``DenseUPolyRing NewPolyRing_DUP(const ring& CoeffRing, const symbol& IndetName, long MinCapacity)``
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The primary purpose for object of class ``DenseUPoly`` is to represent
+values in a ``RingDenseUPoly``.
+
+An object of type DenseUPoly is essentially a vector of coefficients
+(``RingElem``) and a degree (``long``).
+
+In a valid ``DenseUPoly`` the vector has size at least min(1, deg).
+Moreover ``coeff[deg]`` is different from 0, the only exception being
+the zero polynomial, represented with ``myCoeffsValue[0]=0`` and
+``myDegValue=0``.
+
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+

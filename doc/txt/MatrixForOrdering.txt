@@ -1,0 +1,111 @@
+      MatrixForOrdering
+      Copyright (c)  2008,2015 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{MatrixForOrdering}{Anna Bigatti}
+
+
+
+== User Documentation ==
+%======================================================================
+
+This is very preliminary documentation.  These functions are about matrices
+which define term orderings.  They expect and return matrices over [[RingZZ]].
+
+=== Examples ===[examples]
+%----------------------------------------------------------------------
+- [ex-OrderingGrading1.C ../../examples/index.html#ex-OrderingGrading1.C]
+-
+
+=== PseudoConstructors ===[constructors]
+%----------------------------------------------------------------------
+- ``MakeTermOrdMat(ConstMatrixView M)`` -- produce a matrix (with non-neg
+  integer entries and having same number of columns as ``M``) which
+  defines a term ordering refining the partial ordering defined by the
+  input matrix ``M``; error if this cannot be done.
+
+- ``MakeTermOrdMat(ConstMatrixView M, MachineInt GrDim)`` -- 
+  Same as ``MakeTermOrdMat(M)`` except that the first ``GrDim`` rows of the
+  output matrix are equal to the first ``GrDim`` rows of ``M``.
+
+- ``LexMat(MachineInt n)``  returns a ``ConstMatrix`` for "lex" ordering
+- ``StdDegLexMat(MachineInt n)``  returns a ``ConstMatrix`` for "DegLex" ordering
+- ``StdDegRevLexMat(MachineInt n)``  returns a ``ConstMatrix`` for "DegRevLex" orderig
+- ``XelMat(MachineInt n)``  returns a ``ConstMatrix`` for "Xel" ordering
+- ``RevLexMat(MachineInt n)``  returns a ``ConstMatrix`` for "RevLex" ordering (not a term order!)
+
+- ``ElimMat(IndetsToElim, NumIndets)``  -- returns a matrix defining
+  an elimination ordering for ``IndetsToElim``.
+
+- ``ElimMat(IndetsToElim, GradingM)``  -- returns a matrix defining
+  an elimination ordering for ``IndetsToElim`` compatible with the grading in ``GradingM``.
+
+- ``ElimHomogMat(IndetsToElim, GradingM)``  -- returns a matrix defining
+   an elimination ordering for ``IndetsToElim`` with the added knowledge
+   that it will be used with an ideal homogeneous wrt ``GradingM`` (non-trivial)
+-
+
+=== Queries ===[queries]
+%----------------------------------------------------------------------
+Let ``M`` be a matrix over [[RingZZ]] or [[RingQQ]] with integer entries.
+- ``IsTermOrdering(M)``    -- true iff matrix ``M`` defines a term ordering
+
+- ``IsPositiveGrading(M)`` -- true iff ``M`` defines a positive grading 
+  (//i.e.// no null columns and first non-zero entry in each column is positive)
+
+-
+
+== Maintainer Documentation ==
+%======================================================================
+
+The impl for ``LexMat`` is trivial: it is just an ``IdentityMat``.
+Now that ``ConstMatrix`` is available, the impls for ``XelMatImpl``,
+``RevLexImpl``, ``StdDegLex`` and ``StdDegRevLex`` are quite
+straightforward (but a bit lengthy).
+
+Currently we use the "sparse" matrix for ``StdDevRevLex``; we may later
+change it to the non-neg matrix.
+
+``IsTermOrdering`` is essentially the same as testing ``IsPositiveGrading``
+on the whole matrix; this is what the impl does!
+
+
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+Doc is woefully incomplete.
+
+
+== Main changes ==
+%======================================================================
+
+**2022**
+- Feb (v0.99720):
+ - ``MakeTermOrd`` has been renamed ``MakeTermOrdMat``
+-
+
+**2019**
+- Sep (v0.99602):
+ - ``IsNonNegGrading(M)`` is now hidden in anonymous namespace
+-
+
+**2016**
+- Sep (v0.9944):
+ - old ``HomogElimMat`` has been renamed ``ElimHomogMat``
+-
+
+**2015**
+- Nov (v0.9940):
+ - new impls for ``LexMat``, ``XelMat``, ``RevLexMat``, ``StdDegLexMat`` and ``StdDegRevLexMat`` (names are now coherent with their counterparts in CoCoA-5)
+ - replaced several "complete-to-order" fns by a single fn.
+-
+
+**2009**
+- Sept: Naming convention noq respected ("Matrix" should have been "Mat")
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

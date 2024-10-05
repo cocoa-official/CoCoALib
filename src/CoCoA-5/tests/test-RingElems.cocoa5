@@ -1,0 +1,30 @@
+--------------------------------------------------------------------
+-- Test reading RingElem from strings
+--------------------------------------------------------------------
+TestCount := 0;
+///PrintInfo := not(IsDefined(RunningSourceAnna) And RunningSourceAnna=True);
+
+define TEST_ASSERT(A,B)
+  toplevel TestCount;
+///  toplevel PrintInfo;
+  TestCount := TestCount+1;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B));
+  endif;
+///  if PrintInfo then print "."; EndIf;
+enddefine; -- TEST_ASSERT
+--------------------------------------------------------------------
+
+use testR ::= QQ[x,y,z];
+TEST_ASSERT([],RingElemList(testR,"[]"));
+TEST_ASSERT([],RingElemList(testR," [ ] "));
+TEST_ASSERT([],RingElemList(testR,"  [  ]  ")); // double spaces
+TEST_ASSERT([],RingElemList(testR,"	[	]	")); // TABs
+
+TEST_ASSERT([x,y,z],RingElemList(testR, "[x,y,z]"));
+TEST_ASSERT([x,y,z],RingElemList(testR, " [ x , y , z ] "));
+TEST_ASSERT([x,y,z],RingElemList(testR, "  [  x  ,  y  ,  z  ]  ")); // double spaces
+TEST_ASSERT([x,y,z],RingElemList(testR,	"	[	x	,	y	,	z	]	")); // TABs
+
+--------------------------------------------------------------------
+--------------------------------------------------------------------

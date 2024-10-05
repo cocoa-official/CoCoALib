@@ -1,0 +1,68 @@
+      factor
+      Copyright (c)  2013 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{factor}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-factor1.C ../../examples/index.html#ex-factor1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+There are several functions for computing a [[factorization]] of a ring
+element: the factorizations produced have different properties (see below).
+For each function, the result is an object of type [[factorization]]; see
+the corresponding manual page for accessor functions into this type.
+
+
+- ``factor(f)``  factorization into irreducibles
+- ``SqFreeFactor(f)``  factorization into coprime squarefree factors (NB may not be the coarsest such factorization)
+- ``ContentFreeFactor(f)`` polynomial factorization into (coprime) content-free factors
+
+
+**NOTE** The irreducible factorization of a polynomial with rational coefficients
+produces factors with integer coefficients (and integer content = 1) having
+positive leading coefficient.  The remaining factor is the unique rational number
+(actually a polynomial of degree 0) which makes the factorization correct.
+
+**See also: NumTheory documentation for factorizing integers**
+
+
+== Maintainer documentation ==
+%======================================================================
+
+``SqFreeFactor`` is new code; should be reasonably clean and efficient.
+Originally written by d'Ali` but then considerably modified by JAA.
+The code is based on Bernardin's paper "On square-free factorization
+of multivariate polynomials over a finite field" in Theoretical Computer
+Science (special volume on algebra) Volume 187 Issue 1-2, Nov. 15, 1997
+Pages 105 - 116.
+
+``ContentFreeFactor`` is a fairly simplistic recursive method; most of the
+work is done by ``ContentFreeFactorLoop``. 
+
+``factor`` is still only a prototype -- just uses old C4 code to do the work.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+``factor`` still only a prototype -- just uses old C4 code to do the work.
+
+
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- september: updated doc (new fns have been there for quite a while)
+
+**2013**
+- aprile (v0.9953): first doc
+
+
+

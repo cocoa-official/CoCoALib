@@ -1,0 +1,55 @@
+      Graeffe
+      Copyright (c)  2022 John Abbott, Anna M. Bigatti  (orig. auth. Nico Mexis 2022)
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{Graeffe}{Nico Mexis}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-Graeffe.C ../../examples/index.html#ex-Graeffe.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers one function and one class: ``GraeffeN`` and ``GraeffeSeq``.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``f`` be two ``RingElem`` values representing univariate polynomials in a polynomial ring ``P`` over ``ZZ`` or ``QQ``.
+Let ``n`` and ``N`` be positive integers.
+
+- ``GraeffeN(f, n)`` -- returns a ``RingElem`` representing the ``n``-th order Graeffe transformation of ``f`` - its roots are the ``n``-th powers of the roots of ``f``.
+- ``GraeffeSeq(f, N)`` -- constructs an instance of ``GraeffeSeq`` - allowing for iteration over the Graeffe transformations of ``f``.
+- ``*GraeffeSeq`` -- returns a ``RingElem`` representing the current Graeffe iteration of internally stored ``f``. **Not thread-safe!**
+- ``++GraeffeSeq`` -- advances the sequence by one - calculating Newton coefficients for the next Graeffe iteration internally. **Not thread-safe!**
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+- The ``GraeffeN`` resultant approach is taken from Cipu et al. (DOI:10.1007/s00200-011-0150-8).
+- The ``GraeffeSeq`` approach is taken from Hatfield's Dissertation (Root-powering of Polynomial Equations).
+- The indices of the various arrays in the ``GraeffeSeq`` approach are 1-indexed since it is much easier to deal with them this way.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+- ``unsigned long``s could be used in some places instead.
+- The vector for the Newton coefficients should be resized dynamically, not allocated once in the beginning.
+- ``GraeffeSeq`` is not thread-safe!
+
+
+== Main changes ==
+%======================================================================
+
+**2022**
+- August (v0.99802): first release
+-
+
+

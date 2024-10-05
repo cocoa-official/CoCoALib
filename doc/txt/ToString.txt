@@ -1,0 +1,90 @@
+      ToString
+      Copyright (c)  2011,2014  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ToString}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-ToString1.C ../../examples/index.html#ex-ToString1.C]
+- [ex-ToString2.C ../../examples/index.html#ex-ToString2.C]
+-
+
+== User documentation ==
+%======================================================================
+
+These functions are to help visualize integer and rational numbers in
+a more comprehensible format (as a decimal ``string``).  The ``SigFig``
+argument is optional; its default value is 5.
+
+- ``ToString(N)``  converts ``N`` to a (decimal) string.
+
+- ``FloatStr(N, SigFig)`` convert the number ``N`` into a string choosing
+   between "decimal" format and "scientific" format.  The default value for
+   ``SigFig`` is 5.  **NOTE:** this may throw an exception for large values of ``N``.
+   
+- ``ScientificStr(N, SigFig)`` convert the number ``N`` into a string of the
+  form mantissa times power-of-ten, with ``SigFig`` digits in the mantissa.
+  Note that trailing zeroes are not removed from the mantissa.
+   
+- ``DecimalStr(N, DecPlaces)`` convert the number ``N`` into a decimal string
+  with ``DecPlaces`` digits after the decimal point.  The default value for
+  ``DecPlaces`` is 3.
+   
+
+Note: for values with large numerator or denominator it is quicker to convert
+the value to a ``RingElem`` belonging to a [[RingTwinFloat]] and then print
+the result.  This approach offers less control over the output, and no
+guarantee of correct rounding.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The function ``ScientificStr`` gives the clearest guarantees about the
+format used, but also produces the least humanly readable result.  It
+uses ``MantissaAndExponent10`` to do the conversion.
+
+The function ``FloatStr`` is supposed to be the best general choice.
+It passes its args to ``ScientificStr`` in two situations: if the
+number is so large that padding would be needed before the decimal
+point; if the number is so small that the ``ScientificStr`` format
+would be shorter (//i.e.// if the exponent is less than -8).
+
+The function ``DecimalStr`` is Anna's preferred choice.  It uses
+``ToString`` to convert to decimal.
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+These functions cannot be applied directly to a machine integer; to call
+them you have to convert explicitly into a [[BigInt]] (or [[BigRat]]).
+
+The switch-over in ``FloatStr`` to scientific notation for "large"
+numbers is not ideal; in C the "g" format chooses the shorter between
+float and scientific formats.  Is it worth the doing the same here?
+
+Anna says an older version of ``DecimalStr`` would suppress trailing zeroes
+if the result is exact (//e.g.// ``DecimalStr(5/4,9)`` would produce ``1.25``
+rather than ``1.250000000``.  Is this a good idea?
+
+These fns are too slow if ``N`` is a very large integer (or if numerator
+and/or denominator are very large).  Converting to an ``mpf_t`` and
+printing that would be much faster (except in delicate rounding cases).
+
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- April (v0.99533): reorganized, renamed ``FloatStr`` to ``ScientificStr``,
+   added new ``FloatStr``
+
+**2011**
+- February (v0.9943): first release
+
+
+

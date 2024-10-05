@@ -1,0 +1,83 @@
+      ReductionCog
+      Copyright (c)  2006,2021  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ReductionCog}{Anna Bigatti}
+
+
+== class ReductionCogBase ==
+
+``ReductionCogBase`` is an abstract class to perform a full reduction:
+it contains two parts:
+- ``IgnoredPPs``  summands whose PPs are to be ignored
+- ``Active``      the part which will be reduced
+
+
+Thanks to the limited operations allowed on a ``ReductionCog``, all PPs in
+``IgnoredPPs`` are guaranteed bigger than those in the ``Active`` part.
+
+
+With a ``ReductionCog`` ``F`` you can compute:
+- ``ActiveLPP(F)``     the LPP of the ``Active`` part
+- ``IsActiveZero(F)``  is the ``Active`` part zero?
+ 
+- ``F.myMoveToNextLM()``  move the ``LM`` of the ``Active`` part to the ``IgnoredPPs``
+- ``F.myReduce(f)``       reduce the ``Active`` part with ``f``
+- ``F.myAssignReset(f)``  the ``Active`` part gets ``f``;  ``f`` and ``IgnoredPPs`` get 0
+- ``F.myAssignReset(f, fLen)``  same as above but faster for geobucket implementation
+- ``F.myRelease(f)``      ``F`` gets the total value of ``f``;  ``f`` gets 0
+- ``F.myOutput(out)``     
+
+
+The idea is that LM will be reduced first; if the result is not 0 it
+will be "set aside and ignored" and the new LM of the ``Active`` part will be
+reduced, and so on.
+
+The result of ``myReduce`` is defined up to an invertible (in the
+coefficient ring) constant factor.
+
+Constructors are
+```
+  ReductionCog NewRedCogPolyField(const SparsePolyRing& P);
+  ReductionCog NewRedCogPolyGCD(const SparsePolyRing& P);
+  ReductionCog NewRedCogGeobucketField(const SparsePolyRing& P);
+  ReductionCog NewRedCogGeobucketGCD(const SparsePolyRing& P);
+```
+In the "GCD" version, ``myRelease`` makes poly content free.
+In the "Field" version: ``myRelease`` does NOT make poly monic.
+... I can't remember why I made this choice....
+
+==== example ====
+
+```
+  ReductionCog F = ChooseReductionCogGeobucket(myGRingInfoValue);
+  F->myAssignReset(f, fLen);
+  while ( !IsActiveZero(F) )
+  {
+    (..) // find reducer g or break
+    F->myReduce(g);
+  }
+  F->myRelease(f);
+```
+
+== implementations ==
+
+In general the geobucket implementation are to be preferred
+
+: ``RedCog::PolyFieldImpl``
+  this implementation contains two [[RingElem]].
+
+: ``RedCog::PolyGCDImpl``
+  this implementation contains two polynomials [RingElem]
+  two coefficients [RingElem] and a counter
+
+: ``RedCog::GeobucketFieldImpl``
+  this implementation contains a RingElem for the ``IgnoredPPs`` and a
+  geobucket for the ``Active`` part
+
+: ``RedCog::GeobucketGCDImpl``
+  this implementation contains a RingElem for the ``IgnoredPPs`` and a
+  geobucket for the ``Active`` part
+  two coefficients [RingElem] and a counter
+:
+% last ":" guarantees the proper closing of the list

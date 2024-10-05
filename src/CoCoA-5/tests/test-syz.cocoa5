@@ -1,0 +1,68 @@
+--------------------------------------------------------------------
+-- Test for syz computations
+--------------------------------------------------------------------
+TEST_PrintInfo := false;
+//TEST_PrintInfo := true; ---<<<<<<---------------------------------
+TEST_Verb := 99; ///100;
+--------------------------------------------------------------------
+if TEST_PrintInfo then SetVerbosityLevel(TEST_Verb); else SetVerbosityLevel(0); endif;
+TEST_NumAssert := 0;
+
+define TEST_ASSERT(A,B)
+  toplevel TEST_NumAssert;
+  toplevel TEST_PrintInfo;
+  incr(ref TEST_NumAssert);
+  if TEST_PrintInfo then
+    println "--TEST_NumAssert: ", TEST_NumAssert;
+  endif;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B)
+	  + "\n"+dashes()+"TEST_NumAssert: " +Sprint(TEST_NumAssert)+dashes());
+  endif;
+enddefine; -- TEST_ASSERT
+
+define TEST_Time()
+  toplevel TEST_PrintInfo;
+  toplevel t0;
+  if TEST_PrintInfo then println "--TEST_Time: \t", TimeFrom(t0), "s"; endif;
+enddefine; -- TEST_TimeFrom
+--------------------------------------------------------------------
+
+K := NewZZmod(101);
+
+use TEST_R ::= K[x,y,z];
+
+TEST_ASSERT(shifts(ModuleOf(syz([x^2-y-1, y^3-z, x^2-y, y^3-z]))), [[2],  [3],  [2],  [3]]);
+TEST_ASSERT(len(gens(syz([x, y, z, 1]))), 3);
+TEST_ASSERT(IsHomog(syz([x^2, y^2, x*y])), true);
+TEST_ASSERT(IsHomog(syz([x^2, y^2, z^4])), true);
+TEST_ASSERT(IsHomog(syz([x^2, y^2, z^4-2])), false);
+// syz(ideal([x, y, z, 1]));  // NYI minimal syz
+
+TEST_F := NewFreeModuleForSyz([x, y, z, 1]);
+
+TEST_ASSERT(shifts(TEST_F), [[1],  [1],  [1],  [0]]);
+
+TEST_ASSERT(syz(TEST_F,[x, y, z, 1]),
+	    SubmoduleRows(TEST_F, mat([[0, 0, 1, -z], [0, 1, 0, -y], [1, 0, 0, -x]])));
+
+TEST_ASSERT(syz(TEST_F,[x, y, z, 0]),
+	    SubmoduleRows(TEST_F, mat([[0, 0, 0, 1], [0, z, -y, 0], [z, 0, -x, 0], [y, -x, 0, 0]])));
+
+
+--------------------------------------------------------------------
+if TEST_PrintInfo then // additional tests
+--------------------------------------------------------------------
+
+syz([x, y, z, 0]);  --> errore syz
+NewFreeModuleForSyz([x, y, z, 0]);  --> errore NewFreeModuleForSyz
+
+  S := syz(TEST_F,[x, y, z, 0]);
+//  SS := syz(gens(S));
+  SS := SyzOfGens(S);
+  SS;
+  
+
+--------------------------------------------------------------------
+endif; // additional tests
+--------------------------------------------------------------------

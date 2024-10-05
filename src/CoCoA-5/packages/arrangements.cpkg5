@@ -1,0 +1,670 @@
+Package $arrangements;  
+  
+export ArrCharPoly; -- (A), A list
+export ArrFlats; -- (A), A list
+export ArrLattice; -- (A), A list
+export ArrPoincarePoly; -- (A), A list
+export ArrTuttePoly; -- (A), A list
+export NumChambers; -- (A), A list
+export NumBChambers; -- (A), A list
+export ArrBettiNumbers; -- (A), A list
+export GensJacobian;  -- (Q), Q poly
+export GinJacobian;  -- (Q), Q poly
+export ArrDerModule; -- (Q), Q poly or a list [of hyperplanes]
+export ArrExponents; -- (Q), Q poly or a list [of hyperplanes]
+export ArrDeletion; -- (A: arrangement, H: hyperplane)
+export ArrRestriction; -- (A: arrangement, H: hyperplane)
+export ArrLocalization; -- (A: arrangement, L: list of hyperplanes)
+export MultiArrRestrictionZiegler; -- (A: arrangement, H: hyperplane)
+export ArrToMultiArr; -- (A: arrangement, L: list)
+export MultiArrToArr; -- MultiA: list of pairs [H_i,m_i]
+export MultiArrDerModule; -- MultiA: list of pairs [H_i,m_i]
+export MultiArrExponents; -- MultiA: list of pairs [H_i,m_i]
+-- MultiArrGensModules(MultiA) // how to compute module gens!
+-- IntersectionModules  -- G,H matrices
+-- myMinSubsetOfGens(X)
+-- restriction;
+export ArrCone; -- A lists of hyperplane arrangement, t indeterminate
+export SolomonTeraoIdeal; -- SolomonTeraoIdeal(A,f), A lists of hyperplane arrangement, f poly
+export OrlikTeraoIdeal; -- OrlikTeraoIdeal(A), A lists of hyperplane arrangement
+export ArtinianOrlikTeraoIdeal; -- ArtinianOrlikTeraoIdeal(A), A lists of hyperplane arrangement
+  
+// Families of Arrangements ---------------------------------------------------------
+export ArrBoolean; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrBraid; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrTypeD; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrTypeB; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrShiA; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrShiB; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrShiD; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrCatalanA; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrCatalanB; -- (S, k) S polynomial ring, first k-th int in variable's range
+export ArrCatalanD; -- (S, k) S polynomial ring, first k-th int in variable's range
+
+export ArrShiCatalanA; -- (S,k,[-a,b]) S polynomial ring, first k-th int in variable's range, a and b positive integers
+export ArrShiCatalanB; -- (S,k,[-a,b]) S polynomial ring, first k-th int in variable's range, a and b positive integers
+export ArrShiCatalanD; -- (S,k,[-a,b]) S polynomial ring, first k-th int in variable's range, a and b positive integers
+  
+export ArrGraphical; -- (S, edgesG) S polynomial ring, edgesG list of pairs
+export ArrSignedGraphical; -- (S, positive_edgesG, negative_edgesG, loopsG) S polynomial ring, positive_edgesG list of pairs, negative_edgesG list of pairs, loopsG list of integers
+// End of families of Arrangements --------------------------------------------------
+  
+export IsArrCentral; -- (A) A list
+export IsArrFree; -- (Q) Q poly or a list [of hyperplanes]
+export IsMultiArrFree; -- (MultiA) MultiA: list of pairs [H_i,m_i]
+// COMMENT: IsArrFree and IsMultiArrFree use respectively ArrDerModule and MultiArrDerModule. The differences between ArrDerModule and MultiArrDerModule are in how they keep track of the multiplicities. Then we decided to not unify them.  
+
+Define About()
+  PrintLn "    Authors  : Elisa Palezzato and Michele Torielli";
+  PrintLn "    Version  : CoCoA-5.2.4";
+  PrintLn "    Date     : August 2018";
+EndDefine; -- About
+  
+  ----------------------------------------------------------------------
+  -- Exported functions (with input checking)
+  ----------------------------------------------------------------------
+
+define ArrCharPoly(A)
+  S := RingQQt(1);
+  t := indet(S ,1);
+  T := CpuTime();
+  AL := ArrLattice(A);
+  info := $posets.PosetInfo(AL);
+  if VerbosityLevel()>=10 then
+    println "Time to create the lattice: ", TimeFrom(T);
+  endif;
+  return $posets.PosetCharPolyNC(AL)*t^(NumIndets(RingOf(A[1]))-$posets.PosetNRank_rec(AL,info.leaves[1],info.roots));
+enddefine; -- ArrCharPoly
+
+-- define ArrFlats(A)
+--   if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+--   S := RingOf(A[1]);
+--   Arr := [[ideal(zero(S))]];
+--   for i:=1 to min(dim(S),len(A)) do
+--     alpha := subsets(A,i);
+--     Arr_i := MakeSet([ideal(a) | a in alpha and ideal(a)<>ideal(one(S))]);
+--     NewArr_i := [];
+--     foreach J in Arr_i do
+--       IC := [];
+--       foreach I in Arr[i] do  
+-- 	if IsContained(J, I) then
+-- 	  append(ref IC, I);
+-- 	endif;
+--       endforeach;
+-- 	if len(IC)=0  then
+-- 	  append(ref NewArr_i, IdealOfGBasis(J));
+-- 	endif;
+--     endforeach;
+--     append(ref Arr, MakeSet(NewArr_i));
+--   endfor;
+--   return [L | L in Arr and len(L)>0];
+-- enddefine; -- ArrFlats
+
+define ArrFlats(A)
+  if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+  S := RingOf(A[1]);
+  Arr := [[ideal(zero(S))]];
+  for i:=1 to min(dim(S),len(A)) do
+    alpha := subsets(A,i);
+    Arr_i := MakeSet([ideal(a) | a in alpha and ideal(a)<>ideal(one(S))]);
+    NewArr_i := [];
+    foreach J in Arr_i do
+      IC := [];
+      foreach I in Arr[i] do  
+	if IsContained(J, I) then
+	  append(ref IC, I);
+	endif;
+      endforeach;
+      if len(IC)=0  then
+	append(ref NewArr_i, IdealOfGBasis(J));
+      endif;
+    endforeach;
+    if NewArr_i=[] then return Arr; endif;
+    append(ref Arr, MakeSet(NewArr_i));
+  endfor;
+  return Arr;
+enddefine; -- ArrFlats
+
+define ArrLattice(A)
+  AF := ArrFlats(A);
+  L := flatten(AF);
+  AL := [];
+  for i:=2 to len(AF[2])+1 do
+    append(ref AL, [1,i]);
+  endfor;
+  for i:=2 to len(AF)-1 do
+    foreach I in AF[i] do
+      foreach J in AF[i+1] do
+	if IsContained(I,J) then
+	  append(ref AL, [IndicesInList(L,I)[1],IndicesInList(L,J)[1]]);
+	endif;
+      endforeach;
+    endforeach;
+  endfor;
+  return AL;
+enddefine; -- ArrLattice
+
+define ArrPoincarePoly(A)
+  AL := ArrLattice(A);
+  return $posets.PosetPoincarePolyNC(AL);
+enddefine; -- ArrPoincarePoly
+
+define ArrTuttePoly(A) // X,Y: variables (or t:=[X,Y], da modificare!)
+  S := RingQQt(2);
+  X := indet(S ,1);
+  Y := indet(S ,2);
+  R := RingOf(A[1]);
+  SpaceDim := NumIndets(R);
+  SubA := subsets(A);
+  AL := ArrLattice(A);
+  info := $posets.PosetInfo(AL);
+  rk := $posets.PosetNRank_rec(AL, info.leaves[1], info.roots);
+  adds := [(X-1)^(rk)];
+  for i:=2 to len(SubA) do
+    if IsArrCentral(SubA[i]) then
+      rkSubA := SpaceDim-dim(R/ideal(SubA[i]));
+      add := (X-1)^(rk-rkSubA)*(Y-1)^(len(SubA[i])-rkSubA);
+      append(ref adds, add);  
+    endif;
+  endfor;
+  TuttePoly := sum(adds);
+  return TuttePoly;
+enddefine; -- ArrTuttePoly
+
+define NumChambers(A)
+  S := RingQQt(1);
+  t := indet(S,1);
+  phi := PolyAlgebraHom(S, BaseRing(S), [-1]);
+  return abs(phi(ArrCharPoly(A)));
+enddefine; -- NumChambers
+
+define NumBChambers(A)
+  S := RingQQt(1);
+  t := indet(S,1);
+  phi := PolyAlgebraHom(S, BaseRing(S), [1]);
+  return abs(phi(ArrCharPoly(A)));
+enddefine; -- NumBChambers
+
+define ArrBettiNumbers(A)
+  return reversed(coefficients(ArrPoincarePoly(A)));
+enddefine; -- ArrBettiNumbers
+
+define GensJacobian(Q)
+  if IsHomog(Q) then
+    return GetRow(JacobianMat([Q], indets(RingOf(Q))),1);
+  else
+    return concat(GetRow(JacobianMat([Q], indets(RingOf(Q))),1),[Q]);
+  endif;
+enddefine; -- GensJacobian
+
+define GinJacobian(Q)
+  -- return gin(ideal(GetRow(JacobianMat([Q], indets(RingOf(Q))),1)));
+  return gin(ideal(GensJacobian(Q)));
+enddefine; -- GinJacobian
+
+define ArrDerModule(Q) -- Q list of hyperplanes or Q poly (i.e. the defining eq. of the arrangement)
+  if type(Q)=LIST then
+    if not(IsArr(Q)) then error("The input must be a list of hyperplanes"); endif;
+    Q:=product(Q);
+  elif type(Q)=RINGELEM then ;
+  else error("The input must be a list of hyperplanes or the polynomial that define the arrangement.");
+  endif;
+  if IsHomog(Q) then
+    R := RingOf(Q);
+    l := NumIndets(R);
+    Rl := NewFreeModule(R, l);
+    R1 := NewFreeModule(R, 1);
+    L := [zero(Rl)];
+    M := submodule(Rl, L);
+    L1 := [ModuleElem(R1, [Q])];
+    N := submodule(R1, L1);
+    Jf := GensJacobian(Q);
+    LL := [ModuleElem(R1, [Jf[i]]) | i in 1..l];
+    D := Gens_Ker_Hom_Mod(Rl,M,R1,N,LL).Preimage_Ker;
+    MG := MinGens(D);
+    Im_MG := submodule(Rl, MG);
+    return GensAsCols(Im_MG);
+  else error("The input must be homogeneous");
+  endif; 
+enddefine; -- ArrDerModule
+  
+define ArrExponents(Q) -- Q list of hyperplanes or Q poly (i.e. the defining eq. of the arrangement)
+  Saito_Mat := ArrDerModule(Q);
+  R := RingOf(Saito_Mat[1][1]);
+  l := NumIndets(R);
+  Num_Cols := NumCols(Saito_Mat);
+  if l=Num_Cols then
+    exps := [];
+    for i:=1 to Num_Cols do
+      for j:=1 to l do -- NumRows(Saito_Mat)=l
+	if Saito_Mat[j,i]<>0 then
+	  k := deg(Saito_Mat[j,i]);
+	  break;
+	endif;
+      endfor;
+      append(ref exps, k);
+    endfor;
+    return exps;
+  else error("The input must define a free divisor");
+  endif;
+enddefine; -- ArrExponents
+
+define ArrDeletion(A,H)
+  if not(IsArr(A)) then error("The arrangement must be a list of distinct hyperplanes"); endif;
+  k := IndicesInList(A,H)[1];
+  return WithoutNth(A,k);
+enddefine; -- ArrDeletion
+
+define ArrRestriction(A,H)
+  return MakeSet(restriction(A,H));
+enddefine; -- ArrRestriction
+
+define ArrLocalization(A,L)
+  if not(IsArr(A)) then error("The arrangement must be a list of distinct hyperplanes"); endif;
+  return [ H | H in A and H isin ideal(L)];
+enddefine; -- ArrLocalization
+  
+define MultiArrRestrictionZiegler(A,H)
+  MultiA := restriction(A,H);
+  A := MakeSet(MultiA);
+  return ArrToMultiArr(A, [count(MultiA, A[i]) | i in 1..len(A)]);
+enddefine; -- MultiArrRestrictionZiegler
+
+define ArrToMultiArr(A,L)
+  if len(A)<>len(L) then error("The lists must have the same length"); endif;
+  return [[A[i],L[i]] | i in 1..len(A)];
+enddefine; -- ArrToMultiArr
+
+define MultiArrToArr(MultiA)
+  if not(IsListOfPairs(MultiA)) then error("The input must be a list of pairs [hyperplane, multiplicity]"); endif;
+  A := [ pair[1] | pair in MultiA];
+  if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+  return A;
+enddefine; -- MultiArrToArr
+
+define MultiArrDerModule(MultiA)
+  if not(IsListOfPairs(MultiA)) then error("The input must be a list of pairs [hyperplane, multiplicity]"); endif;
+  if not(IsArr([pair[1] | pair in MultiA])) then error("The input must be a list of hyperplanes"); endif;
+  G := MultiArrGensModules(MultiA);
+  Mat_G := [GensAsCols(G[i]) | i in 1..len(G)];
+  Mat_Gi := Mat_G[1];
+  -- Mat_Gi := [IntersectionModules(Mat_Gi,Mat_G[i]) | i in 2..len(MultiA)];
+  for i:=2 to len(MultiA) do
+    Mat_Gi := IntersectionModules(Mat_Gi,Mat_G[i]);
+  endfor;
+  return Mat_Gi;
+enddefine; -- MultiArrDerModule
+
+define MultiArrExponents(MultiA)
+  R := RingOf(MultiA[1][1]);
+  l := NumIndets(R);
+  Saito_Mat := MultiArrDerModule(MultiA);
+  Num_Cols := NumCols(Saito_Mat);
+  if l<>Num_Cols then error("The input must define a free multiarrangement"); endif;
+  exps := [];
+  for i:=1 to Num_Cols do
+    for j:=1 to l do -- NumRows(Saito_Mat)=l
+      if Saito_Mat[j,i]<>0 then
+	k := deg(Saito_Mat[j,i]);
+	break;
+      endif;
+    endfor;
+    append(ref exps, k);
+  endfor;
+  return exps;
+enddefine; -- MultiArrExponents
+    
+define ArrCone(A, t); -- A lists of hyperplane arrangements, t indeterminate
+  if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+  if t isin [T | T in MakeSet(flatten([support(A[i]) | i in 1..len(A)])) and deg(T)=1] then error("The homogenizing variable must be independent from the list of hyperplanes"); endif;
+  return concat(homog(A, t), [t]);
+enddefine; -- ArrCone
+
+define SolomonTeraoIdeal(A, f) -- A lists of hyperplane arrangements, f poly
+  if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+  if deg(f)=0 then error("f must have positive degree"); endif;
+  if not(IsHomog(f)) then error("f must be homogeneous"); endif;
+  return ideal([gen | gen in GetRow(JacobianMat([f])*ArrDerModule(product(A)),1)]);
+enddefine; -- SolomonTeraoIdeal
+
+-- define OrlikTeraoIdeal(A)
+--   if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+--   DependMatA := LinKer(ArrMat(A));
+--   DependA := GetCols(DependMatA);
+--   RangeNewIndets := len(A);
+--   S := NewPolyRing(BaseRing(RingOf(A[1])), SymbolRange("y", 1,RangeNewIndets));
+
+--   ProdIndets := product(indets(S));
+--   generators := [];
+--   for s:=1 to NumCols(DependMatA) do
+--     if 0 isin DependA[s] then 
+--     indices := IndicesInList(DependA[s],0);
+--     else
+--       indices := [];
+--     endif;
+--   --  ListCoeff := [ProdIndets/indets(S)[i] | i in 1..RangeNewIndets];
+--     ListCoeff := [ProdIndets/product([indets(S)[k] | k in MakeSet(concat(indices,[i]))]) | i in 1..RangeNewIndets];
+--     relation := RowMat(S, ListCoeff)*Mat(S,  submat(DependMatA,1..NumRows(DependMatA),[s]));
+--     append(ref generators, relation[1,1]);
+--   endfor;
+--   return ideal(generators);
+--  -- return ideal(GetRow(RowMat(S, ListCoeff)*Mat(S, DependMatA), 1));
+-- enddefine; -- OrlikTeraoIdeal
+
+define OrlikTeraoIdeal(A)
+  if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+  n := len(A);
+  S := NewPolyRing(BaseRing(RingOf(A[1])), SymbolRange("y", 1,n));
+  if n <= 2 then return ideal(zero(S)); endif;  
+  MatArr := ArrMat(A);
+  generators := [];
+  SetN := 1..n;
+  relations := [];
+  dimA := dim(RingOf(A[1]));
+  for i:=3 to min(dimA+1, n) do
+    SubSetN := subsets(SetN, i);
+    foreach elem in SubSetN do
+      if relations=[] or MakeSet([IsSubset(rel, elem) | rel in relations])=[false] then
+	SubMatArr := submat(MatArr, 1..dimA, elem);
+	if rk(SubMatArr)<i then
+	  append(ref relations, elem);
+	  ProdIndets := product([indets(S)[j] | j in elem]);
+	  DependSubMatA := LinKer(SubMatArr);
+	  ListCoeff := [ProdIndets/indets(S)[k] | k in elem];
+	  NEWgenerator := (RowMat(S, ListCoeff)*Mat(S, DependSubMatA))[1,1];
+	  append(ref generators, NEWgenerator);
+	endif;
+      endif;
+    endforeach;
+  endfor;
+  if generators=[] then return ideal(zero(S)); endif;
+  return ideal(generators);
+enddefine; -- OrlikTeraoIdeal
+  
+define ArtinianOrlikTeraoIdeal(A)
+  I := OrlikTeraoIdeal(A);
+  SecondPowers := [k^2 | k in Indets(RingOf(I))];
+  return I+ideal(SecondPowers);
+enddefine; -- ArtinianOrlikTeraoIdeal
+  
+  ----------------------------------------------------------------------
+  -- Functions defining families of arrangements
+  ----------------------------------------------------------------------
+
+define ArrBoolean(S, k) -- S polynomial ring, first k-th int in variable's range
+  IND_S := indets(S);
+  if k>len(IND_S) or k<1 then error("k must be in the indeterminates's range"); endif;
+  return first(IND_S,k);
+enddefine; -- ArrBoolean
+
+define ArrBraid(S, k) -- S polynomial ring, first k-th int in variable's range
+  if k=1 then error("k must be greater then 1"); endif;
+  IND_Sk := ArrBoolean(S, k);
+  IndPairs := subsets(IND_Sk,2);
+  A := [];
+  for i:=1 to len(IndPairs) do
+    append(ref A, IndPairs[i][1]-IndPairs[i][2]);
+  endfor;
+  return A;
+enddefine; -- ArrBraid
+
+define ArrTypeD(S, k) -- S polynomial ring, first k-th int in variable's range
+  if k=1 then error("k must be greater then 1"); endif;
+  IND_Sk := ArrBoolean(S, k);
+  IndPairs := subsets(IND_Sk,2);
+  A := [];
+  for i:=1 to len(IndPairs) do
+    append(ref A, IndPairs[i][1]-IndPairs[i][2]);
+    append(ref A, IndPairs[i][1]+IndPairs[i][2]);
+  endfor;
+  return A;
+enddefine; -- ArrTypeD
+
+define ArrTypeB(S, k) -- S polynomial ring, first k-th int in variable's range
+  return concat(ArrBoolean(S,k), ArrTypeD(S,k));
+enddefine; -- ArrTypeB
+
+define ArrShiA(S, k) -- S polynomial ring, first k-th int in variable's range
+  A := ArrBraid(S,k);
+  A_1 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, A[i]-1);
+  endfor;
+  return concat(A, A_1);
+enddefine; -- ArrShiA
+
+define ArrShiB(S, k) -- S polynomial ring, first k-th int in variable's range
+  A := ArrTypeB(S,k);
+  A_1 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, A[i]-1);
+  endfor;
+  return concat(A, A_1);
+enddefine; -- ArrShiB
+
+define ArrShiD(S, k) -- S polynomial ring, first k-th int in variable's range
+  A := ArrTypeD(S,k);
+  A_1 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, A[i]-1);
+  endfor;
+  return concat(A, A_1);
+enddefine; -- ArrShiD
+
+define ArrCatalanA(S, k) -- S polynomial ring, first k-th int in variable's range
+  A := ArrBraid(S,k);
+  A_1 := [];
+  A_2 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, A[i]-1);
+    append(ref A_2, A[i]+1);
+  endfor;
+  return concat(A, A_1, A_2);
+enddefine; -- ArrCatalanA
+
+define ArrCatalanB(S, k) -- S polynomial ring, first k-th int in variable's range
+  A := ArrTypeB(S,k);
+  A_1 := [];
+  A_2 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, A[i]-1);
+    append(ref A_2, A[i]+1);
+  endfor;
+  return concat(A, A_1, A_2);
+enddefine; -- ArrCatalanB
+
+define ArrCatalanD(S, k) -- S polynomial ring, first k-th int in variable's range
+  A := ArrTypeD(S,k);
+  A_1 := [];
+  A_2 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, A[i]-1);
+    append(ref A_2, A[i]+1);
+  endfor;
+  return concat(A, A_1, A_2);
+enddefine; -- ArrCatalanD
+
+define ArrShiCatalanA(S, k, L) -- S polynomial ring, first k-th int in variable's range, L=[-a,b] with a and b positive integers
+  if not(len(L)=2) then error("L must be a list of 2 integers"); endif
+  A := ArrBraid(S,k);
+  A_1 := [];
+  A_2 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, [A[i]-j | j in 1..-L[1]]);
+    append(ref A_2, [A[i]+j | j in 1..L[2]]);
+  endfor;
+  return flatten(concat(A, A_1, A_2));
+enddefine; -- ArrShiCatalanA
+
+define ArrShiCatalanB(S, k, L) -- S polynomial ring, first k-th int in variable's range, L=[-a,b] with a and b positive integers
+  if not(len(L)=2) then error("L must be a list of 2 integers"); endif
+  A := ArrTypeB(S,k);
+  A_1 := [];
+  A_2 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, [A[i]-j | j in 1..-L[1]]);
+    append(ref A_2, [A[i]+j | j in 1..L[2]]);    
+  endfor;
+  return flatten(concat(A, A_1, A_2));
+enddefine; -- ArrShiCatalanB
+
+define ArrShiCatalanD(S, k, L) -- S polynomial ring, first k-th int in variable's range, L=[-a,b] with a and b positive integers
+  if not(len(L)=2) then error("L must be a list of 2 integers"); endif
+  A := ArrTypeD(S,k);
+  A_1 := [];
+  A_2 := [];
+  for i := 1 to len(A) do
+    append(ref A_1, [A[i]-j | j in 1..-L[1]]);
+    append(ref A_2, [A[i]+j | j in 1..L[2]]);
+  endfor;
+  return flatten(concat(A, A_1, A_2));
+enddefine; -- ArrShiCatalanD
+  
+define ArrGraphical(S, edgesG) -- S polynomial ring, edgesG list of pairs (list of edges in a simple graph G)
+  if not(NumIndets(S)>=max(MakeSet(flatten(edgesG)))) then error("The number of indeterminates of the ring must be coherent with the number of nodes in the graph"); endif;
+  if not(MakeSet([len(edge) | edge in edgesG])=[2]) then error("The edgesG must be a list of pairs"); endif;
+  // add check for double pairs
+  IndetsS := indets(S);
+  return [IndetsS[edge[1]]-IndetsS[edge[2]]| edge in edgesG];
+enddefine; -- ArrGraphical
+
+define ArrSignedGraphical(S, positive_edgesG, negative_edgesG, loopsG) -- S polynomial ring, positive_edgesG list of pairs (list of positive edges in a signed graph G), negative_edgesG list of pairs (list of negative edges in a signed graph G), loopsG list
+  if not(NumIndets(S)>=max(MakeSet(flatten(ConcatLists([positive_edgesG, negative_edgesG, loopsG]))))) then error("The number of indeterminates of the ring must be coherent with the number of nodes in the graph"); endif;
+  if not(MakeSet([len(edge) | edge in positive_edgesG])=[2]) then error("The positive_edgesG must be a list of pairs"); endif;
+  if not(MakeSet([len(edge) | edge in negative_edgesG])=[2]) then error("The negative_edgesG must be a list of pairs"); endif;
+  if not(loopsG=MakeSet(loopsG)) then error("The loopsG must have no repetitions"); endif;
+  // add check for double pairs
+  IndetsS := indets(S);
+  A_pos := [IndetsS[edge[1]]-IndetsS[edge[2]]| edge in positive_edgesG];
+  A_neg := [IndetsS[edge[1]]+IndetsS[edge[2]]| edge in negative_edgesG];
+  A_loop := [IndetsS[loop]| loop in loopsG];
+  return ConcatLists([A_pos, A_neg, A_loop]); 
+enddefine; -- ArrSignedGraphical
+  
+  ----------------------------------------------------------------------
+  -- Input check
+  ----------------------------------------------------------------------
+  
+define IsArrCentral(A)
+  if not(IsArr(A)) then error("The input must be a list of hyperplanes"); endif;
+  return IsHomog(A);
+enddefine; -- IsArrCentral
+
+define IsArrFree(Q) -- Q list of hyperplanes or Q poly (i.e. the defining eq. of the arrangement)
+  Sai := ArrDerModule(Q);
+  if NumCols(Sai)=NumRows(Sai) then return true;
+  else return false;
+  endif;
+enddefine; -- IsArrFree
+
+define IsMultiArrFree(MultiA) -- MultiA
+  Sai := MultiArrDerModule(MultiA);
+  if NumCols(Sai)=NumRows(Sai) then return true;
+  else return false;
+  endif;
+enddefine; -- IsMultiArrFree
+  
+  ----------------------------------------------------------------------
+  -- Internal functions
+  ----------------------------------------------------------------------
+
+define IsListOfPairs(LL)
+  if MakeSet([len(pair) | pair in LL])<>[2] then error("The input must be a list of pairs"); endif;
+  return true;
+enddefine; -- IsListOfPairs
+
+define IsArr(A)
+  if not(len(MakeSet(A))=len(A)) then error("The input must be a list of distinct hyperplanes"); endif;
+  if MakeSet([deg(H) | H in A])<>[1] then error("The input must be a list of hyperplanes"); endif;
+--  if MakeSet([deg(H) | H in A])<>[1] then error("The input must be a list of hyperplanes"); endif;  
+  return true;
+enddefine; -- IsArr
+  
+define IndicesInList(L, elem)
+  IND := [ i in 1..len(L) | L[i] = elem ];
+  if IND=[] then error("The element must be in the list"); endif;
+  return IND;
+enddefine;
+
+define ArrMat(A) -- A lists of hyperplane arrangements
+  if not(IsArrCentral(A)) then error("A must be a central arrangement"); endif;
+  return transposed(mat([coefficients(h, indets(RingOf(A[1]))) | h in A]));
+enddefine; -- ArrMat
+
+define MultiArrGensModules(MultiA) // per avere i generatori del modulo:
+  R := RingOf(MultiA[1,1]);
+  l := NumIndets(R);
+  n := len(MultiA);
+  Rl := NewFreeModule(R, l);
+  R1 := NewFreeModule(R, 1);
+  L := [ModuleElem(Rl, [0| i in 1..l])];
+  M := submodule(Rl, L);
+  alpha_i := [MultiA[i][1] | i in 1..n];
+  m_i := [MultiA[i][2] | i in 1..n];
+  alpha_m := [ModuleElem(R1, [alpha_i[i]^(m_i[i])]) | i in 1..n];
+  module_alpha_m := [submodule(R1, [alpha_m[i]]) | i in 1..n];
+  der_alpha := [GensJacobian(alpha_i[i]) | i in 1..n];
+  derivations := [[ModuleElem(R1, [der_alpha[i][j]]) | j in 1..l] | i in 1..n];
+  return [Gens_Ker_Hom_Mod(Rl,M,R1,module_alpha_m[i],derivations[i]).Preimage_Ker | i in 1..n];
+enddefine; -- MultiArrGensModules
+
+define IntersectionModules(G,H) -- G,H matrices
+  l := NumRows(G);
+  R := RingOf(G);
+  I_l := IdentityMat(R, l);
+  O_l1 := ZeroMat(R, l, NumCols(H));
+  O_l2 := ZeroMat(R, l, NumCols(G));
+  BigMat := BlockMat([[I_l, G, O_l1], [I_l, O_l2, H]]);
+  R2l := NewFreeModule(R,2*l);
+  module_GH := SyzOfGens(submodule(R2l, [ModuleElem(R2l, GetCol(BigMat, i)) | i in 1..NumCols(BigMat)]));
+  -- Min_GH := myMinSubsetOfGens(module_GH);
+  Min_GH := MinSubsetOfGens(module_GH);
+  Im_Min_GH := submodule(ModuleOf(module_GH), Min_GH);
+  Mat_Gens_GH := mat([GetRow(GensAsCols(Im_Min_GH), i) | i in 1..l]);
+  List_Cols := GetCols(Mat_Gens_GH);
+  ZeroVect := [zero(R) | i in 1..l];
+  Gens_GH :=[];
+  for i:=1 to len(List_Cols) do
+    if List_Cols[i] <> ZeroVect then
+      append(ref Gens_GH, List_Cols[i]);
+    endif;
+  endfor;
+  return transposed(mat(Gens_GH));
+enddefine; -- IntersectionModules
+
+-- Define myMinSubsetOfGens(X)
+--   L := gens(X);
+--   If type(X)=IDEAL Then 
+--     For I := 1 To len(L) Do
+--       J := ideal(WithoutNth(L,I));
+--       If L[I] IsIn J Then L[I] := 0*L[I]; EndIf;
+--     EndFor;
+--   EndIf;
+--   If type(X)=MODULE Then 
+--     For I := 1 To len(L) Do
+--       J := submodule(ModuleOf(X), [V In WithoutNth(L,I) | not(IsZero(V))]);
+--       If L[I] IsIn J Then L[I] := 0*L[I]; EndIf;
+--     EndFor;
+--   EndIf;
+--   Return [V In L | not(IsZero(V))];
+-- EndDefine
+
+define restriction(A,H)
+  A_1 := ArrDeletion(A,H);
+  R := RingOf(H);
+  S := NewPolyRing(BaseRing(R), SymbolRange("y", 1,NumIndets(R)-1));
+  Y := indets(S); 
+
+  i_0 := $.IndicesInList(indets(R), LT(H))[1];
+  psi := CanonicalHom(BaseRing(R),S);
+  images0 := concat([Y[i] | i in 1..i_0-1],[zero(S)],
+		    [Y[i] | i in i_0..NumIndets(R)-1]);
+  theta := PolyRingHom(R, S, psi, images0);
+  images := concat([Y[i] | i in 1..i_0-1],[(-theta(H))/psi(LC(H))],
+		   [Y[i] | i in  i_0..NumIndets(R)-1]);
+  phi := PolyRingHom(R, S, psi, images);
+  A_2 := [monic(phi(X)) | X in A_1];
+  return [X | X in A_2 and deg(X)>0];
+enddefine; -- restriction
+    
+EndPackage;

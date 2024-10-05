@@ -1,0 +1,453 @@
+Package $TypeVectors
+
+export TVecFromHF;
+export TVecToHF;
+export TVecPrintRes;
+export TVecPoints;
+  
+
+Define About()
+  PrintLn "    KeyWords : type vectors, Hilbert functions, points.";
+  PrintLn "    Author   : E. Carlini, M. Stewart";
+  PrintLn "    Version  : CoCoA-4.2";
+  PrintLn "    Date     : 8 May 2001 (minor revision July 2002)";
+  PrintLn "    ";
+  PrintLn "    Maintainer : A.M.Bigatti";
+  PrintLn "    Version  : CoCoA-5.3";
+  PrintLn "    Date     : 27 Jan 2020";
+EndDefine; -- About
+
+------[   Manual   ]--------
+
+Define Man()
+  PrintLn "SYNTAX";
+  PrintLn "    TVecFromHF( HF: TAGGED(\"$hp.Hilbert\")): LIST";
+  PrintLn "    TVecToHF( TV: LIST ): TAGGED(\"$hp.Hilbert\")";
+  PrintLn "    TVecPrintRes( TV: LIST )";
+  PrintLn "    TVecPoints( TV: LIST): LIST";
+  PrintLn "-- not yet implemented: write to A.M.Bigatti";
+  PrintLn "    $.Alpha( TV: LIST ): INTEGER";
+  PrintLn "    $.Sigma( TV: LIST ): INTEGER";
+  PrintLn "    $.Type( TV: LIST ):  INTEGER";
+  PrintLn "    $.IsValid( TV: LIST ): BOOL";
+  PrintLn "";
+  PrintLn "DESCRIPTION";
+  PrintLn "";
+  PrintLn "This package enables one to compute with \"type vectors\" as described in";
+  PrintLn "the article by A.Geramita, T.Harima, Y.Shin entitled \"An alternative to";
+  PrintLn "the Hilbert function for the ideal of a finite set of points in P^n\",";
+  PrintLn "published in Illinois J.Math. vol.45 (2001), no. 1, pages 1--23.";
+  PrintLn "";
+  PrintLn "Let T be an n-type vector, we represent a 2-type vector as [[d_1],...,[d_r]]";
+  PrintLn "so that the representation of T is obtained by recursion.";
+  PrintLn "";
+  PrintLn "";
+  PrintLn "   The functions";
+  PrintLn "           $.Alpha(TV)";
+  PrintLn "           $.Sigma(TV)";
+  PrintLn "   return an INTEGER representing the alpha and sigma quantities of $.";
+  PrintLn "";
+  PrintLn "   The function";
+  PrintLn "           $.Type(TV)";
+  PrintLn "   returns the INTEGER n such that TV is a n-type vector.";
+  PrintLn "";
+  PrintLn "   The function";
+  PrintLn "           $.IsValid(TV)";
+  PrintLn "   returns TRUE if TV is a valid type vector, FALSE otherwise.";
+  PrintLn "";
+  PrintLn ">EXAMPLE<";
+  PrintLn "";
+  PrintLn "/**/  Use P ::= QQ[x,y,z,t];";
+  PrintLn "/**/  TVecToHF([[[2], [4]]]);";
+  PrintLn "/**/  Pts := TVecPoints(T);  Pts;";
+  PrintLn "/**/  HilbertFn(P/IdealOfProjectivePoints(P, mat(Pts)));";
+  PrintLn "/**/  TVecPrintRes(T);";
+  PrintLn "";
+  PrintLn "   $.Alpha(T);";
+  PrintLn "   $.Sigma(T);";
+  PrintLn "   $.IsValid(T);";
+  PrintLn "   $.Type(T);";
+EndDefine; -- Man
+
+----------------------------------------------------------------------
+
+----------------------------[ Type Vectors ]--------------------------
+
+Define TVecFromHF(HF)
+  TopLevel CurrentRing;
+  S := $.HFtoTVHF(HF);
+  N := NumIndets(CurrentRing);
+  If Not($.MyIsDiffOS(S)) Then
+    Error("TVecFromHF: Not a differentiable O-sequence: "+Sprint(HF));
+  EndIf;
+  Return $.MakeNList(N-1, $.PTVofHF(S,0));
+EndDefine; -- FromHF
+
+
+define TVecToHF(TV)
+  HF := [1];
+  dep := $.ListDepth(TV);
+  i := 1;
+  repeat
+    h_next := HFNT(dep, TV, i);
+    if h_next = HF[i] then break; endif;
+    append(ref HF, h_next);
+    incr(ref i);
+  endrepeat;
+  return TaggedHilbertFn(TVReduce([HF, HF[i]]));
+enddefine; -- TVecToHF
+
+
+define TVecPrintRes(TV);
+  RingEnv := "R";
+  ResL := TVBetti(TV);
+  print "0 --> ";
+  for i := 1 to len(ResL) do
+    $.PrintShiftedR(ResL[i]);
+    Print " --> ";
+  endfor;
+  println RingEnv;
+enddefine; -- TVecPrintRes
+
+
+Define TVecPoints(TV)
+  N := $.ListDepth(TV);
+  If N = 0 Then Return [[1]]; EndIf;
+  If N = 1 Then Return [[Y-1,1] | Y In 1..TV[1]]; EndIf;
+  TV := Reversed(TV);
+  Result := [];
+  For S := 0 To Len(TV)-1 Do
+    X := TVecPoints(TV[S+1]);
+    $.PrependN(ref X,S);
+    Result := Concat(Result,X);
+  EndFor;
+  Return Result;
+EndDefine; -- Points
+
+
+Define Alpha(TV)
+  N:=$.ListDepth(TV);
+  If N = 0 Then Return -1;      EndIf;
+  If N = 1 Then Return TV[1];   EndIf;
+  If N >=2 Then Return Len(TV); EndIf;
+EndDefine; -- Alpha
+
+Define Sigma(TV)
+  N:=$.ListDepth(TV);
+  If N = 0 Then Return 1;     EndIf;
+  If N = 1 Then Return TV[1]; EndIf;
+  If N >=2 Then Return $.Sigma(TV[Len(TV)]); EndIf;
+EndDefine; -- Sigma
+
+Define IsValid(TV)
+  N := $.ListDepth(TV);
+  If N = 0 Then Return TV = 1;  EndIf;
+  If N = 1 Then Return TV[1]>0; EndIf;
+  If N >=2 Then
+    Foreach TT In TV Do
+      If Not($.IsValid(TT)) Then Return False; EndIf;
+    EndForeach;
+    For I:=1 To Len(TV)-1 Do
+      If $.Alpha(TV[I+1])<=$.Sigma(TV[I]) Then Return False; EndIf;
+    EndFor;
+  EndIf;
+  return true;
+EndDefine; -- IsValid
+
+Define TVType(TV)
+  If Not($.IsValid(TV)) Then
+    Error("$.Type: not a valid type vector: ", TV);
+  EndIf;
+  Return $.ListDepth(TV);
+EndDefine; -- Type
+
+
+----------------------------[ AUXILIARY ]----------------------
+
+----------------------------[ OSequence ]----------------------
+
+Define IsOS(OS)
+  S:=$.OStoMyOS(OS);
+  S := TVReduce(S);
+  S1 := S[1];
+  If S1=[] Then Return True; EndIf;
+  Foreach X In S1 Do If X<0 Then Return False; EndIf; EndForeach;
+  If S[2]<>0 And Deg(S[2])>0 Then
+    Error("$.IsOS only works with 0 dimensional O-Sequence");
+  EndIf;
+  L := Len(S1);
+  For I := 1 To L-1 Do
+    If EvalBinExp(BinExp(S1[I],I),1,1) < S1[I+1] Then Return False; EndIf;
+  EndFor;
+  If EvalBinExp(BinExp(S1[L],L),1,1) < LC(S[2]) Then Return False; EndIf;
+  Return True;
+EndDefine; -- IsOS
+
+Define DiffOS(OS, t)
+-- Help "Given an O-Sequence  S  this function computes its first difference.
+-- Syntax= DiffOS( [ ListOfNonNegativeIntegers , APolynomialOfR[t] )";
+//  Using QQt Do
+    S:=$.OStoMyOS(OS);
+    S := TVReduce(S);
+    Return $.MyOStoOS([[$.Value(S,I+1)-$.Value(S,I) | I In 0..Len(S[1])],
+		      Subst(S[2], t, t+1) - S[2] ]);
+//  EndUsing;
+EndDefine; -- DiffOS
+
+Define IsDiffOS(S)
+  TopLevel CurrentRing;
+  Return $.IsOS($.DiffOS(S, indet(CurrentRing, 1)));
+EndDefine; -- IsDiffOS
+
+Define TVReduce(S)
+--  TopLevel CurrentRing;
+--  Help "Given an O-Sequence S := [ [b_1,..,b_r] , P(t) ],
+--        Reduce(S) := [ [b_1,..b_s] , P(t) ] is such that P(s) /neq b_s ( s<=r )";
+  if type(S[2])=RINGELEM then R := RingOf(S[2]); else R := RingQQt(1); endif;
+  LenS1 := Len(S[1]);
+  If LenS1=0 Or S[1,LenS1]<>Subst(S[2], Indet(R, 1), LenS1) Then
+    Return S;
+  EndIf;
+  L := [ I In 1..LenS1 | S[1,I]<>Subst(S[2], Indet(R, 1), I) ];
+  If L=[] Then M := 0; Else M := Max(L); EndIf;
+  Return [ First(S[1], M), S[2] ];
+EndDefine; -- TVReduce
+
+  
+Define TVIntegrate(L)
+  If Len(L)=1 Then Return L; EndIf;
+  If Len(L)=0 Then Return L; EndIf;
+  M := [];
+  Append(ref M,L[1]);
+  For I := 2 To Len(L) Do
+    Append(ref M,(M[I-1]+L[I]));
+  EndFor;
+  Return M;
+EndDefine; -- TVIntegrate
+
+----------------------------[ Various ]------------------
+
+Define TVValue(S,I)
+  If I=0 Then Return 1; EndIf;
+  If I<0 Then Return 0; EndIf;
+  If I<=Len(S[1]) Then Return S[1][I]; EndIf;
+//  Return QQt :: Eval(S[2], [I]);
+  Return Eval(S[2], [I]);
+EndDefine; -- Value
+
+
+Define ListDepth(L)
+  If Type(L)<>LIST Then Return 0; EndIf;
+//  If flatten(L)=L  Then Return 1; EndIf;
+  If Not (LIST IsIn [Type(X) | X In L])  Then Return 1; EndIf;
+  Return Max([ ListDepth(LL) | LL In L ])+1;
+EndDefine; -- ListDepth
+
+
+Define MakeNList(N, L)
+  For I:=1 To N-$.ListDepth(L) Do L := [L]; EndFor;
+  Return L;
+EndDefine; -- MakeNList
+
+
+Define PTVofHF(S, Idt)
+  N := TVValue(S,1)-1;
+  If N=0 Then Return 1; EndIf;
+  If N=1 Then Return([S[2]]); EndIf;
+  If N=2 Then
+    DS := $.MyDiffOS(S);
+    DS := Concat([1], DS[1]);
+    L := [];
+    While Len(DS)<>0 Do
+      L := Concat([[Len(DS)]], L);
+      DS := Diff([(DS[I]-1) | I In 1..Len(DS) ], [0]);
+    EndWhile;
+    Return L;
+  EndIf;
+  TV1 := $.PTVofHF($.GMRS1(S), Idt+1);
+  TV2 := $.PTVofHF($.GMRS2(S), Idt+1);
+  If $.ListDepth(TV1)=N Then Return Concat(TV1, [TV2]); EndIf;
+  Return [$.MakeNList(N-1,TV1), TV2];
+EndDefine; -- PTVofHF
+
+
+Define GMRS1(S)
+  L := $.ProS1(S);
+  Return TVReduce(L[1]);
+EndDefine; -- GMRS1
+
+
+Define ProS1(S)
+  S := TVReduce(S);
+  N := TVValue(S,1);
+  If N=2 Then Return [ [S[1], S[2]-1], -1]; EndIf;
+  L := [];
+  D := 2;
+  While TVValue(S,D) - TVValue([L,0], D-2) >= Bin(N+D-2, D)  Do
+    Append(ref L, TVValue(S,D)-Bin(N+D-2, D) );
+    D := D+1;
+  EndWhile;
+  Return [ [L, TVValue([L,0], D-2)], D-1];
+EndDefine; -- ProS1
+
+
+Define GMRS2(S)
+    TopLevel CurrentRing;
+  S := TVReduce(S);
+  N := TVValue(S,1);
+  S1 := $.GMRS1(S);
+  H := $.GMRH(S);
+  If H=-1 Then Return([[], Bin(N-2+Indet(CurrentRing, 1), N-2)]);  EndIf;
+  C := [ [Bin(N-2+I, N-2) | I In 1..H ], 0];
+  For J := H+1 To Len(S[1]) Do
+    Append(ref C[1], TVValue(S,J)-TVValue(S1,H-1));
+  EndFor;
+  C[2] := S[2]-TVValue(S1,H-1);
+  Return TVReduce(C);
+EndDefine; -- GMRS2
+
+
+Define GMRH(S)
+  L := $.ProS1(S);
+  Return L[2];
+EndDefine; -- GMRH
+
+
+Define HFNT(LD, TV, j)  // NT??
+  if j<0 then return 0; endif;
+  if j=0 then return 1; endif;
+  LenTV := len(TV);
+  if LD=1 then
+    return min(TV[LenTV], j+1);
+  endif;
+  return sum([ $.HFNT(LD-1, TV[i], j-LenTV+i) | i in 1..LenTV ]);
+enddefine; -- HFNT
+
+
+Define PrintShiftedR(L)
+  RingEnv := "R";
+  While L<>[] Do
+    D := L[1];
+    J := 0;
+    While L<>[] And (L[1]=D) Do
+      L := Tail(L);
+      J := J+1;
+    EndWhile;
+    If J=1  Then Print RingEnv, "(-", D ,")";  EndIf;
+    If J<>1 Then Print RingEnv, "^", J, "(-", D, ")";  EndIf;
+    If L<>[] Then Print "(+)"; EndIf;
+  EndWhile;
+EndDefine; --  PrintShiftedR
+
+
+Define TVBetti(TV)
+  If Len(TV)=1 Then
+    If $.ListDepth(TV)=2 Then
+      Return([[TV[1][1]+1],[TV[1][1],1]]);
+    EndIf;
+    Rold := TVBetti(TV[1]);
+    Rnew := [];
+    Append(ref Rnew,[I+1 | I In Rold[1]]);
+    J := 1;
+    While J<Len(Rold) Do
+      Append(ref Rnew,Sorted(Concat(Rold[J],[I+1|I In Rold[J+1]])));
+      J := J+1;
+    EndWhile;
+    Append(ref Rnew,Sorted(Concat(Rold[Len(Rold)],[1])));
+    Return Rnew;
+  EndIf;
+  ResY := TVBetti(Diff(TV,[TV[Len(TV)]]));
+  ResX := TVBetti([TV[Len(TV)]]);
+  ResYuX := [];
+  For j := 1 To Len(ResX)-1 Do
+    Append(ref ResYuX, Sorted(Concat([I+1| I In ResY[j]],ResX[j])));
+  EndFor;
+  J := Len(ResX)-1;
+  Append(ref ResYuX,Sorted(Concat([I+1| I In ResY[J+1]],Diff(ResX[J+1],[1]))));
+  Return ResYuX;
+EndDefine; -- Betti
+
+
+Define PrependN(ref L, N)
+  For I  :=  1 To Len(L) Do
+    Insert(ref L[I],1,N);
+  EndFor;
+EndDefine; -- PrependN
+
+----------------------------[ MyOSequence ]----------------------
+
+Define MyIsOS(S)
+  S := TVReduce(S);
+  S1 := S[1];
+  If S1=[] Then Return True; EndIf;
+  Foreach X In S1 Do If AsINT(X)<0 Then Return False; EndIf EndForeach;
+  If S[2]<>0 And Deg(S[2])>0 Then
+    Error("This function only works with 0 dimensional O-Sequence");
+  EndIf;
+  L := Len(S1);
+  For I := 1 To L-1 Do
+    If EvalBinExp(BinExp(AsINT(S1[I]),I),1,1) < AsINT(S1[I+1]) Then
+      Return False;
+    EndIf;
+  EndFor;
+  If EvalBinExp(BinExp(AsINT(S1[L]),L),1,1) < AsINT(S[2]) Then
+    Return False;
+  EndIf;
+  Return True;
+EndDefine; -- MyIsOS
+
+
+Define MyDiffOS(S)
+-- Help "Given an O-Sequence  S  this function computes its first difference.
+--     Syntax= MyDiffOS( [ ListOfNonNegativeIntegers , APolynomialOfR[t] )";
+  if type(S[2])=RINGELEM then R := RingOf(S[2]); else R := RingQQt(1); endif;
+//  TopLevel CurrentRing;
+  T := Indet(R, 1);
+  S := TVReduce(S);
+  Return [ [TVValue(S,I+1)-TVValue(S,I) | I In 0..Len(S[1])],
+	  Subst(S[2], T, T+1) - S[2] ];
+EndDefine; -- MyDiffOS
+
+
+Define MyIsDiffOS(S)
+  Return $.MyIsOS($.MyDiffOS(S));
+EndDefine; -- MyIsDiffOS
+
+
+Define MyIntegrate(L)
+  If Len(L)=1 Then Return L; EndIf;
+  If Len(L)=0 Then Return L; EndIf;
+  M := [];
+  Append(M,L[1]);
+  For I := 2 To Len(L) Do
+    Append(M,(M[I-1]+L[I]));
+  EndFor;
+  Return M;
+EndDefine; -- MyIntegrate
+
+----------------------------[ Aggiustamenti ]------------------
+
+Define MyOStoOS(S)
+  If Len(S[1])>0 And S[1][1]=1 Then  Return S; EndIf;
+  Return [Concat([1],S[1]),S[2]];
+EndDefine; -- MyOStoOS
+
+
+Define OStoMyOS(S)
+  S1:=S[1];
+  If Len(S1)<1 Then Return S; EndIf;
+  If S1[1]<>1  Then Return S; EndIf;
+  Return [Tail(S[1]),S[2]];
+EndDefine;
+
+Define HFtoTVHF(H)
+  Return $.OStoMyOS(Untagged(H));
+EndDefine; -- HFtoTVHF
+
+
+-- define TVHFtoHF(H)
+--   return TaggedHilbertFn(H);
+-- enddefine; -- TVHFtoHF
+
+
+EndPackage; -- $contrib/typevectors

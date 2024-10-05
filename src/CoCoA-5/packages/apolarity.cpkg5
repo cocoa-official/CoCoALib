@@ -1,0 +1,144 @@
+-- $Id: apolarity.cpkg5,v 1.5 2014/04/24 17:00:18 abbott Exp $
+Package $apolarity
+
+export DerivationAction;
+export InverseSystem;
+export PerpIdealOfForm;
+
+Define About()
+  PrintLn "    Author   : E.Carlini";
+  PrintLn "    Version  : CoCoA-4.7.5";
+  PrintLn "    Date     : 3 Jun 2009";
+EndDefine; -- About
+
+
+------[   Manual   ]--------
+
+Define Man()
+  PrintLn "DerivationAction(D,P):";
+  PrintLn "   given the polynomial P and the derivation D, computes the action of D on P.";
+  PrintLn;
+  PrintLn "InverseSystem(I,D):";
+  PrintLn "   given an ideal of derivations I, and an integer D, computes the degree D";
+  PrintLn "   part of the inverse system of I.";
+  PrintLn;
+  PrintLn "PerpIdealOfForm(F):";
+  PrintLn "   given a form F computes the ideal of derivations killing it.";
+  PrintLn;
+  PrintLn "For the sake of simplicity Forms/Polynomials and Derivations live in the same";
+  PrintLn "ring, the distinction between them is purely formal.  Thus the same object can";
+  PrintLn "be a Form or Derivation depending on what you need.";
+EndDefine; -- Man
+
+
+----------------------------------------------------------------------
+
+Define MonomialAction(D,P)
+  PolyRing := RingOf(D);
+  If D*P=0 Then Return zero(PolyRing); EndIf;
+  Kx := RingOf(D);
+  L:=[ T | T In indets(Kx) And deg(D,T)>0];
+  Foreach X In L Do
+    If deg(P,X)<deg(D,X) Then Return zero(PolyRing); EndIf;
+  EndForeach;
+  Temp:=CoeffEmbeddingHom(Kx)(LC(D))*subst(P,[[X,1] | X In L]);
+  Foreach X In L Do
+    Temp:=Temp*X^(deg(P,X)-deg(D,X))*binomial(deg(P,X),deg(D,X))*factorial(deg(D,X));
+  EndForeach;
+  Return Temp;
+EndDefine; -- MonomialAction
+
+
+Define DerivationAction(D,P)
+  -- P polynomial, D derivation the result is the action of D on P
+  MonomialPairs:=monomials(D)><monomials(P);
+  Temp:=[ $.MonomialAction(Pair[1],Pair[2]) | Pair In MonomialPairs];
+  Return sum(Temp);
+EndDefine; -- Action
+
+
+Define PerpOfForm(F)
+  -- F form, return the forms of deg(F) killing F
+  If F=0 Then Return support(DensePoly(RingOf(F), deg(F))); EndIf;
+  L:=support(F);
+  M:=first(L);
+  ActionOfM:=$.DerivationAction(M,F);
+  LL:=diff(support(DensePoly(RingOf(F), deg(F))),[M]);
+  Temp:=[];
+  Foreach N In LL Do
+    append(ref Temp, $.DerivationAction(N,F)*M-ActionOfM*N); 
+  EndForeach;
+  Return Temp;
+EndDefine; -- PerpOfForm
+
+
+Define PerpOfSet(I)
+  -- given I, a set of derivation of degree d, returns the forms of degree d killed by them
+  If I=[] Then Return []; EndIf;
+  If len(I)=1 Then Return $.PerpOfForm(I[1]); EndIf;
+  I:=diff(I,[0]);
+  Temp:=ideal(one(RingOf(I[1])));
+  Foreach P In I Do
+    Temp:=intersect(Temp, ideal($.PerpOfForm(P)));
+  EndForeach;
+  Return [ F | F In gens(Temp) And deg(F)=deg(I[1])];
+EndDefine; -- PerpOfSet
+
+
+Define HomogeneousPiece(I,D)
+  -- homegeneous part of the ideal I in degree D
+  GensI:=gens(I);
+  Temp:=[0];
+  Foreach F In diff(GensI,[0]) Do 
+    If D>=deg(F) Then
+      Temp:=concat(Temp,[F*M | M In support(DensePoly(RingOf(I),D-deg(F)))]);
+    EndIf;
+  EndForeach;
+  Return MakeSet(Temp);
+EndDefine; -- HomogeneousPiece
+
+
+Define InverseSystem(I,D)
+  -- homegenous part of degree D of the inverse system of the ideal I
+  If $.HomogeneousPiece(I,D)<>[0] Then
+    Return $.PerpOfSet($.HomogeneousPiece(I,D));
+  EndIf;
+  Return support(DensePoly(D));
+EndDefine; -- InverseSystem
+
+
+Define PerpIdealOfForm(F)
+  -- given the form F, returns the ideal F^\perp
+  D:=deg(F);
+  Kx := RingOf(F);
+  Id:=ideal($.InverseSystem(ideal(F),D));
+  Temp:=gens(Id);
+  For J:=1 To D-1 Do
+    Temp:=concat(Temp,$.HomogeneousPiece(colon(Id,ideal(indets(Kx))^J),D-J));
+  EndFor;
+  Return ideal(interreduced(concat(Temp, gens(ideal(indets(Kx))^(D+1)))));
+EndDefine; -- PerpIdealOfForm
+
+EndPackage;
+
+
+
+-- /**/  PerpIdealOfForm(x^3+x*y*z);
+-- ideal(z^3, y*z^2, x*z^2, y^2*z, x^3 - 6*x*y*z, x^2*z, y^3, x*y^2,
+--       x^2*y, 0, y^2, x^2 - 6*y*z, z^2, 0)
+-- -------------------------------
+-- /**/  hilbert(CurrentRing/It);
+-- H(0) = 1
+-- H(1) = 3
+-- H(2) = 3
+-- H(3) = 1
+-- H(t) = 0   for t >= 4
+-- -------------------------------
+			      
+-- /**/  InverseSystem(ideal(x^3+x*y*z), 3);
+-- [z^3, y*z^2, x*z^2, y^2*z, x^3 - 6*x*y*z, x^2*z, y^3, x*y^2, x^2*y]
+-- -------------------------------
+
+-- /**/  DerivationAction(x*y*z, x^3+x*y*z);
+-- 1
+-- -------------------------------

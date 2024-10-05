@@ -1,0 +1,60 @@
+      DistrMPolyInlPP
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{DistrMPolyInlPP}{John Abbott}
+
+
+
+
+=== User documentation for the class DistrMPolyInlPP ===
+%----------------------------------------------------------------------
+
+If you are not a CoCoA library developer then most likely you should not
+be considering using this class -- use a polynomial ring instead.  That
+way you will gain ease of use and safety with only a small performance
+penalty.
+
+This class should be seen and used only by CoCoA library implementors;
+normal users should use the polynomial rings (which internally may well
+use DMPIs to represent their elements).
+
+The class DistrMPolyInlPP implements multivariate polynomials
+represented as ordered linked lists of summands, each summand is made up
+of a coefficient (RingBase::RawValue) and a power product represented as
+an order vector.
+
+The implementation is oriented towards speed rather than safety or ease
+of use.  To this end argument sanity checks (and other types too) should
+normally use CoCoA_ASSERT rather than CoCoAError.
+
+
+=== Maintainer documentation for the class DistrMPolyInlPP ===
+%----------------------------------------------------------------------
+
+NO DOCUMENTATION YET WRITTEN.
+
+This code is very ugly, and I am far from happy with it.  I hope it will
+eventually become much cleaner while maintaining the speed.
+
+
+=== Bugs and Shortcomings ===
+%----------------------------------------------------------------------
+
+The biggest bug is the definition of the struct summand which is NOT
+PORTABLE since C++ compilers do not guarantee to respect the order of
+fields in a structure.  I do not yet know how best to avoid this without
+incurring a run-time penalty.
+
+This code is apparently stable but surprisingly ugly and awkward to use.
+I continue to hope that the same speed can be achieved with cleaner
+code.  As an example of how bad the code is just take a look at the
+function deriv (which computes derivatives) -- it is far too long and
+incomprehensible.  There must be better way!
+
+The classes DistrMPolyInlPP, PPMonoid and PPOrdering are more closely
+tied together than I would really like.
+
+Iterators are giving me headaches -- we need them, but they seem to
+expose implementation details.
+

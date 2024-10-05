@@ -1,0 +1,171 @@
+------------------------------------------------------------------------------
+-- Groebner bases at ease
+/**/ Use QQ[x,y,z];
+/**/ I := ideal(x^3 +x*y^2 -2*z, x^2*y^3 -y*z^2);
+/**/ GBasis(I);    // same as  "print GBasis(I);"
+--> [x^3 +x*y^2 -2*z, x^2*y^3 -y*z^2, x*y^5 -2*y^3*z +x*y*z^2, ....
+
+/**/ indent(GBasis(I));  --> 
+-- [
+--   x^3 +x*y^2 -2*z,
+--   x^2*y^3 -y*z^2,
+--   x*y^5 -2*y^3*z +x*y*z^2,
+--   2*x*y^3*z -x^2*y*z^2 -y^3*z^2,
+--   y^5*z^2 -4*y^3*z^2 +2*x*y*z^3 +y*z^4
+-- ]
+
+------------------------------------------------------------------------------
+-- new in next release:  CoCoA-5.1.2
+------------------------------------------------------------------------------
+-- GBasis working on algebraic extensions
+/**/ Use R ::= QQ[i];
+/**/ QQi := R/ideal(i^2 +1);
+/**/ Use QQi[x,y,z];
+/**/ I := ideal(x^3 +x*y^2 -2*i*z, x^2*y^3 -i*y*z^2);
+/**/ indent(GBasis(I));
+
+------------------------------------------------------------------------------
+-- non-commutative GBasis (needs refinement and feedback...)
+/**/ WA := NewWeylAlgebra(QQ, "x,y");
+/**/ Use WA;
+/**/ indets(WA); --> x, y, dx, dy
+/**/ x*dx;
+/**/ dx*x; --> x*dx +1
+/**/ ReducedGBasis(ideal(x, dx)); --> [1]
+
+------------------------------------------------------------------------------
+-- Primary Decomposition (work in progress, by Elisa Palezzato)
+/**/ Use R ::= QQ[x,y,z];
+/**/ PD := PrimaryDecomposition(ideal(x-z, y^2-1, z^2));
+/**/ indent(PD);
+-- record[  IsCertified := true,  --> probabilistic
+--          PrDec_I := [ideal(y -1, x -z, z^2), ideal(y +1, x -z, z^2)]  ]
+
+------------------------------------------------------------------------------
+-- Other systems could do that some time ago, so....
+-- Some of CoCoA's *SPECIALITIES*
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+-- "TwinFloat numbers and the computation of gin"
+
+/**/ RR32 := NewRingTwinFloat(32);
+/**/ use RR32_X ::= RR32[x,y,z];
+/**/ F := (1/3)*x - 1/100000;
+/**/ F; --> (1/3)*x -1/100000 --> rational reconstruction
+/**/ 10^20 * F; --> 0.3333333333333333333*10^20*x -1000000000000000
+
+/**/ RR128 := NewRingTwinFloat(128);
+/**/ use RR128_X ::= RR128[x,y,z];
+/**/ F := (1/3)*x - 1/100000;  F;
+/**/ 10^20 * F; --> (100000000000000000000/3)*x -1000000000000000
+/**/ 10^40 * F; --> 0.3333333333333333333333333333333333333333*10^40*x -...
+
+/**/ I := ideal(x^3 +x*y^2 -2*z, x^2*y^3 -y*z^2); --> TwinFloat coefficients
+/**/ GBasis(I); ---> rational reconstruction: same as computation over QQ
+
+-- TwinFloats are very useful for computing "gin"
+-- gin(I) is LT(g(I)) where g is a generic/random change of coordinates
+/**/ use QQ_X ::= QQ[x,y,z];
+/**/ I := ideal(y^20 -x^5*z^6,  x^2*z^3 -y*z^2);
+
+-- Originally generated random LCOC -- we fix one choice for testing.
+-- L := [sum([ random(-1000,1000)*indet(QQ_X,j) | j in 1..3]) | i in 1..3];
+/**/ L := [-756*x -899*y +140*z,  920*x +825*y -948*z,  -164*x +234*y -626*z];
+/**/ indent(L);
+
+/**/ CoordTransform := PolyAlgebraHom(QQ_X, QQ_X, L);
+/**/ GI := ideal(CoordTransform(gens(I)));  GI;
+--> ideal( 101148714265738572816020149152880657871065317376*x^20 ......
+-- computing GBasis(GI) over QQ could be quite hard!
+-- map GI into RR32_X:
+/**/ phi := PolyRingHom(QQ_X, RR32_X, CanonicalHom(QQ,RR32_X), indets(RR32_X));
+/**/ GI32 := ideal(phi(gens(GI)));
+------> /**/ GB := GBasis(GI32); --> ERROR: insufficient precision
+
+-- we try with higher precision:
+/**/ phi := PolyRingHom(QQ_X, RR128_X, CanonicalHom(QQ,RR128_X), indets(RR128_X));
+/**/ GI128 := ideal(phi(gens(GI)));
+/**/ GB := GBasis(GI128);
+/**/ LT(GI128);
+--> ideal(x^5, x^4*y^16, x^3*y^18, x^2*y^20, x*y^22, y^24)  -- it's gin(I)!
+/**/ GB[1]; --> x^5 -617441/302427*x^4*y ... -- reconstructed to QQ
+------> /**/ GB[3]; --> x^3*y^18 +0.105339094621245567277321917656190841*10^1*x^2*y^19..
+--> the GBasis over QQ cannot be reconstructed, but we just want the LT!
+
+-- CoCoA's "gin" does this all for you, and even more:
+-- random coeffs between -10^6 and 10^6; and computed twice, just to make sure!
+/**/ gin(I); --> ideal(x^5, x^4*y^16, x^3*y^18, x^2*y^20, x*y^22, y^24)
+-----> /**/ gin(I, "verbose"); --> prints the precision used in the computations
+
+------------------------------------------------------------------------------
+-- GROEBNER BASES of ideals of points
+-- (Abbott-Bigatti-Kreuzer-Robbiano 1999)
+
+/**/ P ::= QQ[x,y];
+/**/ Points := mat([[10, 0], [-10, 0], [0, 10], [0, -10],
+	             [7, 7], [-7, -7], [7, -7], [-7, 7]]);
+/**/ IdealOfPoints(P, Points);
+--> ideal(x^2*y +(49/51)*y^3 +(-4900/51)*y, ....
+
+-- -- BORDER BASES of ideals of (approximate) points
+-- -- (by Abbott-Fassino-Torrente)
+-- /**/ Epsilon := Mat([[0.1, 0.1]]);
+-- /**/ TmpNBM(P, Points, Epsilon);
+-- /**/ indent(It, 2);
+-- --   AlmostVanishing := [
+-- --     x^2 +(4999/5001)*y^2 -165000/1667, ...
+-- --> indeed the points are "almost" on the circle centered in (0,0) of radius 10!
+
+-- /**/ Epsilon := Mat([[0.01, 0.01]]);
+-- /**/ indent(TmpNBM(P, Points, Epsilon).AlmostVanishing); --> degree > 3
+-- --> not on a conic if the approximation is ~0.01
+
+------------------------------------------------------------------------------
+-- Another kind of approximation:  (Abbott 201?)
+-- modular computations and fault-tolerant rational reconstruction
+
+/**/ f := 1/1234;
+
+/**/ one(NewZZmod(12347))*f;
+/**/ one(NewZZmod(23459))*f;
+/**/ one(NewZZmod(34589))*f;
+/**/ CRT(-5293,12347, -1806,23459); -- Chinese Remainder Theorem
+--> f is 79571122 mod 289648273
+/**/ CRT(79571122, 289648273,  -15893, 34589); -- CRT again
+--> -2362581391739
+/**/ RatReconstructByContFrac(-2362581391739, 10018644114797);
+--> 1/1234
+-- RatReconstructByContFrac is fault-tolerant:
+-- may be useful for running a computation modulo some big primes
+-- combine them with CRT and recover the answer in QQ
+
+------------------------------------------------------------------------------
+-- -- Now some CoCoA-5 ERRORS!
+-- -- helpful when learning CoCoA-5, or converting CoCoA-4 code into CoCoA-5
+
+-- -- obsolete function call: len --> NumRows
+-- /**/ len(mat([[1,2,3], [4,5,6], [7,8,9]]));
+-- --> ERROR: len(MAT) not allowed, use NumRows(MAT) instead
+-- --> /**/ len(mat([[1,2,3], [4,5,6], [7,8,9]]));
+-- -->          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+-- -- missing "*"
+-- /**/ F := xy;
+-- --> ERROR: Cannot find a variable named "xy" in scope.
+-- Similarly named variables (that you might need to import) are: "dy", "x", "y"
+-- --> /**/ F := xy;
+-- -->           ^^
+-- /**/ F := 2y;
+-- --> ERROR: Unexpected identifier, are you forgetting a "*" or a ";" ?
+-- --> /**/ F := 2y;
+-- -->            ^
+
+-- -- typo!
+-- /**/ MatReconstructByConFrac(79571122, 289648273);
+-- --> ERROR: Cannot find a variable named "MatReconstructByConFrac" in scope.
+-- A similarly named variable (that you might need to import) is: "RatReconstructByContFrac"
+-- --> /**/ MatReconstructByConFrac(79571122, 289648273);
+-- -->      ^^^^^^^^^^^^^^^^^^^^^^^
+
+------------------------------------------------------------------------------

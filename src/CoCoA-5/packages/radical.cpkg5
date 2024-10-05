@@ -1,0 +1,1229 @@
+
+--  27/7/04 Aldo Bug fixed - the error was in the TrueEquiRad and FindL
+-- procedures, mainly in the treatment of codim 1 cases.  Major overhaul of
+-- the radical package is in order.  Complete rewriting in cocoa5 when
+-- needed procedures are present a major goal.  TrueEquiRad has to be
+-- completely rewritten and understood.
+
+
+Package $radical
+
+export radical_COCOALANGUAGE;
+export RadicalOfUnmixed;
+  
+Define About()
+  PrintLn "    Topic   : Radical Computations.";
+  PrintLn "    Keywords: Radical, EquiDimensional Isoradical Decomposition";
+  PrintLn "    Authors : M.Caboara";
+  PrintLn "    Date    : 22 February 2002 -- CoCoA 4.2";
+  PrintLn "    Bugfix  : cleans up temporary rings better";
+  PrintLn "    Date    : 27 July 2004 -- CoCoA 4.3";
+  PrintLn "    Bugfix  : Cdim 1 case in TrueEquiRad and FindL fixed";
+  PrintLn "    Date    : 17 Nov 2005 -- CoCoA 4.5.1";
+  PrintLn "    Bugfix  : non-homog, Saturate, SqFreeDec";
+  PrintLn "    Date    : 29 May 2008 -- CoCoA 4.7.3";
+  PrintLn "    Bugfix  : ??";
+EndDefine; -- About
+
+------[   help & examples   ]--------
+
+Define Man()
+  PrintLn "SYNTAX";
+  PrintLn "    radical(I: IDEAL): IDEAL";
+  PrintLn "    EquiIsoDec(I: IDEAL): List of IDEALs";
+  PrintLn "    RadicalOfUnmixed(I: IDEAL): IDEAL";
+  PrintLn;
+  PrintLn "DESCRIPTION";
+  PrintLn "Let P be a polynomial ring and I an ideal. This package computes the";
+  PrintLn "radical of I using the algorithm described in the paper";
+  PrintLn;
+  PrintLn "M. Caboara, P.Conti and C. Traverso:  Yet Another Ideal Decomposition";
+  PrintLn "Algorithm. Proc. AAECC-12, pp 39-54, 1997, Lecture Notes in Computer ";
+  PrintLn "Science, n.1255 Springer-Verlag.";
+  PrintLn "This package has been used as prototype in the development of the radical";
+  PrintLn "implementation for the FRISCO project.";
+  PrintLn;
+  PrintLn "Coefficient fields : at the moment this implementation works only for the";
+  PrintLn "rationals or if the characteristic is big enough.";
+  PrintLn;
+  PrintLn "    There are three main functions :";
+  PrintLn;
+  PrintLn "            EquiIsoDec(I);";
+  PrintLn "    computes an equimensional isoradical decomposition of I, i.e.";
+  PrintLn "    a list of unmixed ideals I_1,..,I_k such that the radical of I is the";
+  PrintLn "    intersection of the radicals of I_1,..,I_k. Redundancies are possible.";
+  PrintLn;
+  PrintLn "            RadicalOfUnmixed(I);";
+  PrintLn "    computes the radical of an unmixed ideal.";
+  PrintLn "";
+  PrintLn "            radical(I);";
+  PrintLn "    computes the radical of an ideal I.";
+  PrintLn;
+  PrintLn "In later releases of the package some of the functions will be ported";
+  PrintLn "to C and the algorithms for intersection, transporter and saturation";
+  PrintLn "will be optimized.";
+  PrintLn;
+  PrintLn ">EXAMPLES<";
+  PrintLn;
+  PrintLn "    Use R ::= QQ[x,y,z];";
+  PrintLn "    I:=intersection(ideal(x-1,y-1,z-1),ideal(x-2,y-2)^2,ideal(x)^3);";
+  PrintLn;
+  PrintLn "    H:=EquiIsoDec(I);";
+  PrintLn "    H;";
+  PrintLn;
+  PrintLn "    [ideal(x),";
+  PrintLn "     ideal(z - 1, y - 1, x - 1),";
+  PrintLn "     ideal(xy - y^2 - 2x + 2y, x^2 - y^2 - 4x + 4y,";
+  PrintLn "           y^2z - y^2 - 4yz + 4y + 4z - 4, y^3 - 5y^2 + 8y - 4,";
+  PrintLn "	   x - 2)]";
+  PrintLn;
+  PrintLn "     [RadicalOfUnmixed(I)|I In H];";
+  PrintLn;
+  PrintLn;
+  PrintLn "     [ideal(x),";
+  PrintLn "      ideal(z - 1, y - 1, x - 1),";
+  PrintLn "      ideal(xy - y^2 - 2x + 2y, x^2 - y^2 - 4x + 4y,";
+  PrintLn "            y^2z - y^2 - 4yz + 4y + 4z - 4, y^3 - 5y^2 + 8y - 4,";
+  PrintLn "	    x - 2, y - 2)]";
+  PrintLn;
+  PrintLn "     Note : the ideals are not necessarily presented in the simplest form.";
+  PrintLn "            The third ideal is in fact ideal(y - 2, x - 2);";
+  PrintLn;
+  PrintLn;
+  PrintLn "     radical(I);";
+  PrintLn;
+  PrintLn "     ideal(xyz - xy - 2xz + 2x, xy^2 - 3xy + 2x, x^2 - xy)";
+EndDefine; -- Man
+
+------[   aux -- backward compatibility   ]--------
+
+define rad(f) return radical(f); enddefine;
+  
+
+  ------[   Main functions   ]--------
+
+
+Define EquiIsoDec(I)
+  IsVERBOSE := IsVERBOSE_func("EquiIsoDec");
+  if IsVERBOSE(99) then println "I = ", I; endif;
+  Kx := RingOf(I);
+--   CR := CoeffRing(Kx);
+--   M:=OrdMat(Kx);
+--   W:=GradingMat(Kx);
+--   NewRing ::= CR[x[1..NumIndets(Kx)]],Ord(M),Weights(W),PosTo;
+--  Using NewRing Do
+    $.RADICAL_BRANCHING:=1;
+--    J := $.FastImage(I,RMap(indets(NewRing))); // anna: why???
+    E := $.TrueEquiDec(I,len(gens(I)));
+--  EndUsing;
+--  E := $.FastImage(E,RMap(Indets(Kx)));
+  Return E;
+EndDefine;
+
+Define RadicalOfUnmixed(I)
+  IsVERBOSE := IsVERBOSE_func("RadicalOfUnmixed");
+  P := RingOf(I);
+  I:=ideal([rad(K)|K In gens(I)]);
+--   M:=OrdMat(P);
+--   W:=GradingMat(P);
+--   CR := CoeffRing(P);
+--   NewRing ::= CR[x[1..NumIndets()]],Ord(M),Weights(W),PosTo; // why????
+--  Using NewRing Do
+//   I := $.FastImage(I,RMap(Indets(NewRing)));
+   E := first($.TrueEquiRad(I));
+--  EndUsing;
+//  E := $.FastImage(E,RMap(Indets(P)));
+  Return E;
+EndDefine;
+
+
+Define radical_COCOALANGUAGE(I)
+  IsVERBOSE := IsVERBOSE_func("radical");
+  if IsVERBOSE(99) then println "--I = ", I; endif;
+  if type(I) = INT or type(I) = RINGELEM then return rad(I); endif;
+  if type(I) <> IDEAL then error("radical: arg must be INT, RINGELEM or IDEAL"); endif;
+  Kx := RingOf(I); // BUG?  ASSUMES Kx is poly ring???
+  if IsZero(I) then return ideal(Kx,[]); endif; // to avoid having a zero gen
+  if IsOne(I)  then return ideal(one(Kx)); endif;
+  if AreGensMonomial(I) then return radical(I); endif;
+  if IsZeroDim(I) then return radical(I); endif;
+  if GradingDim(Kx)=0 then
+    R := NewPolyRing(CoeffRing(Kx), SymbolRange("TmpName",1,NumIndets(Kx)));
+    phi := PolyAlgebraHom(Kx, R, indets(R));
+    psi := PolyAlgebraHom(R, Kx, indets(Kx));
+    return ideal(psi(gens(radical(ideal(phi(gens(I)))))));
+  endif;
+  I := ideal([rad(K) | K In gens(I)]) + ideal([rad(K) | K In GBasis(I)]);
+  if IsVERBOSE(40) then println "after rad gens and GB"; endif;
+--  NewRing := NewPolyRing(CoeffRing(Kx), IndetSymbols(Kx), OrdMat(Kx), GradingDim(Kx)); --- PosTo!!
+--  Using NewRing Do
+//    I:= ideal(PolyAlgebraHom(Kx, NewRing, indets(NewRing))(GBasis(I)));
+    $.RADICAL_BRANCHING:=1;
+    E := $.TrueEquiDec(I,len(gens(I)));
+    if IsVERBOSE(40) then println  "after TrueEquiDec"; EndIf;
+    if IsVERBOSE(99) then println  "E = ",E; EndIf;
+    E := $.ElimRedundant(E);
+    if IsVERBOSE(40) then println  "after ElimRedundant"; EndIf;
+    if IsVERBOSE(99) then println  "E = ",E; EndIf;
+    if IsVERBOSE(40) then println  "++++ ",len(E),"  Components"; EndIf;
+    H := [first($.TrueEquiRad(J)) | J In E];
+    if IsVERBOSE(40)  Then PrintLn "+++ Intersecting"; EndIf;
+//    E:= Op.IntersectionList(H);
+    E := IntersectionList(H);
+--  EndUsing;
+--  println "ring equal =", RingOf(E)=RingOf(I);
+--  E := image(E,RMap(indets(Kx)));
+  Return E;
+EndDefine;
+
+
+
+------[   Initializing   ]--------
+
+// These settings may be modified
+
+
+Define GetStat()
+  Return $.MEMORY_RADICAL_STAT;
+EndDefine;
+
+-- Define Initialize()
+--   TopLevel MEMORY;
+--  $.InitStat();
+  MEMORY_RADICAL_STAT:=Record[GBTime:=0,SATTime:=0, SqFreeTime:=0];
+--
+  RADICAL_NEWRINGNUM:=0;
+  RADICAL_FULLSqFreeSPLIT:=False;
+  RADICAL_FULLGISPLIT:=False;
+  RADICAL_FULLGCDSPLIT:=False;
+  RADICAL_SPLITTINGGCD:=False;
+  RADICAL_BISATSPLITTING:=False; -- se true puo' dare problemi.Investigare
+  RADICAL_SAT:=1;
+  RADICAL_BRANCHING:=0;
+
+--EndDefine;
+
+
+Define PrintSettings()
+  PrintLn "$.RADICAL_FULLSqFreeSPLIT ",$.RADICAL_FULLSqFreeSPLIT;
+  PrintLn "$.RADICAL_FULLGISPLIT ",$.RADICAL_FULLGISPLIT;
+  PrintLn "$.RADICAL_FULLGCDSPLIT ",$.RADICAL_FULLGCDSPLIT;
+  PrintLn "$.RADICAL_SPLITTINGGCD ",$.RADICAL_SPLITTINGGCD;
+  PrintLn "$.RADICAL_BISATSPLITTING ",$.RADICAL_BISATSPLITTING;
+  PrintLn "$.RADICAL_SAT ",$.RADICAL_SAT;
+EndDefine;
+
+------[   Auxiliary functions   ]--------
+
+
+-- Define Peel1(L)
+--   L1:=[];
+--   Foreach K In L Do
+--     L1:=Concat(L1,K);
+--   EndForeach;
+--   Return L1;
+-- EndDefine;
+
+
+
+Define RMap(...)
+  If ARGV=[] Or type(ARGV[1]) <> LIST Then
+    Return RMap(ARGV);
+  Else
+    Return tagged(ARGV[1],"RMap");
+  EndIf;
+EndDefine; -- RMap
+
+
+-- Define NewRingName()
+--   Repeat
+--     $.RADICAL_NEWRINGNUM:=$.RADICAL_NEWRINGNUM+1;
+--   Until not("MaxRing"+Sprint($.RADICAL_NEWRINGNUM-1) IsIn RingEnvs());
+--   S:="MaxRing"+Sprint($.RADICAL_NEWRINGNUM-1);
+--   Return S;
+-- EndDefine;
+
+
+-- Define MakeThisRing(...)
+--   Name:=ARGV[1];
+--   S:=Name+" ::= ";
+--   If ARGV[2]="CR" Then
+--     S:=S+Sprint(CurrentRing());
+--     ARGV:=Concat([first(ARGV)],["#"],Tail(ARGV));
+--   Else
+--     Char:=ARGV[2];
+--     If Char=0 Then
+--       Coeff:="Q";
+--     Else
+--       Coeff:=Concat("ZZ/(",Sprint(Char),")");
+--     EndIf;
+--     If type(ARGV[3])=STRING Then
+--       Inds:="["+ARGV[3]+"]";
+--     Else
+--       Inds:=Sprint(ARGV[3]);
+--     EndIf;
+--     S:=S+Coeff+Sprint(Inds);
+--   EndIf;
+--   If len(ARGV)>3  Then
+--     MyOrd:=ARGV[4];
+--     If type(MyOrd)=MAT Then
+--       Order:="Ord("+Sprint(Cast(MyOrd,LIST))+")";
+--     Else
+--       Order:=MyOrd
+--     EndIf;
+--     S:=S+","+Order;
+--     If len(ARGV)>4 Then
+--        ModOrd:=ARGV[5];
+--        S:=S+","+ModOrd;
+--     EndIf
+--   EndIf;
+--   S:=S+",PosTo;";
+--   D:=OpenIString("",S);
+--   Source D;
+-- EndDefine;
+
+Define WhichVars(f)
+  PP := IndetsProd(f);
+  return [x in indets(RingOf(PP)) | IsDivisible(PP,x)];
+EndDefine;
+
+Define WhichVarsL(L)  Return WhichVars(L);  EndDefine;
+
+Define MakeLexOrderMatrix(Inds)
+  M:=NewList(NumIndets(RingOf(Inds[1])),NewList(NumIndets(RingOf(Inds[1])),0));
+  For I:=1 To len(Inds) Do
+    M[I,IndetIndex(Inds[I])]:=1;
+  EndFor;
+  Return mat(M);
+EndDefine;
+
+Define MakeBlockOrder(BiggerVars)
+  N := NumIndets(RingOf(BiggerVars[1]));
+  L := NewList(N, 0);
+  Foreach X In BiggerVars Do  L[IndetIndex(X)] := 1;  EndForeach;
+  Return MakeTermOrdMat(mat([L, NewList(N,1)-L]));
+--   LesserVars:=diff(indets(Kx),BiggerVars);
+--   K:=len(BiggerVars);
+--   M := ZeroMat(RingZZ(), NumIndets(Kx), NumIndets(Kx));
+--   For I:=1 To len(BiggerVars) Do
+--     M[1,IndetIndex(BiggerVars[I])]:=1;
+--   EndFor;
+--   For I:=1 To len(BiggerVars)-1 Do
+--     M[I+1,IndetIndex(BiggerVars[K-I+1])]:=-1;
+--   EndFor;
+--   For I:=1 To len(LesserVars) Do
+--     M[K+1,IndetIndex(LesserVars[I])]:=1;
+--   EndFor;
+--   For I:=1 To len(LesserVars)-1 Do
+--     M[K+I+1,IndetIndex(LesserVars[len(LesserVars)-I+1])]:=-1;
+--   EndFor;
+--   Return M;
+EndDefine;
+
+
+Define PutPolyLInSubring(L,Inds)
+  IndsProd := product(Inds);
+  Return [f In L | IsCoprime(IndsProd, IndetsProd(f))];
+//  Return [f In L | diff(Inds, $.WhichVars(f)) = Inds];
+EndDefine; -- PutPolyLInSubring
+
+
+--Define IsRadicalMonIdeal(I)
+--   foreach F in gens(I) do
+--     if not(IsSqFree(F)) then return false; endif;
+--   endforeach;
+--   return true;
+--EndDefine;
+
+
+Define PutInZ(P)
+  N:=1;
+  S:=[LC(M) | M In monomials(P)];
+  Foreach C In S Do
+    If type(C)=RAT Then N:=LCM(N,C.Den); EndIf
+  EndForeach;
+  Return N*P;
+EndDefine;
+
+-- Define Content1(P)
+--   S:=[AsINT(LC(M)) | M In monomials(P)];
+--   If len(S)=1 Then Return LC(P); EndIf;
+--   N:=gcd(S[1],S[2]);
+--   Foreach C In S Do
+--     N:=gcd(N,C);
+--   EndForeach;
+--   Return N;
+-- EndDefine;
+
+-- Define PP1(P) Return  P/$.Content1(P); EndDefine;
+
+
+Define T2TT(Kx, T,TrueInds)
+  L:=exponents(T);
+  L1:=NewList(NumIndets(Kx), 0);
+  Foreach I In [IndetIndex(J) | J In TrueInds] Do
+    L1[I]:=L[I];
+  EndForeach;
+  Return MakeTerm(Kx,L1);
+EndDefine;
+
+Define T2FT(Kx, T,TrueInds)
+  L:=exponents(T);
+  Foreach I In [IndetIndex(J)|J In TrueInds] Do
+    L[I]:=0;
+  EndForeach;
+  Return MakeTerm(Kx, L);
+EndDefine;
+
+
+-- Define SplitPoly(P,Inds)
+--   Kx := RingOf(Inds[1]);
+--   K := CoeffRing(Kx);
+--   M:=$.MakeLexOrderMatrix(concat(Inds,diff(indets(Kx),Inds)));
+-- --  NewRing ::= CoeffRing[x[1..NumIndets(Kx)]],Ord(M),PosTo,Weights(GradingMat());
+-- --  Using NewRing Do
+--   NewRing := Kx;
+--     L:=[];Q:=0;
+--     CR2S:=RMap(indets(NewRing));
+--     P:=$.FastImage(P,CR2S);
+--     Inds:=$.FastImage(Inds,CR2S);
+--     TT:=$.T2TT(NewRing, LT(P),Inds);
+--     While P<>0 Do
+--       If $.T2TT(NewRing, LT(P),Inds)<>TT Then
+--         append(ref L, [Q,TT]);
+--         Q:=0;
+--         TT:=$.T2TT(NewRing, LT(P),Inds);
+--       EndIf;
+--       Q:=Q+CoeffEmbeddingHom(RingOf(P))(LC(P))*$.T2FT(NewRing, LT(P),Inds);
+--       P:=P-LM(P);
+--     EndWhile;
+--     append(ref L, [Q,TT]);
+-- --  EndUsing;
+--   S2CR:=RMap(indets(Kx));
+--   L:=$.FastImage(L,S2CR);
+--   Return L;
+-- EndDefine;
+
+-- Define Content(P,Inds)
+--   If Inds=[] Then PrintLn "WARN"; EndIf;
+--   L:=$.SplitPoly(P,Inds);
+--   G:=L[1,1];
+--   Foreach K In [X[1] | X In tail(L)] Do
+--     G:=gcd(G,K);
+--     If IsOne(G) Then Return G; EndIf
+--   EndForeach;
+--   Return G;
+-- EndDefine;
+
+-- Define PP(P,Inds) Return P/$.Content(P,Inds); EndDefine;
+
+
+-- Define SqFreeTerm(T)
+--   L:=exponents(T);
+--   For i:=1 To len(L) Do
+--     If L[i]<>0 Then L[i]:=1; EndIf
+--   EndFor;
+--   Return MakeTerm(RingOf(T), L);
+-- EndDefine;
+
+-- Define SqFreeMonId(I)
+--   Return ideal(interreduced([rad(T) | T In gens(I)]));
+-- EndDefine; -- Ideal
+
+-- Define SqFree1(P,Ind)
+--   Return P/gcd(P,deriv(P,Ind));
+-- EndDefine; -- SqFree1
+
+-- Define SqFreeDec1(P,Ind)
+--   If deriv(P,Ind)=0 Then Return P; EndIf;
+--   If characteristic(RingOf(Ind))=0 Then P:=$.PP1($.PutInZ(P)); EndIf;
+--   F:=[P];
+--   H:=[];
+--   FI:=Ind;
+--   While not(IsZero(deriv(FI,Ind))) Do
+--     If characteristic(RingOf(Ind))=0 Then
+--       FI:=$.PP1($.PutInZ(gcd(last(F),deriv(last(F),Ind))));
+--     EndIf;
+--     FI:=gcd(last(F), deriv(last(F),Ind));
+--     append(ref H, last(F)/FI);
+--     append(ref F, FI);
+--   EndWhile;
+--   W:=[];
+--   For I:=1 To len(H)-1 Do
+--     If deg(H[I])<>deg(H[I+1]) Then
+--       append(ref W, [H[I]/H[I+1],I]);
+--     EndIf;
+--   EndFor;
+--   append(ref W, [last(H),len(H)]);
+--   Return W;
+-- EndDefine;
+
+Define Combine(L,K)
+  If L=[] Then Return K; EndIf;
+  If K=[] Then Return L; EndIf;
+  HL:=first(L);
+  HK:=first(K);
+  If HL[2]=HK[2] Then
+    Return concat([[HL[1]*HK[1],HL[2]]],$.Combine(tail(L),tail(K)));
+  Else
+     If HL[2]>HK[2] Then
+        Return concat([HK],$.Combine(L,tail(K)));
+     Else
+        Return concat([HL],$.Combine(tail(L),K));
+     EndIf;
+  EndIf;
+EndDefine;
+
+-- Define BlockSqFreeDec(P,Inds)
+--   If len(Inds)=1 Then Return SqFreeDec1(P,first(Inds)); EndIf;
+--   If characteristic(RingOf(P))=0 Then
+--     Cont:=$.BlockSqFreeDec($.PP1($.PutInZ($.Content(P,[first(Inds)]))),tail(Inds));
+--     Prim:=SqFreeDec1($.PP1($.PutInZ($.PP(P,[first(Inds)]))),first(Inds));
+--   Else
+--     Cont:=$.BlockSqFreeDec($.Content(P,[first(Inds)]),tail(Inds));
+--     Prim:=SqFreeDec1($.PP(P,[first(Inds)]),first(Inds));
+--   EndIf;
+--   If type(Cont)<>LIST Then Return Prim; EndIf;
+--   If type(Prim)<>LIST Then Return Cont; EndIf;
+--   Return $.Combine(Prim,Cont);
+-- EndDefine;
+
+-- Define SporcoTrucco(K)
+--   If type(K)<>LIST Then Return [[1,0]]; EndIf;
+--   Return K;
+-- EndDefine;
+
+
+-- Define MyFactor(P)
+--   If P=1 Then Return [[P,1]]; EndIf;
+--   L:=factor(P);
+--   Return [K In L | deg(K[1])>0];
+-- EndDefine;
+
+-- Works only for char=0 sice it uses factor
+-- Define SqFreeviaFactor(P)
+--   Return product(factor(P).factors);
+-- EndDefine;
+
+-- JAA 2021-01-21:  is this ever used?
+-- Define SqFreeDecviaFactor(P)
+--   L := factor(P);
+--   L1:=[];
+--   Foreach I In MakeSet(L.multiplicities) Do
+--     append(ref L1, [product([L.factors[i] | i In 1..len(L.factors)
+-- 	   And L.multiplicities[i]=I]),I]) ;
+--   EndForeach;
+--   Return [K In L1 | deg(K[1])>0];
+-- EndDefine;
+
+-- Define SqFreeDec(P)
+--   Kx := RingOf(P);
+--   CR := CoeffRing(Kx);
+--   If deg(P)=0 Then Return [[one(Kx),1]]; EndIf;
+--   If characteristic(Kx)=0 Then Return SqFreeDecviaFactor(P); EndIf;
+-- --  NewRing ::= CR[x[1..NumIndets(Kx)]],Lex,PosTo,Weights(GradingMat(Kx));
+--   NewRing ::= CR[x[1..NumIndets(Kx)]],Lex;//2010-05
+-- --  Using NewRing Do
+--     R2LexR:=RMap(indets(Kx));
+--     P:= image(P,R2LexR);
+--     K:=$.SporcoTrucco($.BlockSqFreeDec(P,$.WhichVars(P)));
+-- --  EndUsing;
+--   LexR2R:=RMap(indets(Kx));
+--   K:= image(K,LexR2R);
+--   If K[1,2]=0 Then Return 1; Else Return K; EndIf;
+-- EndDefine;
+
+
+-- Define DecToSqFree(L)
+--   Return product([P[1] | P In L]);
+-- EndDefine; -- DecToSqFree
+
+Define Splitting(I,P)
+  If $.RADICAL_BISATSPLITTING Then
+    K:=$.BisatSplitting(I,P);
+    If ideal(one(RingOf(I))) IsIn K Then K:=$.NormalSplitting(I,P); EndIf;
+  Else
+    Return $.NormalSplitting(I,P);
+  EndIf;
+EndDefine;
+
+Define NormalSplitting(I,f)
+ Return [saturate(I,ideal(f)), I+ideal(f)];
+EndDefine;
+
+Define BisatSplitting(I,f)
+ I1 := saturate(I,ideal(f));
+ Return [I1, saturate(I,I1)];
+EndDefine;
+
+Define MonomialCleaning(I)
+  IsVERBOSE := IsVERBOSE_func("MonomialCleaning");
+  IsFirstLoop := true;
+  Repeat
+    G:=gens(I);
+    MonFound := false;
+    For j:=1 To len(G) Do
+      If IsMonomial(G[j]) Then
+	MonFound := true;
+	G[j] := rad(LT(G[j]));  -- * LC(G[j])
+      EndIf;
+    EndFor;
+    If MonFound or IsFirstLoop Then  I := ideal(interreduced(G));  EndIf;
+    IsFirstLoop := false;
+    if IsVERBOSE(95)  Then PrintLn I; EndIf;
+  Until EqSet(G, gens(I));
+  Return I;
+EndDefine
+
+
+Define Extr(G,Inds)
+  Kx := RingOf(Inds[1]);
+  CR := CoeffRing(Kx);
+//  NewRing ::= CR[x[1..NumIndets(Kx)]],Ord($.MakeBlockOrder(Inds)),
+//                 PosTo,Weights(GradingMat(Kx));
+  NewRing := NewPolyRing(CoeffRing(Kx), IndetSymbols(Kx), MakeBlockOrder(Inds), 0);
+  Old2New := PolyAlgebraHom(Kx, NewRing, indets(NewRing));
+  G := [monic(P) | P In Old2New(G)];
+  Inds := Old2New(Inds);
+  G1:=[];
+  While  G<>[] Do
+    append(ref G1, first(G));
+    H:=$.T2TT(NewRing, LT(first(G)),Inds);
+    G:=[P In tail(G) | NR($.T2TT(NewRing, LT(P),Inds),[H])<>0]; // MAX1
+    --G:=[P In tail(G)|NF($.T2TT(LT(P),Inds),ideal(H))<>0];// MAX1
+  EndWhile;
+  K:=[];
+  For I:=1 To len(G1) Do
+    Q:=0;
+    T:=$.T2TT(NewRing, LT(G1[I]),Inds);
+    phi := CoeffEmbeddingHom(NewRing);
+    While G1[I]<>0 And $.T2TT(NewRing, LT(G1[I]),Inds)=T Do
+      Q:=Q + phi(LC(G1[I]))*$.T2FT(NewRing, LT(G1[I]),Inds);
+      G1[I]:=G1[I]- phi(LC(G1[I]))*LT(G1[I]);
+    EndWhile;
+    append(ref K, Q);
+  EndFor;
+  New2Old := PolyAlgebraHom(NewRing, Kx, indets(Kx));
+  Return New2Old(K);
+EndDefine; -- Extr
+
+
+Define AlgIndVars(L,codim)
+  interreduce(ref L);
+  Inds := AlgIndVarsRec(interreduced([rad(T) | T In L]), codim);
+  if len(Inds)<>codim then error("len(Inds)<>codim!!!"); endif; -- paranoia...
+  return Inds;
+EndDefine; -- AlgIndVars
+
+Define AlgIndVarsRec(L,CD)
+  If L=[] Then Return []; EndIf; -- (CD=0) success: end of recursion
+  If CD=0 Then Return [0]; EndIf; -- (L<>[]) dead end
+  Foreach X In WhichVars(first(L)) do
+    Vars := AlgIndVarsRec([T In tail(L) | not(IsDivisible(T,X))], CD-1);
+    if Vars<>[0] Then return concat([X],Vars); endif; -- len(Vars)=CD-1
+  EndForeach;
+  return [0];
+EndDefine; -- AlgIndVarsRec
+
+Define AlgIndVarsRecMax(L,CD)
+  If L=[] Then Return []; EndIf;
+  If CD=0 Then Return L; EndIf;
+  K:=$.WhichVars(first(L));
+  Repeat
+    X:=first(K);
+    K:=tail(K);
+    L1:=[T In L | NR(T,[X])<>0];//MAX1
+    Vars:=concat([X], AlgIndVarsRecMax(L1,CD-1));
+  Until K=[] Or len(Vars)=CD;
+  Return Vars;
+EndDefine;
+
+Define LeadTerms(L,Inds)
+  Kx := RingOf(Inds[1]);
+  CR := CoeffRing(Kx);
+  NewRing := NewPolyRing(CoeffRing(Kx), IndetSymbols(Kx), MakeBlockOrder(Inds),0);
+  Old2New := PolyAlgebraHom(Kx, NewRing, indets(NewRing));
+  K := [LT(P)|P In Old2New(L)];//++
+  New2Old := PolyAlgebraHom(NewRing, Kx, indets(Kx));
+  Return New2Old(K);
+EndDefine;
+
+-- Define Start_ElimGB(Ts, Var M, Var R_tmp)
+--   If type(Ts) = POLY Then Ts := [Ts]; EndIf;
+--   IEs := [IndetIndex(X) | X In Ts];
+--   IOs := Diff(1..NumIndets(),IEs);
+--   R := RingEnv();
+--   W := GradingMat();
+--   TW := Transposed(W);
+--   TWE := [TW[I]|I In IEs];
+--   TWO := [TW[I]|I In IOs];
+--   W := Transposed(Mat(Concat(TWE,TWO)));
+--   N := NumIndets()-len(Ts);
+--   R_tmp ::= CoeffRing[t[1..len(Ts)],x[1..N]],Weights(W),Elim(t),PosTo;
+--   ENV.Var(R_tmp).M := $misc.Map(M, R, R_tmp, Concat(IEs, IOs));
+--   If M.PSeries<>Null Then -- PATCH TO BUG: FIX MAP and remove these 3 lines
+--     ENV.Var(R_tmp).M.PSeries := M.PSeries;
+--   EndIf;
+--   Using Var(R_tmp) Do $gb.Start_GBasis(ENV.Var(R_tmp).M); EndUsing;
+-- EndDefine;
+
+-- Define Complete_ElimGB(Ts, Var M, R_tmp)
+--   If type(Ts) = POLY Then Ts := [Ts]; EndIf;
+--   R := RingEnv();
+--   Using R_tmp Do $gb.Complete(ENV.Var(R_tmp).M); EndUsing;
+--   N := len(Ts);
+--   Using R_tmp Do
+--     G := ENV.Var(R_tmp).M.GBasis;
+--   EndUsing;
+--   IEs := [IndetIndex(X) | X In Ts];
+--   IOs := Diff(1..NumIndets(),IEs);
+--   Is := Concat(IEs, IOs);
+--   L := NewList(len(Is));
+--   For I := 1 To len(Is) Do
+--     L[Is[I]] := I;
+--   EndFor;
+--   E := $misc.Map(G, R_tmp, R, L);
+--   Return Cast(E,type(M));
+-- EndDefine;
+
+
+-- Define ElimGB(Var M, Inds)
+--   R_tmp := NewId(RingEnv());
+--   $.Start_ElimGB(Inds, M, R_tmp);
+--   Aux_R := $.Complete_ElimGB(Inds, M,R_tmp);
+--   Return Aux_R;
+-- EndDefine;
+
+Define ElimGB(I, Inds)
+  Kx := RingOf(I);
+  GD := GradingDim(Kx);
+--  If GD >0 Then
+--     wdegs := transposed(GradingMat(Kx));
+--     wdegsE := wdegs;
+--     ZeroDeg := 0 * GetRow(wdegs, 1);
+--     Foreach x In Inds Do
+--       SetRow(ref wdegsE, IndetIndex(x), ZeroDeg);
+--     EndForeach;
+--     W := transposed(ConcatHor(wdegs-wdegsE, wdegsE));
+--     PrintLn "ANNA: W = ", W, Inds;
+-- --    M := MakeTermOrdMat(ConcatVer(W, RevLexMat(NumIndets(Kx))));
+--     M := MakeTermOrdMat(W);
+    if GD>0 and IsHomog(gens(I)) then
+      M := ElimHomogMat([IndetIndex(x) | x in Inds], GradingMat(Kx));
+      R_tmp := NewPolyRing(CoeffRing(Kx), IndetSymbols(Kx), M, GD);
+    else 
+      M := ElimMat([IndetIndex(x) | x in Inds], GradingMat(Kx));
+      --- BUG: if I choose 0 instead of GD  I get segv
+      R_tmp := NewPolyRing(CoeffRing(Kx), IndetSymbols(Kx), M, 1);
+    endif;
+--  EndIf;
+  GB := GBasis(ideal(BringIn(R_tmp, gens(I))));
+  Return ideal(BringIn(Kx, GB));
+EndDefine; -- ElimGB
+
+
+
+-- Define AddIndToMarkedFrozen(Var Marked,Var Frozen, Var NewFrozen, Inds)
+--   NewFrozen:=[];
+--   Foreach V In Diff(Inds,Frozen) Do
+--     If V IsIn Marked Then
+--       append(ref Frozen,V);
+--       append(ref NewFrozen,V);
+--       Marked:=Diff(Marked,[V]);
+--     Else
+--       append(ref Marked,V)
+--     EndIf;
+--   EndForeach;
+-- EndDefine;
+
+
+--CleanVars(ToDoVars, FrozenVars):=[L In ToDoVars | not(IsSubSet(L,FrozenVars))];
+
+Define AlgIndVarsList(L,CD,N)
+  L:=interreduced([rad(T)|T In L]);
+  If L=[] Then Return []; EndIf;
+  If CD=0 Then Return [L]; EndIf;
+  K:=$.WhichVars(first(L));
+  V:=[];
+  Repeat
+    X:=first(K);
+    K:=tail(K);
+    L1:=[T In L | NR(T,[X])<>0];///MAX1
+    --L1:=[T In L | NF(T,ideal(X))<>0];//MAX1
+    V1:=$.AlgIndVarsListRec(L1,CD-1);
+    If V1=[] Then
+      V:=concat([[X]],V);
+    Else
+      V:=concat(V,[concat(LL,[X])|LL In V1]);
+    EndIf;
+  Until K=[] Or len(V)>=N;
+  Return [LL In V | len(LL)=CD];
+EndDefine;
+
+Define AlgIndVarsListRec(L,CD)
+  If L=[] Then Return []; EndIf;
+  If CD=0 Then Return [L]; EndIf;
+  K:=$.WhichVars(first(L));
+  V:=[];
+  Repeat
+    X:=first(K);
+    K:=tail(K);
+    L1:=[T In L | NR(T,[X])<>0];//MAX1
+    --L1:=[T In L | NF(T,ideal(X))<>0];//MAX1
+    V1:=$.AlgIndVarsListRec(L1,CD-1);
+    If V1=[] Then
+      V:=concat([[X]],V);
+    Else
+      V:=concat(V,[concat(LL,[X])|LL In V1]);
+    EndIf;
+  Until K=[];
+  Return [LL In V | len(LL)=CD];
+EndDefine;
+
+Define MakeVarsList(IM,CDim,Inds)
+ NAIVarLists:=$.AlgIndVarsList(IM,CDim,binomial(len(Inds),CDim));
+ L1:=[sorted(K)| K In $.MakeIndsList(NAIVarLists,[],CDim)];
+ L2:=[sorted(K)| K In flatten([$.MakeAdjVarLists(Inds,CDim-1)], 1)];
+ L:=MakeSet(concat(L1,L2));
+ FrozenVars:=[];
+ Result:=[];
+ While L<>[] And not(EqSet(FrozenVars,Inds)) Do
+   VarList:=first(L);
+   L:=tail(L);
+   Result:=concat(Result,[VarList]);
+   FrozenVars:=MakeSet(concat(FrozenVars,diff(Inds,VarList)));
+ EndWhile;
+ Return Result;
+EndDefine;
+
+
+Define MakeAdjVarLists(Inds,N)
+  L:=[];
+  While len(Inds)>=N Do
+    append(ref L, first(Inds,N));
+    Inds:=tail(Inds);
+  EndWhile;
+  append(ref L, concat(Inds,[L[1,1]]));
+  Return L;
+EndDefine;
+
+Define MakeIndsList(VLists,Frozen,CDim)
+  K:=[diff(L,Frozen) | L In VLists];
+  K:=[L In K | len(L) IsIn [CDim, CDim-1]];
+  LL:=concat([[concat(first(L,J),last(L,len(L)-J-1)) | J In 0..(len(L)-1)]| L In K And
+                                                                  len(L)=CDim],
+            [[L] |L In K  And len(L)=CDim-1]);
+  Return MakeSet(flatten(LL,1));
+EndDefine;
+
+
+--------------------------[General Procedures]----------------------------------
+
+
+Define TrueEquiDec(I,V)
+  IsVERBOSE := IsVERBOSE_func("TrueEquiDec");
+  if IsVERBOSE(99) then println  "I = ", I, ";  V = ", V; endif;
+  Kx := RingOf(I);
+  I:=$.MonomialCleaning(I);
+  if IsVERBOSE(40) then println  "after MonomialCleaning "; endif;
+  if IsVERBOSE(99) then println  "I = ",I; endif;
+
+  If IsOne(I) Then
+    decr( ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40)  Then
+      PrintLn  "ideal(1)"," (",$.RADICAL_BRANCHING,")";
+    EndIf;
+    Return [I];
+  EndIf;
+
+  If AreGensMonomial(I) Then
+    decr( ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40)  Then
+      PrintLn  "Mon-Dim Pura = ",dim(Kx/I)," (",$.RADICAL_BRANCHING,")";
+    EndIf;
+    Return [radical(I)]; //    Return [SqFreeMonId(I)];
+  EndIf;
+
+  If len(gens(I))=1 Then
+    decr( ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40)  Then
+      PrintLn  "Principale-Dim Pura = ",dim(Kx/I)," (",$.RADICAL_BRANCHING,")";
+    EndIf;
+    Return [I];
+  EndIf;
+
+  H := GBasis(I);
+
+  If AreGensSqFreeMonomial(LT(I))  Then
+    decr( ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40)  Then
+      PrintLn  "LT(I) radical"," (",$.RADICAL_BRANCHING,")";
+    EndIf;
+    Return [I];
+  EndIf;
+
+  D := DimQuot(LT(I));
+  CDim := NumIndets(Kx)-D;
+
+  If CDim > min(V,len(gens(I)))  Then
+    decr( ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40)  Then
+      PrintLn  "CDim>Ht"," (",$.RADICAL_BRANCHING,")";
+    EndIf;
+    Return [ideal(one(Kx))];
+  EndIf;
+
+  --Mult:=Multiplicity(CurrentRing()/I);
+  --Mult:=Multiplicity(CurrentRing()/LT(I));
+  Inds:=$.AlgIndVars(gens(LT(I)),CDim);
+  Inds:=first($.MakeIndsList([Inds],[],CDim));
+
+  If D-NumIndets(Kx)+len($.WhichVarsL(gens(I)))=0 Then
+    decr( ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40) then println  "0-Dim (local) (",$.RADICAL_BRANCHING,")"; EndIf;
+    Return [I];
+  EndIf;
+
+  If CDim<>1 Then
+    if IsVERBOSE(40)  Then Print "-- codim<>1"; endif;
+    K:=gens($.ElimGB(I,Inds));
+    if IsVERBOSE(40)  Then PrintLn "  after ElimGB"; endif;
+  Else
+    incr(ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40)  Then PrintLn "CDim=1 Splitting (",$.RADICAL_BRANCHING,")"; EndIf;
+    I1:=ideal(gcd(gens(I)));
+    I2:=saturate(I,I1);
+    Return concat($.TrueEquiDec(I1,V),$.TrueEquiDec(I2,V));
+  EndIf;
+
+  If AreGensSqFreeMonomial(ideal($.LeadTerms(K,Inds)))  Then
+    decr(ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40) then println  "Lt(I) Radicale (",$.RADICAL_BRANCHING,")"; EndIf;
+    Return [I];
+  EndIf;
+
+  L:=$.PutPolyLInSubring(K,Inds);
+  if IsVERBOSE(40) then println  "after PutPolyLInSubring"; endif;
+
+  If len(L)>1 Then
+    if IsVERBOSE(40)  Then Print "GCD splitting "; EndIf;
+    G := gcd(L);
+    If $.RADICAL_FULLGCDSPLIT Then
+      incr(ref $.RADICAL_BRANCHING);
+      if IsVERBOSE(40)  Then
+        PrintLn "[",len(L),"]"," (",$.RADICAL_BRANCHING,")";
+      EndIf;
+      K1 := rad(G);
+      K2 := rad(P/G);
+      K := concat([I+ideal(K1)],[I+ideal(K2)|PP In L]);
+    Else
+      incr(ref $.RADICAL_BRANCHING);
+      If $.RADICAL_SPLITTINGGCD Then
+        if IsVERBOSE(40)  Then PrintLn "  (",$.RADICAL_BRANCHING,")"; EndIf;
+        K1 := rad(G);
+        K:=$.Splitting(I,K1);
+      Else
+        if IsVERBOSE(40)  Then PrintLn " Factoring"," (",$.RADICAL_BRANCHING,")";EndIf;
+        K1 := rad(G);
+        K2 := rad(L[1]/G);
+	K := concat([I+ideal(K1)],[I+ideal(K2)]);
+      EndIf;
+    EndIf;
+    K:=ConcatLists([$.TrueEquiDec(JJ,V) | JJ In K]);
+    Return flatten(K,1);
+  EndIf;
+
+  G:=first(L);
+/////  Q:=SqFreeDec(G);
+  Q := SqFreeFactor(G);
+  if IsVERBOSE(40) then println  "after SqFreeFactor"; endif;
+  QFs := Q.factors;
+  
+  If len(QFs)<>1 Or Q.multiplicities[1]<>1 Then
+    if IsVERBOSE(40)  Then Print "new SqFree"; EndIf;
+    If $.RADICAL_FULLSqFreeSPLIT Or (product(QFs) isin I) Then
+      $.RADICAL_BRANCHING:=$.RADICAL_BRANCHING+len(QFs)-1;
+      if IsVERBOSE(40)  Then
+        PrintLn " Splitting [",len(QFs),"]"," (",$.RADICAL_BRANCHING,")";
+      EndIf;
+      K:=[I+ideal(f) | f In QFs];
+      K:=ConcatLists([$.TrueEquiDec(JJ,V) | JJ In K]);
+      Return flatten(K,1);
+    Else
+      P := product(QFs);
+      if IsVERBOSE(40)  Then PrintLn; EndIf;
+      Return $.TrueEquiDec(I+ideal(P),V);
+    EndIf;
+  EndIf;
+
+  GI:=$.Extr(diff(K,L),Inds);
+  if IsVERBOSE(40) then println  "after Extr"; endif;
+  J:=2;
+  GIGCD:=gcd(G,GI[1]);
+  While IsOne(GIGCD) And J<=len(GI) Do
+    GIGCD:=gcd(G,GI[J]);
+    incr(ref J);
+  EndWhile;
+  If GIGCD<>1 Then
+    incr(ref $.RADICAL_BRANCHING);
+    if IsVERBOSE(40)  Then PrintLn "Gi Splitting"," (",$.RADICAL_BRANCHING,")";   EndIf;
+    Id:=$.Splitting(I,GI[J-1]);
+    Return concat($.TrueEquiDec(Id[1],V),$.TrueEquiDec(Id[2],V));
+  EndIf;
+  G1 := rad(product(GI));
+
+  N:=0;
+--  PrintLn "I := ", I;
+--  PrintLn "G := ", G1;
+  t0 := CpuTime();
+  I2 := saturate(I, ideal(G1));
+  if IsVERBOSE(40) then println  "after saturate: ", TimeFrom(t0); EndIf;
+
+  If I2<>I Then
+    if IsVERBOSE(40)  Then Print "I2 Splitting"; EndIf;
+    If $.RADICAL_FULLGISPLIT Then
+      GI:=[PP In GI| PP<>1];
+      $.RADICAL_BRANCHING:=$.RADICAL_BRANCHING+len(GI)-1;
+      if IsVERBOSE(40)  Then
+        PrintLn " [",len(GI),"]"," (",$.RADICAL_BRANCHING,")";
+      EndIf;
+      K:=concat([I2], flatten([[I+ideal(F)]|F In GI], 1));
+    Else
+     incr(ref $.RADICAL_BRANCHING);
+     if IsVERBOSE(40)  Then PrintLn " (",$.RADICAL_BRANCHING,")"; EndIf;
+     If $.RADICAL_BISATSPLITTING Then K:=[I2,saturate(I,I2)];
+     Else K:=[I2,I+ideal(G1)];
+     EndIf;
+    EndIf;
+    K:=ConcatLists([$.TrueEquiDec(JJ,V) | JJ In K]);
+    Return flatten(K,1);
+  EndIf;
+
+  decr( ref $.RADICAL_BRANCHING);
+  if IsVERBOSE(40)  Then
+    PrintLn  "Finale - Dim Pura ",D," (",$.RADICAL_BRANCHING,")";
+  EndIf;
+  Return [I];
+EndDefine;
+
+
+Define TrueEquiRad(I)
+  IsVERBOSE := IsVERBOSE_func("TrueEquiRad");
+  I:=$.MonomialCleaning(I);
+
+  If AreGensMonomial(I) Then
+    if IsVERBOSE(40) then println  "Monomial ideal"; EndIf;
+    Return [radical(I)];  ////    Return [SqFreeMonId(I)];
+  EndIf; -- ideale monomiale
+
+  If len(gens(I))=1 Then
+    if IsVERBOSE(40) then println  "Principal ideal"; EndIf;
+    Return [ideal(rad(first(gens(I))))];
+  EndIf;
+
+  If [P In gens(I) | P<>0 and deg(P)<>1] = [] Then
+    if IsVERBOSE(40) then println  "Linear ideal"; EndIf;
+    Return [I];
+  EndIf;
+
+
+--  /*Ti:=Time*/ H:=GBasis(I);
+  //$.MEMORY_RADICAL_STAT.GBTime:=$.MEMORY_RADICAL_STAT.GBTime+Ti.Cpu;
+
+  If AreGensSqFreeMonomial(LT(I))  Then
+    if IsVERBOSE(40) then println  "Monomial ideal"; EndIf;
+    Return [I];
+  EndIf;
+
+  codim := NumIndets(RingOf(I)) - dim(RingOf(I)/I);
+  --Mult:=Multiplicity(CurrentRing()/I);
+
+  If codim=1 Then
+    If len(gens(I))=1 Then
+      if IsVERBOSE(40) then println  "Hypersurface"; EndIf;
+      /*Ti:=Time*/ K1 := rad(first(gens(I)));
+      //$.MEMORY_RADICAL_STAT.SqFreeTime:=$.MEMORY_RADICAL_STAT.SqFreeTime+Ti.Cpu;
+      Return [ideal(K1)];
+    Else  --len(gens(I))>1
+      H:=gcd(gens(I));
+      /*Ti:=Time*/ K1 := rad(H);
+      //$.MEMORY_RADICAL_STAT.SqFreeTime:=$.MEMORY_RADICAL_STAT.SqFreeTime+Ti.Cpu;
+      Return [intersection(ideal(K1), radical(saturate(I,ideal(H))))];
+    EndIf;
+  EndIf;
+
+  ToDoVarLists:=$.MakeVarsList(gens(LT(I)),codim,$.WhichVarsL(gens(I)));
+
+  While ToDoVarLists<>[] Do
+    if IsVERBOSE(40)  Then PrintLn "Main Cycle ","(",len(ToDoVarLists),")"; EndIf;
+
+    GBInds:=first(ToDoVarLists);
+    ToDoVarLists:=tail(ToDoVarLists);
+    /*Ti:=Time*/ K:=gens($.ElimGB(I,GBInds));
+    if IsVERBOSE(40) then println  "after ElimGB"; endif;
+    //$.MEMORY_RADICAL_STAT.GBTime:=$.MEMORY_RADICAL_STAT.GBTime+Ti.Cpu;
+
+    If AreGensSqFreeMonomial(ideal($.LeadTerms(K,GBInds)))  Then
+      if IsVERBOSE(40) then println  "Lt(I) radical"; EndIf;
+      Return [I];
+    EndIf;
+
+    L:=$.PutPolyLInSubring(K,GBInds);
+
+    ToProceed:=True;
+    If len(L)>1 Then
+      L1:=$.FindL(ideal(L));
+      If type(L1)=BOOL Then
+        if IsVERBOSE(40) then println  "FindL found nothing I radical"; EndIf;
+        --Return [I]; -- no return, salta solo il ciclo
+        ToProceed:=False;
+      EndIf;
+      If type(L1)=IDEAL Then
+          ToProceed:=False;
+          -- L1 is CDIM 1 Ideal contained in I. Treat it as CDIM 1 case above
+        If len(gens(I))=1 Then
+      	  if IsVERBOSE(40) then println  "Hypersurface"; EndIf;
+      	  /*Ti:=Time*/ K1 := rad(first(gens(I)));
+      	  //$.MEMORY_RADICAL_STAT.SqFreeTime:=$.MEMORY_RADICAL_STAT.SqFreeTime+Ti.Cpu;
+      	  Return [ideal(K1)];
+        Else  --len(gens(I))>1
+      	  H:=gcd(gens(L1));
+      	  /*Ti:=Time*/ K1 := rad(H);
+      	  //$.MEMORY_RADICAL_STAT.SqFreeTime:=$.MEMORY_RADICAL_STAT.SqFreeTime+Ti.Cpu;
+      	  Return [I+intersection(ideal(K1), radical(saturate(I,ideal(H))))];
+	EndIf;
+      EndIf;
+      If type(L1)=RINGELEM Then
+        L:=[L1];
+      EndIf;
+    EndIf;
+
+    If ToProceed And len(L)=1  Then  -- len(L)=1  is probably unnecessary.
+      /*Ti := Time*/ G := rad(first(L));
+      //$.MEMORY_RADICAL_STAT.SqFreeTime:=$.MEMORY_RADICAL_STAT.SqFreeTime+Ti.Cpu;
+      If NF(G,I)<>0 Then
+        if IsVERBOSE(40)  Then PrintLn "Found Useful SqFree"; EndIf;
+        If False Then 
+	  L1:=$.TrueEquiRad(I+ideal(G));
+	  J:=first(L1);
+	Else J:= radical(I+ideal(G));
+        EndIf;
+        Return [J];
+      EndIf;
+    EndIf;
+
+  EndWhile;
+
+  if IsVERBOSE(40) then println  "radical by exhaustion"; EndIf;
+  Return [I];
+EndDefine;
+
+
+-- Looks for potential non SqFree polys in the ideal I
+-- Returns False (Found nothing)
+-- or one poly       - to be treated upwards
+-- or codim=1, Ideal - to be treated upwards
+Define FindL(I)
+  IsVERBOSE := IsVERBOSE_func("FindL");
+  /*Ti:=Time*/ H:=GBasis(I);
+  //$.MEMORY_RADICAL_STAT.GBTime:=$.MEMORY_RADICAL_STAT.GBTime+Ti.Cpu;
+
+--  NoPrint := UVPoincareQuotient(I);
+  --  P:=Poincare(CurrentRing()/I);
+  --  I.PSeries:=P;
+  codim := NumIndets(RingOf(I)) - dim(RingOf(I)/I);
+
+  If codim=1 Then
+    Return I;
+  EndIf;
+
+  --Mult:=Multiplicity(CurrentRing()/I);
+  ToDoVarLists:=$.MakeVarsList(gens(LT(I)),codim,$.WhichVarsL(gens(LT(I))));
+
+  While ToDoVarLists<>[] Do
+    if IsVERBOSE(40)  Then PrintLn "Main Cycle - F ","(",len(ToDoVarLists),")"; EndIf;
+    GBInds:=first(ToDoVarLists);
+    ToDoVarLists:=tail(ToDoVarLists);
+
+    /*Ti:=Time*/ K1:=$.ElimGB(I,GBInds);
+    //$.MEMORY_RADICAL_STAT.GBTime:=$.MEMORY_RADICAL_STAT.GBTime+Ti.Cpu;
+
+    K:=gens(K1);
+    L:=$.PutPolyLInSubring(K,GBInds);
+
+    If len(L)>1 Then
+/////      PrintLn [I,GBInds,L];
+      if IsVERBOSE(40)  Then PrintLn "+++++++++++++++++++++++++++++++++++len(L)>1";EndIf;
+      Return $.FindL(ideal(L));
+    EndIf;
+    If len(L)=1  Then
+      Return first(L);
+    EndIf;
+  EndWhile;
+
+  if IsVERBOSE(40)  Then PrintLn "ERROR"; EndIf;
+  Return False;
+EndDefine;
+
+Define ElimRedundant(E)
+  For I:=1 To len(E) Do
+    For J:=I+1 To len(E) Do
+      If IsContained(E[J],E[I]) Then   E[I]:=ideal(one(RingOf(E[I])));
+      elif IsContained(E[I],E[J]) Then E[J]:=ideal(one(RingOf(E[J])));
+      EndIf;
+    EndFor;
+  EndFor;
+  Return [I In E | not(1 IsIn I)];
+EndDefine;
+
+
+-------------------------------- Jacobians by dedo -----------------
+
+Define IdealOfMinors(M,N) Return ideal(minors(N,M)); EndDefine;
+
+
+-- Ideal of Lower Jacobian
+Define LowerJac(I,A)
+  If NumIndets(RingOf(I))=A Then Return ideal(one(RingOf(I))); EndIf;
+  Return I+$.IdealOfMinors(mat(jacobian(gens(I))),NumIndets(RingOf(I))-A);
+EndDefine;
+
+-- Lower Jacobian Dimension
+define LJDim(I)
+  if IsOne(I) then return -1; endif;
+  return dim(RingOf(I)/I);
+enddefine; -- LJDim
+
+
+Define RadicalOfUM(I)
+   D:=dim(RingOf(I)/I);
+   LoJ:=$.LowerJac(I,D);
+  If $.LJDim(LoJ)<D Then Return I; EndIf;
+   A:=D;
+   While $.LJDim(LoJ)=D Do
+     SLJ:=LoJ;
+     incr(ref A);
+     LoJ:=$.LowerJac(I,A);
+    EndWhile;
+    NI:=I:SLJ;
+  Return $.RadicalOfUM(NI);
+EndDefine;
+
+----------------------------------------------------------------------
+
+
+-- Returns the list of the lists of N elements of L
+-- Ex:
+-- Combinazioni([1,2,3,4],3);
+-- [[1, 2, 3], [1, 2, 4], [1, 3, 4], [2, 3, 4]]
+Define Combinazioni(L,N)
+  If L=[] Then Return []; EndIf;
+  If N=1 Then Return [[P]|P In L]; EndIf;
+  Return concat([concat([first(L)],L1)|L1 In $.Combinazioni(tail(L),N-1)],
+		$.Combinazioni(tail(L),N));
+EndDefine;
+
+--------------------------------[ SqFree By John]-----------------------
+
+EndPackage; -- Package $radical
+

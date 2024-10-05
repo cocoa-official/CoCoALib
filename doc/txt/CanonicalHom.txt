@@ -1,0 +1,61 @@
+      CanonicalHom
+      Copyright (c)  2007  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{CanonicalHom}{John Abbott}
+
+
+== User Documentation for CanonicalHom ==
+%======================================================================
+
+The function ``CanonicalHom`` can be used to create certain simple
+canonical homomorphisms.  If it is unable to produce the required
+homomorphism then it will throw an exception of type ``ErrorInfo``
+having error code ``ERR::CanonicalHom`` (see [[error]]).
+
+=== Examples ===[examples]
+%----------------------------------------------------------------------
+- [ex-RingHom1.C ../../examples/index.html#ex-RingHom1.C]
+- [ex-RingHom2.C ../../examples/index.html#ex-RingHom2.C]
+- [ex-RingHom5.C ../../examples/index.html#ex-RingHom5.C]
+-
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+In all cases the syntax is
+- ``CanonicalHom(domain, codomain)``
+-
+
+You can use ``CanonicalHom`` whenever the domain is [[RingZZ]] or
+[[RingQQ]], or if ``codomain`` is formed from ``domain`` in a single
+step.
+Here is a complete list of the cases when ``CanonicalHom`` will work:
+- if ``domain == codomain`` then result is ``IdentityHom``
+- if ``domain`` is [[RingZZ]] then result is ``ZZEmbeddingHom``
+- if ``domain`` is [[RingQQ]] then result is ``QQEmbeddingHom`` (may be a **partial hom**)
+- if ``codomain == FractionField(domain)`` then result is fraction field ``EmbeddingHom``
+- if ``domain == CoeffRing(codomain)`` then result is ``CoeffEmbeddingHom``
+- if ``codomain`` is a quotient of ``domain`` then result is ``QuotientingHom``
+-
+
+== Maintenance notes for CanonicalHom ==
+%======================================================================
+
+Structurally simple and rather tedious.  It is //important// that the cases of the
+domain being [[RingZZ]] or [[RingQQ]] are tested last because the other cases offer
+shortcuts (compared to ``ZZEmbeddingHom`` and ``QQEmbeddingHom``).
+
+
+== Bugs, Shortcomings, etc ==
+%======================================================================
+
+JAA does not like the structure of the code.  Also the restriction to
+a "single step" seems artificial, but how to generalize this without
+perhaps producing annoying "semi-intelligent" code?
+
+If you don't like ``goto``, have a go at rewriting the implementation.
+I'll accept it so long as it is no more complicated than the current
+implementation!
+
+Are there any missing cases?
+

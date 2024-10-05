@@ -1,0 +1,89 @@
+      verbose
+      Copyright (c)  2016  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{verbose}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-verbose1.C ../../examples/index.html#ex-verbose1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers a simple facility for producing "verbose logging" of
+internal behaviour of algorithms.  This is likely to be of interest to
+developers; the logging messages may also please anyone curious to know
+what is happening "behind the scenes".
+
+There is a global "verbosity level": a non-negative integer whose
+default value is 0.  Verbose logging messages specify the lowest level
+at which they will appear: //e.g.// a level-2 message will not appear
+if the global verbosity level is 0 or 1, but will appear if the level
+is 2 or higher.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+There is just one constructor:
+- ``VerboseLog(FnName)`` -- create an output stream for verbose log messages
+
+
+=== Setting and querying the verbosity level ===[queries]
+%----------------------------------------------------------------------
+There is just one query:
+- ``SetVerbosityLevel(n)`` -- set the global verbosity level to ``n`` (non-negative integer); returns value of previous verbosity level.
+- ``IsVerbosityLevel(n)`` -- ``true`` iff the verbose level is **greater than or equal** to ``n`` (positive integer).
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+There is just one operation: let ``VERBOSE`` be a ``VerboseLog`` object
+- ``VERBOSE(n)`` -- produces an ``ostream`` onto which a single-line verbose log message can be printed.
+
+
+**NOTE** a verbose logging command will **always** evaluate its arguments (even if the logging
+command will produce no output because the global level is too low).  It is best not to perform
+costly operations to produce logging output; if you must do so, then place a block of code inside
+the then-part of an ``if (IsVerbosityLevel(...)) {...}`` construct!
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Currently this is a very simplistic first implementation.
+
+There are 3 globals:
+- ``DevNull`` is an ``ostream`` which never prints anything (it just discards everything)
+- ``VerboseLog::ourNestingDepth`` keeps track of nesting depth (value is indicated in log messages)
+- ``VerboseLog::ourVerbosityLevel`` only messages up to this level are printed
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Too simple?
+
+Ideally the prefix containing fn name (and total nesting depth) should be
+printed at the start of each verbose log line; currently, it is printed
+just by the call ``VERBOSE(n)`` -- this works OK provided that only a
+single line is sent to that stream.
+
+The name of ``DevNull`` is slightly misleading.
+
+Perhaps later offer a way to suppress verbose logging messages when the
+nesting depth exceeds a limit?
+
+
+== Main changes ==
+%======================================================================
+
+**2016**
+- November (v0.99544): first release
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

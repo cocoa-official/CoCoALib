@@ -1,0 +1,66 @@
+    VerficationLevel
+      Copyright (c)  2018 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{VerificationLevel}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-VerificationLevel1.C ../../examples/index.html#ex-VerificationLevel1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+A value of type ``VerificationLevel`` is intended to be used to
+specify the level of verification to be applied to the result of a
+heuristic algorithm; the level is a non-negative integer.  The
+``VerificationLevel`` may also indicate that a guaranteed-correct
+algorithm is to be used (if the implementation offers one).  The exact
+interpretation of the ``VerificationLevel`` depends on the specific
+algorithm.
+
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+- ``VerificationLevel(n)``  where ``n`` is a non-negative integer (currently ``n`` must be less than 1000)
+- ``guaranteed()``  returns a special value of type ``VerificationLevel`` intended to indicate that a guaranteed algorithm must be used
+
+
+=== Queries and views ===[queries]
+%----------------------------------------------------------------------
+
+Let ``vl`` be an object of type ``VerificationLevel``.
+
+- ``level(vl)`` returns the level specified when ``vl`` was created; result is negative if ``vl`` was created by ``guaranteed()``.
+- ``IsGuaranteed(vl)`` returns ``true`` if ``vl`` was created by ``guaranteed()``; otherwise returns ``false``.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The first implementation is designed to be especially simple.
+Future experience may help us produce a better design.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Should there be an upper limit?
+
+JAA does not like the name ``IsGuaranteed``.
+
+
+== Main changes ==
+%======================================================================
+
+**2018**
+- March (v0.99570): first release
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

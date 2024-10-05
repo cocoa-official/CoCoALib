@@ -1,0 +1,116 @@
+      RingZZ
+      Copyright (c)  2005,2007,2012  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingZZ}{John Abbott, Anna M. Bigatti}
+
+
+
+== User documentation for RingZZ ==
+%======================================================================
+
+The call ``RingZZ()`` produces the CoCoA [[ring]] which represents ZZ, the
+ring of integers.  Calling ``RingZZ()`` several times will always produce
+the same unique CoCoA [[ring]] representing ZZ.
+
+Strictly, there is a limit on the size of elements you can create, but
+the limit is typically high enough not to be bothersome.
+
+See [[RingElem]] for operations on its elements.
+
+Efficiency of arithmetic on elements of ``RingZZ()`` should be reasonable
+rather than spectacular.  If you wish to compute purely with integers
+(without exploiting CoCoALib's rings) then see the documentation in
+[[BigInt]].
+
+
+=== Examples ===[examples]
+%----------------------------------------------------------------------
+- [ex-RingZZ1.C ../../examples/index.html#ex-RingZZ1.C]
+-
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+- ``RingZZ()`` -- produces the CoCoA [[ring]] which represents ZZ.
+   Calling ``RingZZ()`` several times will always produce the same unique
+   ring in CoCoALib.
+-
+
+=== Query ===[query]
+%----------------------------------------------------------------------
+Let ``R`` be a [[ring]]
+- ``IsZZ(R)`` -- says whether ``R`` is actually ``RingZZ()``
+-
+
+=== Homomorphisms ===[homomorphisms]
+%----------------------------------------------------------------------
+Let ``S`` be a [[ring]]
+- ``NewZZEmbeddingHom(S)`` -- creates the homomorphism ZZ --> ``S``
+                             (but see also [[CanonicalHom]]).
+                            ZZ argument is implicit because there is a
+                            unique copy
+-
+
+== Maintainer documentation for the class RingZZImpl ==
+%======================================================================
+
+The function ``RingZZ()`` simply returns the unique instance of the
+CoCoALib [[ring]] representing ZZ.  This instance is managed by
+[[GlobalManager]], see its documentation.
+
+The function ``MakeUniqueInstanceOfRingZZ`` is the only function which can
+call the ctor of ``RingZZImpl``.  The only function which is supposed to
+call ``MakeUniqueInstanceOfRingZZ`` is the ctor of [[GlobalManager]].  I have
+discouraged others from calling ``MakeUniqueInstanceOfRingZZ`` by not putting
+it in the header file ``RingZZ.H`` -- see bugs section in [[GlobalManager]].
+
+
+The class ``RingZZImpl`` is really very simple.  It may look daunting and
+complex because it inherits lots of virtual functions from ``RingBase``.
+It contains just three data members: a ``MemPool`` for managing the storage
+of the ``mpz_t`` headers, and pointers to the ring's own zero and one elements.
+
+The member functions for arithmetic are all quite simple.  The only
+minor difficulty is in the function ``AsMPZ`` which gets at the ``mpz_t``
+hidden inside a ``RingElemRawPtr``.  I have decided to stick with the C
+interface to GMP for the moment (even though GMP 4 does offer a C++
+interface).  This appears to be more a personal choice than a technical
+one.
+
+Recall (from [[ring]]) that arithmetic on ring elements always passes
+via the virtual member functions of the concrete rings, and that these
+expect arguments to be of type ``RawPtr`` or ``ConstRawPtr``.  The arguments
+are pointers to the ``mpz_t`` headers which reside in a region of memory
+controlled by the [[MemPool]] belonging to the ``RingZZImpl`` class.
+
+Given that the ``mpz_t`` values must live on the free store, we use a [[MemPool]]
+to handle the space for their headers (which are of fixed size).  Note that
+this [[MemPool]] is NOT what handles the memory used for the digits (or limbs)
+of the GMP integer values!  Currently limb space is handled by whatever is
+the default allocator (``malloc``, I suppose).
+
+The data members ``myZeroPtr`` and ``myOnePtr`` just hold ``auto_ptr``s to the zero
+and one elements of the ``RingZZImpl``.  I used an ``auto_ptr`` to avoid having
+to worry about freeing it in the destructor; the zero and one values cannot be
+``RingElem``s because their creation must be deferred.  I opted not to store the
+values in ``RingElem`` fields to avoid any possible problem due to a "race
+condition" where elements of the ring would be constructed before the
+body of the constructor of the ring had begun execution (might be OK
+anyway, but could easily lead to hair-raising bugs (//e.g.// in the dtor)).
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+This code is probably not //exception safe//; I do not know what the
+``mpz_*`` functions do when there is insufficient memory to proceed.
+Making the code "exception safe" could well be non-trivial: I suspect
+a sort of ``auto_ptr`` to an ``mpz_t`` value might be needed.
+
+Should I switch to the C++ interface for GMP integers?
+
+It is a shame that the ``mpz_t`` headers are "out of line".  How much this may
+affect run-time performance I don't know.
+
+Generation of random elements in ``RingZZ`` is not possible (yet???).
+

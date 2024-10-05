@@ -1,0 +1,106 @@
+      bool3
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{bool3}{John Abbott}
+
+
+
+== User documentation for bool3 ==
+%======================================================================
+
+The class called ``bool3`` implements a three-valued boolean: the
+possible values represent the notions //false//, //uncertain// and
+//true//.  A variable of type ``bool3`` has a default initial value of
+//uncertain//.  To avoid problems with reserved words the three truth
+values are actually called:
+ | ``true3``
+ | ``false3``
+ | ``uncertain3``
+
+
+=== Examples ===[examples]
+%----------------------------------------------------------------------
+- [ex-bool3.C ../../examples/index.html#ex-bool3.C]
+-
+
+=== Constructors ===[Constructors]
+%----------------------------------------------------------------------
+- ``bool3()``       -- is the same as ``uncertain3``
+- ``bool3(true)``   -- is the same as ``true3``
+- ``bool3(false)``  -- is the same as ``false3``
+-
+
+To convert a normal ``bool`` to a ``bool3`` value, you must call
+the ctor explicitly.
+
+For convenience, a variable of type ``bool3`` may be assigned a C++
+``bool`` value (//e.g.// ``bool3  b3 = true;``) in which case ``true``
+maps to ``true3`` and ``false`` to ``false3``.
+
+
+=== Queries ===[queries]
+%----------------------------------------------------------------------
+There are three functions for testing the value of a ``bool3`` expression:
+(note that these functions return a C++ ``bool`` value)
+- ``IsTrue3(expr)``       -- true iff ``expr`` is ``true3``
+- ``IsFalse3(expr)``      -- true iff ``expr`` is ``false3``
+- ``IsUncertain3(expr)``  -- true iff ``expr`` is ``uncertain3``
+-
+
+These functions are the only way of //"converting"// a ``bool3`` to a
+standard C++ ``bool`` value -- there is no automatic conversion from a
+``bool3`` value to a standard C++ ``bool``.
+
+=== Operations on bool3 ===[operations]
+%----------------------------------------------------------------------
+There are **no arithmetic operations** on ``bool3`` values.  There is
+also **no equality test**.
+
+``bool3`` values may be printed in the usual way.  The printed forms are:
+``true3`` and  ``false3`` and  ``uncertain3``.
+
+
+
+== Maintainer documentation for bool3 ==
+%======================================================================
+
+The implementation is very simple.  The only point to watch is that the
+order of the constants in the enum ``TruthValueSet`` was chosen to allow a
+simple implementation of the function ``cmp`` (which is currently removed;
+see //Bugs and Shortcomings// below).  If you change the order, you will
+have to change the definition of ``cmp``.
+
+All functions/operations are implemented inline except for I/O.
+I have avoided const-ref arguments since it is surely cheaper simply to
+copy the enum value.
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+I made the ``bool3`` ctor from ``bool`` explicit; if conversion from
+``bool`` to ``bool3`` is automatic then machine integer values match
+``bool3`` as well as they match ``MachineInt`` --  be careful.
+
+Boolean arithmetic operations are not defined since we have not needed
+them so far.  It would be a simple matter, but I prefer to wait until
+there is a real need for such operations.
+
+There was also a function ``cmp`` for comparing two ``bool3`` values:
+```  cmp(b1, b2)  returns an int <0, =0 or >0 according as b1 <,=,> b2
+(assuming this ordering: false3 < uncertain3 < true3)
+```
+>     friend int cmp(bool3 lhs, bool3 rhs); // must be friend function
+>   inline int cmp(bool3 lhs, bool3 rhs)
+>   {
+>     return lhs.myTruthValue - rhs.myTruthValue;
+>   }
+```
+
+I do feel quite uneasy about disagreeing with BOOST's ``tribool`` design, but
+their example of a three-way //if// statement looks to me to be a recipe for
+programmer grief -- one has to suppress the //law of the excluded middle// to
+read their code without finding it odd and surprising.
+

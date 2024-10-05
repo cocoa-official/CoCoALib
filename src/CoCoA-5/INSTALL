@@ -1,0 +1,99 @@
+== Temporary instructions, to be polished!! ==
+----------------------------------------------------------------------
+
+== Pre-Requirements ==
+
+  Compile CoCoAlib  (which in turn needs the GMP library)
+
+  Install BOOST; see file ``COCOA_ROOT/doc/txt/ExternalLibs-BOOST.txt``
+  [ensure static libs are built, so we can distribute ``CoCoAInterpreter``]
+
+NOTE:  ``libboost-system-dev`` is needed only for older BOOST installations
+
+
+----------------------------------------------------------------------
+== Precompiled readline ==
+
+=== Linux ===
+``` sudo apt-get libreadline-dev
+
+----------------------------------------------------------------------
+== Precompiled Qt ==
+
+```  sudo apt-get install qt5-default
+
+``` sudo apt-get install qt5-qmake  qt5-webkit  #?? libqt5webkit5-dev  
+
+
+
+
+http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x
+[for MacOS 64-bit you must get the "Cocoa" based compilation]
+- On Mac: there was an installation bug in 4.7.0
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+== Compilation of QCodeEdit ==
+
+
+=== on Linux ===
+
+
+  cd CoCoALib/src/CoCoA-5/QCodeEdit/
+  qmake QCodeEdit.pro
+  make
+
+  [If you get the error: 'uic: File generated with too recent version of Qt Designer (4.0 vs. 3.3.8b)']
+  step (1) check your shell's PATH, i.e. check that "which uic" indicates the executable you expected
+           if it doesn't then correct your shell's PATH by updating its RC/profile file
+  step (2) update your Qt installation, for instance
+    sudo update-alternatives --config qmake
+    [Select qmake-qt4]
+    qmake QCodeEdit.pro
+    make
+
+=== on Mac ===
+  cd CoCoALib/src/CoCoA-5/QCodeEdit/
+  *** uncomment line about ppc/x86_64 in QCodeEdit.pro ***
+##??  qmake -spec macx-g++ QCodeEdit.pro
+  qmake -spec macx-clang QCodeEdit.pro
+  make -j2
+
+----------------------------------------------------------------------
+== Compilation of C5 GUI ==
+
+cd /src/CoCoA-5
+make Qt-gui
+
+NOTE: it takes a long time!!
+
+=== on Linux ===
+  cd ..
+  qmake C5.pro
+  make -f C5Makefile
+
+=== on Mac ===
+  make gui
+--- (old) instructions for doing it manually ---
+  cd ..
+    *** if necessary (i.e. ppc) remove -arch 386 from C5.pro ***
+    *** if necessary add ppc/x86_64 in C5.pro ***
+##??  qmake -spec macx-g++ C5.pro
+  qmake -spec macx-clang C5.pro
+  make -f C5Makefile clean
+  make -j2 -f C5Makefile 
+  mv C5.app/Contents/MacOS/C5 C5.app/Contents/MacOS/C5.bin
+  cp C5.mac.script C5.app/Contents/MacOS/C5
+  tar czf C5.app/Contents/MacOS/packages.tgz C5.app/Contents/MacOS/packages/
+  mv C5.app/Contents/MacOS/packages.tgz  C5.app/Contents/MacOS/packages-old/
+  rm -rf C5.app/Contents/MacOS/packages/*
+  cp -r packages/*  C5.app/Contents/MacOS/packages/
+-----------------
+
+## for TEXTUAL version to be distributed ##
+  mv /Applications/CoCoA-5/packages/  /Applications/CoCoA-5/packages-before`date "+%Y-%m-%d"`
+  cp emacs/cocoa5.el  /Applications/CoCoA-5/emacs/cocoa5.el
+  cp -r packages/  /Applications/CoCoA-5/packages/
+  cp CoCoAInterpreter  /Applications/CoCoA-5/
+
+

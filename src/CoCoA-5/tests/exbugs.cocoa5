@@ -1,0 +1,405 @@
+-------------------------------------------------------
+-- (2014-05-02) sort had a slippery bug making it give wrong answers
+length := 33;
+for j:=1 to 1000 do
+  l1 := [random(0,100) | i in 1..length];
+  l2 := sorted(l1);
+  for i:=1 to len(l2)-1 do
+    if l2[i] > l2[i+1] then
+      println "BADLY SORTED!  l1=",l1,"   and l2=",l2;
+    endif;
+  endfor;
+endfor;
+
+-- There was no bug for lists shorter than 33, but here's a quick test anyway
+length := 9;
+for j:=1 to 1000 do
+  l1 := [random(0,100) | i in 1..length];
+  l2 := sorted(l1);
+  for i:=1 to len(l2)-1 do
+    if l2[i] > l2[i+1] then
+      println "BADLY SORTED!  l1=",l1,"   and l2=",l2;
+    endif;
+  endfor;
+endfor;
+
+-----------------------------------------------------------------------------
+-- Bug in IsHomog(LIST) did not check first element!
+
+use QQ[x];
+if IsHomog([x+1]) then error("IsHomog([x+1]) gave wrong answer!"); endif;
+
+-----------------------------------------------------------------------------
+-- Oldish bug in elim (failed to check for zero ideal, see Redmine #447)
+
+use R::=QQ[x,y,z,t];
+I := ideal(zero(R));
+Lista := [x,y];
+NoPrint := elim(Lista,I);
+
+-----------------------------------------------------------------------------
+-- Dangling reference bug in (some) RingHoms: see Redmine #190
+
+R := NewPolyRing(QQ, "x");
+phi := CoeffEmbeddingHom(R);
+R := "delete ring";
+phi(123);
+
+for I := 1 to 9 do
+  print I;
+  P ::= QQ[x,y,z];
+  phi := CoeffEmbeddingHom(P);
+endfor;
+println;
+
+-----------------------------------------------------------------------------
+-- ILogBase had a subtle bug (caused by fp rounding): see Redmine 776
+
+J := 38478521676166483490305685030818526171181904643421577733382705346571894686085840002453315602443444444401/38478521676166483605741250097796497856523182881313912761668255277583712667477744737709244389536050430475222646784;
+if FloorLog10(J) <> -10 then println "FloorLogBase bug: redmine 776"; endif
+if FloorLogBase(J,10) <> -10 then println "FloorLogBase bug: redmine 776"; endif
+
+-----------------------------------------------------------------------------
+-- Product of ideal, the first one with monomial gens: see Redmine 870
+
+-- feedback by Vadim Tropashko (2016-04-25?)
+use QQ[x,y];
+if ideal(x,y)*ideal(x-1,y-1)*ideal(x-2,y-2) <>
+   ideal(y^3 -3*y^2 +2*y, x -y)
+  then
+  println "exbug: Vadim Tropashko";
+endif;
+-- GBasis used to give: [y^3, x*y^2, x^2*y, x^3]
+-- similar problem occurred with MinGens, after "modifying" the generators
+-- of an ideal, without properly tidying up the other fields
+
+-----------------------------------------------------------------------------
+-- Det of 0x0 matrix: see Redmine 956
+
+if det(IdentityMat(ZZ,0)) <> 1 then println "det of 0x0 matrix; redmine 956"; endif;
+
+-----------------------------------------------------------------------------
+-- SqFreeFactor over non-prime finite field:  see redmine 981
+
+Fp ::= ZZ/(32003);
+use Fpt ::= Fp[t];
+// factor(t^3+t-5); --> irreducible
+K := Fpt/ideal(t^3+t-5);
+use K[x];
+f := x^2 +(t^2)*x +(-1);
+facs := SqFreeFactor(f);
+if facs.multiplicities <> [1] or f <> facs.factors[1]*facs.RemainingFactor then
+  println "SqFreeFactor wrong";
+endif;
+
+------------------------------------------------------------------
+-- Stupid problem in IsRadical
+use QQ[x,y];
+IsRadical(ideal(x+y,x-x));
+
+------------------------------------------------------------------
+-- Used to reject negative numbers (for 1st arg).
+FacInfo := FactorINT_TrialDiv(-9,3);
+
+------------------------------------------------------------------
+-- Used to fail with zero generator.
+use R ::= QQ[x,y];
+I1 := ideal(x,zero(R));
+I2 := ideal(y);
+intersect(I1,I2); --> ERROR
+
+------------------------------------------------------------------
+-- Handled incorrectly a trivial case
+use QQ[x];
+if RealRoots(x, 1, [1,2]) <> [] then println "RealRoots(x,1,[1,2]) wrong"; endif;
+if RealRoots(x, 1, [0,1]) = [] then println "RealRoots(x,1,[0,1]) wrong"; endif;
+if RealRoots(x, 1, [-1,0]) = [] then println "RealRoots(x,1,[-1,0]) wrong"; endif;
+if RealRoots(x, 1, [-2,-1]) <> [] then println "RealRoots(x,1,[-2,-1]) wrong"; endif;
+
+------------------------------------------------------------------
+-- Redmine 1189
+
+M := ColMat([-2,-5]);
+if HilbertBasisKer(M) <> [] then error("Redmine 1189 bug has returned"); endif;
+
+------------------------------------------------------------------
+-- Redmine 1261
+
+str := ascii(200);
+chars := ascii(str);
+if chars[1] <> 200 then error("Redmine 1261 bug has returned"); endif
+
+
+------------------------------------------------------------------
+-- Redmine 1274
+
+L := [8,  2,  9,  10,  15,  3,  1,  14,  5,  11,  13,  4,  16,  17,  6,  12,  7];
+if SortedBy(L, func(a,b) return a<b; endfunc) <> 1..17 then error("Redmine 1274 bug has returned"); endif;
+  
+------------------------------------------------------------------
+-- Redmine 1228 (comment 18)
+
+L := [1];
+L1 := L;
+L[1] := 0;
+if L1 <> [1] then error("Redmine 1228 comment 18 bug strikes again!"); endif;
+
+L := [2,3,1];
+L1 := sorted(L);
+if L <> [2,3,1] then error("Redmine 1228 comment 18 bug strikes again!"); endif;
+
+------------------------------------------------------------------
+-- redmine 1273  (and 1290)
+
+vars := SymbolRange("a", [1,2],[1,2]);
+P := NewPolyRing(QQ, vars); -->  used to crash
+append(ref vars, record[head:="b" /*no indices field*/]);
+P := NewPolyRing(QQ, vars); -->  used to give error (deliberately)
+
+------------------------------------------------------------------
+-- redmine 1321
+
+use QQ[x];
+RR := RealRoots(-x^2);
+if len(RR) <> 1 or RR[1].inf <> 0 or RR[1].sup <> 0 then error("redmine 1321 bug is back"); endif;
+
+------------------------------------------------------------------
+-- redmine 1379  (two tests!)
+
+use P ::= QQ[x,y,z], Lex;
+I1 := ideal(x-z^2, y-z^3-3*z-1, z^3-z-1);
+I2 := ideal(x-5, y, z)^2;
+I3 := ideal(x^2, y-2, z-1);
+L := [I1,I2,I3];
+I := IntersectionList(L);
+-- dim(P/I);  --->  0
+PD := PrimaryDecomposition(I);  --> error NYI
+
+
+//use QQ[x,y,z], Lex;
+I := ideal(y*z -2*z^5 -2*z^4 +2*z^3,
+	   y^2 -16*z^5 -12*z^4 +12*z^3 +12*z^2,
+	   x*y -2*x*z -5*y +6*z^5 +2*z^3 -8*z^2 +10*z,
+	   x^2 +10*x*z -10*x -51*z^5 +74*z^4 +16*z^3 -14*z^2 -50*z +25,
+	   x*z^2 -x*z +5*z^5 -6*z^4 -4*z^3 +5*z,
+	   z^6 -z^5 -z^4 +z^2,  z^3 -z -1);
+GB := GBasisByHomog(I);
+if not(IsZeroDim(I)) then error("redmine 1379: not recog as zero-dim"); endif;
+
+------------------------------------------------------------------
+-- redmine 1383
+
+define Redmine1383()
+  S := NewPolyRing(RingQQ(), SymbolRange("x",[1,1],[3,3]));
+enddefine; -- Redmine1383
+Redmine1383(); --> used to cause a crash
+
+------------------------------------------------------------------
+-- redmine 1409 -- found by Ashkan Nikseresht
+
+K::=ZZ/(2);
+Use S::=K[a,b,x,y];
+J:=ideal(a^2+a+1, b^2 +(a)*b +(1), (x-a)^2,(y-b^2));
+Iz:=Elim([a,b],J);
+Use R::=K[x,y];
+phi:=PolyAlgebraHom(S,R,[0,0,x,y]);
+if not(IsPrimary(ideal(phi(gens(Iz))))) then print "Error: IsPrimary (redmine 1409)"; endif;
+
+-------------------------------------------------------
+-- redmine 1230
+
+use P::= QQ[x,y,z],Lex;
+f1 := z^2-y;  f2 := x^2 -2*x*z +y; f3 := y^2-y-z;
+J := ideal(f1,f2,f3);
+PD := PrimaryDecomposition(J); --> used to give ERR::NYI
+
+-------------------------------------------------------
+-- redmine 1416 (IdealOfProjectivePoints)
+
+use P ::= QQ[x,y,z];
+K := IdealOfProjectivePoints(P,mat([[0,1,1],[0,0,1]]));
+MinGens(K);
+
+-------------------------------------------------------
+-- redmine 1449 (factor bug)
+
+use QQ[x];
+flist := [(x+11)*(x^2+1)*(x^4+n) | n in [21458,21469,21470,21484,21496,21497]];
+foreach f in flist do
+  facs := factor(f);
+  if len(facs.multiplicities) <> 3 then println "redmine 1449 is back"; endif;
+endforeach;
+
+use QQ[x,y];
+facs := factor((x+y)*(x^2 +y^2)*(2*x^6 +y^6 +2));
+if len(facs.multiplicities) <> 3 then println "redmine 1449 is back"; endif;
+
+-------------------------------------------------------
+-- redmine 1531 (untagging bug)
+
+-- these (correctly) give errors -- previously caused crashes
+try
+  1+tagged([1],"tag");
+  println "SHOULD NOT EXECUTE THIS";
+uponerror ERR do
+  // Should check that the error is the one expected (cannot add INT and LIST)
+endtry;
+try
+  tagged([1],"tag")+1;
+  println "SHOULD NOT EXECUTE THIS";
+uponerror ERR do
+  // Should check that the error is the one expected (cannot add LIST and INT)
+endtry;
+
+-------------------------------------------------------
+-- redmine 1577 (radical 0-dim with LEX order)
+
+use QQ[x,y],lex;
+I := ideal(x*y +x,  x^2 +x);
+radI := radical(I); --> triggered error
+
+
+-------------------------------------------------------
+-- redmine 724 (RationalSolveHomog over finite char)
+
+use ZZ/(3)[x,y,z];
+L := [x*z, x*y]; 
+solns := RationalSolveHomog(L); -- used to give error
+
+-------------------------------------------------------
+-- redmine 1567 (silly error during radical in non-zero char)
+
+use ZZ/(5)[x,y,z];
+radI := radical(ideal(x^2+y,y+z)); --> gave error in factorizer
+
+-------------------------------------------------------
+-- not on redmine (email from Andraschko 2021-06-21)
+
+if subsets([1],2) <> [] then error("subsets([1],2) is wrong"); endif;
+
+-------------------------------------------------------
+-- redmine 1646 (0-dim radical complained about 0 gen)
+
+use QQ[x,y];
+NoPrint := radical(ideal(x^2,x-x,y^2)); // used to give error about non-zero poly expected
+
+radI := radical(ideal(x^2,  x -1,  y^2));
+if not(1 isin radI) or len(gens(radI)) <> 1 then error("redmine 1646: expected ideal(1)"); endif;
+
+-------------------------------------------------------
+-- Redmine 1656
+use QQ[x];
+NoPrint := resultant(x^2+1, x/x, x); // used to SEGV
+
+-------------------------------------------------------
+-- Not on redmine (2022-09-26)
+
+R1 ::= ZZ/(3)[x];
+R2 ::= ZZ/(5)[x];
+z1 := RingElem(R1,0);
+use R2;
+try
+  z2 := BringIn(z1);
+  println "BringIn wrongly mapped 0 between rings of difft char";
+uponerror E do
+  // Ignore expected error
+endtry;
+
+-------------------------------------------------------
+-- redmine 1717
+
+try
+  NoPrint := (func() endfunc = IdentityHom(ZZ));
+uponerror E do
+  // ignore expected error
+endtry;
+
+-------------------------------------------------------
+-- redmine 1714
+
+use R_1714 ::= QQ[x];
+I := ideal(x^3-x);
+S := R_1714/I;
+use S;
+NoPrint := IsDivisible(x+1,x+1); // should work fine
+try
+  NoPrint := IsDivisible(x,x+1); // used to give a weird error
+uponerror E do
+  error("redmine 1714 is back!");
+endtry;
+
+-------------------------------------------------------
+-- redmine 1710
+
+NoPrint := IsCoprime(RingElem(ZZ, 1234), RingElem(ZZ, 4321));
+if NoPrint <> true then error("IsCoprime(ZZ) is wrong"); endif;
+
+
+use ZZ[x,y];
+NoPrint := IsCoprime(x^2, y^3);
+try
+  NoPrint := IsCoprime(2*x^2, 2*y^3); // expect error
+  println "Should not get here: redmine 1710";
+uponerror E do
+  // ignore expected error
+endtry;
+
+use QQ[x,y];
+NoPrint := IsCoprime(2*x^2, 2*y^3);
+if NoPrint <> true then error("IsCoprime(poly) is wrong"); endif;
+
+-------------------------------------------------------
+-- redmine 1745 -- Printing of Hilbert series via indent
+
+/**/ use R ::= QQ[t,x,y,z];
+/**/ L := [ HilbertSeries(R/ideal(t^2, x, y^3)) ]; //(1 + 2*t + 2*t^2 + t^3) / (1-t)
+if sprint(L) <>
+"[tagged(record[DenFactors := record[RemainingFactor := 1, factors := [-t +1], multiplicities := [4]], num := -t^6 +t^5 +t^4 -t^2 -t +1], \"$hp.PSeries\")]"
+then
+  error("Different printing for [HilbertSeries]");
+endif;
+  
+if IndentStr(L) <> "[\n  (1 + 2*t + 2*t^2 + t^3) / (1-t)\n]\n" then
+  error("Different output for IndentStr([HilbertSeries])");
+endif;
+
+
+-------------------------------------------------------
+-- not on redmine: used to give error (fixed in 5.4.1q,  0.99816)
+
+use QQ[x];
+f := x^8 +2*x^7 -3*x^6 -2*x^5 -5*x^4 -2*x^3 -3*x^2 +2*x +1;
+NoPrint := IsLRSDegenerate(f);
+f := x^8 +4*x^7 -3*x^6 -10*x^5 -16*x^4 -10*x^3 -3*x^2 +4*x +1;
+NoPrint := IsLRSDegenerate(f);
+
+-------------------------------------------------------
+-- not on redmine: used to segv (fixed in 5.4.1s,  0.99818)
+
+P2 := NewFreeModule(NewPolyRing(QQ,"x"), 2);
+GBasis(submodule(0*gens(P2)));
+GenRepr(CanonicalBasis(P2)[1],  SubmoduleRows(P2, matrix([[0,0]])));
+
+
+-------------------------------------------------------
+-- redmine 1647 (comment 18)
+
+use QQ[x,y,z];
+I  := ideal(x-y-z, y^4*z^2+2*y^3*z^3+y^2*z^4);
+J := saturate(I, ideal(x*y*z));
+if gens(J) <> [1] then error("redmine 1647: obv redundant ideal generators - sat"); endif;
+J := I + ideal(one(RingOf(I)));
+if gens(J) <> [1] then error("redmine 1647: obv redundant ideal generators - sum"); endif;
+J := ideal(one(RingOf(I))) + I;
+if gens(J) <> [1] then error("redmine 1647: obv redundant ideal generators - sum"); endif;
+J := ideal(x, x-1);  GB := GBasis(J);  J := I+J;
+if gens(J) <> [1] then error("redmine 1647: obv redundant ideal generators - sum with HasGBasis"); endif;
+J := ideal(x, x-1);  GB := GBasis(J);  J := J+I;
+if gens(J) <> [1] then error("redmine 1647: obv redundant ideal generators - sum with HasGBasis"); endif;
+
+-- -------------------------------------------------------
+-- -- not on redmine: use to give "TooBig" error when creating order mat
+
+-- use ZZ/(101)[x,y,z,t];
+-- I := ideal(y^4 +x^2*t,  x^4 +z,  z^4 +x*t,  t^4 +y);
+-- GF := GroebnerFanIdeals(I); -- takes about 3.5 sec

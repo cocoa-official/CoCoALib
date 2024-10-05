@@ -1,0 +1,73 @@
+      time
+      Copyright (c)  2005,2020  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{time}{John Abbott}
+
+
+
+== User documentation for CpuTime, ElapsedTime and RealTime ==
+%======================================================================
+
+``CpuTime()`` returns a ``double`` whose value is the user CPU usage in
+seconds since the start of the program (//i.e.// the amount of time the
+processor has dedicated to your computation -- this may be rather less than
+the real elapsed time if the computer is also busy with other tasks).  For
+instance, to find out how long ``func()`` takes to execute you can do the
+following:
+```
+int main()
+{
+  double t0 = CpuTime();
+  func();
+  cout << "Time taken (in seconds) is " << CpuTime()-t0 << endl;
+  return 0;
+}
+```
+
+``ElapsedTime()`` returns a ``double`` being the number of seconds elapsed
+since the program was started (more-or-less).
+
+The function ``RealTime()`` returns a ``double`` whose value is the number
+of seconds elapsed since some fixed point in the past (on Unix/Linux boxes
+this is typically 1st January 1970, sometimes called "the epoch").
+
+
+**WARNING** we cannot guarantee the accuracy of these functions;
+as a rule of thumb you should regard time differences as having an
+imprecision of around 2% plus up to 0.2 seconds of unknown variation.
+So using these functions to measure a time difference less than 1 second
+is likely to produce a value with quite a large relative error.
+
+As a convenience there is also the function ``DateTime(long& date, long& time)``
+which stores in ``date`` and ``time`` the current date and time
+represented as decimal integers having the formats ``yyyymmdd`` & ``hhmmss``
+respectively.  Example:
+```
+    long date, time_unused;
+    DateTime(date, time_unused);
+    int YearToday = date/10000;
+    int MonthToday = (date/100)%100;
+    int DayToday = date%100;
+```
+
+
+== Maintainer documentation for CpuTime ==
+%======================================================================
+
+It works on GNU/Linux and MacOSX.  I hope someone else will deal with the
+portability issues.
+
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+2020-12-18: added ``ElapsedTime`` (should be portable).
+
+Might not work on Microsoft platforms -- maybe this is really a feature?
+
+I ignore the return values of ``getrusage`` and ``gettimeofday``; I'd be
+amazed if they could signal errors, but perhaps the code ought to check?
+
+BOOST has probably solved this; apparently Bruno has a solution too.

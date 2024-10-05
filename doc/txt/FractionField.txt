@@ -1,0 +1,173 @@
+      FractionField
+      Copyright (c)  2005,2012 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{FractionField}{John Abbott, Anna M. Bigatti}
+
+
+
+== User documentation for FractionField ==
+%======================================================================
+
+A ``FractionField`` is an abstract class (inheriting from [[ring]])
+representing a fraction field of an effective GCD domain.
+
+See [[RingElem FractionField]] for operations on its elements.
+
+=== Examples ===
+%----------------------------------------------------------------------
+- [ex-RingQQ1.C    ../../examples/index.html#ex-RingQ1.C]
+- [ex-PolyRing1.C    ../../examples/index.html#ex-PolyRing1.C]
+- [ex-RingHom5.C    ../../examples/index.html#ex-RingHom5.C]
+-
+
+=== Pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+- ``NewFractionField(R)`` -- creates a new [[ring]], more precisely a 
+   ``FractionField``, whose elements are formal fractions of elements of
+   ``R`` (where ``R`` is a true GCD domain, see ``IsTrueGCDDomain`` in [[ring]]).
+- ``RingQQ()`` -- produces the CoCoA [[ring]] which represents QQ, the
+   field of rational numbers, fraction field of [[RingZZ]].
+   Calling ``RingQQ()`` several times will always produce the same unique
+   ring in CoCoALib.
+- ``FractionField(R)`` -- sort of downcast the ring ``R`` to a fraction field;
+will throw an ``ErrorInfo`` object with code ``ERR::NotFracField`` if needed.
+-
+
+=== Query and cast ===[query]
+%----------------------------------------------------------------------
+Let ``S`` be a [[ring]]
+- ``IsFractionField(S)`` -- ``true`` iff ``S`` is actually a ``FractionField``
+- ``FractionFieldPtr(S)`` -- pointer to the fraction field impl (for calling mem fns);
+will throw an ``ErrorInfo`` object with code ``ERR::NotFracField`` if needed.
+-
+
+=== Operations on FractionField ===[operations]
+%----------------------------------------------------------------------
+In addition to the standard [[ring operations]], a ``FractionField``
+may be used in other functions.
+
+Let ``FrF`` be a ``FractionField``
+built as ``NewFractionField(R)`` with ``R`` a [[ring]]
+
+- ``BaseRing(FrF)`` -- the [[ring]] it is the ``FractionField`` of --
+                       an identical copy of ``R``, not merely an isomorphic
+                       [[ring]].
+-
+
+=== Homomorphisms ===[homomorphisms]
+%----------------------------------------------------------------------
+- ``EmbeddingHom(FrF)`` -- ``BaseRing(FrF)`` --> ``FrF``
+- ``InducedHom(FrF, phi)`` -- phi: ``BaseRing(K)`` --> ``codomain(phi)``
+-
+
+== Maintainer documentation for FractionField, FractionFieldBase, FractionFieldImpl ==
+%======================================================================
+
+The class ``FractionField`` is wholly analogous to the class [[ring]],
+//i.e.// a reference counting smart pointer.  The only difference is that
+``FractionField`` knows that the ``myRingPtr`` data member actually points to
+an instance of a class derived from ``FractionFieldBase`` (and so can
+safely apply a ``static_cast`` when the pointer value is accessed).
+
+``FractionFieldBase`` is an abstract class derived from ``RingBase``.
+It adds a few pure virtual functions to those contained in ``RingBase``:
+
+```
+virtual const ring& myBaseRing() const;
+virtual ConstRawPtr myRawNum(ConstRawPtr rawq) const; // NB result belongs to BaseRing!!
+virtual ConstRawPtr myRawDen(ConstRawPtr rawq) const; // NB result belongs to BaseRing!!
+virtual const RingHom& myEmbeddingHom() const;
+virtual RingHom myInducedHomCtor(const RingHom& phi) const;
+```
+
+``myBaseRing`` returns a reference to the [[ring]] (guaranteed to be an effective GCD
+domain) supplied to the constructor.
+
+``myRawNum`` (resp. ``myRawDen``) produces a raw pointer to a value belonging to
+``BaseRing`` ( and *NOT* to the ``FractionField``!); these two functions *practically*
+*oblige* the implementation of ``FractionField`` to represent a value as a pair of
+raw values "belonging" to the ``BaseRing``.  Note that, while the value belongs to
+``BaseRing``, the resources are owned by the ``FractionField``!!
+
+``EmbeddingHom`` returns the embedding homomorphism from the ``BaseRing`` into
+the ``FractionField``; it actually returns a reference to a fixed homomorpism
+held internally.
+
+``InducedHom`` creates a new homomorpism from the ``FractionField`` to another
+[[ring]] S given a homomorpism from the ``BaseRing`` to S.
+
+
+``FractionFieldImpl`` implements a general fraction field.  Its
+elements are just pairs of ``RawValue``s belonging to the ``BaseRing``
+(see the struct ``FractionFieldElem``).  For this implementation the
+emphasis was clearly on simplicity over speed (at least partly because
+we do not expect ``FractionFieldImpl`` to be used much).  For polynomials
+whose coefficients lie in a ``FractionField`` we plan to implement a
+specific [[ring]] which uses a common denominator representation for
+the whole polynomial.  If you want to make this code faster, see some
+of the comments in the bugs section.
+
+Important: while fractions are guaranteed to be reduced (//i.e.// no
+common factor exists between numerator and denominator), it is rather
+hard to ensure that they are //canonical// since in general we can
+multiply numerator and denominator by any unit.  See a **bug comment**
+about normalizing units.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+The functions ``myNew`` are not //exception safe//: memory would be leaked if
+space for the numerator were successfully allocated while allocation for
+the denominator failed -- nobody would clean up the resources consumed
+by the numerator.  Probably need a sort of ``auto_ptr`` for holding
+temporary bits of a value.
+
+Should partial homomorphisms be allowed: //e.g.// from QQ to ZZ/(3)?
+Mathematically it is a bit dodgy, but in practice all works
+out fine provided you don't divide by zero.  I think it would be too
+useful (//e.g.// for chinese remaindering methods) to be banned.
+Given phi:ZZ->ZZ[x]  it might be risky to induce QQ->ZZ[x];
+note that ker(phi)=0, so this is not a sufficient criterion!
+
+Currently you can make a ``FractionField`` only from a ring satisfying
+``IsTrueGCDDomain``; in principle one could create a ``FractionFieldImpl``
+of any integral domain (it just wouldn't be possible to cancel factors
+without a GCD -- so probably not terribly practical).  I'll wait until
+someone really needs it before allowing it.
+
+It is not clear how to make the denominator positive when the GCD domain
+is ZZ (so the fraction field is QQ).  In general we would need the GCD domain
+to supply a //normalizing unit//: such a function could return 1 unless we
+have some special desire to normalize the denominator in a particular way.
+HERE'S A CONUNDRUM: FractionField(Q[x]) -- all rationals are units, and
+so we could end up with horrible representations like (22/7)/(22/7)
+instead of just 1.  MUST FIX THIS!!
+
+The printing function is TERRIBLE!
+
+: FASTER + and -
+  Addition and subtraction can be done better:
+  let h be the GCD of the two denominators,
+  suppose we want to compute  a/bh + c/dh
+  (where gcd(a,bh) = gcd(c, dh) = gcd(b,d) = 1
+   //i.e.// h = gcd(B,D) where B,D are the denoms)
+  If h = 1 then there is no cancellation,
+  o/w gcd(ad+bc, bdh) = gcd(ad+bc, h), so we can use a simpler
+  gcd computation to find the common factor.
+
+: FASTER * and /
+  Multiplication and division can also be made a little faster by simplifying
+  the GCD computation a bit.  The two cases are essentially the same, so I
+  shall consider just multiplication.  Assuming inputs are already reduced
+  (//i.e.// there is no common factor between numerator and denominator).
+  To compute (a/b)*(c/d), first calculate h1 = gcd(a, d) and h2 = gcd(b, c).
+  The result is then: num = (a/h1)*(c/h2)  &  den = (b/h2)*(d/h1)
+  and this is guaranteed to be in reduced form.
+
+
+``myIsRational`` is incomplete: it will fail to recognise rationals whose
+numerator and denominator have been multiplied by non-trivial units.  BAD BUG!
+Ironically ``myIsInteger`` does work correctly.
+

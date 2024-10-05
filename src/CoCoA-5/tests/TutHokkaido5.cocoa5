@@ -1,0 +1,333 @@
+------------------------------------------------------------------------
+-- TUTORIAL 5
+------------------------------------------------------------------------
+
+-- MULTIARRANGEMENTS
+
+------------------------------------------------------------------------
+
+-- DEFINITION
+
+-- A MULTIARRANGEMENT (A,m) is a pair of an arrangement A and a multiplicity map m.
+
+------------------------------------------------------------------------
+
+-- QUESTION: how do we represent such object in CoCoA?
+
+---> In CoCoA we represent a multiarrangement as a list of pairs [f, m(f)],
+-- where f is a polynomial of degree 1 and m(f) its multiplicity.
+
+------------------------------------------------------------------------
+
+use QQ[x,y,z];
+
+A1 := [[x,1],[y,2],[z,2],[x-y,1]]; A1;
+Q1 := product([A1[i][1]^A1[i][2] | i in 1..len(A1)]); Q1;
+
+-- If m(f) = 1 for all f, we can see the multiarrangement as an arrangement.
+
+A2 := [[x,1],[y,1],[x+z,1],[y-z,1]]; A2;
+Q2 := product([A2[i][1]^A2[i][2] | i in 1..len(A1)]); Q2;
+A3 := [x,y,x+z,y-z]; A3;
+-- A2 = A3; -- error: because they are threated as different object in CoCoA
+Q2 = product(A3); -- They have the same defining equation
+
+-- Given a multiarrangement we can easily recover the underlying arrangement.
+
+MultiArrToArr(A1);
+MultiArrToArr(A2) = A3;
+
+-- Similarly, given an arrangement we can constuct a multiarrangement
+-- with the desired multiplicities.
+
+ArrToMultiArr(A3,[1,2,3,6]);
+ArrToMultiArr(A3,[1,1,1,1]) = A2;
+
+------------------------------------------------------------------------
+
+-- DEFINITION
+
+-- Given an arrangement A and one of its hyperplane H,
+-- the ZIEGLER'S MULTIRESTRICTION is the multiarrangement
+-- (ArrRestriction(A,H),mH), where mH(X) = #[ H in A | IsSubset(X,H) ] - 1.
+
+------------------------------------------------------------------------
+
+use S ::= QQ[x,y,z,t];
+
+-- (1)
+A1 := [x,y,x+t,x-t,y+z-2*t]; A1;
+MultiArrRestrictionZiegler(A1,x);
+
+-- (2)
+A2 := ArrBraid(S,4); A2;
+MultiArrRestrictionZiegler(A2,x-y);
+
+------------------------------------------------------------------------
+
+-- DEFINITION:
+
+-- Let A be a central arrangement. The multiarrangement (A,m) is FREE if D(A,m)
+-- the module of logarithmic vector fields is a free module.
+
+-- The EXPONENTS of a free multiarrangement (A,m) are the degree of a basis of D(A,m).
+
+-- If (A,m) is free with MultiArrExponents((A,m)) =  [ e1,...,el ],
+-- then m(A) := sum[ m(H) | H in A ] = sum(MultiArrExponents((A,m))).
+
+------------------------------------------------------------------------
+
+-- THEOREM (Saito's criterion, extended)
+
+-- A multiarrangement in K^l with defining equation Q(A,m) = 0 is free iff
+-- there exists a (lxl) matrix M such that
+-- (1) det(M)=c*Q(A,m) for a non-zero scalar c
+-- (2) the columns of M are linearly independent and the sum of their degree is m(A).
+
+------------------------------------------------------------------------
+
+use S ::= QQ[x,y,z];
+
+-- (1)
+A1 := [[x,1],[y,2],[z,2],[x-y,1]]; A1;
+Q1 := product([A1[i][1]^A1[i][2] | i in 1..len(A1)]); Q1;
+M1 := MultiArrDerModule(A1); M1;
+det(M1) = -Q1;
+MultiArrExponents(A1);
+sum(It) = deg(Q1);
+IsMultiArrFree(A1);
+
+-- (2) slow
+-- A := [x,y,x+2*y-3*z,x-y+z,y-2*z]; A;
+-- A2 := ArrToMultiArr(A, [1,2,3,3,1]); A2;
+-- MultiArrDerModule(A2);
+-- -- MultiArrExponents(A2);
+-- IsMultiArrFree(A2); --> false 
+
+------------------------------------------------------------------------
+
+-- The exponents of a free multiarrangement are NOT combinatorial.
+
+use QQ[x,y];
+
+A1 := [[x,3],[y,3],[x-y,1],[x+y,1]]; A1;
+A2 := [[x,3],[y,3],[x-y,1],[x+2*y,1]]; A2;
+IsMultiArrFree(A1);
+IsMultiArrFree(A2);
+MultiArrExponents(A1);
+MultiArrExponents(A2);
+
+------------------------------------------------------------------------
+
+-- COROLLARY
+
+-- Terao's conjecture does not hold for multiarrangements.
+
+------------------------------------------------------------------------
+
+-- EXERCISE
+
+-- Can you find two arrangements B1 and B2 such that Ai = MultiArrRestrictionZiegler(Bi,H),
+-- for some H in Bi? Are they free?
+
+------------------------------------------------------------------------
+
+-- THEOREM (Ziegler)
+
+-- If a central arrangement A is free with ArrExponents(A) = [ 1,e2,...,el ], then
+-- B := MultiArrRestrictionZiegler(A,H) is free with MultiArrExponents(B) = [ e2,...,el ].
+
+------------------------------------------------------------------------
+
+use S ::= QQ[x,y,z,t];
+
+-- (1)
+A1 := [x,y,x+t,x-t,y+z-2*t]; A1;
+IsArrFree(A1);
+A1_zieg := MultiArrRestrictionZiegler(A1,x); A1_zieg;
+IsMultiArrFree(A1_zieg);
+
+-- (2)
+A2 := ArrBraid(S,4); A2;
+IsArrFree(A2);
+A2_zieg := MultiArrRestrictionZiegler(A2,y-z); A2_zieg;
+IsMultiArrFree(A2_zieg);
+
+-- (3) 
+use QQ[x,y,z];
+A3 := [x,x+z,x+y-4*y,x-3*y+7*z,x-y+z]; A3;
+IsArrFree(A3);
+A3_zieg := MultiArrRestrictionZiegler(A3,x); A3_zieg;
+IsMultiArrFree(A3_zieg); -- the previous theorem is not IFF...
+
+------------------------------------------------------------------------
+
+-- THEOREM (Yoshinaga)
+
+-- Let A be a central arrangement and fix a hyperplane H of A.
+-- A is free with ArrExponents(A) = [ 1,e2,...,el ], iff
+-- (1) B := MultiArrRestrictionZiegler(A,H) is free with MultiArrExponents(B) = [ e2,...,el ],
+-- (2) A is locally free at H.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+-- ALGEBRAS
+
+------------------------------------------------------------------------
+
+-- DEFINITION
+
+-- Let A be an arrangement in K^l and f in S = K[x1,...xl] homogeneous.
+-- The SOLOMON-TERAO IDEAL of A w.r.t. f is I(A,f) := ideal([ d(f) | d in ArrDerModule(A) ]).
+
+-- The SOLOMON-TERAO ALGEBRA of A w.r.t. f is ST(A,f) := S/I(A,f).
+
+------------------------------------------------------------------------
+
+use S ::= QQ[x,y,z];
+
+-- (1)
+A1 := ArrTypeD(S,3); A1;
+f1 := x^2+y^2+z^2;
+SolomonTeraoIdeal(A1,f1);
+S/It;
+
+-- (2)
+A2 := [x,y+x+3*y-z,y+z]; A2;
+f2 := x^2+y^2+x*z;
+I2 := SolomonTeraoIdeal(A2,f2); I2;
+S/I2;
+
+------------------------------------------------------------------------
+
+-- THEOREM
+
+-- Let A be a free arrangement in K^l with ArrExponents(A) = [ e1,...,el ] and
+-- f in K[x1,...xl] homogeneous with deg(f) = d (with some restriction).
+-- Then HilbertPoly(ST(A,f)) = product([ 1+t+...+t^(d+ei-2) | i in 1..l ]).
+
+------------------------------------------------------------------------
+
+use S ::= QQ[x,y,z];
+
+-- (1)
+l := dim(S); l;
+A1 := ArrTypeD(S,3); A1;
+IsArrFree(A1);
+Exp1 := ArrExponents(A1); Exp1;
+f1 := x^2+y^2+z^2;
+d := deg(f1); d;
+I1 := SolomonTeraoIdeal(A1,f1);
+ST1 := S/I1; ST1;
+HS1 := HilbertSeries(ST1); HS1;
+HV1 := HVector(ST1); HV1;
+t := indet(RingQQt(1),1);
+ProdExp1 := product([sum([t^(j) | j in 0..d+Exp1[i]-2]) | i in 1..l]);  ProdExp1;
+CoeffListWRT(ProdExp1, t) = HV1;
+
+-- (2)
+A2 := ArrTypeB(S,3); A2;
+IsArrFree(A2);
+Exp2 := ArrExponents(A2); Exp2;
+f2 := x^2+y^2+z^2;
+d := deg(f2); d;
+I2 := SolomonTeraoIdeal(A2,f2); I2;
+ST2 := S/I2; ST2;
+HV2 := HVector(ST2); HV2;
+t := indet(RingQQt(1),1);
+ProdExp2 := product([sum([t^(j) | j in 0..d+Exp2[i]-2]) | i in 1..l]);
+CoeffListWRT(ProdExp2, t) = HV2;
+
+------------------------------------------------------------------------
+
+-- EXERCISE
+
+-- Check the previous equality for three new arraangements.
+
+------------------------------------------------------------------------
+
+-- DEFINITION
+
+-- Let A = [ H_1,...,H_n ] and R = K[y[1],...y[n]]. If L := [ H_i1,...,H_ik ] are dependent
+-- define f_L := sum([ c_j*product([ y[r] | r in [i1,...,ik] not(r=j) ]) | j in 1..k ]), where
+-- sum([ c_j*H_ij | j in 1..k ]) = 0.
+
+-- The ORLIK-TERAO IDEAL I(A) of A is the ideal of R generated by f_L, for all dependent L.
+-- The ORLIK-TERAO AlGEBRA of A is the quotient R/I(A).
+
+-- The ARTINIAN ORLIK-TERAO IDEAL AI(A) of A is the ideal of R generated by f_L,
+-- for all dependent L, together with the square of all y[i].
+-- The ARTINIAN ORLIK-TERAO AlGEBRA of A is the quotient R/AI(A).
+
+------------------------------------------------------------------------
+
+use S ::= QQ[x,y,z];
+
+-- (1)
+A1 := ArrBraid(S,3); A1;
+OT_ideal1 := OrlikTeraoIdeal(A1); OT_ideal1;
+AOT_ideal1 := ArtinianOrlikTeraoIdeal(A1); AOT_ideal1;
+RingOf(AOT_ideal1)/AOT_ideal1;
+
+-- (2)
+A2 := [x,y,z,x+y+z]; A2;
+OT_ideal2 := OrlikTeraoIdeal(A2); OT_ideal2;
+AOT_ideal2 := ArtinianOrlikTeraoIdeal(A2); AOT_ideal2;
+
+------------------------------------------------------------------------
+
+-- THEOREM (Orlik-Terao)
+
+-- Let A be an arrangement. Then HVector(AOT(A)) --> ArrPoincarePoly(A).
+
+-- len(QuotientBasis(AOT_Ideal(A))) = sum([abs(X) | X in moebius(ArrLattice(A))]).
+
+------------------------------------------------------------------------
+
+use S ::= QQ[x,y,z];
+
+-- (1)
+A1 := ArrBraid(S,3); A1;
+AOT_Ideal1 := ArtinianOrlikTeraoIdeal(A1); AOT_Ideal1;
+HVector(RingOf(AOT_Ideal1)/AOT_Ideal1);
+ArrPoincarePoly(A1);
+len(QuotientBasis(AOT_Ideal1)) = sum([abs(X) | X in moebius(ArrLattice(A1))]);
+
+-- (2)    
+A2 := [x,y,z,x+y+z]; A2;
+AOT_ideal2 := ArtinianOrlikTeraoIdeal(A2); AOT_ideal2;
+HVector(RingOf(AOT_ideal2)/AOT_ideal2);
+ArrPoincarePoly(A2);
+len(QuotientBasis(AOT_ideal2)) = sum([abs(X) | X in moebius(ArrLattice(A2))]);
+
+-- (3)
+A3 := ArrTypeB(S,3); A3;
+AOT_ideal3 := ArtinianOrlikTeraoIdeal(A3); AOT_ideal3;
+
+T1 := CpuTime();
+ArrPoincarePoly(A3);
+-- TimeFrom(T1);
+
+T2 := CpuTime();
+HVector(RingOf(AOT_ideal3)/AOT_ideal3);
+-- TimeFrom(T2);
+
+len(QuotientBasis(AOT_ideal3)) = sum([abs(X) | X in moebius(ArrLattice(A3))]);
+
+------------------------------------------------------------------------
+
+-- EXERCISE
+
+-- Check the previous two equalities for three new arrangements.
+
+------------------------------------------------------------------------
+
+-- EXERCISE (COMPULSORY)
+
+-- Fill in the questionnaire.
+
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+

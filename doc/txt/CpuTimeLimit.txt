@@ -1,0 +1,143 @@
+      CpuTimeLimit
+      Copyright (c)  2017-2022  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{CpuTimeLimit}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-CpuTimeLimit1.C ../../examples/index.html#ex-CpuTimeLimit1.C]
+- [ex-CpuTimeLimit2.C ../../examples/index.html#ex-CpuTimeLimit2.C]
+-
+
+== User documentation for CpuTimeLimit ==
+%======================================================================
+
+An object of type ``CpuTimeLimit`` may be used to "limit" the CPU time
+taken by a computation: if the computation takes too long then an
+exception (of type ``CoCoA::TimeoutException``) is thrown.
+
+When creating a ``CpuTimeLimit`` object you must specify a time limit
+in seconds as a positive ``double``: //e.g.// ``CpuTimeLimit CheckTime(10)``.
+
+You must tell the ``CheckTime`` object explicitly when it should check whether
+the time limit has been reached by calling ``CheckTime()``, //i.e.// by calling
+its member function ``operator()``.  If the time limit has been reached,
+it throws an exception of type ``CoCoA::TimeoutException`` (derived from
+``CoCoA::ErrorInfo``); otherwise the call does nothing (other than the check).
+
+The typical use is with a potentially long loop.  Just before the loop
+one creates the ``CpuTimeLimit`` object, then at the start of each
+iteration inside the loop one calls ``operator()``.
+
+**IMPORTANT** CoCoALib checks for timeout **only when** the member
+function ``CpuTimeLimit::operator()`` is called; so CoCoALib
+**will not notice that time-out has occurred between successive calls**
+to ``operator()``.
+
+It is possible to use a single ``CpuTimeLimit`` object for several
+loops, but then it is important to call ``myReset`` just before
+entering each new loop; the variability of the iterations of that loop
+can be specified.
+
+
+An optional second parameter to the ctor specifies the "variability" of
+time between successive iterations: //e.g.// if the checks are in a loop
+where each iteration takes more or less the same time then the variability
+is low (``IterationVariability::low``); if the iterations can vary greatly in
+computation time then the variability is high  (``IterationVariability::high``);
+by default the variability is medium (``IterationVariability::medium``).
+
+
+=== Constructor ===[constructors]
+%----------------------------------------------------------------------
+
+There is one real constructor, and one pseudo-constructor:
+- ``CpuTimeLimit(seconds)`` where ``seconds`` is a positive ``double``; the measurement of CPU use begins immediately; there is an upper limit of one million seconds.
+- ``CpuTimeLimit(seconds, variability)`` as above, but specify how variable time between successive checks might be
+- ``NoCpuTimeLimit()`` returns a ``CpuTimeLimit`` object which has infinite timeout
+-
+
+Variability should be: ``IterationVariability::low`` if successive iterations take more or less the same time;
+``IterationVariability::high`` if successive iterations can take widely differing amounts of time.  The default
+is ``IterationVariability::medium`` which indicates some sort of compromise.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``CheckForTimeout`` be an object of type ``CpuTimeLimit``.
+There are two operations:
+- ``CheckForTimeout.IamTimedOut()`` -- returns ``true`` if time-out has occurred, otherwise ``false``
+- ``CheckForTimeout(context)`` -- does nothing unless timeout has occurred, when it throws a ``TimeoutException`` object; ``context`` is a string literal which is copied into the "context" field of the exception
+- ``CheckForTimeout.myReset()`` -- if the same ``CpuTimeLimit`` object is to be used inside more than one loop, then call this before every loop (except the first one)
+- ``CheckForTimeout.myReset(v)`` -- like ``myReset`` but also specify a "variability" for the new loop
+- ``IsUnlimited(CheckForTimeout)``  -- return ``true`` iff ``CheckForTimeout`` was created by ``NoCpuTimeLimit``
+-
+
+
+=== Exception ===[exceptions]
+%----------------------------------------------------------------------
+
+There is one class for exceptions:
+- ``TimeoutException(context)`` -- the arg ``context`` is a string literal indicating where the time-out was detected (usually it is a good idea to use the name of the function which was interrupted)
+-
+
+The class ``TimeoutException`` derives from ``ErrorInfo``.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+This is the fourth design.  The first was based on SIGVTALRM, but it was not
+clear how portable that would be.  The second was based on ``CheckForInterrupt``,
+but the calls to ``CpuTime`` were too costly (and it depended on a global
+variable).  The third design was based on ``ProgressReporter``: it assumed
+that the times between successive clock checks do not vary too much.
+This new fourth design revises the third, and lets the caller specify
+the "variability" of time between successive checks.
+
+The idea is to check the actual cpu time only occasionally, and not every
+time ``operator()`` is called.  It uses a similar strategy to that of
+``ProgressReporter``; based on the variability, a "proper check" is
+performed only every few times ``operator()`` is called.  The number of
+"ignored" calls uses an estimate of how many iters can safely be
+performed before the next "proper check" -- this assumes that calls
+to ``operator()`` occur at fairly regular intervals.
+
+The private data field ``myInterval`` has a special role if its value is
+negative: it means that the ``CpuTimeLimit`` object has infinite time-out,
+so should never check cpu usage.
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Perhaps offer a version which uses only elapsed time?  This should be easy to implement!
+
+Inconvenient having to pass ``CpuTimeLimit`` as explicit parameters;
+but how else to do this in a threadsafe way?
+
+A normal call to ``CpuTime()`` may not work as desired in a multithreaded
+context.  It is not clear how to solve this portably.
+
+
+
+== Main changes ==
+%======================================================================
+
+**2019**
+- Dec (v.0.99650): big revision, introduced "variability" factor.
+
+**2018**
+- May (v0.99570): major revision, now cheaper and multithread compatible.
+
+**2017**
+- July (v0.99560): first release; major revision
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

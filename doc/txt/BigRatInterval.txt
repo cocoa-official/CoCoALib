@@ -1,0 +1,84 @@
+      BigRatInterval
+      Copyright (c)  2018 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{BigRatInterval}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-BigRatInterval1.C ../../examples/index.html#ex-BigRatInterval1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+``BigRatInterval`` is designed to represent (finite, non-empty) intervals
+with [[BigRat]] rational end points.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+- ``BigRatInterval(lwb, upb)`` creates an interval with lower end point ``lwb``
+    and upper end point ``upb``; gives error if ``lwb > upb``
+-
+
+
+=== Queries and views ===[queries]
+%----------------------------------------------------------------------
+Let ``I`` be a [[BigRatInterval]]
+- ``min(I)`` -- gives the lower end point of ``I``
+- ``max(I)`` -- gives the upper end point of ``I``
+- ``width(I)`` -- gives the width of ``I`` as a [[BigRat]]
+- ``IsZeroInside(I)`` -- true iff ``min(I) < 0 and max(I) > 0``
+-
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Basic interval arithmetic operations between two intervals ``I1`` and ``I2``:
+- ``I1 + I2``
+- ``I1 - I2``
+- ``I1 * I2``
+- ``I1 / I2``  gives error if ``I2`` contains 0
+- ``merge(I1, I2)``  union, but error if ``I1`` and ``I2`` are disjoint.
+- ``square(I1)``  like ``I1*I1`` but ensures lower bound is non-negative.
+- ``soften(I1)`` widen ``I1`` to make its end points nicer numbers (PROTOTYPE!)
+-
+
+
+Basic arithmetic operations between an interval ``I`` and a rational ``q``:
+- ``I + q``  and ``q + I``
+- ``I - q``  and ``q - I``
+- ``I * q``  and ``q * I``
+-
+
+Division is not yet supported!
+
+
+== Maintainer documentation ==
+%======================================================================
+
+I have preferred simplicity over efficiency for this first version.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Not efficient!
+
+What should the interface to ``soften`` be?  Is there a better fn name?
+
+
+== Main changes ==
+%======================================================================
+
+**2018**
+- April (v0.99563):  first release
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

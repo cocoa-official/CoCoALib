@@ -1,0 +1,108 @@
+      FloatApprox
+      Copyright (c)  2014-2015  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{FloatApprox}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-FloatApprox1.C ../../examples/index.html#ex-FloatApprox1.C]
+-
+
+== User documentation ==
+%======================================================================
+These functions determine a "floating point" approximation to an
+integer or rational.  The base of the representation is either 2 or 10.
+
+
+See also: [[ToString]] for functions producing readable numbers.
+
+
+=== Pseudo-constructors for binary representation ===[constructors]
+%----------------------------------------------------------------------
+
+- ``MantissaAndExponent2(x,prec)`` determine the ``MantExp2`` structure for ``x`` with precision ``prec``
+- ``FloatApprox(x,prec)`` apply ``MantissaAndExponent2`` then convert the result into ``BigRat``.
+
+
+The value of ``prec`` is the number of bits in the mantissa; if unspecified, it defaults to 53.
+
+A ``MantExp2`` structure contains 4 public data fields:
+- ``mySign`` an ``int`` having value -1 or 1
+- ``myExponent`` a ``long``
+- ``myMantissa`` a ``BigInt`` (between ``2^(prec-1)`` and ``2^prec-1``)
+- ``myNumDigits`` a ``long`` (just the value of  ``prec``)
+
+
+As an exception if ``x=0`` then all fields are set to 0.
+
+The structure represents the value ``mySign * (myMantissa/2^(myNumDigits-1)) * 2^myExponent``.
+
+
+=== Pseudo-constructors for decimal representation ===[constructors]
+%----------------------------------------------------------------------
+
+- ``MantissaAndExponent10(x,prec)`` determine the ``MantExp10`` structure for ``x`` with precision ``prec``
+
+
+The value of ``prec`` is the number of (decimal) digits in the mantissa;
+if unspecified, it defaults to 5.
+
+A ``MantExp10`` structure contains 4 public data fields:
+- ``mySign`` an ``int`` having value -1 or 1
+- ``myExponent`` a ``long``
+- ``myMantissa`` a ``BigInt`` (between ``10^(prec-1)`` and ``10^prec-1``)
+- ``myNumDigits`` a ``long`` (just the value of  ``prec``)
+
+
+As an exception if ``x=0`` then all fields are set to 0.
+
+The structure represents the value ``mySign * (myMantissa/10^(myNumDigits-1)) * 10^myExponent``.
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The implementation is simple rather than efficient.  The current design
+ensures that 0.5ulp is rounded consistently (currently towards zero).
+
+The only tricky parts were deciding how to round in the case of a tie,
+and correct behaviour when the mantissa "overflows".  I finally
+decided to delegate rounding to ``RoundDiv``: it is easy to implement,
+and I wanted a solution which was symmetric about zero, so that the two
+``MantissaAndExponent`` fns applied to ``N`` and to ``-N`` would always
+give the same result except for sign.
+
+Mantissa overflow requires special handling, but it's quite easy.
+
+Printing of a ``MantExp2`` or ``MantExp10`` structure is simple rather
+than elegant.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Using ``mpfr`` would surely be better.
+
+The fields of a ``MantExp2`` and ``MantExp10`` are publicly accessible;
+I'm undecided whether it is really better to supply the obvious accessor fns.
+
+The conversion in ``MantissaAndExponent10`` is rather slow when the input
+number is large.
+
+In principle the call to ``FloorLog2`` could fail because of overflow;
+but in that case ``FloorLog2`` itself should report the problem.
+
+In principle a mantissa overflow could trigger an exponent overflow
+(//i.e.// if the exponent was already the largest possible long).
+
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- April (v0.99533): first release
+
+

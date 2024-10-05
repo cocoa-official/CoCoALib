@@ -1,0 +1,66 @@
+      cyclotomic
+      Copyright (c)  2022,2023 John Abbott, Anna M. Bigatti  (collab. with Nico Mexis 2022)
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{Cyclotomicity}{Nico Mexis}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-cyclotomic.C ../../examples/index.html#ex-cyclotomic.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers some functions related to cyclotomic polynomials,
+including tests for LRS-degeneracy.  Several contributions from Nico Mexis.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``f`` be a ``RingElem`` representing a univariate polynomial in a polynomial
+ring ``P`` (with characteristic 0).  Let ``n`` be a positive integer.
+
+- ``cyclotomic(n,x)`` -- returns the ``n``-th cyclotomic polynomial in the indet ``x``
+- ``CyclotomicTest(f)`` -- returns an ``unsigned long n`` indicating that ``f`` is the ``n``-th cyclotomic polynomial; if ``f`` is not cyclotomic, it returns 0.
+- ``CyclotomicIndex(f)`` -- if ``f`` is cyclotomic, returns ``n`` its index.  If ``f`` is not cyclotomic it may return 0 or some other value.  Faster than ``CyclotomicTest``.
+
+
+- ``LRSDegeneracyOrder(f)``  -- returns least order of LRS-degeneracy, or 0 if not LRS-degenerate
+- ``LRSDegeneracyOrders(f)`` -- returns ``vector<long>`` of all LRS-degeneracy orders
+- ``LRSDegeneracyOrders(f, VerLev)`` -- same as above, but may give some false positives; (recommend ``VerLev = 3``)
+
+
+- ``IsLRSDegenerate(f)``  -- returns ``true`` if ``f`` is ``k``-LRS-degenerate for some ``k``
+- ``IsLRSDegenerateOrder(f, k)`` -- returns ``true`` if ``f`` is ``k``-LRS-degenerate
+- ``IsLRSDegenerateOrder(f, n, VerLev)`` -- same as above, but may give false positive
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+- Details about the ``InversePhiBound`` can be found in OEIS sequence A355667.
+- The algorithms are as yet unpublished: maybe upload to arXiv in Dec 2023
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+- Some dodgy bits of code in the LRS-degenerate implementations
+
+
+
+== Main changes ==
+%======================================================================
+
+**2023**
+- December (v0.99821): major update to cyclotomic; other fns are new
+
+**2022**
+- August (v0.99802): first release
+-
+
+

@@ -1,0 +1,76 @@
+<html>
+<head>
+<title>Notes</title>
+<meta name="keywords" content="menus">
+<link rel="next" href="./uih.html" title="next page">
+<link rel="previous" href="./uih.html" title="previous page">
+</head>
+
+<body bgcolor=#FFFFFF text=#000000>
+<table width=100%>
+<tr bgcolor=#CCCCCC><td colspan=3 align=center><b><font size=7>Known Bugs and Limitations</font></b></td></tr>
+</table>
+<center>This page lists only bugs in the user interface, <b>not</b> any bugs concerning the cocoa engine!</center>
+<p>
+Every software has bugs. In fact, developers could improve software endlessly. But since the user wants
+to use the software eventually, it will eventually be distributed even if it is known to contain bugs.<br>
+The same is true for CoCoA. Here is a short list of known bugs (I am sure there are more :-):
+<ol>
+<li><b><a name="freeze">CoCoA freezes while browsing the online manual</a></b><br>
+	Due to a bug in the HTML renderer in Trolltech's Qt library upon which this user interface is base, the entire
+	application may freeze while you are browsing the online help.<br>
+	Specifically, this has been known to occur when you browse the online help, copy something to the clipboard,
+	<b>leave the copied text marked</b> and continue browsing. It has not occured when you copy to the clipboard
+	and then <b>deselect</b> the text. This might be considered as a workaround.<br>
+	The bug has been reported to Trolltech and we hope it will be fixed in one of the next releases
+	of the Qt library.
+</li>
+<li><b><a name="char_2048">WinCoCoA cannot display more than 2048 characters in one line</a></b><br>
+	This bug may occur when you run WinCoCoA on Windows 95. On these systems, buggy system libraries prevent the display
+	of more that 2048 characters in one line. Therefore, when you set CoCoA to "No WordWrap" and calculate "Fact(1000);"
+	not all digits of the result will be shown. However, you can still <b>copy</b> the digits. So they are there, but
+	you can't see them :-). The only way to fix this is to update Windows or not to use "No WordWrap".
+</li>
+<li><b><a name="help_browser">Help browser</a></b>
+	<ul>
+	<li>Bookmarks & History<br>
+		When you browse the online help and make use of bookmarks you will detect that only the first
+		window of the online help will save its bookmarks and history. This will eventually be resolved.
+	</li>
+	<li>Items not visible<br>
+		Sometimes the help browser doesn't determine the size of the window correctly and thus does not display
+		some items. If you suspect there should be more on the page, try to resize the window. It helps most of
+		the time.
+	</li>
+	<li>Quitting CoCoA<br>
+		Quitting CoCoA has different effects on different help windows: The first help window you opened will be
+		closed automatically and the application will terminate. If however, you opened other help windows from
+		within the first help window, those will not be closed automatically and the application will not quit. You
+		will have to close them manually. This will be resolved in a future version of CoCoA.
+	</li>
+	</ul>
+</li>
+<li><b><a name="interactive_document">Interactive Document</a></b>
+	<ul>
+		<li>Saving<br>
+			Currently when you are in the Interactive Document and you select <b>Save as</b>, only the
+			current page of the Interactive Document will be saved. Future versions of CoCoA will probably
+			provide an option to save all pages of the Interactive Document to one file and maybe even a
+			possibility to load such a file into the Interactive Document at startup.
+		</li>
+		<li>Browsing the history<br>
+			Currently, there are no keys or menu entries to jump to the first or last history page. This
+			will probably be implemented in a future version of CoCoA.
+		</li>
+	</ul>
+</li>
+<li><b><a name="copying_text">Copying text</a></b><br>
+	The icon and menu entry for copying text is not active when the output window has the focus. This will be fixed in
+	a future version of CoCoA. For the time being, use the mouse to mark the text you want to copy and press <b>Ctrl + C</b>
+	or use the right mouse button to popup a context menu with edit features or save the whole output window using the
+	<b>Save Output As</b> menu entry.
+</li>
+</ol>
+
+</body>
+</html>

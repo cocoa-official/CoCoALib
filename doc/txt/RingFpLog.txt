@@ -1,0 +1,127 @@
+      RingFpLog
+      Copyright (c)  2005,2010-2011  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingFpLog}{John Abbott}
+
+
+
+== User documentation for the class RingFpLogImpl ==
+%======================================================================
+
+The usual way to perform arithmetic in a (small, prime) finite field
+is to create the appropriate ring via the pseudo-constructors
+``NewZZmod`` (or ``NewQuotientRing`` if you prefer) which are
+documented in [[QuotientRing]].  These functions will automatically
+choose a suitable underlying implementation, and you should normally
+use them.
+
+In some special circumstances, you may wish to choose explicitly the
+underlying implementation.  CoCoALib offers three distinct
+implementations of small prime finite fields: [[RingFp]], and
+``RingFpLog`` (described here) and [[RingFpDouble]].  Of these
+``RingFpLog`` may be the fastest if your processor has slow division
+instructions -- this file describes how to create a ``RingFpLog``
+implementation.
+
+To create a [[ring]] of this specific type use one of the pseudo-constructors:
+```
+  NewRingFpLog(p) -- Z ring of integers, p a machine integer or BigInt
+  NewRingFpLog(I) -- Z ring of integers, I an ideal of Z
+  NewRingFpLog(p, res) -- p a machine integer, res is either ``GlobalSettings::SymmResidues`` or ``GlobalSettings::NonNegResidues``
+```
+These pseudo-constructors are for creating small prime finite fields; they
+will fail if the characteristic is not prime or is too large: the error
+signalled by throwing a ``CoCoA::ErrorInfo`` whose //code// is
+``CoCoA::ERR::BadSmallFpChar``.  You can test whether an argument is
+suitable by calling ``IsGoodFoRingFpLog``.
+
+In the directory ``examples/`` there is a small example program showing
+how small finite fields (with known implementation) can be created and
+used: ``ex-RingFp2.C``.
+
+The default convention for printing residues is specified when you create
+the [[GlobalManager]]; you can also specify explicitly which convention to
+use by giving a second argument to the pseudo-ctor ``NewRingFpLog``.  Note
+that the **internal representation** is always least non-negative
+regardless of the output convention chosen.
+
+If you seek a means for fast arithmetic in small finite fields consult
+the documentation about [[SmallFpImpl]], [[SmallFpLogImpl]], and
+[[SmallFpDoubleImpl]].  All arithmetic on elements of a ``RingFp``
+is actually carried out by a ``SmallFpImpl`` object.
+
+
+== Maintainer documentation for the class RingFpLogImpl ==
+%======================================================================
+
+The class ``RingFpLogImpl`` is a low-level implementation of (small
+prime) finite fields; it is not intended for direct use by casual CoCoA
+library users.  Multiplication and division are effected using discrete
+log/exp tables.
+
+The class ``RingFpLogImpl`` is intended to represent small, prime finite
+fields.  The constructor is more complicated than one might expect, this
+is because the ``RingFpLogImpl`` object must store a little extra
+information to fulfil its role as a ``QuotientRingBase``.  Currently, the
+characteristic must be prime (otherwise it wouldn't be a field).
+Furthermore, the characteristic must also be less than 65536 even on
+machines with 64-bit arithmetic -- larger values are prohibited as the
+internal tables would become excessively large.  Creating a
+``RingFpLogImpl`` of characteristic p takes time roughly linear in p;
+space consumption is linear in p.  An error is signalled if the
+characteristic is too large or not prime.
+
+Extreme efficiency is NOT one of the main features of this version.
+
+The class ``RingFpLogImpl`` derives from ``QuotientRingBase``, which in turn
+is derived from ``RingBase``: see [[QuotientRing]] and [[ring]] for more
+details.  Note that there is no ``RingFpLog`` class; a ``RingFpLogImpl``
+object can only be accessed via a ``QuotientRing``.
+
+Note the use of "argument checking" static member functions in the ctor:
+this is because ``const`` data members must be initialized before the main
+body of the ctor is entered.
+
+A member typedef ``RingFpLogImpl::value_t`` specifies the type used for
+representing the value of an element of a ``RingFpLogImpl``: currently
+this is a typedef for ``SmallFpLogElem_t`` which is defined in config.H.
+
+Essentially all operations are delegated to the class ``SmallFpLogImpl``.
+The two classes are separate so that the inline operations of
+``SmallFpLogImpl`` can be accessed directly in certain other special case
+implementations (//e.g.// polynomials with coeffs in a SmallFp).  See the
+documentation on [[SmallFpLogImpl]] for details.  I note that the
+residues are represented as the least non-negative value in the residue
+class.
+
+The data members are those of a ``QuotientRingBase`` (which are used only
+for answering queries about a [[QuotientRing]]), plus the characteristic
+of the field (held as a ``value_t`` in ``myModulusValue``), and an auto-pointer
+to a copy of the zero and one elements of the ring.
+
+The zero and one elements of the ring is held in an auto_ptr<> for
+consistency with the implementation of other rings -- in this simple
+class it is not really necessary for exception safety.
+
+The largest permitted modulus for a ``RingFpLogImpl`` may depend on the
+platform.  On a 32-bit machine the modulus must surely be less than
+65536 -- refer to [[SmallFpLogImpl]] for details.  A 64-bit machine may
+allow larger characteristics.
+
+Although it may seem wasteful to use heap memory for the values of
+elements in a RingFpLogImpl, trying to make them "inline" leads to
+lots of problems -- see [[RingFp]] for more details
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+See also some comments in the "bugs" section of RingFp.txt.
+
+The code is not very smart in the case of characteristic 2.
+
+Run-time performance is disappointing.
+
+I wonder if this code will ever prove useful to anyone.
+

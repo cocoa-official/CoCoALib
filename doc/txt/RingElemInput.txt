@@ -1,0 +1,66 @@
+      RingElemInput
+      Copyright (c)  2014,2016,2020  John Abbott & Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingElemInput}{Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-PolyInput2.C ../../examples/index.html#ex-PolyInput2.C]
+-
+
+== User documentation ==
+%======================================================================
+These are the functions for creating a [[RingElem]] from a ``string`` or an ``istream``.
+Let
+``str`` be a ``string``,
+``in`` be a ``string`` or ``istream`` (//e.g.// reading from file),
+and ``R`` any [[ring]].
+They both return the expression read from ``in`` and evaluated in ``R``.
+
+- ``RingElem(R, str)``  -- [[RingElem]] constructor, same as ``ReadExpr(R, str)``
+- ``ReadExpr(R, in)`` -- keeps reading to the end of input (so it's
+convenient for reading from a string)
+- ``ReadExprSemicolon(R, in)`` -- stops at the semicolon (convenient for reading from file or standard input)
+- ``RingElems(R, in)``  -- returns a ``vector<RingElem>`` of the comma-separated list of [[RingElem]] written in file/string ``in``
+- ``RingElemVec(R, in)``  -- returns a ``vector<RingElem>`` of the comma-separated list of [[RingElem]] inside square brackets written in file/string ``in``
+-
+
+Recognized operations in the string are:
+``` + - * / ^ ()
+
+The expression may contain integer constants or decimals (which are read
+as exact rational numbers, //e.g.// ``1.25`` is read the same as ``(5/4)``).
+The expression may contain symbols (any indices are placed after the symbol
+head inside square brackets, and separated by commas).
+
+
+== Maintainer documentation ==
+%======================================================================
+Code is so nice it does not need any documentation! ;-)
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Potentially ambiguous expressions such as ``1/2/3`` are accepted (without any
+warning message), and interpreted as ``(1/2)/3``.
+
+
+== Main changes ==
+%======================================================================
+
+**2019**
+- October (v0.99650): added ``RingElems`` for reading a vector
+
+**2016**
+- September (v0.99544): added "decimal numbers"
+
+
+**2014**
+- January (v0.99533): first release
+-
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

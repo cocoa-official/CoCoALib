@@ -1,0 +1,43 @@
+      SparsePolyOps-vector
+      Copyright (c)  2023 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SparsePolyOps-vector}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==
+%======================================================================
+-
+
+
+== User documentation ==
+%======================================================================
+
+- ``std::vector<RingElem> interreduced(std::vector<RingElem> v);`` --
+Groebner-interreduce ``v``
+- ``std::vector<RingElem> TmpDivAlg(f, const std::vector<RingElem>& v);`` -- 
+Groebner-division: quotients and remainder, the remainder is in ``result[len(v)]`` (this interface might change)
+
+
+.. more functions to come ..
+
+
+== Maintainer documentation ==
+%======================================================================
+
+``SparsePolyOps-vector`` should collect all functions operating on a
+vector of ``RingElem``.
+Requires a bit more thinking/designing.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== Main changes ==
+%======================================================================
+
+**2023**
+- March (v0.99814):
+ - added documentation
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

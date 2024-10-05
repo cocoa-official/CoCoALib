@@ -1,0 +1,116 @@
+<html>
+<head>
+<title>Menus</title>
+<meta name="keywords" content="menus">
+<link rel="next" href="./uih.html" title="next page">
+<link rel="previous" href="./uih.html" title="previous page">
+</head>
+
+<body bgcolor=#FFFFFF text=#000000>
+<table width=100%>
+<tr bgcolor=#CCCCCC><td colspan=3 align=center><b><font size=7>The History</font></b></td></tr>
+</table>
+
+<ol>
+<li><b><a name="description">Description</a></b><br>
+	CoCoA's Interactive Document maintains a history of all executed command sets. This history
+	can be browsed and - to a limited extent - edited.
+	<p>
+	Entering a command set in the Interactive Document and executing it using <b>Ctrl + Return</b>
+	triggers the following actions:
+	<ul>
+		<li>The command set is appended to the history of the Interactive Document.</li>
+		<li>The Interactive Document jumps to the end of its history thus displaying
+		    (most of the time - see below) an empty page.</li>
+		<li>The command set is executed.</li>
+	</ul>
+	<p>
+	Thus you can imagine the history in the following way
+	<p align=center>
+	<img src="images/history_vision.png" width=180 height=50>
+	</p>
+	where the rectangle with the arrows represents the <b>history cursor</b>, i.e. the current
+	position the history. The history cursor can be moved using the keys <b>Alt + Left</b> (to go
+	to a command set entered earlier) and <b>Alt + Right</b> (to go to a command set entered
+	later). When the history cursor is positioned on the last history page and you press
+	<b>Alt + Right</b> a new empty page will be opened.<br>
+	The current position of the history cursor is shown in the <b>HI</b> status bar entry when the
+	Interactive Document is active.
+	<p>
+	Since there might be situations when you don't want all of the three actions mentioned above
+	to be executed, there are several key combinations to change that behaviour:
+ 	<ul>
+		<li>Pressing <b>Alt + Return</b> instead of <b>Ctrl + Return</b> does the same as <b>
+		    Ctrl + Return</b> except that it does not trigger <b>execution</b> of the command
+		    set.</li>
+		<li>Pressing <b>Shift</b> together with <b>Ctrl + Return</b> or <b>Alt + Return</b>
+		    prevents the jump to the end of the history. This is useful, when you are editing
+		    a command set and executing it from time to time to see whether it works or not.
+		</li>
+		<li>Pressing <b>Shift + Return</b> alone replaces the current history page and does
+		    <b>not</b> execute the command set.</li>
+	</ul>
+	Apart from that, you can use <b>Ctrl + Delete</b> to remove the page you are currently editing
+	from the history.
+	<p>
+	When you are <b>not</b> in the Interactive Document, all of the above key combinations should
+	work except the combinations to browse the history and the key combination <b>Shift + Return</b>
+	to replace the current history page and <b>Ctrl + Delete</b> to remove the current history page,
+	since those make no sense when you are not in the Interactive Document.
+</li>
+<li><b><a name="shortcuts">Shortcuts</a></b><br>
+	<table>
+	<tr bgcolor=#FFFF80 align=center><th>Key</th><th colspan=3>Modifiers</th><th>Description</th></tr>
+	<tr bgcolor=#FFFFB0 align=center>
+		<th width=10%>&nbsp;</th>
+		<th width=5%>Alt</th><th width=5%>Ctrl</th><th width=5%>Shift</th>
+		<th width=75%>&nbsp;</th>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Return</td>
+		<td>-</td><td>X</td><td>-</td>
+		<td align=left>Append, Execute, Jump</td>
+	</tr>
+	<tr align=center>
+		<td>Return</td>
+		<td>X</td><td>-</td><td>-</td>
+		<td align=left>Append, NoExecute, Jump</td>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Return</td>
+		<td>-</td><td>-</td><td>X</td>
+		<td align=left>Replace, NoExecute, NoJump</td>
+	</tr>
+	<tr align=center>
+		<td>Return</td>
+		<td>X</td><td>-</td><td>X</td>
+		<td align=left>Append, NoExecute, NoJump</td>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Return</td>
+		<td>-</td><td>X</td><td>X</td>
+		<td align=left>Append, Execute, NoJump</td>
+	</tr>
+	<tr align=center>
+		<td>&nbsp;</td>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Left</td>
+		<td>X</td><td>-</td><td>-</td>
+		<td align=left>Previous interactive page</td>
+	</tr>
+	<tr align=center>
+		<td>Right</td>
+		<td>X</td><td>-</td><td>-</td>
+		<td align=left>Next interactive page</td>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Delete</td>
+		<td>-</td><td>X</td><td>-</td>
+		<td align=left>Delete current history page</td>
+	</tr>
+ 	</table>
+</li>
+
+</body>
+</html>

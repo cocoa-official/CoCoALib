@@ -1,0 +1,98 @@
+      RingQQ
+      Copyright (c)  2005,2007,2012  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingQQ}{John Abbott, Anna M. Bigatti}
+
+
+
+== User documentation for RingQQ ==
+%======================================================================
+
+The call ``RingQQ()`` produces the CoCoA [[ring]] which represents QQ, the
+field of rational numbers.  Calling ``RingQQ()`` several times will
+always produce the same unique CoCoA [[ring]] representing QQ.
+
+Strictly, there is a limit on the size of elements you can create, but
+the limit is typically high enough not to be bothersome.
+
+``RingQQ`` is the [[FractionField]] of [[RingZZ]];
+
+See [[RingElem]] for operations on its elements.
+
+If you wish to compute purely with rationals (without exploiting
+CoCoALib's [[ring]]s) then see the documentation in [[BigRat]]. 
+
+=== Examples ===[examples]
+%----------------------------------------------------------------------
+- [ex-RingQQ1.C ../../examples/index.html#ex-RingQQ1.C]
+-
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+- ``RingQQ()`` -- produces the CoCoA [[ring]] which represents QQ.
+   Calling ``RingQQ()`` several times will always produce the same unique
+   ring in CoCoALib.
+-
+
+=== Query ===[query]
+%----------------------------------------------------------------------
+Let ``R`` be a [[ring]]
+- ``IsQQ(R)`` -- says whether ``R`` is actually ``RingQQ()``
+-
+
+=== Operations on RingQQ ===[operations]
+%----------------------------------------------------------------------
+See [[FractionField operations]].
+
+
+=== Homomorphisms ===[homomorphisms]
+%----------------------------------------------------------------------
+Let ``S`` be a [[ring]]
+- ``NewQQEmbeddingHom(S)`` -- creates the (partial) homomorphism QQ --> ``S``
+                           (but see also [[CanonicalHom]]).
+                           QQ argument is implicit because there is a
+                           unique copy
+-
+
+== Maintainer documentation for the class RingQQImpl ==
+%======================================================================
+
+The function ``RingQQ()`` simply returns the unique instance of the
+CoCoALib [[ring]] representing QQ.  This instance is managed by
+[[GlobalManager]], see its documentation.
+
+The function ``MakeUniqueInstanceOfRingQQ`` is the only function which can
+call the ctor of ``RingQQImpl``.  The only function which is supposed to
+call ``MakeUniqueInstanceOfRingQQ`` is the ctor of [[GlobalManager]].  I have
+discouraged others from calling ``MakeUniqueInstanceOfRingQQ`` by not putting
+it in the header file ``RingQQ.H`` -- see bugs section in [[GlobalManager]].
+
+
+``RingQQImpl`` is the implementation of the field of rational numbers
+following the scheme laid by ``RingBase`` and ``FractionFieldBase``.  Almost
+all member functions are trivial: indeed, virtually all the work is done by
+the GMP library.  Once you have understood how ``RingZZImpl`` works, the
+implementation here should be easy to follow.
+
+
+The implementation of ``RingQQImpl::InducedHomImpl::myApply`` turns out to
+be a bit lengthy, but I do not see how to improve it.  Since partial
+homomorphisms can be built, ``myApply`` maps numerator and denominator then
+must check that their images can be divided.  I cannot reuse the
+implementation of ``FractionFieldImpl::InducedHomImpl::myApply`` because
+there is no equivalent of ``RefNum`` and ``RefDen`` in ``RingQQImpl``.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+This code is probably not //exception safe//; I do not know what the
+``mpq_*`` functions do when there is insufficient memory to proceed.
+Making the code "exception safe" could well be non-trivial: I suspect
+a sort of ``auto_ptr`` to an ``mpq_t`` value might be needed.
+
+How to check that induced homomorphisms are vaguely sensible??
+e.g. given ZZ->ZZ[x] ker=0, but cannot induce QQ->ZZ[x]; so it is not
+sufficient simply to check that the kernel is zero.
+

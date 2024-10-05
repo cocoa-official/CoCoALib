@@ -1,0 +1,478 @@
+Package $experimental;
+
+--export HilbertFn;
+Export CRTIdeal;
+export FindCycle;
+Export MinPolyModularWithPrimes;
+Export MinPolyTwinFloat;
+///Export NFPower;
+Export SepNil; // Lenstra+?
+Export SectionalMatrix;
+Export SectionalMatrixQuotient;
+Export PrintTable;
+export ReductionNumber;
+Export PrintSectionalMatrix;
+Export CoeffNumDenSize10;
+Export FrobeniusBasis;
+Export distraction;
+Export LegendrePoly;
+
+export Gens_Ker_Hom_Mod;
+
+------------------------------------------------------------------
+// 2024-08-13  not currently exported -- is it useful for anyone?
+define NextIndex(ref ind, limits)
+  n := len(ind);
+  while n > 0 and ind[n] = limits[n] do
+    ind[n] := 1;
+    n := n-1;
+  endwhile;
+  if n >= 1 then ind[n] := ind[n]+1; endif;
+enddefine; -- NextIndex
+
+
+
+  ----------------------------------------------------------------------
+-- define HilbertFn()
+--   return 3;
+-- enddefine; -- HilbertFn
+  
+  
+define InvMod(f, I)
+  if RingOf(f) <> RingOf(I) then error("mixed rings"); endif;
+  R := NewQuotientRing(RingOf(I), I);
+  return CanonicalRepr(1/QuotientingHom(R)(f));
+enddefine; -- InvMod
+  
+define SepNil(a, I)
+  P := RingOf(a);
+  x := indet(P,1);
+  mi_a := MinPolyQuot(a, I, x);
+  f := product(SqFreeFactor(mi_a).factors);
+  b := a;  r := zero(P);
+  for i := 1 to 100 do  -- while
+    f_b := subst(f, x, b);
+    if f_b IsIn I then return record[b := NF(b,I), r := NF(r,I)]; endif;
+    F := NF(f_b * InvMod(subst(deriv(f,x), x, b), I), I);
+    b := b - F;  r := r + F;
+//    println "b = ", b, "  r = ", r;
+  endfor;
+  error("stopped after 100 steps");
+enddefine; -- SepNil
+
+--========== CRTIdeal ==================
+
+Define CRTIdeal2(r1, I1, r2, I2)
+  J := ideal(concat(gens(I1), gens(I2)));
+  if not(IsOne(J)) then error("ideals must be comaximal"); endif;
+  GR := GenRepr(one(RingOf(I1)), J);
+  i1 := ScalarProduct(gens(I1), first(GR, NumGens(I1)));
+  i2 := ScalarProduct(gens(I2), last(GR, NumGens(I2)));
+  J :=intersection(I1,I2);
+  return record[residue := NF(i2*r1 + i1*r2, J), modulus := J];
+EndDefine; -- CRTIdeal
+
+Define CRTIdeal(L)
+  if not(IsEven(len(L))) then error("len(L) must be even"); endif;
+  r1 := L[1];
+  I1 := L[2];
+  for pos := 2 to len(L)/2 do
+    r2 := L[2*pos-1];
+    I2 := L[2*pos];
+    X := CRTIdeal2(r1, I1, r2, I2);
+    r1 := X.residue;
+    I1 := X.modulus;
+  endfor;
+  return record[residue:=r1, modulus:=I1];
+EndDefine; -- CRTIdeal
+
+--========== MinPolyModular ==================
+
+define UniPolyToQQ(f, x)
+//  if RingOf(f)=P then return f; endif;
+  return sum([ AsINT(LC(m))*x^deg(LPP(m)) | m in monomials(f) ]);
+enddefine; -- UniPolyToQQ
+
+  
+define MinPolyModularWithPrimes(f, I, x, opt vrb, opt primes)
+  if not(IsDefined(vrb)) then vrb := false; endif;
+  if not(IsDefined(primes)) and type(vrb) = LIST then
+    primes := vrb;
+    vrb := false;
+  endif;
+  if type(vrb) = STRING then
+    if vrb = "verbose" then vrb := true;
+    else
+      error("argument must be STRING  \"verbose\" or LIST of primes");
+    endif;
+  endif;
+  P := RingOf(I);
+  if not(IsQQ(CoeffRing(P))) then error("CoeffRing must be QQ"); endif;
+  PrimeCounter := 1;
+  if IsDefined(primes) then p := primes[PrimeCounter];
+  else p := 32009;  --  p := 2;
+  endif;
+  if HasGBasis(I) then
+    if not(IsZeroDim(I)) then error("non zero-dim"); endif;
+    G := ReducedGBasis(I);
+    HasRGB := true;
+  else
+    println "WARNING: no precomputed GBasis, using gens!";
+    G := gens(I);
+    HasRGB := false;
+  endif;
+  if vrb then println PrimeCounter, ": prime is ", p; endif;
+  NewP := NewPolyRing(NewZZmod(p), IndetSymbols(P));
+  pi := PolyRingHom(P, NewP, CanonicalHom(RingQQ(), NewP), indets(NewP));
+  Jp := ideal(pi(G));
+  mp := MinPolyQuot(pi(f), Jp, indet(NewP,1));
+  mpCRT := record[modulus := p, residue := UniPolyToQQ(mp,x)];
+--  println "residue poly is ", LM(mpCRT.residue), "+ ...";
+  repeat
+    incr(ref PrimeCounter);
+    if IsDefined(primes) then p := primes[PrimeCounter];
+    else p := NextPrime(p);
+    endif;
+    if vrb then println PrimeCounter, ": prime is ", p;endif;
+    NewP := NewPolyRing(NewZZmod(p), IndetSymbols(P));
+    pi := PolyRingHom(P, NewP, CanonicalHom(RingQQ(), NewP), indets(NewP));
+    Jp := ideal(pi(G));
+    if not(IsZeroDim(Jp)) then ERROR("non zero-dim"); endif;
+    mp := MinPolyQuot(pi(f), Jp, indet(NewP,1));
+    --    println "residue poly is ", LM(mp), "+ ...";
+    if deg(mp) = deg(mpCRT.residue) then
+      mpCRT := CRTPoly(mpCRT.residue, mpCRT.modulus, UniPolyToQQ(mp,x), p);
+      --    println "CRT poly is     ", mpCRT.residue;
+    elif HasRGB and deg(mp) > deg(mpCRT.residue) then
+      println "WOW! deg(mp) > CRT:  swap!";
+      mpCRT := record[modulus := p, residue := UniPolyToQQ(mp,x)];
+    endif;
+    if deg(mp) < deg(mpCRT.residue) then  println "WOW! deg(mp) > CRT";  endif;
+    try
+      Rat_mp := RatReconstructPoly(mpCRT.residue, mpCRT.modulus);
+      return Rat_mp;
+    uponerror ERR do
+      if not("cannot reconstruct rational" isin GetErrMesg(ERR)) then
+	error(GetErrMesg(ERR));
+      endif;
+    endtry;
+  endrepeat;
+enddefine; -- MinPolyModular
+
+  
+Define TryPrecisions(ref precision, f, I, vrb)
+  P := RingOf(I);
+  While true Do
+    if vrb then PrintLn "-- trying with FloatPrecision ", precision; endif;
+    RRx := NewPolyRing(NewRingTwinFloat(precision),
+		       SymbolRange("x",1,NumIndets(P)));
+    phi := PolyRingHom(P, RRx,
+		       CanonicalHom(RingQQ(),CoeffRing(RRx)),
+		       indets(RRx));
+    Try
+      X := MinPolyQuotDef(phi(f), ideal(phi(gens(I))), indet(RRx,1));
+      phi := "delete";
+      Return X; // [ MakeTerm(P,exponents(LT(f))) | f in gens(X) ];
+    UponError E Do
+      If "insufficient precision" IsIn GetErrMesg(E) Then
+	precision := precision * 2;
+      Else
+	error(GetErrMesg(E));
+      EndIf;
+    EndTry;
+  EndWhile;
+EndDefine; -- TryPrecisions
+
+
+  
+define MinPolyTwinFloat(f, I, x)
+  prec := 64;
+  MP := TryPrecisions(ref prec, f,I,true);
+  return MP;
+enddefine; -- MinPolyTwinFloat
+  
+  
+--========================= SectionalMatrix =======================
+
+  -----------------------------------------------------------------------
+-- forma lineare generica
+-----------------------------------------------------------------------
+-- Define RandomLinearForm(R)
+--   Return sum([random(-1000000,1000000)*indet(R,j) | j In 1..NumIndets(R)]);
+-- EndDefine; -- RandomLinearForm
+-----------------------------------------------------------------------
+-- Definisco l'ideale dei punti:
+-----------------------------------------------------------------------
+-- Define SectionalMatrixPoints2(P, Points)
+--   J := IdealOfPoints(P, Points);
+--   N := NumIndets(P);
+--   R := NewPolyRing(BaseRing(P), concat(IndetSymbols(P), ["h"]));
+--   J := homog(ideal(PolyAlgebraHom(P,R,first(indets(R),N))(gens(J))),   last(indets(R)));
+--   PrintLn "J :", J;
+--   PrintLn "HF(R/J) : ", HilbertFn(R/J);  
+--   Return SectionalMatrix(J);
+-- EndDefine; -- SectionalMatrixPoints2
+
+-- Define HomogIdealOfPoints(P, Points)
+--   J := IdealOfPoints(P, Points);
+--   N := NumIndets(P);
+--   R := NewPolyRing(BaseRing(P), concat(IndetSymbols(P), ["h"]));
+--   J := homog(ideal(PolyAlgebraHom(P,R,first(indets(R),N))(gens(J))), last(indets(R)));
+--   Return J;
+-- EndDefine; -- HomogIdealOfPoints
+
+-----------------------------------------------------------------------
+-- SectionalMatrix
+-----------------------------------------------------------------------
+
+Define SectionalMatrix(XX, opt D) -- J homog // D length rows
+  if type(XX)=RING then J := DefiningIdeal(XX); else J := XX; endif;  
+  if IsDefined(D) then
+    MS := SectionalMatrixQuotient(J, D);
+  else
+    MS := SectionalMatrixQuotient(J);
+  endif;
+  if type(XX)=RING then return MS; endif;
+  N := NumIndets(RingOf(J));
+  D := NumCols(MS)-1;
+  return mat(RingZZ(), [[binomial(i+d-1,d) | d In 0..D] | i in 1..N]) -MS;
+EndDefine; -- SectionalMatrix
+
+
+Define SectionalMatrixQuotient(J, opt D) -- J homog // D length rows
+  I := gin(J, "drl");
+  if not(IsDefined(D)) then D := max([deg(g)|g in gens(I)])+1; endif;
+  P := RingOf(I);
+  N := NumIndets(P);
+  MS := [];
+  For i := 0 To N-1 Do
+    A := untagged(HilbertFn(P/I));
+    AA := [AsINT(eval(A[2],[d])) | d In len(A[1])..D];
+    append(ref MS, concat(A[1], AA));
+    I := I + ideal(indet(P,N-i));
+  EndFor;
+  return matrix(RingZZ(), reversed(MS));
+EndDefine; -- SectionalMatrix
+
+
+define PrintTable(M, opt SplitAfterRow)
+  if not(IsDefined(SplitAfterRow)) then SplitAfterRow := NumRows(M)+1;endif;
+//  ColWidth := [ NumDigits10(AsINT(max(GetCol(M,c))))+2 | c in 1..NumCols(M)];
+  ColWidth := [FloorLog10(AsINT(max(max(GetCol(M,c)),1)))+3|c in 1..NumCols(M)];
+  for i := 1 to NumRows(M) do
+    for j := 1 to NumCols(M) do
+      Print format(M[i,j], ColWidth[j]);
+    EndFor;
+    PrintLn;
+    if i = SplitAfterRow then 
+      for j := 1 to NumCols(M) do print format("-", ColWidth[j]); EndFor;
+      println;
+    endif;
+  EndFor;
+enddefine; -- PrintTable
+
+define PrintSectionalMatrix(M)
+  if type(M) = MAT then 
+    PrintTable(ConcatVer(RowMat(RingOf(M),[ i-1 | i in 1..NumCols(M)]),M), 1);
+  elif type(M) = IDEAL or type(M) = RING then
+    PrintSectionalMatrix(SectionalMatrix(M));
+  else
+    error("only for RING, IDEAL, or MAT");
+  endif;
+enddefine; -- PrintSectionalMatrix
+
+
+define ReductionNumber(M, opt i)
+  If type(M) = RING then
+    if not(IsDefined(i)) then i := dim(M); endif;
+    M := SectionalMatrix(M);
+  elif type(M) = MAT then
+    if not(IsDefined(i)) then error("missing second argument (INT)"); endif;
+  else
+    error("first argument must be RING or MAT");
+  endif;
+  return max([ j in 1..NumCols(M) | M[i,j]<>0 ]);
+enddefine; -- ReductionNumber
+
+-----------------------------------------------------------------------
+
+Define MaxGrowthMacQuot(SM, opt d)
+  if not(IsDefined(d)) then d := 1; endif;
+  n := NumRows(SM);
+  m := NumCols(SM);
+  for i:=2 to n do
+    PrintLn i, " -row ", "-------------------------------------------";
+    for j:=d+1 to m-1 do
+      if SM[i,j+1]=BinomialReprShift(AsINT(SM[i,j]), j-1, 1, 1) then
+	PrintLn "MaxGrowthMacQuot in row: ", i , " and column: ", j-1, "-->", j;
+      endif;
+    endfor;
+  endfor;
+EndDefine;
+
+Define MinGrowthMacIdeal(SM, opt d)  -- d = deg(first generator)
+  if not(IsDefined(d)) then d := 1; endif;
+  n := NumRows(SM);
+  m := NumCols(SM);
+  for i:=2 to n do
+    PrintLn i, " -row ", "-------------------------------------------";
+    for j:=d+1 to m-1 do
+      if SM[i,j+1]=BinomialReprShift(AsINT(SM[i,j]), i-1, 1, 0) then
+	PrintLn "MinGrowthMacIdeal in row: ", i , " and column: ", j-1, "-->", j;
+      endif;
+    endfor;
+  endfor;
+EndDefine;
+
+Define MinGrowthSM(SM, opt d)
+  if not(IsDefined(d)) then d := 1; endif;
+  n := NumRows(SM);
+  m := NumCols(SM);
+  for i:=2 to n do
+    PrintLn i, " -row ", "-------------------------------------------";
+    for j:=d+1 to m-1 do //j:=3 ??? 1-2 is always verified?!
+      if SM[i,j+1]= sum([SM[k,j] | k in 1..i]) then
+	PrintLn "MinGrowthSM in row: ", i , " and column: ", j-1, "-->", j;
+      endif;
+    endfor;
+  endfor;
+EndDefine;
+
+-----------------------------------------------------------------------
+
+define NFPower(f, pow, I)
+  return NF(f^pow, I);
+enddefine; -- NFPower
+  
+-----------------------------------------------------------------------
+
+-----------------------------------------------------------------------
+-- max num digits of num and denom
+define CoeffNumDenSize10(f)
+  if not(IsQQ(CoeffRing(RingOf(f)))) then error("CoeffSize only for QQ"); endif;
+  NumSize := -1;
+  DenSize := -1;
+  foreach c in coefficients(f) do
+    q := AsRAT(c);
+    n := num(q); d := den(q);
+    if not(IsOne(n)) and not(IsMinusOne(n)) and FloorLog10(n) > NumSize then
+      NumSize := FloorLog10(n);
+    endif;
+    if not(IsOne(d)) and not(IsMinusOne(d)) and FloorLog10(d) > DenSize then
+      DenSize := FloorLog10(d);
+    endif;
+  endforeach;
+  return [NumSize+1, DenSize+1];
+enddefine; -- CoeffSize10
+-----------------------------------------------------------------------
+
+define FrobeniusBasis(I)
+  return $PrimaryDecomposition0.BaseFrobeniusSpace(I);
+enddefine; -- FrobeniusBasis
+
+
+define distraction(T)
+  return product([product([x-j | j in 0..deg(T,x)-1])
+		  | x in indets(RingOf(T))]);
+enddefine; -- distraction
+
+
+----------------------------------------------------------------------
+  -- Module Homomorphisms
+----------------------------------------------------------------------
+
+Define Gens_Ker_Hom_Mod(Pr,M, Ps,N, L) // L = list of phi(e_i)
+  r := NumCompts(Pr); -- Rango di Pr.
+  Gens_Im_N := concat(L, [g in gens(N) | not(IsZero(g)) ]);
+-- REPLACE NEXT 3 LINES A.S.A.P. !!!
+  Submodule_Im_N := submodule(Ps, Gens_Im_N);
+  P := RingOf(Submodule_Im_N);
+  Syz_Im_N := SyzOfGens(NewFreeModule(P, len(gens(Submodule_Im_N))),
+			Submodule_Im_N); -- Elementi di P^(r+b)
+  -- Prime r compts di ogni gen in Syz_Ker_M.
+  G := GensAsRows(Syz_Im_N);
+---->  G := GensAsRows(syz(Gens_Im_N));
+  Preimage_Ker := SubmoduleRows(Pr, submat(G, 1..NumRows(G), 1..r));
+  Return Record[ Preimage_Ker := Preimage_Ker, Quotient_SubM := M ];
+EndDefine; -- Gens_Ker_Hom_Mod
+
+
+-----------------------
+-- (b) Pres_Im_Hom_Mod.
+
+-- Input:(P^r, M, P^s, N, [w_1,...,w_r])
+-- Output: Record[Free_Mod_Im := P^r,
+--                Quot_Im := submodule(P^r,[(v_i1,...,v_ir) : i in {1,...,u}])]
+
+Define Pres_Im_Hom_Mod(Pr,M,Ps,N,L) // L = list of phi(e_i)
+  -- Richiamo la funzione Gens_Ker_Hom_Mod.
+  Return Record[Free_Mod_Im := Pr, Quot_Im := Gens_Ker_Hom_Mod(Pr,M,Ps,N,L).Preimage_Ker];
+  -- Gens_Quot := Gens_Ker_Hom_Mod(Pr,M,Ps,N,L).Gens;
+  -- Quot := submodule(Pr,Gens_Quot);
+  -- Return Record[Free_Mod_Im := Pr, Quot_Im := Quot];
+EndDefine; -- Pres_Im_Hom_Mod
+
+-----------------------
+-- (c) Pres_Ker_Hom_Mod.
+-- Input:(P^r, M, P^s, N, [w_1,...,w_r])
+-- Output:
+-- (1) Se il Ker è non nullo:
+-- Record[Free_Mod_Ker := P^u,
+--              Quot_Ker := submodule(P^u,[(l_i1,...,l_iu) : i in {1,...,u'}])]
+-- (2) Se il Ker è nullo: [].
+
+Define Pres_Ker_Hom_Mod(Pr,M,Ps,N,L) // L = list of phi(e_i)
+  -- Richiamo la  funzione Gens_Ker_Hom_Mod.
+  Gens_Ker := gens(Gens_Ker_Hom_Mod(Pr,M,Ps,N,L).Preimage_Ker);
+  -- Caso in cui il Ker è nullo.
+  If Gens_Ker=[] Then Return []; EndIf;
+  -- Caso in cui il Ker è non nullo.
+  P := RingOf(Pr);
+  u := len(Gens_Ker);
+  Pu := NewFreeModule(P,u);
+  Gens_Ker_M := concat(Gens_Ker, gens(M));
+  Submodule_Ker_M := submodule(Pr, Gens_Ker_M);
+  Syz_Ker_M := SyzOfGens(Submodule_Ker_M); -- Elementi di P^(u+a).
+---->  REPLACE PRECEDING 2 LINES BY THE 1 LINE BELOW????
+---->  Syz_Ker_M := syz(Gens_Ker_M);
+  -- Prime u compts di ogni v in Syz_Ker_M.
+  G := GensAsRows(Syz_Ker_M);
+  Quot := SubmoduleRows(Pu, submat(G, 1..NumRows(G), 1..u));
+  Return Record[Free_Mod_Ker := Pu, Quot_Ker := Quot];
+EndDefine; -- Pres_Ker_Hom_Mod
+
+
+----------------------------------------------------------------------
+
+// ARGS:
+//  InitVal  - value
+//  NextVal  - fn
+//  IsEquivalent - bool test whether two values are equivalent (i.e. separated by a whole number of cycles)
+// Produce list of values in the cycle (length is 1+CycleLen)
+define FindCycle(InitVal, NextVal, IsEquivalent)
+  X := InitVal;
+  ListVals := [X];
+  repeat
+    X := NextVal(X);
+    append(ref ListVals, X);
+    for i := 1 to len(ListVals)-1 do
+      if IsEquivalent(X, ListVals[i]) then
+	CycleLen := len(ListVals)-i;
+	return last(ListVals, 1+CycleLen);
+      endif;
+    endfor;
+  endrepeat;
+enddefine; -- FindCycle
+
+
+// Defn taken from Wikipedia (impl is simple rather than fast)
+define LegendrePoly(n,x)
+  TopLevel QQ;
+  if type(n) <> INT or n < 0 then error("LegendrePoly: arg 1, n must be non-negative"); endif;
+  if type(x) = INT or type(x) = RAT then return AsRAT(LegendrePoly(n,RingElem(QQ,x))); endif;
+  if type(x) <> RINGELEM then error("LegendrePoly: arg2, x must be a RINGELEM"); endif;
+  return sum([binomial(n,k)*binomial(n+k,k)* ((x-1)/2)^k | k in 0..n]);
+enddefine; -- LegendrePoly
+  
+  
+EndPackage;

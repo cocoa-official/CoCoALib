@@ -1,0 +1,290 @@
+      INSTALL
+      Copyright (c)  2013,2014,2022 John Abbott and Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{INSTALL}{John Abbott and Anna Bigatti}
+
+== INSTALLATION guide for CoCoALib ==
+
+CoCoALib is supplied as **SOURCE** code in C++, and so must be **COMPILED**
+before you can use it -- these instructions tell you how to do this on a
+GNU/Linux computer (and probably Mac OS X).  See below for Microsoft Windows.
+
+
+=== Prerequisites and Preparation ===
+
+Before compilation you must ensure that you have available:-
+
+- the GNU ``make`` program (other versions may work too);
+- a C++ compiler together with the standard C++ libraries (//e.g.// ``g++``)
+- an installation of GMP; more details in [[ExternalLibs-GMP]]
+- if you want to build ``CoCoA-5`` too, you need the **BOOST libraries**
+   (see ``http://www.boost.org/``); more details are in [[src/CoCoA-5/INSTALL]]
+
+
+2022-04-11: I have just done a build on a clean Linux box.
+For CoCoALib I had to install the following packages:
+- ``emacs`` [optional]
+- ``g++``  also if you prefer:  ``clang++`` seems to work
+- ``libgmp-dev`` (but probably better to compile from source ``http://gmplib.org/``)
+- ``make``
+- ``texlive``
+- ``texlive-latex-extra``
+- ``txt2tags`` (I think I got this from another source)
+- unfortunately java is needed to rebuild the documentation
+
+
+For CoCoA-5 the following additional packages are needed:
+- ``libboost-all-dev`` or possibly just ``libboost-filesystem-dev`` and ``libboost-system-dev``
+- [optional]  ``libreadline-dev``
+
+
+For the Qt GUI the following extra packages are needed:
+- ``qt5make``
+- ``libqt5webkit5-dev``
+
+
+For developers/curious who want to use ``ExtLib-GSL``:
+- ``liblapack-dev``
+
+
+=== Compilation of CoCoALib ===
+
+Extract the .tgz file and ``cd`` into the root directory ``CoCoALib-NNN``:
+```
+  tar xzf CoCoALib-NNN.tgz
+  cd CoCoALib-NNN
+```
+
+Then configure and compile.
+In most cases the following two commands will suffice:
+```
+  ./configure  --only-cocoalib
+  make
+```
+
+The command ``make`` compiles CoCoALib (and puts it in ``lib/libcocoa.a``);
+it also compiles & runs the test suite, and compiles the example programs.
+
+``` Good news: all CoCoALib tests passed
+
+
+=== Compilation of CoCoA-5 (without GUI) ===
+
+Extract the .tgz file and ``cd`` into the root directory ``CoCoALib-NNN``:
+```
+  tar xzf CoCoALib-NNN.tgz
+  cd CoCoALib-NNN
+```
+
+Then configure and compile.
+In most cases the following two commands will suffice:
+```
+  ./configure  --no-qt-gui
+  make
+```
+
+This compiles CoCoALib as before (incl. tests & examples).
+It also compiles ``CoCoAInterpreter`` (in ``src/CoCoA-5``), and
+runs all the CoCoA-5 tests.  To run CoCoA-5 it is best to use
+the lauch script ``cocoa5`` (which is in ``src/CoCoA-5``).
+
+
+=== Compilation of CoCoA-5 with GUI ===
+
+Extract the .tgz file and ``cd`` into the root directory ``CoCoALib-NNN``:
+```
+  tar xzf CoCoALib-NNN.tgz
+  cd CoCoALib-NNN
+```
+
+Then configure and compile.
+In most cases the following two commands will suffice:
+```
+  ./configure
+  make
+```
+
+After ``configure`` check to see if there was a message about being
+unable to build the GUI.  If so, check that you have all the
+necessary packages installed (see above).
+
+This compiles CoCoALib and  ``CoCoAInterpreter`` & runs the tests.
+Then it compiles the GUI -- be patient!  The executable for the GUI
+is in ``src/CoCoA-5/C5``
+
+
+== INSTALLATION ==
+
+After compilation you can try installing CoCoALib and CoCoA-5.
+Be careful: this has been little tested!
+
+It should suffice to execute:
+```  make install
+
+
+
+
+==== Notes ====
+
+(1) The configure script looks for the GMP library, and makes a few checks.
+    It assumes your compiler is ``g++``.  If it encounters a problem, it will
+    print out a helpful error message telling you.
+
+(2) The command ``make library`` will compile the library but not run the tests.
+    The command ``make check`` will run the tests -- they are in ``src/tests/``.
+    CoCoALib does not yet have an official ``make install`` target.
+
+(3) For the adventurous: the command
+```       ./configure --help
+    explains the various options the script recognizes.
+
+(4) Optimization for small polynomials (//not really recommended//)
+    By default ``CoCoALib`` allows quite polynomials of quite high degree
+    (//e.g.// typically beyond 1000000).  If you are sure that degrees will
+    remain small (//e.g.// below 1000) then you //might obtain better performance//
+    by editing the source file ``include/CoCoA/config.H`` so that the ``typedef``
+    for ``SmallExponent_t`` is ``unsigned short`` instead of ``unsigned int``.
+    But **beware** that CoCoALib does not generally check for exponent overflow
+    during polynomial arithmetic!
+
+
+=== Documentation & Examples ===
+
+Main documentation for CoCoALib: ``CoCoALib-XX/doc/html`` and ``CoCoALib-XX/CoCoALib.pdf``
+
+Example programs using CoCoALib: ``CoCoALib-XX/examples/index.html``
+
+
+
+=== Troubleshooting (and known issues) ===
+
+If you encounter problems while compiling or using CoCoALib,
+the best way to let us know is to report the issue via
+```    http://cocoa.dima.unige.it/redmine/
+
+Please tell us also the platform and compiler you are using.
+
+Alternatively you can send us email at ``cocoa@dima.unige.it``
+
+==== Known Issues ====
+
+Recent MacOSX systems use the "llvm" compiler which produces
+numerous warnings with the BOOST libraries; please ignore these
+warnings.  If you know how to edit makefiles, you can add the
+flag ``-Wno-c99-extensions`` to the definition of ``CXXFLAGS_CUSTOM``
+on line 3 of ``src/CoCoA-5/Makefile`` -- this should get rid of
+most of the warnings.
+
+
+%----------------------------------------------------------------------
+== Installing CoCoA on Microsoft Windows ==
+
+You can build ``CoCoALib`` and ``CoCoA-5`` on a //Microsoft Windows//
+computer by using ``Cygwin``, a free package which provides a
+Linux-like environment (see ``http://www.cygwin.com/``).
+
+Once you have installed ``Cygwin``, start its terminal emulator,
+and then follow the usual instructions above for compiling ``CoCoALib``.
+
+
+=== Installing Cygwin ===
+
+**IMPORTANT:** installing Cygwin can take quite some time.
+
+Download the script ``setup.exe`` from the Cygwin website
+(``http://www.cygwin.com/``)
+Start the script and choose //install from internet//;
+if necessary, choose //direct connection// to internet.
+You will be asked which mirror site to download from;
+pick a nearby one (//e.g.// in your country).
+Using that script select the following extension packages:
+- gcc-g++
+- make
+- m4
+- libboost-devel
+- libboost-1.48
+- libgmp-devel
+- emacs
+-
+
+
+Once you have ``Cygwin`` working, you can build CoCoA.  Download the
+CoCoA sources, and put the downloaded CoCoA file in your cygwin
+filespace (//e.g.// in your cygwin home which is the folder
+``c:\cygwin\home\``//userid//) so it can be accessed from a cygwin
+"terminal".  Now follow the instructions above.
+
+
+==== CoCoA-5 GUI ====
+
+This is a bit complicated (we don't really recommend it).
+
+If you want to build the ``CoCoA-5`` GUI, you must obtain also
+these extension packages for Cygwin
+- qt4-devel-tools
+- libqtcore4 
+- libqtcore4devel
+- libqtgui4
+- libqtgui4-devel
+- libqtxml4-devel
+- xorg-server
+- xinit
+- emacs-X11    (not necessary, but probably helpful)
+-
+
+Inside Cygwin copy the file ``/lib/qt4/bin/qmake.exe`` into the
+directory ``/usr/local/bin/``.
+
+
+=== In Case of Trouble ===
+
+We cannot really help you, as we have almost no experience ourselves
+of Microsoft computers.  Switch to Linux, or try searching on the internet...
+
+
+The following instructions may help if you cannot start the GUI.
+If the Xserver does not start properly, create (from MS Windows)
+a ``.bat`` file in the folder ``c:\cygwin`` containing the following
+```
+@echo off
+
+cd bin
+
+@rem dash -l -i -c "echo ' !!  Starting rebasing. Be patient  !! \n' ; rebaseall -s 'dll|so|oct' -T /usr/local/lista_rebase"
+dash -l -i -c "echo ' !!  Starting rebasing. Be patient  !! \n' ; rebaseall -s 'dll|so|oct' "
+
+
+echo .
+echo  !!  No rebaseall errors ?  Then everything is fine,   !!  
+echo  !!  otherwise you have other cygwin processes running !!
+echo .
+
+pause
+```
+
+and run it (from MS Windows).
+
+
+Set up the configuration of the xserver to create a CoCoA-5 shortcut:
+in a cygwin terminal, create a file called ``.XWinrc`` containing the
+following:
+```
+SilentExit
+Menu apps {
+	C5 EXEC "CoCoALib-xxxx/src/CoCoA-5/C5.exe  --packageDir CoCoALib-xxxx/src/CoCoA-5/packages"
+	xterm	exec	"xterm"
+	"Emacs"	exec	"emacs"
+	notepad	exec	notepad
+	SEPARATOR
+	"Reload .XWinrc"	RELOAD
+}
+RootMenu apps
+```
+
+
+To have the CoCoA-5 GUI start automatically when you start ``Cygwin``, place
+the following line in a file called ``.startxwinrc`` in your cygwin home directory.
+```
+/home/<USERID>/CoCoALib/src/CoCoA-5/C5.exe  --packageDir CoCoALib/src/CoCoA-5/packages
+```

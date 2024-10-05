@@ -1,0 +1,137 @@
+Package $combinatoria  -- some combinatorial algorithms
+
+-- Exported functions
+Export partitions;
+-- Export SumOfDivisors; // ??? useful???
+Export permutations;
+Export subsets;
+Export tuples;
+
+
+Define About()
+  PrintLn "    Author: J Abbott";
+  PrintLn "    Date: 30 May 2003";
+  PrintLn "    Comment: first version, efficiency not a strong point.";
+EndDefine;
+
+-----------------------------------------------------------------------------
+  -- Exported functions are:
+  --   subsets(S)  -- all subsets of S  [just calls AllSubsets]
+  --   subsets(S,N) -- all subsets of S of card N  [just calls SubsetsN]
+  --   tuples(S, N) -- all N-tuples of elements from S
+  --   partitions(N) -- all integer partitions of N
+  --   permutations(S) -- all permutations of S
+-----------------------------------------------------------------------------
+
+Define subsets(...)
+  If len(ARGV) = 1 Then
+    if type(ARGV[1]) <> LIST then
+      error("subsets: arguments must be either LIST or LIST,(positive)INT");
+    endif;
+    Return $.AllSubsets(ARGV[1]);
+  EndIf;
+  If len(ARGV) = 2 Then
+    if type(ARGV[1]) <> LIST or type(ARGV[2]) <> INT or ARGV[2] < 0 then
+      error("subsets: arguments must be either LIST or LIST,(positive)INT");
+    endif;
+    Return $.SubsetsN(ARGV[1], ARGV[2]);
+  EndIf;
+  error("subsets: arguments must be either LIST or LIST,(positive)INT");
+EndDefine;
+
+-- Returns a list of all subsets of cardinality N
+Define SubsetsN(S, N)
+  If len(S) < N Then Return []; EndIf;
+  If N = 0 Then Return [[]]; EndIf;
+  If N = 1 Then Return [[X] | X In S]; EndIf;
+  if N = 2 then return ConcatLists([[[S[i],S[j]] | j in i+1..len(S)] | i in 1..len(S)]); endif; // (see redmine 1651) and faster than recursion
+  If N = len(S) Then Return [S]; EndIf;
+  TailS := tail(S);
+  Return concat([concat([S[1]], L) | L In $.SubsetsN(TailS, N-1)],
+		$.SubsetsN(TailS, N));
+EndDefine; -- SubsetsN
+
+-- Returns a list of all subsets
+Define AllSubsets(S)
+  If S = [] Then Return [[]]; EndIf;
+  half := $.AllSubsets(tail(S));
+  FirstS := S[1];
+  Return concat(half, [concat([FirstS], T) | T In half]);
+EndDefine; -- AllSubsets
+
+
+------------------------------------------------------------------
+-- Returns S >< S >< .. >< S  (N times)
+Define tuples(S, N)
+  If type(S) <> LIST Or type(N) <> INT Then error("tuples: args should be (LIST, INT)"); EndIf;
+  If N < 0 Then error("tuples: tuple size must be non-negative"); EndIf;
+  If N = 0 Then Return [[]]; EndIf;
+  If S = [] Then Return []; EndIf; -- empty set has no N-tuples for N > 0
+  If len(S) > FloorRoot(div(10^9,len(S)),N) Then error("tuples: result would be too large"); EndIf;
+  Return $.TupleCtor(N, S);
+EndDefine; -- tuples
+
+-- Args to TupleCtor are sane: S is non empty, and N positive.
+Define TupleCtor(N, S)
+  If N=1 Then Return [[X] | X In S]; EndIf;
+  Ts := $.TupleCtor(N-1, S);
+  Return ConcatLists([[concat([X], L) | L In Ts] | X In S]);
+EndDefine; -- TupleCtor
+
+------------------------------------------------------------------
+-- Returns a list of all the permutations of L
+-- it will give repeated elements if L has repeated elements
+Define permutations(L)
+  If len(L)=1 Then Return [L]; EndIf;
+  Return ConcatLists([[concat([L[I]],X) | X In $.permutations(WithoutNth(L,I))]
+		     | I In 1..len(L)]);
+EndDefine; -- Permutations
+
+------------------------------------------------------------------
+-- Function to compute all integer partitions of N
+Define partitions(N)
+  Return ConcatLists([ $.Partitions2(N,length,N) | length In 1..N]);
+EndDefine;
+
+-- Compute all partitions of N with NSummands summands each at most MaxSummand
+Define Partitions2(N, NSummands, MaxSummand)
+  If NSummands = 1 Then
+    If MaxSummand >= N Then Return [[N]]; Else Return []; EndIf;
+  EndIf;
+  MinLast := 1 + div(N-1,NSummands);
+  MaxLast := min(N - NSummands + 1, MaxSummand);
+  ans := [];
+  For last := MinLast To MaxLast Do
+    ans := concat(ans, [concat(P, [last]) | P In $.Partitions2(N-last, NSummands-1, last)]);
+  EndFor;
+  Return ans;
+EndDefine; -- Partitions2
+
+Define Partitions3(N, NSummands, MinSummand)
+  If NSummands = 1 Then
+    If MinSummand <= N Then Return [[N]];
+    Else Return [];
+    EndIf;
+  EndIf;
+  MaxFirst := div(N, NSummands);
+  ans := [];
+  For first := MinSummand To MaxFirst Do
+    ans := concat(ans, [concat([first], P) | P In Partitions3(N-first, NSummands-1, first)]);
+  EndFor;
+  Return ans;
+EndDefine; -- Partitions3
+
+
+Define SumOfDivisors(N)
+  If N = 1 Then Return 1; EndIf;
+  facs := FactorINT_TrialDiv(N,N);
+  p := facs.factors;
+  e := facs.multiplicities;
+  ans := 1;
+  For k := 1 To len(facs.factors) Do
+    ans := ans * ((p[k]^(e[k]+1)-1)/(p[k]-1));
+  EndFor;
+  Return ans;
+EndDefine; -- SumOfDivisors
+
+EndPackage; -- end of package $combinatoria

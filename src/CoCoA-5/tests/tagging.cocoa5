@@ -1,0 +1,58 @@
+-- An old test about tagged values (reactivated 2020-02-13)
+
+a := tagged(7, "dots");
+
+PrintLn "\n\n---Unexisting record---";
+PrintLn a;
+
+PrintLn "\n\n---Wrong type---";
+PrintTagged := 3;
+PrintLn a;
+
+PrintLn "\n\n---No fields ---";
+PrintTagged := Record[];
+PrintLn a;
+
+PrintLn "\n\n---Field of wrong type--";
+PrintTagged.dots := 3;
+PrintLn a;
+
+PrintLn "\n\n---Wrong arity---";
+PrintTagged.dots := func () endfunc;
+PrintLn a;
+
+PrintLn "\n\n---By ref1---";
+PrintTagged.dots := func (ref A, B) endfunc;
+PrintLn a;
+
+PrintLn "\n\n---By ref2 --";
+PrintTagged.dots := func (A, ref B, opt x) endfunc;
+PrintLn a;
+
+PrintLn "\n\n---By ref3---";
+PrintTagged.dots := func (ref A, ref B) endfunc;
+PrintLn a;
+
+PrintLn "\n\n---Not a proc---";
+PrintTagged.dots := func (A, B, opt C) return 47; endfunc;
+Try
+	PrintLn a;
+UponError e Do
+	PrintLn "should get here...";
+EndTry
+
+PrintLn "\n\n---Finally... a valid impl! ;-) ---";
+PrintTagged.dots := func (device, value)
+		for i:=1 to value do
+			print "." on device;
+		endfor
+	endfunc;
+PrintLn a;
+
+PrintLn "\n\n---Other tests---";
+PrintLn "[untagged value]  tag=", tag(1);
+PrintLn "[with tag \"one\"]  tag=", tag(tagged(1, "one"));
+PrintLn "[double tag ?!?]   tag=", tag(untagged(tagged(tagged(1, "one"), "two")));
+//PrintLn "tag=", tag(func () endfunc ());
+
+

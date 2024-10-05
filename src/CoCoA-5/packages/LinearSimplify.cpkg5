@@ -1,0 +1,170 @@
+Package $LinearSimplify  -- find a simplifying linear decomposition
+
+export LinearSimplify;
+
+Define About()
+  PrintLn "    Author: J Abbott";
+  PrintLn "    Date:  5 April 2005";
+  PrintLn "    Comment: the heuristic works well, could be further improved";
+EndDefine; -- About
+
+
+-- Endeavours to compute the largest integer N such that
+-- N^(I-1) divides the I-th entry in L.  It may fail to get
+-- the largest such N because it does not factorize the elements of L.
+-- The value of the best N it found is returned; it may return 1.
+Define RisingPower(L)
+  If len(L) < 2 Then Return 1; EndIf;
+  L := tail(L);
+  G := GCD(L);
+  If G=1 Then Return 1; EndIf;
+  Facs := FactorINT_TrialDiv(G,1000); -- 1000 is arbitrary
+  G := Facs.RemainingFactor;
+  Facs := Facs.factors;
+  If G <> 1 Then
+    GFBasis := [G];
+    SomeOfL := L; If len(SomeOfL) > 20 Then SomeOfL := first(SomeOfL,20); EndIf;
+    GFBasis := CoprimeFactorBasis(concat(GFBasis, SomeOfL));
+////    Foreach N In SomeOfL Do  -- much faster to run through first(L,20) say.
+////      GFBasis := RefineGCDFreeBasis(GFBasis, N)[1];
+////    EndForeach;
+    Facs := concat(Facs, GFBasis);
+  EndIf;
+  -- Must start with last coeff as it is the only one sure to be non-zero
+  Exp := [div(FactorMultiplicity(F,last(L)), len(L)) | F In Facs];
+  For J := 1 To len(Facs) Do
+    Fac := Facs[J];
+    For I:=1 To len(L)-1 Do
+      If Exp[J] > 0 And L[I] <> 0 Then
+//	Exp[J] := min(Exp[J], FactorMultiplicity(Fac^I, L[I]));
+	Exp[J] := min(Exp[J], div(FactorMultiplicity(Fac, L[I]), I));
+      EndIf;
+    EndFor;
+  EndFor;
+  Return product([Facs[I]^Exp[I] | I In 1..len(Facs)]);
+EndDefine; -- RisingPower
+
+
+-- Get coeffs of F as a list of integers (including zeroes).
+-- Denominator of F is cleared, but content is NOT removed.
+-- Assumes F is univariate with rational coeffs.
+-- Result is [CF, D] where D is the common denominator And
+-- CF is a list of integers being the coeffs of F*D.
+Define IntCoeffs(F)
+  If deg(F) = 0 Then Return 1; EndIf; ///???BUG BUG???
+  X := UnivariateIndetIndex(F);
+  If X = 0 Then Return error("IntCoeffs: arg is not univariate"); EndIf;
+  X := indet(RingOf(F),X);
+  CF := [AsRAT(c) | c In CoeffListWRT(F, X)];
+  D := LCM([den(c) | c In CF]);
+  Return [D*CF, D];
+EndDefine;
+
+
+-- Assumes F is univariate over Q.
+-- Determines a decomposition D*F(x) = G(H(x)) with H linear and both
+-- G and H having integer coeffs; G should be "small" in some sense.
+-- Result is [A, B] where H(x) = A*x+B, and G is uniquely determined.
+Define LinearSimplify(F)
+  If type(F) <> RINGELEM Then error("LinearSimplify: arg must be a polynomial"); EndIf;
+  If not(IsQQ(CoeffRing(RingOf(F)))) Then
+    error("LinearSimplify: arg must have rational coeffs");
+  EndIf;
+  X := UnivariateIndetIndex(F);
+  If X = 0 Then Return error("LinearSimplify: arg is not univariate"); EndIf;
+  X := indet(RingOf(F), X);
+  DegF := deg(F);
+  If DegF = 1 Then Return record[SimplePoly:=X, LinearChange:=F]; EndIf;
+  -- Get rid of denominator in F
+  CFDen := $.IntCoeffs(F);
+  CF := CFDen[1];
+  DenF := CFDen[2];
+  NumF := sum([X^(k-1)*CF[k] | k In 1..(DegF+1)]); -- rebuild F
+  A := $.RisingPower(CF);
+  F := subst(NumF, X, X/A);
+  B := $.HeuristicShift(F);
+  --  B2 := BestShift(F); -- much slower, but is always right
+  If B = 0 Then
+    Return record[SimplePoly:=F/DenF, LinearChange:=A*X];
+  EndIf;
+  -- Loop below equivalent to subst(F,X,X-B) except that
+  -- this loop is enormously faster than Subst.
+  ShiftedF := 0;
+  Foreach C In reversed(CoeffListWRT(F, X)) Do
+    ShiftedF := ShiftedF*(X+B)+C;
+  EndForeach;
+  Return record[SimplePoly:=ShiftedF/DenF, LinearChange:=A*X-B];
+  //  EndUsing;
+EndDefine; -- LinearSimplify
+
+
+-- In many cases this gets close to the best shift value
+Define HeuristicShift(F)
+  CF := $.IntCoeffs(F)[1]; -- discard denominator
+  LCF := last(CF);
+  X := indet(RingOf(F), UnivariateIndetIndex(F));
+  DegF := len(CF)-1;
+  If DegF=1 Then Return -round(CF[1],CF[2]); EndIf;
+  -- Get coeffs of (X+1)^D as integers:
+//???JAA  Binom := [num(AsRAT(A)) | A In CoeffListWRT((X+1)^D, X)];
+  Pwrs := [RoundDiv(CF[k+1], LCF*binomial(DegF,k)) | k In 0..(DegF-1)];
+  Base := [FloorRoot(abs(2^(DegF-k)*Pwrs[k+1]),DegF-k) | k In 0..(DegF-1)];
+--???  -- If min and max are too far apart, give up
+--???  If (D+1)*(min(Base)+4) < D*max(Base) Then Return 0; EndIf;
+  Base := first(Base,div(3*DegF,4));
+  Shift := RoundDiv(sum(Base), 2*len(Base)); -- average value of later entries
+  If Shift = 0 Then Return 0; EndIf;
+  -- Decide between +Shift and -Shift
+  -- Could also "walk" up/down a little trying to improve the heuristic guess;
+  -- initial step size could be about (abs(Shift)/deg(F)).  Up to 10 steps total?
+  AbsF0 := abs(AsINT(subst(F,X,0)));
+  Up := abs(AsINT(subst(F,X,Shift)));
+  If Up < AbsF0 Then Return Shift; EndIf;
+  Down := abs(AsINT(subst(F,X,-Shift)));
+  If Down < AbsF0 Then Return -Shift; EndIf;
+  Return 0;
+EndDefine; -- HeuristicShift
+
+-- Costly routine which finds the best shift; NOT USED IN THIS VERSION
+Define BestShift(F)
+  TopLevel QQ;
+  C := $.IntCoeffs(F);
+  X := indet(UnivariateIndetIndex(F));
+  D := len(C)-1;
+  If D=1 Then Return -RoundDiv(C[2],C[1]); EndIf;
+  ShiftRing ::= QQ[x,y];
+//  Using ShiftRing Do
+    x := indet(ShiftRing,1);
+    y := indet(ShiftRing,2);
+    F := sum([C[I]*x^(D+1-I) | I In 1..(D+1)]);
+    G := subst(F,x,x+y);
+    CG := CoeffListWRT(G,x);
+    L := sum([Cf^2 | Cf In CG]);
+    PrintLn "Arg To real roots is ",deriv(L,y);
+    RR := RealRoots(deriv(L,y), 0.1);
+    S := [RoundDiv(num(R.Inf), den(R.Inf)) | R In RR];
+    PrintLn "Candidate shifts are ", S;
+    If len(S)=1 Then Return S[1]; EndIf;
+    V := [abs(subst(F,x,Delta1)) | Delta1 In S];
+    MinV := min(V);
+    Posn := [I In 1..len(V) | V[I] = MinV];
+    Delta := S[Posn[1]];
+    Fshifted := subst(F,x,x+Delta);
+    L2 := sum([Cf^2 | Cf In CoeffListWRT(Fshifted)]);
+    For I := 1 To len(S) Do
+      If V[I] < L2 Then
+	Fshifted1 := subst(F,x,x+S[I]);
+	ThisL2 := sum([Cf^2 | Cf In CoeffListWRT(Fshifted1)]);
+	If ThisL2 < L2 Then
+	  Delta := S[I];
+	  Fshifted := Fshifted1;
+	  L2 := ThisL2;
+	EndIf;
+      EndIf;
+    EndFor;
+    Return Delta; -- Return Fshifted???
+//  EndUsing;
+EndDefine; -- BestShift
+
+
+EndPackage; -- LinearSimplify

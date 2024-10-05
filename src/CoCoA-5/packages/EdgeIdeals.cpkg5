@@ -1,0 +1,1706 @@
+package $EdgeIdeal;
+
+export graph;
+export CoverIdeal;
+export ChromaticNumber;
+export ComplementaryGraph;
+export IsChordal;
+export cycle;
+export CompleteGraph;
+export AdjacencyMatrix;
+export IncidenceMatrix;
+export EdgeIdeal;
+export IndependenceNumber;
+export IndependenceComplex;
+export CliqueComplex;
+export AllOddHoles;
+export AllEvenHoles;
+export CliqueNumber;
+export AntiCycle;
+export IsBipartite;
+export VertexCovers;
+export VertexCoverNumber;
+export IsPerfect;
+export IsSCM;
+export IsCM;
+
+
+-- //export HyperGraph;
+-- //export hyperGraph;
+-- //export Graph;
+-- export changeRing;
+-- export completeMultiPartite;
+-- export connectedComponents;
+-- export connectedGraphComponents;
+-- export degreeVertex;
+-- export deleteEdges;
+-- export edges;
+-- //export getCliques;
+-- //export getEdge;
+-- //export getEdgeIndex;
+-- export getGoodLeaf;
+-- export getGoodLeafIndex;
+-- export getMaxCliques;
+-- export hasGoodLeaf;
+-- export hasOddHole;
+-- export hyperGraphToSimplicialComplex;
+-- export inducedGraph;
+-- export inducedHyperGraph;
+-- export isConnected;
+-- export isConnectedGraph;
+-- export isEdge;
+-- export isForest;
+-- export isGoodLeaf;
+-- export isGraph;
+-- export isLeaf;
+-- export isolatedVertices;
+-- export lineGraph;
+-- export neighbors;
+-- export numConnectedComponents;
+-- export numConnectedGraphComponents;
+-- export numTriangles;
+-- export randomGraph;
+-- export randomUniformHyperGraph;
+-- export randomHyperGraph;
+-- export simplicialComplexToHyperGraph;
+-- export smallestCycleSize;
+-- export spanningTree;
+-- export vertexCoverNumber; //*
+-- export vertices;
+-- export Gins;
+-- export BranchLimit;
+-- export TimeLimit;
+-- export MaximalEdges;
+-- export OriginalRing;
+
+------------------------------------------------------------------------------
+-- TYPES
+------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------
+-- HyperGraph
+------------------------------------------------------------------------------
+
+// H := new HyperGraph from hashTable({"ring" => R, "vertices" => V, "edges" => E});
+
+----------------------------------------------------------------------------
+-- Graph
+----------------------------------------------------------------------------
+
+-- graph (HyperGraph) := Graph => (H) -> 
+-- (
+--      if not isGraph(H) then error "Edges must be of size two.";
+--      new Graph from H
+-- )
+
+-- hyperGraph (Graph) := HyperGraph => (G) -> 
+-- (
+--      new HyperGraph from G
+-- )
+
+define graph(L, opt V)
+  if not(IsDefined(V)) then
+    V := reversed(sorted(factor(product(L)).factors));
+  endif;
+//  return record[edges := L, vertices := V];
+  return record[edges := reversed(sorted(L)), vertices := V];
+enddefine; -- graph
+
+-- define EqGraph(G1, G2)
+-- return EqSet(G1.vertices, G2.vertices) and
+--   EqSet(G1.edges, G2.edges);
+-- enddefine; -- EqGraph
+
+
+-----------------------------------------------------------------
+-- FUNCTIONS
+------------------------------------------------------------------
+
+--------------------------------------------------------------
+-- return the adjacency matrix of a graph
+
+define AdjacencyMatrix(G)
+  X := vertices(G);
+  n := len(X);
+  IsEdge01 := func(i,j) return Bool01(X[i]*X[j] IsIn edges(G)); endfunc;
+  return mat([[ IsEdge01(i, j) | i in 1..n ] | j in 1..n ]);
+enddefine; -- AdjacencyMatrix
+
+------------------------------------------------------------
+-- returns a list of even induced cycles
+-- NOTE: This function is slow.
+
+define AllEvenHoles(G)
+  R := RingOf(vertices(G)[1]);
+  NewR := NewPolyRing(CoeffRing(R), SymbolRange("x",1,NumIndets(R)+1));
+  phi := PolyAlgebraHom(R, NewR, first(indets(NewR), NumIndets(R)));
+  invphi := PolyAlgebraHom(NewR, R, concat(indets(R), [1]));
+  z := last(indets(NewR));
+  NewEdges := phi(edges(G));
+  NewVertices := concat(phi(vertices(G)), [z]);
+  EvenH := [];
+  foreach E in NewEdges do
+    F := factor(E).factors;
+    L := concat(diff(NewEdges, [E]), [F[1]*z, F[2]*z]);
+    OddH := AllOddHoles(graph(L, NewVertices));
+    EvenH := concat(EvenH, [diff(H,[z]) | H in OddH and z IsIn H]);
+  endforeach;
+  return [invphi(H) | H in MakeSet(EvenH)];
+enddefine; -- AllEvenHoles
+
+
+--------------------------------------------------------------
+-- returns a list of all the odd holes in a graph
+
+define AllOddHoles(G)
+  CoverI := (CoverIdeal(G))^2;
+  PD := [radical(I) | I In FrbPrimaryDecomposition(CoverI)];
+  return [ gens(I) | I In PD and len(gens(I))>3 ];
+enddefine; -- allOddHoles
+
+
+-------------------------------------------------------------------
+-- return the complement of a cycle.
+
+define AntiCycle(R, opt N)
+  if not(IsDefined(N)) then N := NumIndets(R); endif;
+  CG := CompleteGraph(R,N);
+  return graph(diff(edges(CG), edges(cycle(R,N))), vertices(CG));
+enddefine; -- AntiCycle
+
+------------------------------------------------------------
+-- changeRing
+-- moves a HyperGraph into a new Ring
+-----------------------------------------------------------
+
+-- changeRing = method(Options=>{MaximalEdges=>false})
+-- changeRing (HyperGraph, PolynomialRing, List) :=  option -> (H, R, L) -> (
+--      E := edges H;
+--      f := map(R, ring H, L);
+--      E = toList set apply(E, e-> set apply(e, v-> f v));
+--      I := if option.MaximalEdges then (
+--        select(toList(0..#E-1), i-> all(toList(0..#E-1), j-> j===i or not isSubset(E_i,E_j)))
+--      ) else (
+--        select(toList(0..#E-1), i-> all(toList(0..#E-1), j-> j===i or not isSubset(E_j,E_i)))
+--      );
+--      hyperGraph(R,apply(I, i->toList E_i))
+--      );
+
+---------------------------------------------------------------
+-- returns the chromatic number of a (hyper)graph
+-- NOTE: based upon work in progress by Francisco-Ha-Van Tuyl
+
+define ChromaticNumber(G)
+  T := product(vertices(G));
+  J := CoverIdeal(G);
+  Chi := 2;
+  while (not(T^(Chi-1) IsIn J^Chi)) do incr(ref Chi); endwhile;
+  return Chi;  
+enddefine; -- ChromaticNumber
+
+------------------------------------------------------------------
+-- Here is a remarkably simple algorithm to test for r-colourability.
+
+-- define IsColourable2(Edges, NumColours)
+--   TopLevel x;
+--   G := product( [x[e[1]]-x[e[2]] | e in Edges] );
+--   Verts := MakeSet(ConcatLists(Edges));
+--   ColourPoly := func(k)
+--                   ImportByValue NumColours;
+--                   ImportByValue x;
+--                   return x[k]^NumColours - x[k];
+--                 endfunc;
+--   return not(G IsIn ideal(VertEqns(Verts, ColourPoly)));
+-- enddefine; -- IsColourable2
+   
+-- Why does this work?
+-- Theorem
+--   The graph Gamma is not r-colourable if and only if
+--   G is in the ideal generated by the vertex-equations. 
+-- Proof 
+-- (==>) Suppose Gamma is not r-colourable.
+--       Then 1 is in ideal(VertEqns, EdgeEqns); thus there exist
+--       polys A[1],... A[N] (N vertices) and
+--       B[I,J] (for each edge (i,j) such that 
+--       1 = sum([A[i]*VertPoly(i)]) + sum([B[e[1],e[2]]*EdgePoly(e)])
+--       Recall from the definition that EdgePoly(e) is just
+--         (VertPoly(e[1])-VertPoly(e[2]))/(x[e[1]]-x[e[2]])
+--       But denominator is a factor of G, so each G*EdgePoly(e) is in
+--       ideal(VertEqns)
+--       G = G*sum([A[i]*VertPoly(i)]) + G*sum([B[e[1],e[2]]*EdgePoly(e)])
+--       and both summands on RHS are in ideal(VertEqns).  QED
+-- (<==) Suppose G is in ideal(VertEqns); so there exist polys A[i]
+--       such that G = sum( [A[i]*VertPoly(i)] )
+--       Suppose Gamma admits an r-colouring, and let X=(x[1],...,x[N])
+--       be the corresponding algebraic solution, then
+--       G(X) <> 0 since each factor is non-zero but
+--       each vertex poly vanishes as X, so G(X) = 0.  Contradiction!
+
+
+---------------------------------------------------------------
+-- return the simplicial complex whose faces are the cliques of a graph
+
+define CliqueComplex(G)
+  return IndependenceComplex(ComplementaryGraph(G));
+enddefine; -- cliqueComplex
+
+-------------------------------------------------
+-- return the clique number of a graph
+
+define CliqueNumber(G)
+  CC := CliqueComplex(G);
+  return max([ deg(PP) | PP in CC]);
+enddefine; -- CliqueNumber
+
+---------------------------------------------------------------
+-- returns the complement of a graph or hypergraph
+-- NOTE:  does something different for graphs vs hyerpergraphs
+
+define ComplementaryGraph(G)
+  CG := CompleteGraph(RingOf(vertices(G)[1]));
+  return graph(diff(edges(CG), edges(G)), vertices(CG));
+enddefine; -- ComplementaryGraph
+
+----------------------------------------------------------------------
+-- return graph of complete n-graph
+
+define CompleteGraph(R, Opt N)
+  X := indets(R);
+  if not(IsDefined(N)) then N := len(X); endif;
+  return graph(flatten([[X[i]*X[j] | j in (i+1)..N] | i in 1..N], 1), first(X, N));
+enddefine; -- CompleteGraph
+
+--------------------------------------------------------------------------
+-- completeMultiPartite
+-- return the complete multi-partite graph
+--------------------------------------------------------------------------
+
+-- completeMultiPartite = method();
+
+-- completeMultiPartite (Ring, ZZ, ZZ) := Graph =>(R,N,M) -> 
+--      completeMultiPartite(R, toList apply(N, i->M))
+
+-- completeMultiPartite (Ring, List) := Graph =>(R, L) -> (
+--      if all(L, l -> class l === ZZ) then (
+--      if sum L > #gens(R) then 
+--      error "Too few variables in ring to make complete multipartite graph";	
+--      N := 0;
+--      L = for i from 0 to #L-1 list (
+--           E := toList apply(L#i, j -> R_(j+N));
+--           N = N+L#i;
+--           E
+--           );
+--      );
+--      if all(L, l -> class l === List) then (
+--      K := flatten for i from 0 to #L-2 list
+--        flatten for j from i+1 to #L-1 list
+--          flatten for x in L#i list
+--            for y in L#j list {x,y};
+--      return graph(R, K);
+--      ) else error "completeMultipartite must be passed a list of partition sizes or a list of partitions.";
+--      )
+
+// L := [2,2,3,5] --> 12 indets
+// each vertex in a set connects to all other vertices not in the same set
+
+-----------------------------------------------------------------------
+-- connectedComponents
+-- returns all the connected components of a hypergraph
+----------------------------------------------------------------------
+
+-- connectedComponents = method();
+-- connectedComponents HyperGraph := H -> (
+--      V := select(H#"vertices", v-> any(H#"edges", e -> member(v,e)));
+--      while #V > 0 list (
+--        C := {V#0};
+--        i := 0;
+--        while i < #C do (
+--          N := select(neighbors(H, C#i), v-> not member(v,C));
+--          C = join(C,N);
+--          i = i+1;
+--        );
+--        V = select(V, v -> not member(v,C));
+--        rsort C
+--        )
+--      )
+
+// the obvious brute force search
+
+-----------------------------------------------------------------------
+-- connectedGraphComponents
+-- returns all the connected components of a graph
+----------------------------------------------------------------------
+
+-- connectedGraphComponents = method();
+-- connectedGraphComponents HyperGraph := H -> join(apply(isolatedVertices(H), v->{v}), connectedComponents H)
+
+----------------------------------------------------------------------
+-- CoverIdeal
+-- return the Alexander dual of edge ideal, otherwise known as the cover ideal
+
+define CoverIdeal(G)
+  return AlexanderDual(EdgeIdeal(G));
+enddefine; -- CoverIdeal
+
+----------------------------------------------------------------------------
+-- cycle -- return graph of the cycle on n vertices
+
+define cycle(R, opt N)
+  X := indets(R);
+  if not(IsDefined(N)) then N := len(X); endif;
+  if N < 3 then error("needs length at least 3"); endif;
+  L := [X[i-1]*X[i] | i in 2..N];
+  append(ref L, X[1]*X[N]);
+  return graph(L, first(X,N));
+enddefine; -- cycle
+
+----------------------------------------------------------------------
+-- returns the degree of a vertex
+
+define DegreeVertex(V, G)
+  return len([E in edges(G) | IsDivisible(E,V) ]);
+enddefine; -- DegreeVertex
+
+------------------------------------------------------------------------------
+-- deleteEdges
+-- remove edges from a (hyper)graph
+------------------------------------------------------------------------------
+-- deleteEdges = method();
+
+-- deleteEdges (HyperGraph,List) := (H,E) -> (
+--      if all(E, e -> class class e === PolynomialRing) then E = apply(E, support);
+--      if (isSubset(set E,set H#"edges") =!= true) then error "Second argument must be a subset of the edges, entered as a list";
+--      hyperGraph(ring H, toList(set(H#"edges")-set(E)))
+--      )
+
+--deleteEdges (Graph,List) := (H,E) -> (graph deleteEdges (hyperGraph(H),E))
+
+// obvious implementation (tool for creating graphs)
+
+----------------------------------------------------------------------
+-- return the edge ideal of a graph or hypergraph
+
+define EdgeIdeal(G) return ideal(edges(G)); enddefine;
+
+------------------------------------------------------------
+-- returns edges and vertices of a (hyper)graph
+
+define edges(G) return G.edges; enddefine;
+define vertices(G) return G.vertices; enddefine;
+
+----------------------------------------------------------------
+-- getCliques
+-- return all cliques of the graph
+----------------------------------------------------------------
+
+-- getCliques = method();
+-- getCliques (Graph,ZZ) := (G,d) -> (
+--      subs := apply(subsets(G#"vertices",d),i->subsets(i,2));
+--      cliqueIdeals := apply(subs,i->ideal apply(i,j->product j));
+--      edgeId := edgeIdeal G;
+--      apply(select(cliqueIdeals,i->isSubset(i,edgeId)),j->support j)
+--        )
+
+-- getCliques Graph := G -> (
+--      numVerts := #(G#"vertices");
+--      cliques := {};
+--      count := 2;
+--      while count <= numVerts do (
+-- 	  newCliques:=getCliques(G,count);
+-- 	  if newCliques == {} then return flatten cliques;
+-- 	  cliques = append(ref cliques,newCliques);
+-- 	  count = count+1;
+-- 	  );
+--      flatten cliques
+--      )
+
+
+------------------------------------------------------------
+-- getEdge
+-- returns a specific edge
+------------------------------------------------------------
+
+-- getEdge = method();
+-- getEdge (HyperGraph, ZZ) := (H,N) -> H#"edges"#N;
+
+------------------------------------------------------------
+-- getEdgeIndex
+-- returns position of a given edge in a list of edges
+------------------------------------------------------------
+
+-- getEdgeIndex = method();
+-- getEdgeIndex (HyperGraph, List) := (H,E) -> ( 
+--      if class class E === PolynomialRing then E = support E;
+--      N :=  select(0..#(H#"edges")-1, N -> set H#"edges"#N === set E);
+--      if #N === 0 then return -1; 
+--      first N
+-- )
+
+-- getEdgeIndex (HyperGraph, RingElement) := (H,E) -> ( 
+--      getEdgeIndex(H, support E)
+-- )
+
+-----------------------------------------------------------
+-- getGoodLeaf
+-- return a "Good Leaf" of a hypergraph
+----------------------------------------------------------
+
+-- getGoodLeaf = method();
+-- getGoodLeaf HyperGraph := H -> ( 
+--      H#"edges"#(getGoodLeafIndex H)
+-- )
+
+
+------------------------------------------------------------
+-- getGoodLeafIndex
+-- return the index of a "Good Leaf" in a hypergraph
+------------------------------------------------------------
+
+-- getGoodLeafIndex = method();
+-- getGoodLeafIndex HyperGraph := H ->
+-- (  GL := select(0..#(H#"edges")-1, N -> isGoodLeaf(H,N));
+--    if #GL == 0 then return -1;
+--    first GL
+-- );
+
+--------------------------------------------------------------------------
+-- getMaxCliques
+-- return all cliques of maximal size
+--------------------------------------------------------------------------
+
+// in CoCoA a complex is represented by Top Faces
+// so MaxCliques is the same as IndependenceComplex
+define MaxCliques(G)
+  return CliqueComplex(G);
+enddefine; -- MaxCliques
+
+-----------------------------------------------------------------------------
+-- hasGoodLeaf
+-- checks if a hypergraph has any "Good Leaves"
+----------------------------------------------------------------------------
+
+-- hasGoodLeaf = method();
+-- hasGoodLeaf HyperGraph := H -> any(0..#(H#"edges")-1, N -> isGoodLeaf(H,N))
+
+
+------------------------------------------------------------------------------
+-- checks if a graph has an odd hole (not triangle)
+
+-- hasOddHole = method();
+-- hasOddHole Graph := G -> (
+--      coverI := coverIdeal G;
+--      any(ass coverI^2,i->codim i > 3)
+--      )
+
+// optimize this!
+define HasOddHole(G)
+  return AllOddHoles(G) <> [];  
+enddefine; -- HasOddHole
+
+--------------------------------------------------
+-- hyperGraphToSimplicialComplex
+-- make a simplicialComplex from a (hyper)graph 
+---------------------------------------------------
+-- hyperGraphToSimplicialComplex = method()
+-- hyperGraphToSimplicialComplex HyperGraph := H -> (
+--      if H#"edges" == {} then return simplicialComplex monomialIdeal 1_(ring H);
+--      simplicialComplex flatten entries gens edgeIdeal H
+--      )
+
+-----------------------------------------------------------------------------
+-- return the incidence matrix of a graph
+
+define IncidenceMatrix(G)
+  X := vertices(G);
+  IsInEdge01 := func(x) return [Bool01(IsDivisible(E,x)) | E In edges(G)]; endfunc;
+  return mat([ IsInEdge01(x) | x in X ]);
+enddefine; -- IncidenceMatrix
+
+-------------------------------------------------------------------------------
+-- independenceComplex
+-- returns the simplicial complex whose faces are the independent sets of a (hyper)graph
+
+define IndependenceComplex(G)
+  AD := AlexanderDual(EdgeIdeal(G));
+  ProdX := product(indets(RingOf(G.vertices[1])));
+  return [ ProdX/PP | PP In gens(AD)];
+enddefine; -- IndependenceComplex
+
+
+------------------------------------------------------------------
+-- return the independence number, the size of the largest independent set of a vertices
+
+define IndependenceNumber(G)
+  I := EdgeIdeal(G);
+  return dim(RingOf(I)/I);
+enddefine; -- IndependenceNumber
+
+--------------------------------------------------------------------------------
+-- inducedGraph
+-- given a set of vertices, return induced graph on those vertices
+--------------------------------------------------------------------------------
+--if OriginalRing is true, then the graph stays in the larger ring.
+--by default, the ring of the induced graph is the smaller ring.
+--this avoids having lots of isolated vertices in the resulting hypergraph.
+
+-- inducedGraph = method(Options=>{OriginalRing=>false});
+-- inducedGraph (Graph,List) := opts -> (H,S) -> (
+--      graph inducedHyperGraph(H,S,OriginalRing=>opts#OriginalRing)
+--      )
+
+define InducedGraph(G, V)
+  PV := product(V);
+  return graph([ E in edges(G) | IsDivisible(PV, E)], V);
+enddefine; -- InducedGraph
+
+--------------------------------------------------------------------------------
+-- inducedHyperGraph
+-- given a set of vertices, return induced hypergraph on those vertices
+--------------------------------------------------------------------------------
+--if OriginalRing is true, then the hypergraph stays in the larger ring.
+--by default, the ring of the induced hypergraph is the smaller ring.
+--this avoids having lots of isolated vertices in the resulting hypergraph.
+
+-- inducedHyperGraph = method(Options=>{OriginalRing=>false});
+-- inducedHyperGraph (HyperGraph,List) := opts -> (H,S) -> (
+--      if (isSubset(set S, set H#"vertices") =!= true) then error "Second argument must be a subset of the vertices";
+--      ie := select(H#"edges",e -> isSubset(set e,set S));
+--      if not opts#OriginalRing then (
+-- 	  R := (coefficientRing H#"ring")[S];
+-- 	  F := map(R,H#"ring");
+--      	  ienew := apply(ie,e->apply(e,v->F(v)));
+-- 	  use H#"ring";
+-- 	  return(hyperGraph(R,ienew));
+-- 	  );
+--      hyperGraph(ring H,ie)
+--      )
+
+
+-----------------------------------------------------------
+-- checks if a graph is bipartite
+
+define IsBipartite(G)
+  return ChromaticNumber(G) = 2;
+enddefine; -- IsBipartite
+
+
+-------------------------------------------------------------
+-- isChordal
+-- check if a graph is a chordal graph
+-------------------------------------------------------------
+
+-- isChordal Graph := G -> (
+--      I := edgeIdeal complementGraph G;
+--      graphR := G#"ring";
+--      if I == ideal(0_graphR) then return true;
+--      D := min flatten degrees I;
+--      B := coker gens I;
+--      R := regularity(B);
+--      if D-1 =!= R then return false;
+--      true
+--      )
+
+define IsChordal(G)
+  I := EdgeIdeal(ComplementaryGraph(G));
+  if IsZero(I) then return true; endif;
+  return reg(I) = 2;
+enddefine; -- IsChordal
+
+
+-------------------------------------------------------------
+-- checks if a (hyper)graph is Cohen-Macaulay
+
+define IsCM(G)
+  CI := CoverIdeal(G);
+  D := min([deg(PP) | PP in gens(CI)]);
+  return D = reg(CI);
+enddefine; -- IsCM
+
+-- ------------------------------------------------------------
+-- -- isConnected
+-- -- checks if a graph is connected
+-- -- (the graph is connected <=> A, the adjacency the matrix,
+-- -- and I, the identity matrix of size n, has the 
+-- -- property that (A+I)^{n-1} has no zero entries)
+-- ------------------------------------------------------------
+
+-- isConnected = method();
+-- isConnected HyperGraph := H -> numConnectedComponents H == 1
+
+-- ------------------------------------------------------------
+-- -- isConnectedGraph
+-- -- checks if a graph is connected
+-- -- isolated vertices are considered separate components
+-- ------------------------------------------------------------
+
+-- isConnectedGraph = method();
+-- isConnectedGraph HyperGraph := H -> numConnectedGraphComponents H == 1
+
+-- ------------------------------------------------------------
+-- -- isEdge
+-- -- checks if a set is an edge of a (hyper)graph
+-- ------------------------------------------------------------
+
+-- isEdge = method();
+-- isEdge (HyperGraph, List) := (H,E) -> (
+-- 		if class class E === PolynomialRing then E = support E;
+-- 		any(H#"edges", G->set G === set E)
+-- 	)
+-- isEdge (HyperGraph, RingElement) := (H,E) -> (
+-- 		isEdge(H, support E)
+-- 	)
+
+-- -------------------------------------------------------------
+-- -- isForest
+-- -- checks if a (hyper)graph is a tree
+-- ------------------------------------------------------------
+
+-- isForest = method();
+-- isForest Graph := G -> (smallestCycleSize G == infinity);
+
+-- isForest HyperGraph := H -> (
+--     E := toList(0..#(H#"edges") -1);
+--     while #E =!= 0 do (
+-- 	L := select(E, i-> isGoodLeaf(H,i));
+-- 	if #L === 0 then return false;
+--         H = hyperGraph(H#"ring", drop(H#"edges", {first L, first L}));
+-- 	E = toList(0..#(H#"edges") -1);
+--     );
+--     true
+--     )
+
+-- -------------------------------------------------------------
+-- -- isGoodLeaf
+-- -- checks if the n-th edge of a hypergraph is a "Good Leaf"
+-- ----------------------------------------------------------
+
+-- isGoodLeaf = method();
+-- isGoodLeaf (HyperGraph, ZZ) := (H,N) -> ( 
+--      intersectEdges := (A,B) -> set H#"edges"#A * set H#"edges"#B;
+--      overlaps := apply(select(0..#(H#"edges")-1, M -> M =!= N), M -> intersectEdges(M,N));
+--      overlaps = sort toList overlaps;
+--      --Check if the overlaps are totally ordered
+--      all(1..(#overlaps -1), I -> overlaps#(I-1) <= overlaps#I)
+--      );
+
+-- ------------------------------------------------------------
+-- -- isGraph
+-- -- checks if a hypergraph is a graph
+-- ------------------------------------------------------------
+
+-- isGraph = method();
+-- isGraph HyperGraph := Boolean => (H) -> (
+-- 		H#"edges" == {} or all(H#"edges", e-> #e === 2 )
+-- 	)
+
+
+-- --------------------------------------------------------------
+-- -- isLeaf
+-- -- checks if the n-th edge of the (hyper)graph is a leaf
+-- --------------------------------------------------------------
+
+-- isLeaf = method();
+-- isLeaf (HyperGraph, ZZ) := (H,N) -> ( 
+--      intersectEdges := (A,B) -> set H#"edges"#A * set H#"edges"#B;
+--      overlaps := apply(select(0..(#(H#"edges")-1), M -> M =!= N), M -> intersectEdges(M,N));
+--      overlapUnion := sum toList overlaps;
+--      any(overlaps, branch -> isSubset(overlapUnion,branch))
+--      )
+
+-- isLeaf (Graph, ZZ) := (G,N) -> ( 
+--      any(G#"edges"#N, V -> degreeVertex(G,V) === 1)
+--      ---Note N refers to an edge index
+--      )
+
+-- isLeaf (HyperGraph, RingElement) := (H,V) -> ( 
+--      E := select(0..#(H#"edges")-1, I -> member(V, H#"edges"#I));
+--      #E == 1 and isLeaf(H, E#0)
+--      )
+
+-- --------------------------------------------------------------
+-- -- isolatedVertices
+-- -- returns vertices contained in no edges
+-- --------------------------------------------------------------
+
+-- isolatedVertices = method();
+-- isolatedVertices (HyperGraph) := (H) -> ( 
+--      edgeUnion := sum apply(H#"edges", set);
+--      if #(H#"edges")==0 then return H#"vertices" else
+--      select(H#"vertices", v -> not member(v, edgeUnion))
+--      )
+
+-- ------------------------------------------------------------
+-- -- isPerfect
+-- -- checks if a graph is a perfect graph
+-- ------------------------------------------------------------
+
+-- isPerfect = method();
+-- isPerfect Graph := G -> (
+--      if hasOddHole G then return false;
+--      if hasOddHole complementGraph G then return false;
+--      true
+--      )
+define IsPerfect(G)
+  if HasOddHole(G) then return false; endif;
+  if HasOddHole(ComplementaryGraph(G)) then return false; endif;
+  return true;
+enddefine; -- IsPerfect
+  
+  
+-- ------------------------------------------------------------
+-- -- isSCM
+-- -- checks if (hyper)graph is Sequentially Cohen-Macaulay
+-- -------------------------------------------------------------
+-- --uses GenericInitialIdeals package for the gin
+-- --if the user selects the Gins option
+
+define IsSCM(G)
+  return NumGens(gin(CoverIdeal(G))) = NumGens(CoverIdeal(G));
+enddefine; -- IsSCM
+  
+-- isSCM= method(Options=>{Gins=>false});
+-- isSCM HyperGraph := opts -> H -> (
+--      J := dual edgeIdeal H;
+--      if opts#Gins then (
+-- 	  g := gin J;
+-- 	  return (#(flatten entries mingens g) == #(flatten entries mingens J));
+-- 	  );
+--      degs := sort unique apply(flatten entries gens J,i->first degree i);
+--      numDegs := #degs;
+--      count := 0;
+--      while count < numDegs do (
+-- 	  Jdeg:=monomialIdeal super basis(degs#count,J);
+-- 	  if regularity Jdeg != degs#count then return false;
+-- 	  count = count+1;
+-- 	  );
+--      true
+--      )
+     
+
+-- ------------------------------------------------------------------
+-- -- lineGraph
+-- -- return the graph with E(G) as its vertices where two
+-- --  vertices are adjacent when their associated edges are adjacent in G.
+-- ------------------------------------------------------------------
+
+-- lineGraph = method();
+
+-- lineGraph HyperGraph := H -> (
+--     R ::= QQ[x_0..x_(#edges(H)-1)];
+--     E := apply(H#"edges", set);
+--     L := select(subsets(numgens R, 2), e -> #(E#(e#0) * E#(e#1)) > 0);
+--     graph(R, apply(L,e->apply(e, i-> x_i)))
+--     )
+
+
+-- -----------------------------------------------------------
+-- -- neighbors
+-- -- returns all the neighbors of a vertex or a set
+-- -----------------------------------------------------------
+
+-- neighbors = method();
+
+-- neighbors (HyperGraph, ZZ) :=  (H, N) -> neighbors(H, H#"ring"_N)
+
+-- neighbors (HyperGraph, RingElement) := (H,V) -> (
+--      unique select(flatten select(H#"edges", E-> member(V,E)), U-> U =!= V)
+--      )
+
+-- neighbors (HyperGraph, List) := (H,L) -> (
+--      if any(L, N-> class N === ZZ) then L = apply(L, N-> H#"ring"_N);
+--      unique select(flatten apply(L, V-> neighbors(H,V)), U -> not member(U, L))
+--      )
+
+-- ------------------------------------------------------------
+-- -- numConnectedComponents
+-- -- the number of connected components of a (hyper)Graph
+-- ------------------------------------------------------------
+
+-- numConnectedComponents = method();
+-- numConnectedComponents HyperGraph:= H -> (
+--      if (H#"edges" == {}) or (H#"edges"== {{}}) then return 0;
+--      (rank HH_0 hyperGraphToSimplicialComplex H)+1
+--      )
+
+-- ------------------------------------------------------------
+-- -- numConnectedGraphComponents
+-- -- the number of connected components of a (hyper)Graph
+-- -- this includes isolated vertices
+-- ------------------------------------------------------------
+
+-- numConnectedGraphComponents = method();
+-- numConnectedGraphComponents HyperGraph := H -> (
+--      if (H#"edges" == {}) or (H#"edges"== {{}}) then (
+-- 	  return #isolatedVertices(H);
+-- 	  );
+--      numConnectedComponents(H) + #isolatedVertices(H)
+--      )
+
+-- -----------------------------------------------------------
+-- -- numTriangles
+-- -- returns the number of triangles in a graph
+-- -----------------------------------------------------------
+
+-- numTriangles = method();
+-- numTriangles Graph := G -> (
+--      number(ass (coverIdeal G)^2,i->codim i==3)
+--      )
+
+-- -----------------------------------------------------------
+-- -- randomGraph
+-- -- returns a graph with a given vertex set and randomly chosen
+-- -- edges with the user determining the number of edges
+-- -----------------------------------------------------------
+-- randomGraph = method();
+-- randomGraph (PolynomialRing,ZZ) := (R,num) -> (
+--      graph randomUniformHyperGraph(R,2,num)
+--      )
+
+-- -----------------------------------------------------------
+-- -- randomUniformHyperGraph
+-- -- returns a random hypergraph on a given vertex set
+-- -- user chooses cardinality of edges and the number of edges
+-- -----------------------------------------------------------
+
+-- randomUniformHyperGraph = method();
+-- randomUniformHyperGraph (PolynomialRing,ZZ,ZZ) := (R,card,num) -> (
+--      if card <= 0 then error "cardinalities of hypergraphs must be positive integers";
+--      if num < 0 then error "number of edges must be nonnegative";
+--      if num > binomial(numgens R,card) then error "can't make that many edges";
+--      edges := take(random subsets(gens R,card),num);
+--      hyperGraph(R,edges)
+--      )
+
+-- -----------------------------------------------------------
+-- -- randomHyperGraph
+-- -- returns a random hypergraph on a given vertex set
+-- -- user chooses the size of each edge
+-- -----------------------------------------------------------
+-- recursiveRandomHyperGraph = (V,L,D,BranchLimit,TerminateTime) -> (
+--      if #D === 0 then return L;
+--      V = random V;
+--      W := set take(V, D#0);
+--      if any(L, l -> all(W, w-> member(w#0,l))) then return null;
+--      if any(L, l -> all(l, w-> member(w#0,W))) then return null;
+--      L = append(ref L, W);
+--      D = drop(D,1);
+--      H := recursiveRandomHyperGraph(V,L,D,BranchLimit,TerminateTime);
+--      I := 0;
+--      while H === null and I < BranchLimit + #D  and currentTime() < TerminateTime do (
+--           H = recursiveRandomHyperGraph(V,L,D,BranchLimit,TerminateTime);
+-- 	  I = I - 1;
+--      );
+--      H
+-- )
+
+-- randomHyperGraph = method(Options => {TimeLimit => 5, BranchLimit => 3});
+-- randomHyperGraph (PolynomialRing,List) := opts -> (R,D) -> (
+--      if any(D, d-> d < 0) then error "edge sizes must be nonnegative";
+--      if any(D, d-> d > dim R) then error "edge sizes cannot exceed the number of variables available";
+--      if sum(apply(toList(0..#D-1), i-> (binomial(numgens R, D_i))^(-1))) > 1 then return null;
+--      V := gens R;
+--      if opts.TimeLimit === 0 then opts.TimeLimit === 24*60*60;
+--      TerminateTime := currentTime() + opts.TimeLimit;
+--      H := null;
+--      i := 0;
+--      while H === null and i < opts.BranchLimit + #D and currentTime() < TerminateTime do (
+-- 	H = recursiveRandomHyperGraph(V,{},D,opts.BranchLimit,TerminateTime);
+-- 	i = i+1;
+--         );
+--      if H === null then return null;
+--      hyperGraph(R, apply(H, h-> toList h))
+--      )
+
+-- -----------------------------------------------------------
+-- -- ring
+-- -- returns the ring of a hypergraph
+-- -----------------------------------------------------------
+
+-- ring HyperGraph := H -> H#"ring"
+
+-- --------------------------------------------------
+-- -- simplicialComplexToHyperGraph
+-- -- make a (hyper)graph from a simplicial complex 
+-- ---------------------------------------------------
+
+-- simplicialComplexToHyperGraph = method()
+
+-- simplicialComplexToHyperGraph SimplicialComplex := D -> (
+-- 	  hyperGraph flatten entries facets D
+-- 	  )
+
+-- ------------------------------------------------------
+-- -- smallestCycleSize
+-- -- length of smallest induced cycle in a graph
+-- -------------------------------------------------------
+-- smallestCycleSize = method();
+
+-- smallestCycleSize Graph := G -> (
+--      if numTriangles G =!= 0 then return 3;
+--      R :=  res edgeIdeal complementGraph G;
+--      smallestCycle := 0;
+--      i := 1;
+--      -- this loop determines if there is a non-linear syzygy
+--      -- the first non-linear syzygy tells us the smallest induced
+--      -- cycle has length >= 4.  This is based upon 
+--      -- the paper of Eisenbud-Green-Hulek-Popescu,
+--      -- "Restricting linear syzygyies: algebra and geometry"
+--      while  ((smallestCycle == 0) and (i <= pdim betti R)) do (
+-- 	  A := R_i;
+--           B := flatten degrees A;
+-- 	  t := tally B;
+-- 	  if (t #? (i+1)) then (
+--                d := rank A;
+-- 	       if d == t#(i+1) then i = i+1 else smallestCycle = i+2;
+--                )	   
+--        	  else smallestCycle = i+2;     
+--        );
+--      -- If the resolution is linear, smallestCycle still has the value of 0
+--      -- Because the resolution is linear, the graph is chordal, by
+--      -- a result of Froberg.  Since we have taken care of the case
+--      -- that G has a triangle, the graph will be a tree.
+--      if smallestCycle==0 then return infinity else return smallestCycle;
+--      )
+
+
+
+-- ------------------------------------------------------------
+-- -- spanningTree
+-- -- returns a spanning tree of a graph
+-- -----------------------------------------------------------
+
+-- spanningTree = method();
+-- spanningTree Graph:= G-> (
+--      if #edges(G) === 0 then return G;
+--      E := G#"edges";
+--      W := set(G#"vertices"); -- vertices not visited yet
+--      V := {}; -- vertices visited
+--      T := {}; -- edges in tree
+--      M := 0; -- index of vertex to visit next
+--      while #W > 0 do (
+-- 	X := first toList W;
+-- 	W = W - set{X};
+-- 	V = append(ref V,X);
+-- 	while M < #V do (
+-- 	    L := select(E, e-> member(V#M,e) and not member(first toList(set(e)-set{V#M}), V));
+-- 	    T = T | L;
+-- 	    L = toList(set(flatten L) - set{V#M});
+-- 	    V = V | L;
+-- 	    W = W - set(L);
+-- 	    M = M + 1;
+-- 	    );
+-- 	);
+--      graph T
+--      );
+
+
+-- ----------------------------------------------------
+-- -- vertexCoverNumber
+-- -- return the vertex cover number of a (hyper)graph
+-- ---------------------------------------------------
+
+define VertexCoverNumber(G)
+  VC := VertexCovers(G);
+  if VC = [] then return 0; endif;
+  return min([ deg(g) | g in VC]);
+enddefine; -- VertexCoverNumber
+  
+-- ----------------------------------------
+-- -- vertexCovers
+-- -- return all minimal vertex covers 
+-- -- (these are the generators of the Alexander dual of the edge ideal)
+define VertexCovers(G)
+  return gens(CoverIdeal(G));
+enddefine; -- VertexCovers
+
+  
+  -- ----------------------------------------
+
+-- vertexCovers  = method();
+-- vertexCovers HyperGraph := H -> (
+--      flatten entries gens coverIdeal H
+--      )
+
+-- -----------------------------------------
+-- -- vertices
+-- -- returns the vertices of the (hyper)graph
+-- --------------------------------------------
+
+-- vertices = method();
+-- vertices HyperGraph := H -> H#"vertices";
+
+
+-- -----------------------------
+-- -- Constructor Tests --------
+-- -- Test hyperGraph and Graph
+-- -----------------------------
+
+
+-- -- /// TEST
+-- -- R ::= QQ[a,b,c];
+-- -- H := hyperGraph(R, [[a,b],[b,c]]);
+-- -- TEST_ASSERT(len(edges H), 2);
+-- -- TEST_ASSERT(len(vertices H), 3);
+-- -- ///
+
+-- -- /// TEST;
+-- -- R ::= QQ[a,b,c];
+-- -- H := hyperGraph(R, [[a,b,c]]);
+-- -- TEST_ASSERT(len(edges H), 1);
+-- -- TEST_ASSERT(len(vertices H), 3);
+-- -- ///
+
+-- -- /// TEST;
+-- -- R ::= QQ[a,b,c];
+-- -- H := hyperGraph(R, [a*b,b*c]);
+-- -- TEST_ASSERT(len(edges H), 2);
+-- -- TEST_ASSERT(len(vertices H), 3);
+-- -- ///
+
+-- -- /// TEST;
+-- -- R ::= QQ[a,b,c];
+-- -- H := hyperGraph([[a,b],[b,c]]);
+-- -- TEST_ASSERT(len(edges H), 2);
+-- -- TEST_ASSERT(len(vertices H), 3);
+-- -- ///
+
+-- -- /// TEST;
+-- -- R ::= QQ[a,b,c];
+-- -- H := hyperGraph([a*b,b*c]);
+-- -- TEST_ASSERT(len(edges H), 2);
+-- -- TEST_ASSERT(len(vertices H), 3);
+-- -- ///
+
+-- -- /// TEST;
+-- -- R ::= QQ[a,b,c];
+-- -- H := hyperGraph(ideal [a*b,b*c]);
+-- -- TEST_ASSERT(len(edges H), 2);
+-- -- TEST_ASSERT(len(vertices H), 3);
+-- -- ///
+
+-- -- /// TEST;
+-- -- R ::= QQ[a,b,c];
+-- -- H := hyperGraph(monomialIdeal [a*b,b*c]);
+-- -- TEST_ASSERT(len(edges H), 2);
+-- -- TEST_ASSERT(len(vertices H), 3);
+-- -- ///
+
+-- -- -----------------------------
+-- -- -- Test Equality,;
+-- -- -----------------------------
+
+-- -- /// TEST;
+-- -- R ::= QQ[a,b,c,d];
+-- -- G1 := hyperGraph(R, [[a,b],[b,c]]);
+-- -- G2 := hyperGraph(R, [[a,b],[b,c]]);
+-- -- G3 := hyperGraph(R, [[a,b],[c,b]]);
+-- -- G4 := hyperGraph(R, [[b,c], [b,a]]);
+-- -- G5 := hyperGraph(R, [[b,c], [a,c]]);
+
+-- -- S ::= QQ[a,b,c];
+-- -- G6 := hyperGraph(S, [[a,b], [b,c]]);
+
+-- -- TEST_ASSERT(G1, G1);
+-- -- TEST_ASSERT(G1, G2);
+-- -- TEST_ASSERT(G1, G3);
+-- -- TEST_ASSERT(G1, G4);
+-- -- TEST_ASSERT(G1 != G5);
+-- -- TEST_ASSERT(G1 != G6);
+-- -- ///
+
+
+-- ------------------------
+-- -- Test changeRing
+-- ------------------------;
+
+-- -- /// TEST;
+-- -- P ::= QQ[a,b,c];
+-- -- H := hyperGraph([a*b,b*c]);
+-- -- G := hyperGraph([a*b*c]);
+-- -- R ::= QQ[x,y,z,w];
+-- -- A1 := hyperGraph([x*z,z*y]);
+-- -- A2 := hyperGraph([x*y]);
+-- -- A3 := hyperGraph([x*y]);
+-- -- A4 := hyperGraph([y]);
+-- -- A5 := hyperGraph([x*y]);
+-- -- A6 := hyperGraph([y]);
+-- -- TEST_ASSERT(A1, changeRing(H,R,[x,z,y]));
+-- -- TEST_ASSERT(A2, changeRing(G,R,[x,y,y]));
+-- -- TEST_ASSERT(A3, changeRing(H,R,[x,y,x]));
+-- -- TEST_ASSERT(A4, changeRing(H,R,[x,y,y]));
+-- -- TEST_ASSERT(A5, changeRing(H,R,[x,y,y], MaximalEdges=>true));
+-- -- TEST_ASSERT(A6, changeRing(H,R,[x,y,y], MaximalEdges=>false));
+-- -- ///
+
+-- ------------------------
+-- -- Test ChromaticNumber
+-- use R ::= QQ[a,b,c,d,e];
+-- c4 := graph([a*b,b*c,c*d,d*a]);  -- 4-cycle
+-- c5 := graph([a*b,b*c,c*d,d*e,e*a]);  -- 5-cycle;
+-- TEST_ASSERT(ChromaticNumber(c4), 2);
+-- TEST_ASSERT(ChromaticNumber(c5), 3);
+-- ///
+
+-- --------------------------
+-- -- Test cliqueComplex and cliqueNumber
+-- use R ::= QQ[w,x,y,z];
+-- e := graph([w*x,w*y,x*y,y*z], indets(R)); -- clique on [w,x,y];  and [y,z];
+-- Delta1 := CliqueComplex(e);  -- max facets [w,x,y];  and [y,z];
+-- Delta2 := [w*x*y,y*z]; -- SimplicialComplex top faces
+-- TEST_ASSERT(Delta1, Delta2);
+-- TEST_ASSERT(CliqueNumber(e) -1, max([deg(F) | F in Delta2])-1);
+
+-- -----------------------------
+-- -- Test ComplementaryGraph
+-- use R ::= QQ[a,b,c,d,e]	;
+-- c5 := graph([a*b,b*c,c*d,d*e,e*a]);
+-- c5c := graph([a*c,a*d,b*d,b*e,c*e]);
+-- TEST_ASSERT(ComplementaryGraph( c5), c5c);
+
+-- -----------------------------
+-- -- Test CompleteGraph
+-- use R ::= QQ[a,b,c,d];
+-- TEST_ASSERT(CompleteGraph(R), graph([a*b,a*c,a*d,b*c,b*d,c*d]));
+-- TEST_ASSERT(CompleteGraph(R, 3), graph([a*b,a*c,b*c]));
+
+-- -----------------------------
+-- -- Test completeMultiPartite;
+-- -----------------------------
+
+-- /// TEST;
+-- use R ::= QQ[a,b,c,d];
+-- TEST_ASSERT(completeMultiPartite(R, 2,2), graph [a*d,a*c,b*c,b*d]);
+-- TEST_ASSERT(completeMultiPartite(R, [1,3]), graph [a*b,a*c,a*d]);
+-- TEST_ASSERT(completeMultiPartite(R, [[b],[a,c,d]]), graph [b*a,b*c,b*d]);
+-- ///
+
+-- -----------------------------
+-- -- Test connectedComponents;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a..k]	;
+-- H := hyperGraph [a*b, c*d*e,e*k, b*f, g, f*i]);
+-- TEST_ASSERT(len connectedComponents(H), 3 );
+-- R ::= QQ[a,b,c,d];
+-- G := hyperGraph([a*b*c]);
+-- H := hyperGraph([a,b,c]);
+-- TEST_ASSERT(len connectedComponents(G), 1 );
+-- TEST_ASSERT(len connectedComponents(H), 3 );
+-- ///
+
+-- -----------------------------
+-- -- Test connectedGraphComponents;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a..i]	;
+-- H := graph([a*b, b*c,c*d,d*e,a*e,f*g,g*h]);
+-- TEST_ASSERT(len connectedGraphComponents(H), 3 );
+-- R ::= QQ[a..h];
+-- H := graph([a*b, b*c,c*d,d*e,a*e,f*g,g*h]);
+-- TEST_ASSERT(len connectedGraphComponents(H), 2);
+-- R ::= QQ[a,b,c,d];
+-- G := graph([a*b,c*d]);
+-- TEST_ASSERT(len connectedGraphComponents(G), 2 );
+-- ///
+
+-- -----------------------------
+-- -- Test coverIdeal;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c];
+-- i := monomialIdeal [a*b,b*c];
+-- j := monomialIdeal [b,a*c];
+-- h := hyperGraph i;
+-- TEST_ASSERT((coverIdeal h), j);
+-- ///
+
+-- -----------------------------
+-- -- Test cycle;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d];
+-- G := graph(monomialIdeal(a*b,b*c,c*d,a*d));
+-- TEST_ASSERT (G, cycle(R,4));
+-- ///
+
+-- -----------------------------
+-- -- Test degreeVertex;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d];
+-- H := hyperGraph(monomialIdeal [a*b,b*c,c*d,c*a]);
+-- TEST_ASSERT( degreeVertex(H,a), 2);
+-- TEST_ASSERT( degreeVertex(H,0), 2);
+-- TEST_ASSERT( degreeVertex(H,b), 2);
+-- TEST_ASSERT( degreeVertex(H,1), 2);
+-- TEST_ASSERT( degreeVertex(H,c), 3);
+-- TEST_ASSERT( degreeVertex(H,2), 3);
+-- TEST_ASSERT( degreeVertex(H,d), 1);
+-- TEST_ASSERT( degreeVertex(H,3), 1);
+-- ///
+
+-- -----------------------------
+-- -- Test deleteEdges;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d];
+-- G := deleteEdges(completeGraph R,[[b,d],[a,c]]);
+-- TEST_ASSERT (G, graph(monomialIdeal(a*b,a*d,b*c,c*d)));
+-- ///
+
+-- -----------------------------
+-- -- Test edgeIdeal;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c];
+-- i := monomialIdeal [a*b,b*c];
+-- h := hyperGraph i;
+-- TEST_ASSERT((edgeIdeal h), i);
+-- ///
+
+-- -----------------------------
+-- -- Test edges;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d];
+-- G := graph(monomialIdeal(a*b,c*d,a*d));
+-- TEST_ASSERT (edges G, [[a,b],[a,d],[c,d]]);
+-- ///
+
+-- -----------------------------
+-- -- Test getCliques;
+-- -- Test getMaxCliques;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d];
+-- G := completeGraph R;
+-- TEST_ASSERT (getMaxCliques G, [[a,b,c,d]]);
+-- TEST_ASSERT (len(getCliques G), binomial(4,2)+binomial(4,3)+binomial(4,4));
+-- ///
+
+-- -----------------------------
+-- -- Test getEdge;
+-- -----------------------------
+-- /// TEST;
+-- R ::= QQ[a,b,c,d];
+-- H := hyperGraph(R,[[a,b,d],[d,c,b]]);
+-- TEST_ASSERT (getEdge(H,0), [a,b,d]);
+-- ///
+
+-- -----------------------------
+-- -- Test getEdgeIndex;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c];
+-- H := hyperGraph(monomialIdeal [a*b,b*c]);
+-- TEST_ASSERT( getEdgeIndex(H,[a,b]), 0);
+-- TEST_ASSERT( getEdgeIndex(H,a*b), 0);
+-- TEST_ASSERT( getEdgeIndex(H,[c,b]), 1);
+-- TEST_ASSERT( getEdgeIndex(H,c*b), 1);
+-- TEST_ASSERT( getEdgeIndex(H,[a,c]), -1);
+-- TEST_ASSERT( getEdgeIndex(H,a*c), -1);
+-- ///
+
+-- -----------------------------
+-- -- Test getGoodLeaf;
+-- -- Test getGoodLeafIndex;
+-- -- Test hasGoodLeaf;
+-- -- Test isGoodLeaf;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a..g];
+-- H := hyperGraph([a*b*c*d,b*c*d*e,c*d*f,d*g,e*f*g]);
+-- G := hyperGraph([b*c*d*e,d*g,e*f*g,a*b*c*d]);
+-- C := graph([a*b,b*c,c*d,d*e,e*a]);  -- 5-cycle;
+-- TEST_ASSERT( getGoodLeaf(H), [a,b,c,d]);
+-- TEST_ASSERT( getGoodLeafIndex(H), getEdgeIndex(H, [a,b,c,d]));
+-- TEST_ASSERT( getGoodLeaf(G), [a,b,c,d]);
+-- TEST_ASSERT( hasGoodLeaf G );
+-- TEST_ASSERT( isGoodLeaf(H, getEdgeIndex(H,[a,b,c,d])) );
+-- TEST_ASSERT( not isGoodLeaf(H, getEdgeIndex(H,[b,c,d,e])) );
+-- TEST_ASSERT( not hasGoodLeaf C );
+-- ///
+
+-- -----------------------------
+-- -- Test hasOddHole;
+-- -- Test isPerfect;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a..g];
+-- G := graph([a*b,b*c,c*d,d*e,e*f,f*g,a*g]);
+-- H := complementGraph G;
+-- TEST_ASSERT hasOddHole G;
+-- TEST_ASSERT not hasOddHole H;
+-- TEST_ASSERT not isPerfect G;
+-- ///
+
+-- -----------------------------
+-- -- Test hyperGraphToSimplicialComplex;
+-- ----------------------------------
+
+-- /// TEST;
+-- R ::= QQ[x_1..x_6];
+-- G := graph([x_1*x_2,x_2*x_3,x_3*x_4,x_4*x_5,x_1*x_5,x_1*x_6,x_5*x_6]) --5-cycle and a triangle;
+-- DeltaG := hyperGraphToSimplicialComplex G;
+-- hyperGraphDeltaG := simplicialComplexToHyperGraph DeltaG;
+-- GPrime := graph(hyperGraphDeltaG);
+-- TEST_ASSERT(G, GPrime);
+-- ///
+
+-- -----------------------------
+-- -- Test incidenceMatrix;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e,f];
+-- H := hyperGraph([a*b*c*d,c*d*e,f]);
+-- TEST_ASSERT(incidenceMatrix H, matrix [[1,0,0],[1,0,0],[1,1,0],[1,1,0],[0,1,0],[0,0,1]]);
+-- ///
+
+-- -----------------------------------
+-- -- Test independenceComplex;
+-- -----------------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- c5 := graph([a*b,b*c,c*d,d*e,e*a]);
+-- D := simplicialComplex monomialIdeal (a*b,b*c,c*d,d*e,e*a);
+-- TEST_ASSERT(D, independenceComplex c5);
+-- ///
+
+-- ;
+-- -----------------------------
+-- -- Test independenceNumber;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- c4 := graph([a*b,b*c,c*d,d*a]);  -- 4-cycle plus an isolated vertex!!!!;
+-- c5 := graph([a*b,b*c,c*d,d*e,e*a]);  -- 5-cycle;
+-- TEST_ASSERT(independenceNumber c4, 3);
+-- TEST_ASSERT(independenceNumber c5, 2);
+-- ///
+
+-- -----------------------------
+-- -- Test inducedGraph;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- G := graph([a*b,b*c,c*d,d*e,a*e]);
+-- TEST_ASSERT(inducedHyperGraph(G,[a,d,e],OriginalRing=>true), graph(monomialIdeal(d*e,a*e)));
+-- H := inducedGraph(G,[a,d,e]);
+-- use ring H;
+-- TEST_ASSERT(H, graph(monomialIdeal(d*e,a*e)));
+-- ///
+
+-- -----------------------------
+-- -- Test inducedHyperGraph;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- G := graph([a*b,b*c,c*d,d*e,a*e]);
+-- TEST_ASSERT(inducedHyperGraph(G,[a,d,e],OriginalRing=>true), graph(monomialIdeal(d*e,a*e)));
+-- H := inducedHyperGraph(G,[a,d,e]);
+-- use ring H;
+-- TEST_ASSERT(H, hyperGraph(monomialIdeal(d*e,a*e)));
+-- ///
+
+-- -----------------------------
+-- -- Test isBipartite;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- c4 := graph([a*b,b*c,c*d,d*a]);  -- 4-cycle;
+-- c5 := graph([a*b,b*c,c*d,d*e,e*a]);  -- 5-cycle;
+-- TEST_ASSERT(isBipartite c4, true);
+-- TEST_ASSERT(isBipartite c5, false);
+-- ///
+
+-- ;
+-- -----------------------------------
+-- -- Test isChordal;
+-- ----------------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- C := cycle R;
+-- TEST_ASSERT(isChordal C, false);
+-- D := graph([a*b,b*c,c*d,a*c]);
+-- TEST_ASSERT(isChordal D, true);
+-- TEST_ASSERT((isChordal completeGraph (QQ[a,b,c,d,e])), true);
+-- ///
+
+-- -----------------------------
+-- -- Test isCM;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- C := cycle R;
+-- UnmixedTree := graph([a*b, b*c, c*d]);
+-- MixedTree := graph([a*b, a*c, a*d]);
+-- TEST_ASSERT isCM C;
+-- TEST_ASSERT isCM UnmixedTree;
+-- TEST_ASSERT not isCM MixedTree;
+-- ///
+
+-- -----------------------------
+-- -- Test isConnected;
+-- -----------------------------
+
+-- /// TEST;
+-- S ::= QQ[a,b,c,d,e];
+-- g := graph([a*b,b*c,c*d,d*e,a*e]);  -- the 5-cycle (connected);
+-- h := graph([a*b,b*c,c*a,d*e]);  -- a 3-cycle and a disjoint edge (not connected);
+-- TEST_ASSERT(isConnected g);
+-- TEST_ASSERT(not isConnected h);
+-- ///
+
+-- -----------------------------
+-- -- Test isConnectedGraph;
+-- -----------------------------
+
+-- /// TEST;
+-- S ::= QQ[a,b,c,d,e];
+-- g := graph([a*b,b*c,c*d,d*e,a*e]);  -- the 5-cycle (connected);
+-- h := graph([a*b,b*c,c*d,a*d]);  -- 4-cycle with isolated vertex (not connected)	;
+-- k := graph([a*b,b*c,c*a,d*e]);  -- a 3-cycle and a disjoint edge (not connected);
+-- TEST_ASSERT(isConnectedGraph g);
+-- TEST_ASSERT(not isConnectedGraph h);
+-- TEST_ASSERT(not isConnectedGraph k);
+-- ///
+
+-- -----------------------------
+-- -- Test isEdge;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c];
+-- H := hyperGraph(monomialIdeal [a*b,b*c]);
+-- TEST_ASSERT( isEdge(H,[a,b]) );
+-- TEST_ASSERT( isEdge(H,a*b) );
+-- TEST_ASSERT( isEdge(H,[c,b]) );
+-- TEST_ASSERT( isEdge(H,b*c) );
+-- TEST_ASSERT( not isEdge(H,[a,c]) );
+-- TEST_ASSERT( not isEdge(H,a*c) );
+-- ///
+
+-- -----------------------------
+-- -- Test isForest;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a..h];
+-- H := hyperGraph([a*b*h, b*c*d, d*e*f, f*g*h, b*d*h*f]);
+-- K := hyperGraph([a*b*h, b*c*d, d*e*f, b*d*h*f]);
+-- G := graph([a*b,b*c,b*d,d*e, f*g, g*h]);
+-- J := graph([a*b,b*c,b*d,d*e, f*g, g*h, e*a]);
+-- TEST_ASSERT( not isForest H );
+-- TEST_ASSERT( isForest K );
+-- TEST_ASSERT( isForest G );
+-- TEST_ASSERT( not isForest J );
+-- TEST_ASSERT( isForest hyperGraph G );
+-- TEST_ASSERT( not isForest hyperGraph J );
+-- ///
+
+-- -----------------------------
+-- -- Test isLeaf;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- G := graph([a*b,b*c,c*d,d*a,a*e]);
+-- H := hyperGraph([a*b*c,b*d,c*e]);
+-- I := hyperGraph([a*b*c,b*c*d,c*e]);
+-- TEST_ASSERT(isLeaf(G,4));
+-- TEST_ASSERT(not isLeaf(G,1));
+-- TEST_ASSERT(not isLeaf(G,0));
+-- TEST_ASSERT(not isLeaf(G,a));
+-- TEST_ASSERT(isLeaf(G,e));
+-- TEST_ASSERT(not isLeaf(H,0));
+-- TEST_ASSERT(isLeaf(I,0));
+-- ///
+
+-- -----------------------------
+-- -- Test isolatedVertices;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- G := graph([a*b,c*d]);
+-- H := hyperGraph ideal(0_R);
+-- TEST_ASSERT(isolatedVertices(G), [e]);
+-- TEST_ASSERT(isolatedVertices(H), [a,b,c,d,e]);
+-- ///
+
+-- -----------------------------
+-- -- Test lineGraph;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- G := graph([a*b,a*c,a*d,d*e]);
+-- TEST_ASSERT(adjacencyMatrix lineGraph G, matrix [[0,1,1,0],[1,0,1,0],[1,1,0,1],[0,0,1,0]]);
+-- ///
+
+-- -----------------------------
+-- -- Test neighbors;
+-- -----------------------------
+
+-- /// TEST;
+-- S ::= QQ[a,b,c,d,e,f];
+-- G := graph([a*b,a*c,a*d,d*e,d*f]);
+-- TEST_ASSERT(apply(gens S, V -> lenneighbors(G, V)), [3,1,1,3,1,1]);
+-- TEST_ASSERT(apply(numgens S, N -> lenneighbors(G, N)), [3,1,1,3,1,1]);
+-- TEST_ASSERT(neighbors(G, [a,c]), [b,d]);
+-- TEST_ASSERT(neighbors(G, [e,f]), [d]);
+-- ///
+
+-- ;
+-- -----------------------------
+-- -- Test numConnectedComponents;
+-- -----------------------------
+-- /// TEST;
+-- S ::= QQ[a,b,c,d,e];
+-- g := graph([a*b,b*c,c*d,d*e,a*e]);  -- the 5-cycle (connected);
+-- h := graph([a*b,b*c,c*a,d*e]);  -- a 3-cycle and a disjoint edge (not connected);
+-- TEST_ASSERT(numConnectedComponents g, 1);
+-- TEST_ASSERT(numConnectedComponents h, 2);
+-- ///
+
+-- -----------------------------
+-- -- Test numConnectedGraphComponents;
+-- -----------------------------
+-- /// TEST;
+-- S ::= QQ[a,b,c,d,e];
+-- g := graph([a*b,b*c,c*d,d*e,a*e]);  -- the 5-cycle (connected);
+-- h := graph([a*b,b*c,c*a,d*e]);  -- a 3-cycle and a disjoint edge (not connected);
+-- k := graph([a*b,b*c,c*d,a*d]);  -- 4-cycle and isolated vertex (not connected);
+-- numConnectedGraphComponents g;
+-- numConnectedGraphComponents h;
+-- numConnectedGraphComponents k;
+-- TEST_ASSERT(numConnectedGraphComponents g, 1);
+-- TEST_ASSERT(numConnectedGraphComponents h, 2);
+-- TEST_ASSERT(numConnectedGraphComponents k, 2);
+-- ///
+
+-- -------------------------------------
+-- -- Test randomGraph;
+-- -------------------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- G := randomGraph(R,3);
+-- TEST_ASSERT(len(edges G), 3);
+-- TEST_ASSERT(vertices G, [a,b,c,d,e]);
+-- ///
+
+-- -------------------------------------
+-- -- Test randomUniformHyperGraph;
+-- -------------------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e];
+-- G := randomUniformHyperGraph(R,3,2);
+-- TEST_ASSERT(len(edges G), 2);
+-- TEST_ASSERT(len(first edges G), 3);
+-- ///
+
+-- -------------------------------------
+-- -- Test ring;
+-- -------------------------------------
+
+-- /// TEST;
+-- S ::= QQ[a,b,c,d,e];
+-- G := graph monomialIdeal(a*b,c*e);
+-- TEST_ASSERT(ring G, S);
+-- H := hyperGraph(S,[[a,b,c],[a,d]]);
+-- TEST_ASSERT(ring H, S);
+-- ///
+
+-- -------------------------------------
+-- -- Test simplicialComplexToHyperGraph;
+-- -------------------------------------
+
+-- /// TEST;
+-- S ::= QQ[a,b,c,d,e,f];
+-- Delta := simplicialComplex [a*b*c,b*c*d,c*d*e,d*e*f];
+-- h := simplicialComplexToHyperGraph Delta;
+-- TEST_ASSERT(class h, HyperGraph);
+-- ///
+
+-- -----------------------------
+-- -- Test smallestCycleSize;
+-- -----------------------------
+
+-- /// TEST;
+-- T ::= QQ[x_1..x_9];
+-- g := graph([x_1*x_2,x_2*x_3,x_3*x_4,x_4*x_5,x_5*x_6,x_6*x_7,x_7*x_8,x_8*x_9,x_9*x_1]);  -- a 9-cycle;
+-- TEST_ASSERT(smallestCycleSize g, 9);
+-- ///
+
+-- --------------------------------
+-- -- Test spanningTree;
+-- ------------------------------
+-- /// TEST;
+-- T ::= QQ[x_1..x_9];
+-- h := graph([x_1*x_2,x_2*x_3,x_3*x_4,x_4*x_5,x_5*x_6,x_6*x_7,x_7*x_8,x_8*x_9]);  -- a tree (no cycles);
+-- TEST_ASSERT(spanningTree h, h);
+-- ///
+
+-- -----------------------------
+-- -- Test vertexCoverNumber;
+-- -----------------------------
+-- /// TEST;
+-- S ::= QQ[a,b,c,d];
+-- g := graph([a*b,b*c,c*d,d*a]);  -- the four cycle;
+-- TEST_ASSERT(vertexCoverNumber g, 2);
+-- ///
+
+-- -----------------------------
+-- -- Test vertexCovers;
+-- -----------------------------
+-- /// TEST;
+-- S ::= QQ[a,b,c,d];
+-- g := graph([a*b,b*c,c*d,d*a]);  -- the four cycle;
+-- vertexCovers g;
+-- coverIdeal g;
+-- TEST_ASSERT(flatten entries gens coverIdeal g, vertexCovers g);
+-- ///
+
+-- -----------------------------
+-- -- Test vertices;
+-- -----------------------------
+
+-- /// TEST;
+-- R ::= QQ[a,b,c,d,e,f];
+-- G := graph([a*b,b*c,c*d,d*e,e*f]);
+-- V := vertices(G);
+-- TEST_ASSERT(vertices(G), [a,b,c,d,e,f]);
+-- ///
+
+
+-- end;
+
+
+--restart;
+--installPackage ("EdgeIdeals", UserMode=>true);
+--loadPackage "EdgeIdeals";
+--viewHelp;
+
+endpackage;

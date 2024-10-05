@@ -1,0 +1,806 @@
+Package $galois
+
+export GaloisCyclotomic;
+
+Alias Galois := $galois,
+      GB := $gb,
+      HL := $hilop;
+
+--    Run CoCoA and type:
+
+--      Galois.About();
+--      Galois.Man();
+
+
+Define About()
+  PrintLn "    Authors: A.M.Bigatti, D.La Macchia, F.Rossi";
+  PrintLn "    Version: CoCoA3.8";
+  PrintLn "    Date:    7 February 2000";
+EndDefine;
+
+------[   Manual   ]--------
+
+Define Man()
+  PrintLn "Suggested alias for this package:";
+  PrintLn "    Alias Galois := $contrib/galois;";
+  PrintLn "";
+  PrintLn "SYNTAX";
+  PrintLn "    Galois.Solve( F: POLY, P: LIST): RECORD";
+  PrintLn "    Galois.Info(  F: POLY, P: LIST): NULL";
+  PrintLn "    Galois.Eval(  F: POLY, Val: POLY, Conds: IDEAL): POLY";
+  PrintLn "    Galois.Factor(F: POLY, MinPoly: POLY): LIST";
+  PrintLn "    Galois.Cyclotomic(N: INT, X:INDET): POLY";
+  PrintLn "";
+  PrintLn "DESCRIPTION";
+  PrintLn "";
+  PrintLn "Let F(x) be an irreducible monic univariate polynomial of degree n";
+  PrintLn "with coefficients in the field Q of rational numbers.  Suppose that";
+  PrintLn "the Galois group G of F(x) be a cyclic group and that a generator P of";
+  PrintLn "G is given.  This package deals with the problem of computing the n";
+  PrintLn "roots of F(x) in terms of radicals in its coefficients.";
+  PrintLn "";
+  PrintLn "    The main functions are";
+  PrintLn "                Solve(F, P);";
+  PrintLn "    which returns both the list S of solutions of F(x) and the ideal C";
+  PrintLn "    of conditions which must be verified by the solutions, and";
+  PrintLn "		Info(F, P);";
+  PrintLn "    same as Solve, but prints a lot of information during the computation.";
+  PrintLn "";
+  PrintLn "    The function";
+  PrintLn "                Eval(F, Val, Conds);";
+  PrintLn "    evaluates a univariate poly F in Val under the conditions in the ideal";
+  PrintLn "    Conds (the polynomial Val and the ideal Conds must be defined in the";
+  PrintLn "    same ring)";
+  PrintLn "";
+  PrintLn "                Factor(F, MinPoly);";
+  PrintLn "    computes, using Trager's algorithm, the factorization";
+  PrintLn "    of a univariate polynomial F with rational coefficients";
+  PrintLn "    over the field of algebraic numbers QQ[t]/MinPoly(t).";
+  PrintLn "    The function returns a list of the form [[F_1,N_1],...,[F_r,N_r]]";
+  PrintLn "    where F_1^N_1 ... F_r^N_r = F and the F_i are monic and irreducible";
+  PrintLn "    or a rational number.";
+  PrintLn "";
+  PrintLn "                Cyclotomic(N, X);";
+  PrintLn "    computes the N-th cyclotomic polynomial (i.e. the polynomial whose";
+  PrintLn "    roots are the N-th primitive roots of unity) in the indeterminate X.";
+  PrintLn "";
+  PrintLn "For more information, see the article:";
+  PrintLn "D.La Macchia, F.Rossi, On Computational Galois Theory.";
+  PrintLn "An algorithm to solve a cyclic equation.  To appear.";
+  PrintLn "";
+  PrintLn ">EXAMPLES<";
+  PrintLn "    Alias Galois := $contrib/galois;";
+  PrintLn "";
+  PrintLn "    Use QQ[w];";
+  PrintLn "    Galois.Cyclotomic(12, w);";
+  PrintLn "";
+  PrintLn "    Use QQ[x,i];";
+  PrintLn "    Galois.Factor(x^4+1, i^2+1);";
+  PrintLn "";
+  PrintLn "    Use QQ[x,y,z];";
+  PrintLn "    Galois.Factor(x^4+1, z^2+2);";
+  PrintLn "";
+  PrintLn "    F := x^4+x^3+x^2+x+1;";
+  PrintLn "    P := [[1,2,3,4]];";
+  PrintLn "    GS := Galois.Solve(F, P);";
+  PrintLn "    S  := GS.Solutions;  S;";
+  PrintLn "    C  := GS.Conditions; C;";
+  PrintLn "    Galois.Eval(F, S[1], C);";
+  PrintLn "";
+  PrintLn "    F := x^4-x^3+x^2-x+1;";
+  PrintLn "    P := [[1,2,3,4]];";
+  PrintLn "    GS := Galois.Info(F, P);  GS;";
+  PrintLn "    Use GaloisRing_Qxrw;";
+  PrintLn "    FF := Product([ x-Sol | Sol In GS.Solutions]);";
+  PrintLn "    NF(FF, GS.Conditions);";
+  PrintLn "";
+  PrintLn "    F := x^3 - 3x +1;";
+  PrintLn "    P := [[1,2,3]];";
+  PrintLn "    Galois.Info(F, P);";
+  PrintLn "";
+  PrintLn "    F :=x^3+x^2-2x-1;";
+  PrintLn "    P := [[1,2,3]];";
+  PrintLn "    Galois.Solve(F, P);";
+EndDefine;
+
+------[   Main functions   ]--------
+
+Define Initialize()
+  QQ := RingQ();
+  GaloisRing_Qxw  ::= QQ[x,w],  Lex;
+  GaloisRing_Qxrw ::= QQ[x,r,w], Lex;
+EndDefine; -- Initialize
+
+
+---------<>---------
+
+Define Solve(F, P)
+  E1 := "Solve: First arg must be a univariate poly with rational coeffs";
+  E2 := "Solve: Second arg must be a list of lists of integers";
+  If Type(F) <> RINGELEM Then Error(E1); EndIf;
+//  Using Var(RingEnv(F)) Do
+    Idx := UnivariateIndetIndex(F);
+  If TypeOfCoeffs() <> RAT Or Idx=0 Then Error(E1); EndIf;
+  If Type(P)<>LIST Or MakeSet([Type(X)|X In P])<>[LIST] Then Error(E2); EndIf;
+  Return Galois.AuxSolve(F, P, Indet(Idx));
+//  EndUsing;
+EndDefine; -- Solve
+
+
+---------<>---------
+
+Define Info(F, P)
+  E1 := "Info: First arg must be a univariate poly with rational coeffs";
+  E2 := "Info: Second arg must be a list of lists of integers";
+  If Type(F) <> RINGELEM Then Error(E1); EndIf;
+//  Using Var(RingEnv(F)) Do
+    Idx := UnivariateIndetIndex(F);
+  If TypeOfCoeffs() <> RAT Or Idx=0 Then Error(E1); EndIf;
+  If Type(P)<>LIST Or MakeSet([Type(X)|X In P])<>[LIST] Then Error(E2); EndIf;
+  //    Indent := Option(Indentation);
+  //    Set Indentation;
+  GS := Galois.AuxInfo(F, P, Indet(Idx));
+  //    Set Indentation := Indent;
+  //  EndUsing;
+  Return GS;
+EndDefine; -- Info
+
+
+---------<>---------
+
+Define Eval(F, Val, Ref Conds)
+  E1 := "Galois.Eval: First argument must be a univariate polynomial";
+  ERing := "Galois.Eval: Val and Conds must be defined in the same ring";
+  If Type(F) <> RINGELEM Then Error(E1); EndIf;
+  If RingEnv(Val)<>RingEnv(Conds) Then Error(ERing); EndIf;
+//  Using Var(RingEnv(F)) Do
+    Idx := UnivariateIndetIndex(F);
+  If Idx = 0 Then Error(E1); EndIf;
+    Phi := NewList(NumIndets(), 0);
+//  EndUsing;
+//  Using Var(RingEnv(Val)) Do
+    Phi[Idx] := Val;
+    Return NF(Image(F, RMap(Phi)), Conds);
+//  EndUsing;
+EndDefine; -- Eval
+
+
+---------<>---------
+
+Define GaloisCyclotomic(K, W)
+  If Shape([K, W]) <> [INT, RINGELEM] Then
+    Error("Cyclotomic: arguments must be an INT and an indeterminate");
+  EndIf;
+  If Not(W) IsIn Indets() Then
+    Error("Cyclotomic: second argument must be an indeterminate");
+  EndIf;
+  If K = 1 Then Return W-1; EndIf;                        -- K is 1
+  L := Galois.Divisors(K);
+  If L = [1] Then Return Sum([W^I| I In 0..(K-1)]); EndIf;-- K is prime
+  M := Galois.Maxdiv(L);
+  If Len(M) = 1 Then Return (W^K-1)/(W^M[1]-1); EndIf;    -- K is prime power
+  Return GCD([ (W^K-1)/(W^D-1) | D In M ]);               -- general case
+EndDefine; -- Cyclotomic
+
+
+---------<>---------
+
+-- Define Factor(F, MinPol)
+--   If TypeOfCoeffs()<>RAT Then
+--     Error("Galois.Factor: only over an extension of Q");
+--   EndIf;
+--   Gamma := NewList(NumIndets(), 0);
+--   FIdx  := UnivariateIndetIndex(F);
+--   MPIdx := UnivariateIndetIndex(MinPol);
+-- //  Using GaloisRing_Qxw Do
+--     Gamma[FIdx] := RingElem(GaloisRing_Qxw, "x");
+--     Gamma[MPIdx] := RingElem(GaloisRing_Qxw, "w");
+--     F       := Image(F, RMap(Gamma));
+--     GCD_FF1 := GCD(F, Der(F,x));
+--     SqFrF := F/GCD_FF1;
+--     MinPol := Image(MinPol, RMap(Gamma));
+--     L := Galois.AuxFactor(SqFrF, MinPol);
+--     Foreach G In L Do
+--       While NR(GCD_FF1, [G, MinPol])=0 Do
+-- 	Append(L, G);
+-- 	D := DivAlg(GCD_FF1, [G, MinPol]);
+-- 	GCD_FF1 := D.Quotients[1];
+--       EndWhile;
+--     EndForeach;
+-- //  EndUsing;
+--   L := Image(L, RMap([Indet(FIdx), Indet(MPIdx)]));
+--   If LC(F)<>1 Then Append(L, LC(F)); EndIf;
+
+--   Return Distrib(L);
+-- EndDefine; -- Factor
+
+
+------[   Auxiliary functions   ]--------
+
+/* Funzione che computa la lista dei divisori di un intero K diversi da K */
+
+Define Divisors(K)
+  Return [ I In 1..(K-1) | Mod(K, I) = 0 ];
+EndDefine; -- Divisors
+
+
+----------------------------------
+-- Funzione che calcola i divisori massimali (diversi da K),
+-- rispetto alla divisibilita', di un intero K
+  
+
+Define Maxdiv(L)
+  LenL := Len(L);
+  Return [ L[I] | I In 1..LenL   And
+	  [ X In Last(L, LenL-I) | Mod(X, L[I])=0]=[] ];
+EndDefine; -- Maxdiv
+
+
+------------------------------------------
+
+Define PolyDiv(F, G)
+  Return Comp(GenRepr(F, Ideal(G)), 1);
+EndDefine; -- PolyDiv
+
+
+/* piu` diretta, ma piu` lenta: da rivedere */
+Define CyclotomicJAA(N, X)
+  Ans := NewList(N);
+  Ans[1] := X-1;
+  For I := 2 To N Do
+    If Mod(N, I) = 0 Then
+      F := X^I-1;
+      G := 1;
+      For J := 1 To I-1 Do
+        If Mod(I, J) = 0 Then G := G*Ans[J]; EndIf;
+      EndFor;
+      Ans[I] := F/G;
+    EndIf;
+  EndFor;
+  Return Ans[N];
+EndDefine; -- CyclotomicJAA
+
+
+------------------------------------------
+-- Input: K e' un numero naturale, G e' un polinomio nella indeterminata W
+-- (radice K-ma primitiva dell'unita'). La seguente funzione riduce G modulo
+-- W.
+
+Define Mo_w(K, G, W)
+  Return NR(G, [Galois.Cyclotomic(K, W)]);
+EndDefine; -- Mo_w
+
+
+-------------------------
+-- Anello: QQ[x,w], Lex; . w e' radice K-ma dell'unita''.
+--   Questa funzione estrae il coefficiente del monomio di grado massimo del
+--   polinomio F(x).
+
+Define LC(F)
+  x := RingElem(RingOf(F), "x");
+  D := First(Log(LT(F)));
+  Return Sum([ M In Monomials(F) | First(Log(M))=D ])/x^D;
+  --  Return (F-NR(F, [x^D]))/x^D
+EndDefine; -- LC
+
+
+--------------------------
+Define Inverse(FW, MinPol)
+  x := RingElem(RingOf(FW), "x");
+  Return NF(x, Ideal(MinPol, x*FW-1));
+EndDefine; -- Inverse
+
+
+Define Monic(F, MinPol)
+  Return NR(Galois.Inverse(Galois.LC(F), MinPol) * F, [MinPol]);
+EndDefine; -- Monic
+
+
+------------------------
+/* Grado di F >= grado di G ;attenzione! Ge F possono essere razionali!*/
+
+Define Genres(F, G, MinPol)
+  x := RingElem(RingOf(F), "x");
+  D := First(Log(LT(G)));
+  While First(Log(LT(F))) >= D Do
+    R := Galois.Coegen(G)*F - Galois.Coegen(F)*x^(First(Log(LT(F)))-D)*G;
+    F := NF(R, [MinPol]);
+  EndWhile;
+  Return F;
+EndDefine; -- Genres
+
+
+--------------------------
+Define GCD(F, G, MinPol)
+  Repeat
+    R := NF(F, Ideal(G, MinPol));
+    F := G;
+    G := R;
+  Until G = 0;
+  Return Galois.Monic(F, MinPol);
+EndDefine; -- GCD
+
+--------------------------
+
+Define AuxFactor(F, MinPol)
+  x := RingElem(RingOf(F), "x");
+  w := RingElem(RingOf(F), "w");
+  S := 0;
+  R := Resultant(MinPol, F, w);
+  While Deg(GCD(R, Der(R, x)))<>0 Do
+    S := S+1;
+    R := Resultant(MinPol, Subst(F, [[x, x-S*w]]), w);
+  EndWhile;
+  FctR := Factor(R);
+  FS := Subst(F, [[x, x-S*w]]);
+  FctF := [ Subst(Galois.GCD(Fct[1], FS, MinPol), [[x, x+S*w]])
+	    | Fct In FctR And Deg(Fct[1])<>0 ];
+  Return [ NR(G, [MinPol]) | G In FctF];
+EndDefine; -- AuxFactor
+
+
+------------------------------------
+--    F univariate squarefree polynomial in QQ[....];
+--   It returns the roots of F in Q(w)
+--   where w is a K primitive root of unity
+  
+
+-- Define WRoots(F, MinPol)
+-- //  Using Var(RingEnv(F)) Do
+--     Gamma := NewList(NumIndets(), 0);
+--     FIdx  := UnivariateIndetIndex(F);
+-- //  EndUsing;
+-- //  Using Var(RingEnv(MinPol)) Do
+--     Tau := NewList(NumIndets(), 0);
+--     MPIdx := UnivariateIndetIndex(MinPol);
+-- //  EndUsing;
+-- //  Using GaloisRing_Qxw Do
+--     Gamma[FIdx] := RingElem(GaloisRing_Qxw, "x");
+--     Tau[MPIdx]  := RingElem(GaloisRing_Qxw, "w");
+--     L := Galois.AuxFactor(Image(F, RMap(Gamma)), Image(MinPol, RMap(Tau)));
+--     M := [ F In L | LT(F)=x ];
+--     Return [ x-R | R In M ];
+-- //  EndUsing;
+-- EndDefine; -- WRoots
+
+
+------------------------------
+/* matrice di trasformazione per un ciclo lungo N x=By.*/
+
+Define Blocco(N, W)
+  Cycl := Galois.Cyclotomic(N, W);
+  Return Mat([ [ NR(W^((N-I)*J), [Cycl]) | I In 0..(N-1)] | J In 0..(N-1)]);
+EndDefine; -- Blocco
+
+
+-------------------------------------
+/*Funzione che calcola l`inversa di Blocco(N, W)*/
+
+Define BloccoInv(N, W)
+  Cycl := Galois.Cyclotomic(N, W);
+  Return (1/N)*Mat([ [ NR(W^(I*J), [Cycl]) | I In 0..(N-1)] | J In 0..(N-1)]);
+EndDefine; -- BloccoInv
+
+
+---------------------------
+
+--   Anello QQ[x[0..N-1],w].
+-- Questa funzione fornisce la lista dei trasformati T^(-1)x nella
+-- trasformazione di coordinate definita da P. 
+
+Define Cambio2(P)
+  x := RingElem(RingOf(P), "x");
+  w := RingElem(RingOf(P), "w");
+  C := [ Len(Perm)| Perm In P ];
+  M := LCM(C);
+  G := Flatten([ List(Galois.BloccoInv(C[I], w^Div(M, C[I]))
+                      * Mat([ [x[P[I, J]-1]] | J In 1..C[I] ]))
+                | I In 1..Len(P) ]);
+  L := Diff(1..Len(x), ConcatLists(P));
+  Return Concat(G, [ x[X-1] | X In L ]);
+EndDefine; -- Cambio2
+
+
+---------------------------------
+--   Anello QQ[y[1..N],w];
+--   Questa funzione fornisce la lista dei trasformati Ty nella
+--   trasformazione di coordinate definita da P.
+
+-- Define Cambio(P)
+--   C := [ Len(Perm)| Perm In P ];
+--   M := LCM(C);
+--   G := Flatten([ List(Galois.Blocco(C[I], w^Div(M, C[I]))
+--                       * Mat([ [y[P[I, J]]] | J In 1..C[I] ]))
+--                 | I In 1..Len(P) ]);
+--   L := Diff(1..Len(y), ConcatLists(P));
+--   Return Concat(G, [ y[X] | X In L ])
+-- EndDefine; -- Cambio
+
+------------------------------
+
+--   L = lista di polinomi in qualsiasi variabili; la seguente funzione
+--   definisce le funzioni simmetriche elementari negli elementi di L.
+  
+
+-- Define Symmetric(L)
+--   SimmR ::= CoeffRing[a[1..Len(L)], z];
+--   Using SimmR Do
+--     N := Len(a);
+--     G := Product([z+a[I]|I In 1..N]);
+--     H := NewList(N);
+--     H[N] := NR(G, [z]);
+--     For J := 1 To (N-1) Do
+--       G := Der(G, z);
+--       H[N-J] := NR(G, [z])/Fact(J);
+--     EndFor;
+--   EndUsing;
+--   Phi := RMap(Concat(L, [0]));
+--   H := Image(H, Phi);
+--   Return H
+-- EndDefine; -- Symmetric
+
+--------------------------------------------
+  
+--   Anello QQ[x[0..(N-1)]].
+--   F polinomio monico ciclico di grado N in X := var a coefficienti razionali,
+--   C := Coefficients(F, X),
+--   P una permutazione di SN che genera il gruppo di Galois di F.
+--   La seguente funzione calcola la lista dei polinomi che definiscono la
+--   trasformata dell`orbita delle radici di F sotto l`azione di SN nella
+--   trasformazione di coordinate Tx determinata da Cambio2(P).
+  
+
+Define Torb(C, MinPol, P)
+  A := [ NR(F, [MinPol]) | F In Galois.Symmetric(Galois.Cambio2(P)) ];
+  Return [ A[I]-((-1)^I *C[I]) | I In 1..Len(C) ];
+EndDefine; -- Torb
+
+
+--------------------------------------------
+--  Anello QQ[u,t,x[1..K],y[1..K]]. Funzione che computa la base di Hilbert per
+-- l'equazione diofantea F= a1*x[1]+...+aK*x[K]=0.'
+
+-- Define Basehil(F)
+--   L := Diff(Indets(), y);
+--   M := [CoeffOfTerm(X, F) | X In L];
+--   N := [ Cond(M[I] >= 0, x[I-2]-t^M[I]*y[I-2], x[I-2]*t^(-M[I])-y[I-2])
+-- 	| I In 3..Len(M)];
+--   Append(N, ut-1);
+--   J := Ideal(N);
+--   JJ := Gens(Elim(u..t, J));
+--   H := LT(Ideal([ G In JJ | Product([ NR(G, [X]) | X In x])<>0 ]));
+--   LL := Elim(y, H);
+--   LOGS := [Log(T)|T In Gens(LL)];
+--   Return [ [ LOG[I] | I In 3..(Len(x)+2) ] | LOG In LOGS]
+-- EndDefine; -- Basehil
+
+---------------------------------
+--  Anello QQ[u,t,x[1..K],y[1..K]]. La seguente funzione calcola gli
+-- esponenti degli invarianti.
+
+-- Define Esp_Inv(P)
+--   L := [Len(S)| S In P];
+--   MM := LCM(L);
+--   PP := [Div(MM, L[1])*Sum([J*x[J]|J In 1..(L[1]-1)])];
+--   For I := 2 To Len(L) Do
+--     GI := Sum([ L[H] | H In 1..(I-1)]);
+--     FI := Div(MM, L[I])*Sum([J*x[(GI+J-I+1)]|J In 1..(L[I]-1)]);
+--     Append(PP, FI);
+--   EndFor;
+--   F := Sum(PP) - MM*Last(x);
+--   G := Galois.Basehil(F);
+--   GG := [ First(R, (Len(x)-1)) | R In G ];
+--   Return GG
+-- EndDefine; -- Esp_Inv
+
+
+------------------------------------
+
+--  P permutazione scritta nel prodotto di cicli disgiunti (lista di
+-- liste). G := < P > sottogruppo ciclico di SN. Nelle nuove coordinate x[0],
+-- .. , x[N-1], la seguente funzione scrive un sistema fondamentale di monomi
+-- invarianti per l' azione di G sull'anello R ::= QQ[x[0..(N-1)]] noto A :=
+-- Esp_Inv(P).  
+
+-- Define Invarianti1(P, A)
+--   B := Flatten([ [ P[I,J]-1 | J In 2..Len(P[I]) ] | I In 1..Len(P) ]);
+--   M := [x[J]| J In B];
+--   BB := [ Product([M[J]^A[I,J]|J In 1..Len(A[I])]) | I In 1..Len(A) ];
+--   C := Concat(BB, Diff(x, M));
+--   Return C
+-- EndDefine; -- Invarianti1
+
+
+-------------------------------
+-- P permutazione scritta nel prodotto di cicli disgiunti (lista di liste). G
+-- := < P > sottogruppo ciclico di SN. Nelle nuove coordinate x[0], .. ,
+-- x[N-1], la seguente funzione calcola un sistema fondamentale di monomi
+-- invarianti per l'azione di G sull'anello R ::= QQ[x[0..(N-1)]]. 
+
+Define ByDeg(S,T)
+  Return Deg(S) < Deg(T);
+EndDefine; -- ByDeg
+
+
+-- Define Invarianti(P)
+--   L := [Len(H)| H In P];
+--   K := Sum(L)-Len(L)+1;
+--   InvRing ::= QQ[u,t,x[1..K],y[1..K]];
+--   A := InvRing:: Galois.Esp_Inv(P);
+--   B := Galois.Invarianti1(P, A);
+--   Return SortedBy(B, Function("$contrib/galois.ByDeg"))
+-- EndDefine; -- Invarianti
+
+
+---------------------
+-- Sia [z[I]-F[I](z[R]), G(z[R])| I In 1..R-1]. La seguente funzione
+-- serve per scrivere in ordine (z[1]+.., z[2]+..., z[R-1]+....).
+-- (non scrive G(z[R])).  
+
+-- Define Ordina(L)
+--   LL := [];
+--   For I := 1 To Len(L) Do
+--     For J := 1 To Len(L) Do
+--       If LT(L[J]) = z[I] Then
+-- 	Append(LL, L[J]);
+--       EndIf;
+--     EndFor;
+--   EndFor;
+--   Return LL
+-- EndDefine; -- Ordina
+
+
+-------------------------
+-- Anello QQ[x[0..(N-1)],w]. F := polinomio monico ciclico di grado N in x[0].
+-- P := generatore del gruppo (ciclico) di Galois G < SN di F.
+-- La seguente funzione testa se l`ideale della varieta` delle orbite e` in
+-- posizione normale rispetto l`ultima indeterminata. In caso affermativo
+-- fornisce le informazioni 1) - 7). 
+
+-- Define AuxInfo(F, P, Ind)
+--   QQ := RingQ();
+--   N := Deg(F);
+--   MCM := LCM([ Len(H) | H In P ]);
+
+--   PrintLn;
+--   PrintLn "(1) The change of coordinates is defined by:";
+--   PrintLn;
+--   Chan ::= QQ[y[1..N],w], Lex;
+--   Using Chan Do
+--     TT := Galois.Cambio(P);
+--     For I:=1 To N Do  PrintLn "   x[",I-1,"] := ", TT[I];    EndFor;
+--   EndUsing;
+--   PrintLn;
+--   PrintLn "   (computed in the ring Chan ::= ", Ring(Chan);
+--   PrintLn "   where w is a primitive ", MCM, "-th root of unity over Q);";
+
+--   C := Coefficients(F, Reversed([x^D | D In 0..(N-1)]));
+--   Cycl := QQt::Galois.Cyclotomic(MCM, t);
+
+--   AuxGaloisRing_xrw ::= QQ[x[0..(N-1)],r,w], Lex;
+
+--   Using AuxGaloisRing_xrw Do
+--     Invs := Galois.Invarianti(P);
+--     R    := Len(Invs);
+--     Idx  := UnivariateIndetIndex(Invs[R])-1;
+--     Orb  := Ideal(Galois.Torb(C, Image(Cycl, RMap([w])), P));
+--     PrintLn;
+--     PrintLn "(2) A fundamental system of invariants of C[x]^G,";
+-- //    Using Var(RingEnv(F)) Do
+--       PrintLn "    where G is the Galois group of F := ", F, " over Q,";
+-- //    EndUsing;
+--     PrintLn "    is given by the following list of ", R, " elements:";
+--     PrintLn;
+--     PrintLn "Invs := ", Invs, ";";
+--   EndUsing;
+
+--   AuxGaloisRing_xz ::= QQ[x[0..(N-1)],z[1..R]];
+--   AuxGaloisRing_z  ::= QQ[z[1..R]], Elim(z[1]..z[R-1]);
+--   AuxGaloisRing_zw ::= QQ[z[1..R],w];
+
+--   Using AuxGaloisRing_xz Do
+--     Phi := RMap(Concat(x, [0,0]));
+--     II := Image(Invs, Phi);
+--     B := Elim(x, Ideal([ II[J]-z[J] | J In 1..R ]) + Image(Orb, Phi));
+--   EndUsing;
+
+--   Using AuxGaloisRing_z Do
+--     Phi := RMap(Concat(NewList(N,0), z));
+--     G := ReducedGBasis(Image(B, Phi));
+--     UnivP := First([ P In G | Deg(LT(P)) = Deg(LT(P), z[R])]);
+--     A := UnivP;
+--     If Deg(UnivP) <> Fact(N)/MCM Then
+--       Error("The ideal is not in normal position "+
+--             "with respect to the last indeterminate z[" + R + "]" +
+--             "of C^" + R + "; Change the variables z's.")
+--     EndIf;
+--     GG := Galois.Ordina(G);
+
+--     PrintLn;
+--     PrintLn "(3) An ideal defining the relative orbit variety  V/G  in C^",
+--              R, " is:";
+--     PrintLn;
+--     PrintLn "J := ", Ideal(Concat(GG, [UnivP])), ";";
+--     PrintLn;
+--     PrintLn "(4) The last generator of  J  is:";
+--     PrintLn;
+--     PrintLn "L := ", A;
+--     PrintLn;
+--     PrintLn "    (steps (3) and (4) are computed in the ring";
+--     PrintLn "    AuxGaloisRing_z ::= ", Ring(AuxGaloisRing_z), ");";
+--   EndUsing;
+
+--   Using AuxGaloisRing_zw Do
+--     -- GWRoots is in GaloisRing_Qxw;
+--     GWRoots := Galois.WRoots(UnivP, Cycl);
+--     PrintLn;
+--     PrintLn "(5) A root a of L in Q(w), where w is a primitive ",
+--              MCM, "-th root of unity, is:";
+--     PrintLn;
+--     Using GaloisRing_Qxw Do PrintLn "a := ",GWRoots[1]; EndUsing;
+--     PrintLn;
+--     PrintLn "    (computed in the ring  GaloisRing_Qxw ::= ",
+--             Ring(GaloisRing_Qxw), ");";
+
+--     AA := Image(GWRoots[1], RMap([0, w]));
+--     S  := Subst(Image(GG, RMap(z)), [[z[R], AA]]);
+--     MinPol := Image(Cycl, RMap([w]));
+--     SSS := [ z[I]-NR(S[I], [MinPol]) | I In 1..Len(S) ];
+--     Append(SSS, AA);
+--   EndUsing;
+
+--   Using AuxGaloisRing_xrw Do
+--     SS := Image(SSS, RMap(Concat(NewList(R, 0), [w])));
+--     PrintLn;
+--     PrintLn "(6) A point  z  of Q(w)^", R, " of the variety  V/G  is:";
+--     PrintLn;
+-- //    Unset Indentation;
+--     PrintLn "z := ", SS, ";";
+-- //    Set Indentation;
+--     PrintLn;
+--     PrintLn "(7) The orbit parametrized by  z  is defined by:";
+--     PrintLn;
+--     PrintLn Ideal([Invs[J] - SS[J] | J In 1..Len(SS)]);
+
+--     RG  := ReducedGBasis(Ideal([ Invs[J] - SS[J] | J In 1..Len(SS) ]) +
+--                         Ideal(Image(Cycl, RMap([w])))+
+--                         Ideal(r-x[Idx]));
+--     Sol := NewList(N);
+--     Condiz := [];
+--     Foreach P In RG Do
+--       If LT(P) IsIn x Then
+-- 	Sol[IndetIndex(LT(P))] := [LT(P),LT(P)-P]
+--       Else
+-- 	Append(Condiz, P)
+--       EndIf;
+--     EndForeach;
+
+--     S := Galois.Tagged(Record[
+--          Solutions  := Subst(Galois.Cambio2(P), Sol),
+--          Conditions := Ideal(Condiz) ], "Solutions");
+--   EndUsing;
+
+--   PrintLn;
+-- //  Using Var(RingEnv(F)) Do
+--     Print "(8) Solutions by radicals of  F := ", F, "  are:";
+-- //  EndUsing;
+--   Using  GaloisRing_Qxrw Do
+--     Phi := Concat(NewList(N, 0), [r, w]);
+--     Phi[1] := x;
+--     GS := Image(S, RMap(Phi));
+--     PrintLn;
+--     PrintLn GS.Solutions, ";";
+--     PrintLn;
+--     PrintLn "    (computed in the ring  GaloisRing_Qxrw ::= ",
+--             Ring(GaloisRing_Qxrw), ");";
+--     PrintLn;
+--     PrintLn "    where  w  is a chosen primitive ", MCM, "-th root of unity";
+--     Foreach P In Gens(GS.Conditions) Do
+--       If NR(LT(P), [r])=0  Then
+-- 	Print "    and  r  is a chosen "; --, Deg(LT(P)), "-th ";
+-- 	PrintLn "root over Q(w) of  ", P -- P-LT(P)
+--       EndIf;
+--     EndForeach;
+--     PrintLn "--------------------------------------------------------------";
+--   EndUsing;
+--   Return GS;
+-- EndDefine; -- AuxInfo
+
+
+---------------------------------------------------------------
+-- Define AuxSolve(F, P, Ind)
+--   N := Deg(F);
+--   C := Coefficients(F, Reversed([x^D | D In 0..(N-1)]));
+--   MCM := LCM([ Len(H) | H In P ]);
+--   Cycl := QQt::Galois.Cyclotomic(MCM, t);
+
+--   AuxGaloisRing_xrw ::= QQ[x[0..(N-1)],r,w], Lex;
+
+--   Using AuxGaloisRing_xrw Do
+--     Invs := Galois.Invarianti(P);
+--     R    := Len(Invs);
+--     Idx  := UnivariateIndetIndex(Invs[R])-1;
+--     Orb  := Ideal(Galois.Torb(C, Image(Cycl, RMap([w])), P));
+--   EndUsing;
+
+--   AuxGaloisRing_xz ::= QQ[x[0..(N-1)],z[1..R]];
+--   AuxGaloisRing_z  ::= QQ[z[1..R]],    Elim(z[1]..z[R-1]);
+--   AuxGaloisRing_zw ::= QQ[z[1..R],w];
+
+-- --  PrintLn " --------> AuxGaloisRing_xz";
+--   Using AuxGaloisRing_xz Do
+--     Phi := RMap(Concat(x, [0,0]));
+--     II := Image(Invs, Phi);
+--     B := Elim(x, Ideal([ II[J]-z[J] | J In 1..R ]) + Image(Orb, Phi));
+--   EndUsing;
+
+-- --  PrintLn " --------> AuxGaloisRing_z";
+--   Using AuxGaloisRing_z Do
+--     Phi := RMap(Concat(NewList(N,0), z));
+--     G := ReducedGBasis(Image(B, Phi));
+--     UnivP := Comp([ P In G | Deg(LT(P)) = Deg(LT(P),z[R])], 1);
+--     If Deg(UnivP) <> Fact(N)/MCM Then
+--       Error("The ideal is not in normal position "+
+--             "with respect to the last indeterminate z[" + R + "]" +
+--             "of C^" + R + "; Change the variables z's.")
+--     EndIf;
+--     GG := Galois.Ordina(G);
+--   EndUsing;
+
+-- --  PrintLn " --------> AuxGaloisRing_zw";
+--   Using AuxGaloisRing_zw Do
+--     -- GWRoots is in GaloisRing_Qxw;
+--     GWRoots := Galois.WRoots(UnivP, Cycl);
+--     AA := Image(GWRoots[1], RMap([0, w]));
+--     S  := Subst(Image(GG, RMap(z)), [[z[R], AA]]);
+--     MinPol := Image(Cycl, RMap([w]));
+--     SSS := [ z[I]-NR(S[I], [MinPol]) | I In 1..Len(S) ];
+--     Append(SSS, AA);
+--   EndUsing;
+
+--   Using AuxGaloisRing_xrw Do
+--     SS  := Image(SSS, RMap(Concat(NewList(R, 0), [w]) ));
+--     RG  := ReducedGBasis(Ideal([ Invs[J] - SS[J] | J In 1..Len(SS) ]) +
+--                         Ideal(Image(Cycl, RMap([w])))+
+--                         Ideal(r-x[Idx]));
+--     Sol := NewList(N);
+--     Condiz := [];
+--     Foreach P In RG Do
+--       If LT(P) IsIn x Then
+-- 	Sol[IndetIndex(LT(P))] := [LT(P),LT(P)-P]
+--       Else
+-- 	Append(Condiz, P)
+--       EndIf;
+--     EndForeach;
+
+--     S := Galois.Tagged(Record[
+--          Solutions  := Subst(Galois.Cambio2(P), Sol),
+--          Conditions := Ideal(Condiz) ], "Solutions");
+--   EndUsing;
+--   Using  GaloisRing_Qxrw Do
+--     Phi := Concat(NewList(N, 0), [r, w]);
+--     Phi[1] := x;
+--     Return Image(S, RMap(Phi));
+--   EndUsing;
+-- EndDefine; -- AuxSolve
+
+
+--------------------[  TAG  ]--------------------
+
+Define Tagged(X,T)
+  Return Tagged(X, Galois.PkgName()+"."+T);
+EndDefine; -- Tagged
+
+
+Define Print_Solutions(S)
+//  Indent := Option(Indentation);
+//  Set Indentation;
+  If RingEnv()<>"GaloisRing_Qxrw" Then PrintLn "GaloisRing_Qxrw ::"; EndIf;
+//  Using GaloisRing_Qxrw Do
+  PrintLn Untagged(S);
+//  EndUsing;
+//  Set Indentation := Indent;
+EndDefine; -- Print_Solutions
+
+
+EndPackage; -- $contrib/galois

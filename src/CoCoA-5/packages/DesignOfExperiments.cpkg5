@@ -1,0 +1,390 @@
+Package $DesignOfExperiments
+
+-- D := [0..3, 0..2];
+-- D := [-1..1, -1..1];
+-- FacCl := [1, x, y, x^2, y^2];
+export FullDesignPoints;  -- FullDesignPoints(D);
+export FullDesignLevels;  -- FullDesignLevels(D);
+export FullDesignQB;      -- FullDesignQB(R, D);
+export FullDesignPolys;   -- FullDesignPolys(R, D);
+export corners;           -- corners(FD_QB, SmallerQB);
+export border;            -- border(FD_QB, SmallerQB);
+export GBRelations;       -- GBRelations(D, SmallerQB)
+export BBRelations;       -- BBRelations(D, SmallerQB)
+export AllGBases;         -- AllGBases(GBRelations(D,SmallerQB))
+export AllBBases;         -- AllBBases(BBRelations(D,SmallerQB))
+  
+export FractionQB;        -- FractionQB(FD_QB, [pp1, pp2,...]);
+
+
+
+------------------------ [ Procedures ] ----------------------------------
+
+-- The number of parameters necessary for Corner, QB.
+
+Define MakeNumParams(Corners, QB)
+  Return sum([len([P in QB | P<T]) | T in Corners]);
+EndDefine; -- MakeNumParams
+
+
+-- For each term T_i in QB, gives the (parametric) polynomial G_i
+Define FillGB(Corners, QB)
+  P := RingOf(Corners[1]);
+  phi := CoeffEmbeddingHom(P);
+  params := phi(indets(CoeffRing(P)));
+  Index := 0;
+  L := [];
+  For i := 1 To len(Corners) Do
+    K := [T In QB | T<Corners[i]];
+    append(ref L, Corners[i] + sum([params[Index+j]*K[j] | j in 1..len(K)]));
+    Index := Index + len(K);
+  EndFor;
+  Return L;
+EndDefine; -- FillGB
+
+
+Define FillBB(Border, QB)
+  P := RingOf(Border[1]);
+  phi := CoeffEmbeddingHom(P);
+  params := phi(indets(CoeffRing(P)));
+  Index := 0;
+  L := [];
+  For i := 1 To len(Border) Do
+    append(ref L, record[head:=Border[i],
+			 tail:=sum([params[Index+j]*QB[j] | j in 1..len(QB)])]);
+    Index := Index + len(QB);
+  EndFor;
+  Return L;
+EndDefine; -- FillBB
+
+
+Define corners(BigQB, SmallQB)
+  return interreduced(diff(BigQB,SmallQB));
+EndDefine; -- corners
+
+
+Define border(BigQB, SmallQB)
+  IsInBorder :=
+  func(T)
+    foreach X in indets(RingOf(BigQB[1])) do
+      if IsDivisible(T,X) and (T/X isin SmallQB) then return true; endif;
+    endforeach;
+    return false;
+  endfunc;
+  return [ T in diff(BigQB, SmallQB) | IsInBorder(T) ];
+EndDefine; -- corners
+
+
+define FullDesignPoints(FD)
+  return CartesianProductList(FD);
+enddefine; -- FullDesignPoints
+
+
+define FullDesignLevels(FD)
+  return [ len(D) | D in FD];
+enddefine; -- FullDesignLevels
+  
+
+Define FullDesignQB(P, FD)
+  if NumIndets(P) < len(FD) then error("Insufficient NumIndets in ring"); endif;
+  Return [MakeTerm(P, L) | L in CartesianProductList([0..len(D)-1 | D In FD])];
+EndDefine; -- FullDesign
+
+
+Define FullDesignPolys(P, FD)
+  if NumIndets(P) < len(FD) then error("Insufficient NumIndets in ring"); endif;
+  Return [product([ indet(P,i)-a | a in FD[i]]) | i in 1..len(FD)];
+EndDefine; -- FullDesignEq
+
+
+Define FractionQB(QB, Corners)
+  I := ideal(Corners);
+  Return [T in QB | not(T IsIn I)];
+EndDefine; -- CornerFullDesign
+
+  
+-------------[ Point Solving ]
+
+-- Gives the list of fractions described by the specialization of Sys for
+-- every element of Sol.
+Define Points(equations, GenericEQ, ParameterSols)
+  Return [$.Point(equations, GenericEQ, Sol) | Sol in ParameterSols];
+EndDefine;
+
+
+Define Point(equations, GenericEQ, ParameterSol)
+  S := RingOf(GenericEQ[1]);
+  R := RingOf(equations[1]);
+  phiSR := PolyRingHom(S, R, PolyAlgebraHom(CoeffRing(S),RingQQ(),ParameterSol), indets(R));
+  ActualSys := concat(equations, phiSR(GenericEQ));
+  Return RationalSolve(ActualSys);
+EndDefine;
+
+
+
+-----------------------[Buchberger procedures]-----------------------------
+
+
+------------[ Terms ]------------
+
+Define TermsAreCoprime(S,T)
+  L1 := exponents(S);
+  L2 := exponents(T);
+  For I := 1 To NumIndets(RingOf(T)) Do
+    if L1[I]*L2[I] <> 0 then return false; endif;
+  EndFor;
+  Return true;
+EndDefine;
+
+-----------------[ Pairs ]---------------
+
+Define BCriterion(ref Pairs, T) --> T is the LT of the new polynomial
+  Pairs := [P in Pairs | not(IsDivisible(P.lcm, T)
+                         and lcm(T,LT(P.f1)) <> P.lcm
+                         and lcm(T,LT(P.f2)) <> P.lcm) ];
+EndDefine;
+
+
+Define NewPair(F,G)
+  return Record[f1:=F,  f2:=G,  lcm:=lcm(LT(F),LT(G)),
+		IsCoprime := $.TermsAreCoprime(LT(F),LT(G))];
+EndDefine;
+
+
+Define InsertPairGM(ref Pairs, P)
+  LCM_P := P.lcm;
+  ToBeInserted := true;
+  for i := 1 to len(Pairs) do
+    LCM_i := Pairs[i].lcm;
+    if LCM_i = LCM_P Then
+      if P.IsCoprime then Pairs[i] := P; endif;
+      ToBeInserted := false;
+    elif IsDivisible(LCM_i, LCM_P) Then Pairs[i] := "remove";
+    elif IsDivisible(LCM_P, LCM_i) Then ToBeInserted := false;
+    endif;
+    if not(ToBeInserted) then break; endif;
+  endfor;
+  If ToBeInserted Then append(ref Pairs, P); EndIf;
+  Pairs := [ PPP In Pairs | type(PPP) <> STRING ];
+EndDefine; -- InsertPairGM
+
+
+-------------------[ Buchberger auxiliary ]-----------------
+
+Define SPoly(P)
+  F := P.f1;  G := P.f2; lcmP := P.lcm;
+  phi := CoeffEmbeddingHom(RingOf(F));
+  Return phi(LC(G))*(lcmP/LT(F))*F - phi(LC(F))*(lcmP/LT(G))*G;
+EndDefine;
+
+
+-------------------[ Buchberger Main ]-----------------
+
+Define BuildNewPairs(ref GB, F)
+  Pairs := [];
+  for i := 1 to len(GB) do
+    P := NewPair(GB[i], F);
+    if LT(GB[i]) = P.lcm then GB[i] := "remove"; endif;
+    $.InsertPairGM(ref Pairs, P);
+  endfor;
+  GB := [FF In GB | type(FF) <> STRING ];
+  Return [ PP In Pairs | not(PP.IsCoprime) ];
+EndDefine;
+
+
+Define UpdateBasisAndPairs(ref GB, ref Pairs, f)
+  $.BCriterion(ref Pairs, f);
+  Pairs_f := $.BuildNewPairs(ref GB, f);
+  append(ref GB, f);
+  Pairs := concat(Pairs, Pairs_f);
+EndDefine;
+
+
+Define relations_Buchberger(GB, GenericPolys)
+  Pairs := [];
+  Foreach f In GenericPolys Do
+    $.UpdateBasisAndPairs(ref GB, ref Pairs, f);
+  EndForeach;
+  PrintLn "len(Pairs) = ", len(Pairs);
+  PrintLn "GB = ", GB;
+  Out := [NR(SPoly(PP), GB) | PP in Pairs];
+  return record[GB := GB,
+	  rel := ConcatLists([coefficients(f) | f In Out and not(IsZero(f))])];
+EndDefine; -- relations_Buchberger
+
+  
+Define GBRelations(FullDesign, FractionQB)
+  rings := diff(RingsOf(FractionQB), CurrentTypes());
+  if len(rings)>1 then error("more than 1 ring in FractionQB");endif;
+  P := rings[1];
+  FD_QB := FullDesignQB(P, FullDesign);
+  PrintLn "FD_QB = ", FD_QB;
+  foreach T in FractionQB do
+    if not(T IsIn FD_QB) then error(sprint(T)+" not contained in QB"); endif;
+  endforeach;
+  FractionCorners := corners(FD_QB, FractionQB);
+  PrintLn "FractionCorners = ", FractionCorners;
+  S := BuildParamRing(P, "a", MakeNumParams(FractionCorners, FractionQB));
+  phiPS := PolyRingHom(P,S, CanonicalHom(CoeffRing(P),CoeffRing(S)), indets(S));
+  GenericEqns := FillGB(phiPS(FractionCorners), phiPS(FractionQB));
+  PrintLn "GenericEqns = "; indent(GenericEqns);
+  FD_polys := FullDesignPolys(S, FullDesign);
+  return relations_Buchberger(FD_polys, GenericEqns);
+EndDefine; -- GBRelations
+
+
+define FindReducerBB(f, L)
+  for j:=1 to len(L) do
+    if IsDivisible(LT(f),L[j].head) then return j; endif;
+  endfor;
+  return 0;
+enddefine; -- FindReducerBB
+
+define NRBB(f, L)
+//  PrintLn "NRBB(f, L) ", f;
+  TmpRes := zero(RingOf(f));
+  if IsZero(f) then return TmpRes; endif;
+  i := FindReducerBB(f, L);
+  repeat
+    while i = 0 do
+      TmpRes := TmpRes + LM(f);      f := f - LM(f);
+      if IsZero(f) then return TmpRes; endif;
+      i := FindReducerBB(f, L);
+    endwhile;
+    f := f - (LM(f)/L[i].head)*(L[i].head + L[i].tail); -- NR
+//    PrintLn "f --> ", f;
+    if IsZero(f) then return TmpRes; endif;
+    i := FindReducerBB(f, L);
+  endrepeat;
+enddefine; -- NRBB
+
+
+Define MultiplicationMat(H, x, QB)
+//  PrintLn "QB = ", QB;
+  SortBy(ref H, func(a,b) return a.head>b.head; endfunc);
+  return transposed(mat([coefficients(NRBB(x*T, H), QB) | T in QB]));
+EndDefine; -- MultiplicationMat
+
+
+define eval(f,M)
+  v := ZeroMat(RingOf(M[1]), NumRows(M[1]), NumRows(M[1]));
+  foreach m in monomials(f) do
+    L := log(LT(m));
+    v := v+ RingElem(RingOf(v),LC(m)) * product([ M[i]^L[i] | i in 1..len(M)]);
+//    PrintLn "m = ", m;
+//    PrintLn "v = ", v;
+  endforeach;
+//  PrintLn "f = ", f;
+  return v;
+enddefine; -- eval
+
+
+define relations_MultMat(FD_polys, GenericEqnsBB, FractionQB, FractionBorder)
+  H := concat([ record[head:=LT(f), tail:=f-LT(f)] | f in FD_polys], GenericEqnsBB);
+  X := [indet(RingOf(f), UnivariateIndetIndex(f)) | f in FD_polys];
+  M := [MultiplicationMat(H, x, FractionQB) | x in X];
+//  PrintLn "M = ", M;
+  commutators := [M[i[1]]*M[i[2]]-M[i[2]]*M[i[1]] | i in subsets(1..len(M),2)];
+//  PrintLn "commutators = ", commutators;
+  ColMatrices := [ GetCol(eval(f,M),1) | f in FD_polys and IsZero(NR(LT(f), FractionBorder)) ];
+//  PrintLn "ColMatrices = ", ColMatrices;
+  AllMatEntries := flatten(concat([GetRows(N) | N in commutators],ColMatrices));
+  return record[BB := H,
+		rel := [ g in AllMatEntries | not(IsZero(g))]];
+enddefine; -- relations_MultMat
+
+
+Define BBRelations(FullDesign, FractionQB)
+  rings := diff(RingsOf(FractionQB), CurrentTypes());
+  if len(rings)>1 then error("more than 1 ring in FractionQB");endif;
+  P := rings[1];
+  FD_QB := FullDesignQB(P, FullDesign);
+//  PrintLn "FD_QB = ", FD_QB;
+  foreach T in FractionQB do
+    if not(T IsIn FD_QB) then error(sprint(T)+" not contained in QB"); endif;
+  endforeach;
+  FractionBorder := border(FD_QB, FractionQB);  -- C2
+//  PrintLn "FractionBorder = ", FractionBorder;
+  S := BuildParamRing(P, "a", len(FractionBorder)*len(FractionQB));
+  phiPS := PolyRingHom(P,S, CanonicalHom(CoeffRing(P),CoeffRing(S)), indets(S));
+  GenericEqnsBB := FillBB(phiPS(FractionBorder), phiPS(FractionQB));
+//  PrintLn "GenericEqnsBB = "; indent(GenericEqnsBB);
+  FD_polys := FullDesignPolys(S, FullDesign);
+//  PrintLn "FD_polys = "; indent(FD_polys);
+  return relations_MultMat(FD_polys, GenericEqnsBB,
+			   phiPS(FractionQB), phiPS(FractionBorder));
+EndDefine;
+
+
+define AllGBases(Rel)
+  TopLevel CurrentRing;
+  P := CurrentRing;
+  ParameterSol := RationalSolve(Rel.rel);
+  S := RingOf(Rel.GB[1]);
+  CoeffHoms := [PolyAlgebraHom(CoeffRing(S),CoeffRing(P),
+			 [AsRAT(x)|x in sol]) | sol in ParameterSol];
+  return [ PolyRingHom(S,P,phi,indets(P))(Rel.GB) | phi in CoeffHoms];
+enddefine; -- AllGBases
+  
+
+define AllBBases(Rel)
+  TopLevel CurrentRing;
+  P := CurrentRing;
+  ParameterSol := RationalSolve(Rel.rel);
+  BB := [ f.head + f.tail | f in Rel.BB];
+  S := RingOf(BB[1]);
+  CoeffHoms := [PolyAlgebraHom(CoeffRing(S),CoeffRing(P),
+			 [AsRAT(x)|x in sol]) | sol in ParameterSol];
+  return [ PolyRingHom(S,P,phi,indets(P))(BB) | phi in CoeffHoms];
+enddefine; -- AllBBases
+  
+
+-----------------------  [ Misc Procedures ] --------------
+
+Define Delta_Var(D_Var, L)
+  L:=concat([0],L);
+  S:=1;
+  For I:=2 To len(L) Do
+    S:=S*binomial(AsINT(D_Var-L[I-1]), AsINT(L[I]-L[I-1]));
+  EndFor;
+  Return S;
+EndDefine;
+
+
+-- L is a list of terms, D are the vars max degs
+Define Delta(L,D)
+  L:=GetCols(mat([exponents(T)|T In L]) );
+  L:=[sorted(R)|R In L];
+  Ris:=1;
+  For I:=1 To len(L) Do
+    Ris := Ris*$.Delta_Var(D[I], L[I]);
+  EndFor;
+  Return Ris;
+EndDefine;
+
+--------------------------- [ Imaging Procedures ] -------------------------
+  
+Define BuildParamRing(P, ParamsName, NumParams)
+//  PrintLn NumParams;
+  R := NewPolyRing(RingQQ(), SymbolRange(ParamsName, 1, NumParams));
+//  K := NewFractionField(R);
+  return NewPolyRing(R, IndetSymbols(P));
+EndDefine;
+
+EndPackage; -- $DesignOfExperiments
+
+
+-- PrintLn "/**/  FD := [0..1, 0..1, 0..1];  QB := [1, x, y, z];";
+-- PrintLn "/**/  FD := [-1..1, -1..1];  QB := [1, x, y, x^2, y^2]; // ex (h)";
+-- PrintLn "/**/  FD := [-1..1, [-1,1]];  QB := [1, x, y]; // ex (g)";
+-- PrintLn;
+-- PrintLn "/**/  Rel := GBRelations(FD, QB);";
+-- PrintLn "/**/  multiplicity(RingOf(Rel.rel[1])/ideal(Rel.rel));";
+-- PrintLn "/**/  AllGBs := AllGBases(Rel);  indent(AllGBs);";
+-- PrintLn "/**/  indent([RationalSolve(B) | B in AllGBs]);";
+-- PrintLn;
+-- PrintLn "/**/  Rel := BBRelations(FD, QB);";
+-- PrintLn "/**/  multiplicity(RingOf(Rel.rel[1])/ideal(Rel.rel));";
+-- PrintLn "/**/  AllBBs := AllBBases(Rel);  indent(AllBBs);";
+-- PrintLn "/**/  indent([RationalSolve(B) | B in AllBBs]);";
+-- PrintLn "/**/  indent(diff(subsets(FullDesignPoints(FD),3), [RationalSolve(B) | B in AllBBs]));";

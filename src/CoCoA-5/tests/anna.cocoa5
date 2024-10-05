@@ -1,0 +1,386 @@
+-- some very basic tests
+-- C-c C-k to (re)start latest compiled version
+
+TestCount := 0;
+PrintInfo := not(IsDefined(RunningSourceAnna) And RunningSourceAnna=True);
+
+define TEST_ASSERT(A,B)
+  toplevel TestCount;
+  toplevel PrintInfo;
+  TestCount := TestCount+1;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B));
+  endif;
+  if PrintInfo then print "."; EndIf;
+enddefine; -- TEST_ASSERT
+
+T0 := CpuTime();
+
+PrintLn "\n-- INT, RAT --";
+TEST_ASSERT(sum([1,2,3]), 6);
+TEST_ASSERT(sum([],6), 6);
+TEST_ASSERT(product([1,2,3]), 6);
+TEST_ASSERT(product([],6), 6);
+TEST_ASSERT(FloorLog2(128), 7);
+TEST_ASSERT(FloorLogBase(128,2), 7);
+TEST_ASSERT(FloorLog10(999), 2);
+TEST_ASSERT(FloorLogBase(81.5,3), 4);
+TEST_ASSERT(NextPrime(100), 101);
+TEST_ASSERT(NextProbPrime(1000000000000000000000), 1000000000000000000117);
+TEST_ASSERT(binomial(4,2), 6);
+TEST_ASSERT(binomial(-4,3), -20);
+TEST_ASSERT(BinomialReprShift(45, 2, 1, 0), 55);
+TEST_ASSERT(lcm(6,4), 12);
+TEST_ASSERT(CFApprox(1.414213, 10^(-2)),  17/12);
+
+PrintLn "\n-- LIST --";
+TEST_ASSERT(NewList(3),  [0,0,0]);
+TEST_ASSERT(sum(NewList(3, "a")),  "aaa");
+TEST_ASSERT((Func() L:=[1,2]; append(ref L,4); Return L; EndFunc)(), [1,2,4]);
+TEST_ASSERT((Func() L:=[7,8]; remove(ref L,1); Return L; EndFunc)(), [8]);
+TEST_ASSERT(ascii("hello"), [104, 101, 108, 108, 111]);
+TEST_ASSERT(ascii([104, 101, 108, 108, 111]), "hello");
+TEST_ASSERT(ascii(104), "h");
+TEST_ASSERT(RingElem(QQ,2) * [1,1],  [2,2]);
+TEST_ASSERT([1,1]*RingElem(QQ,2),  [2,2]);
+TEST_ASSERT(lcm([4,4,4,4,6,6,6,6]),  12);
+TEST_ASSERT(lcm([]),  1);
+TEST_ASSERT(gcd([]),  0);
+TEST_ASSERT(lcm(4, 6),  12);
+TEST_ASSERT(lcm(RingElem(RingZZ(),4), 6),  12);
+TEST_ASSERT(lcm(6,RingElem(RingZZ(),4)),  12);
+TEST_ASSERT(gcd(4, 6),  2);
+TEST_ASSERT(gcd(RingElem(RingZZ(),4), 6),  2);
+TEST_ASSERT(gcd(6,RingElem(RingZZ(),4)),  2);
+TEST_ASSERT(type(gcd([4, 6])),  INT);
+TEST_ASSERT(type(lcm([4, 6])),  INT);
+R0 ::= QQ[x,y,z];
+TEST_ASSERT(gcd(RingElem(R0,4), RingElem(R0,6)),  1);
+TEST_ASSERT(reversed([1,2,3]),  [3,2,1]);
+TEST_ASSERT(first([1,2,3]),  1);
+TEST_ASSERT(first([1,2,3], 2),  [1,2]);
+TEST_ASSERT(last([1,2,3]),  3);
+TEST_ASSERT(last([1,2,3], 2),  [2,3]);
+TEST_ASSERT((Func() L:=[7,8]; L1:=L; reverse(ref L); Return [L,L1]; EndFunc)(), [[8,7],[7,8]]);
+TEST_ASSERT(SortedBy([1,4,2,7], func(a,b) return a>b; endfunc), [7,4,2,1]);
+TEST_ASSERT(SortedBy([1,4,2,7], func(a,b) return a<b; endfunc), [1,2,4,7]);
+TEST_ASSERT(MinBy([1,4,2,7], func(a,b) return a>b; endfunc), 7);
+TEST_ASSERT(MaxBy([1,4,2,7], func(a,b) return a>b; endfunc), 1);
+
+println "\n-- RING: PolyRing --";
+M := mat(ZZ, [[1,10], [0,1]]);
+P := NewPolyRing(QQ, "a,b", M, 1);
+TEST_ASSERT(HasPositiveGrading(P), true);
+TEST_ASSERT(NumIndets(P), 2);
+TEST_ASSERT(GradingMat(P), mat(ZZ,[[1,10]]));
+Use P;
+TEST_ASSERT(indets(P), [a,b]);
+TEST_ASSERT(LF(a^2+b), b);
+TEST_ASSERT(LF(a^10+b), a^10+b);
+TEST_ASSERT(wdeg(a), [1]);
+TEST_ASSERT(wdeg(b), [10]);
+TEST_ASSERT(factor(a^3-a^2*b).factors, [b-a, a]);
+P := NewPolyRing(QQ, "a,b", M, 2);
+TEST_ASSERT(HasPositiveGrading(P), true);
+Use P;
+TEST_ASSERT(wdeg(a), [1,0]);
+TEST_ASSERT(wdeg(b), [10,1]);
+TEST_ASSERT(deg(b), 1);
+
+PrintLn "\n-- RINGELEM --";
+use Qxy ::= QQ[x,y];
+TEST_ASSERT(RingElem(Qxy,"x"), x);
+TEST_ASSERT(RingOf(RingElem(Qxy,"x")), Qxy);
+TEST_ASSERT(x < y,  false);
+TEST_ASSERT(x >= y,  true);
+TEST_ASSERT(x <= x,  true);
+TEST_ASSERT(x >= x,  true);
+TEST_ASSERT(RingElem(QQ, 1) < RingElem(QQ,3),  true);
+TEST_ASSERT(IsInvertible(lcm(x*x,x*y)/(x^2*y)), true);
+TEST_ASSERT(indet(Qxy, IndetIndex(x)), x);
+TEST_ASSERT(IndetSubscripts(x), []);
+TEST_ASSERT(IndetName(x), "x");
+TEST_ASSERT(product(indets(Qxy)), x*y);
+TEST_ASSERT(coefficients(DensePoly(NewPolyRing(QQ, "a,b,c", LexMat(3), 1),2)),  NewList(6,1));
+-- disabled (redmine 1288) TEST_ASSERT(len(x^2-x+1),  3);
+TEST_ASSERT(NumTerms(x^2-x+1),  3);
+TEST_ASSERT(homog(x^2-x+1, y),  x^2-x*y+y^2);
+TEST_ASSERT(homog([x^2-x+1, x-1], y),  [x^2-x*y+y^2, x-y]);
+TEST_ASSERT(IsHomog([x^2-y^2, y^2]),  true);
+TEST_ASSERT(IsHomog([x^2, y^2, y^2-x]),  false);
+TEST_ASSERT((2*x)/x, 2);
+TEST_ASSERT(binomial(x^2+2,2), (1/2)*x^4 +(3/2)*x^2 +1);
+TEST_ASSERT(gcd(2*x, 2*y),  1);
+TEST_ASSERT(gcd(4*one(Qxy), zero(Qxy)),  1);
+TEST_ASSERT(ClearDenom(x/3+y/2),  2*x+3*y);
+use ZZ[x,y];
+TEST_ASSERT(IsInvertible(gcd(2*x^2, 2*x*y)/(2*x)),  true);
+use P ::= QQ[x[1..4,10..12]];
+TEST_ASSERT(IndetName(x[1,10]), "x");
+TEST_ASSERT(IndetSubscripts(x[1,10]), [1,10]);
+TEST_ASSERT(RingElem(P,["x",1,10]), x[1,10]); // va bene?
+TEST_ASSERT(IndetSubscripts(indet(P,1)), [1,10]);
+TEST_ASSERT(RingElem(Qxy,2), 2);
+TEST_ASSERT(type(RingElem(Qxy,2)), RINGELEM);
+K := NewFractionField(Qxy);
+use K;
+TEST_ASSERT(IsField(K),  true);
+TEST_ASSERT(subst(x+1, x, y),  y+1);
+TEST_ASSERT(subst(x+1, x, y+2),  y+3);
+use R ::= QQ[x,y,z];
+TEST_ASSERT(*** CoefficientsWRT(xyz-xz^2, [y])***, [record[coeff := x*z, PP := y], record[coeff := -x*z^2, PP := 1]]);
+TEST_ASSERT(*** CoefficientsWRT(xyz-xz^2, y)***, [record[coeff := x*z, PP := y], record[coeff := -x*z^2, PP := 1]]);
+TEST_ASSERT(*** CoeffListWRT(xyz-xz^2, y)***, [-x*z^2, x*z]);
+TEST_ASSERT(***ContentWRT(xyz-xz^2, [y])***, x*z);
+TEST_ASSERT(***ContentWRT(xyz-xz^2, y)***, x*z);
+TEST_ASSERT(len(interreduced([x^2-y-z,x^2-1-z,x^2-z+y])), 1);
+
+PrintLn "\n-- RING: RingTwinFloat --";
+K := NewRingTwinFloat(128);
+Use R128xy ::= K[x,y];
+TEST_ASSERT(IdealOfGBasis(ideal(zero(R128xy))), ideal(zero(R128xy)));
+TEST_ASSERT(GBasis(ideal(x-1, x+1)), [1]);
+TEST_ASSERT((10*x)^100 - x^100 - (10*x)^100,  0);
+TEST_ASSERT((10*x)^100 - (10*x)^100 - x^100,  -x^100);
+
+PrintLn "\n-- MAT --";
+M := mat([[x,y,0], [1,2,x^2]]);
+TEST_ASSERT(NumRows(M), 2);
+TEST_ASSERT(NumCols(M), 3);
+TEST_ASSERT(NewDenseMat(R128xy,2,2)[1,1], 0);
+TEST_ASSERT(IsZeroRow(M,2), false);
+TEST_ASSERT(IsZeroCol(M,3), false);
+TEST_ASSERT(IsDiagonal(mat([[1,0,1],[0,1,1],[1,1,1]])),  false);
+TEST_ASSERT(IsSymmetric(mat([[1,0,1],[0,1,1],[1,1,1]])),  true);
+TEST_ASSERT(IsAntiSymmetric(mat([[1,0,1],[0,1,1],[1,1,1]])),  false);
+TEST_ASSERT(GetRow(M,1),  [x,y,0]);
+TEST_ASSERT(GetCol(M,3),  [0,x^2]);
+TEST_ASSERT((Func(ref M) SetRow(ref M, 1, [0,1,2]); Return M; EndFunc)(ref M),  mat([[0,1,2], [1,2,x^2]]));
+TEST_ASSERT((Func(ref M) TopLevel x; SetCol(ref M, 3, [0,x]); Return M; EndFunc)(ref M),  mat([[0,1,0], [1,2,x]]));
+TEST_ASSERT(KroneckerProd(IdentityMat(CurrentRing, 2), M),  BlockMat2x2(M, ZeroMat(CurrentRing, 2, 3), ZeroMat(CurrentRing, 2, 3), M));
+TEST_ASSERT(ElimHomogMat([2,3],mat([[1,5,10]])),matrix(ZZ,[[1,5,10],[0,1,1],[0,0,-1]]));
+TEST_ASSERT(ElimMat([2,3],mat([[1,5,10]])),matrix(ZZ,[[0,1,1],[1,5,10],[0,0,-1]]));
+TEST_ASSERT(ElimMat([2,3],3),matrix(ZZ,[[0,1,1],[1,1,1],[0,0,-1]]));
+TEST_ASSERT(CharPoly(mat([[0,1,0,0,1,0],[-1,0,0,0,0,1],[0,0,0,1,0,0],[0,0,-1,0,0,0],[0,0,0,0,0,1],[0,0,0,0,-1,0]]),x),(x^2+1)^3);
+TEST_ASSERT(MinPoly(mat([[0,1,0,0,1,0],[-1,0,0,0,0,1],[0,0,0,1,0,0],[0,0,-1,0,0,0],[0,0,0,0,0,1],[0,0,0,0,-1,0]]),x),(x^2+1)^2);
+
+PrintLn "\n-- MAT --> MatrixView --";
+I := IdentityMat(R128xy,2);
+TEST_ASSERT(I, mat(R128xy,[[1,0],[0,1]]));
+TEST_ASSERT(I, DiagMat(R128xy,[1,1]));
+TEST_ASSERT(LexMat(2), mat(ZZ,[[1,0],[0,1]]));
+TEST_ASSERT(RevLexMat(4),  -1*XelMat(4));
+TEST_ASSERT(RingOf(RevLexMat(4)), ZZ);
+TEST_ASSERT(StdDegLexMat(4),  ConcatVer(NewMatFilled(1,4,one(ZZ)), FirstRows(LexMat(4),3)));
+TEST_ASSERT(StdDegRevLexMat(4),  ConcatVer(NewMatFilled(1,4,one(ZZ)), FirstRows(RevLexMat(4),3)));
+//TEST_ASSERT(StdDegRevLexMat(3),  MinimalizeOrdMat(ConcatVer(RowMat([1,1,1]), RevLexMat(3))));
+TEST_ASSERT(transposed(M)[1,2], 1);
+TEST_ASSERT(NumRows(transposed(M)), 3);
+TEST_ASSERT(NumCols(ConcatHor(M,M)), 2*NumCols(M));
+TEST_ASSERT(NumRows(ConcatHor(M,M)), NumRows(M));
+TEST_ASSERT(NumCols(ConcatVer(M,M)), NumCols(M));
+TEST_ASSERT(NumRows(ConcatVer(M,M)), 2*NumRows(M));
+TEST_ASSERT(NumRows(ConcatAntiDiag(M,M)), 2*NumRows(M));
+TEST_ASSERT(NumCols(ConcatAntiDiag(M,M)), 2*NumCols(M));
+TEST_ASSERT(ConcatDiag(I,I), IdentityMat(R128xy,4));
+TEST_ASSERT(BlockMat2x2(M,I,M,I), ConcatVer(ConcatHor(M,I), ConcatHor(M,I)));
+TEST_ASSERT(BlockMat2x2(M,I,M,I), ConcatHor(ConcatVer(M,M), ConcatVer(I,I)));
+TEST_ASSERT(submat(M,[2],[1,3]), mat([[1,x]]));
+PrintLn "\n-- MAT --> MatrixArith --";
+TEST_ASSERT(I*M, M);
+TEST_ASSERT(DiagMat(R128xy, [x,y,3])^3, DiagMat(R128xy, [x^3,y^3,27]));
+//TEST_ASSERT(DiagMat(R128xy, [1,1,3])^(-1), DiagMat(R128xy, [1,1,1/3]));
+TEST_ASSERT(2*mat(ZZ, [[1,10], [0,1]]),  mat(ZZ, [[2,20], [0,2]]));
+TEST_ASSERT(M+M-M, M);
+TEST_ASSERT(LinKer(mat([[1,2,3]])), matrix(QQ, [[-2,-3], [1, 0], [0, 1]]));
+TEST_ASSERT(LinSolve(mat([[1,2,3]]),mat([[2]])), matrix(QQ, [[2], [0], [0]]));
+TEST_ASSERT(IsTermOrdering(IdentityMat(ZZ,3)), true);
+TEST_ASSERT(det(transposed(M)*M), 0);
+TEST_ASSERT(det(mat([[1,2,3], [4,5,6], [7,8,9]])),  0);
+TEST_ASSERT(rk(M), 2);
+//TEST_ASSERT((Func(ref M) AssignZero(ref M); Return M; EndFunc)(ref M), NewDenseMat(R128xy,2,3));
+TEST_ASSERT(inverse(mat(ZZ,[[8,3,6],[2,7,3],[3,-4,1]])),mat(ZZ,[[-19,27,33],[-7,10,12],[29,-41,-50]]));
+TEST_ASSERT(inverse(mat(ZZ, [[1,10], [0,1]])),  mat(ZZ, [[1,-10], [0,1]]));
+TEST_ASSERT(inverse(mat(QQ, [[1,10], [0,2]])),  mat(QQ, [[1,-5], [0,1/2]]));
+TEST_ASSERT(adj(mat(ZZ, [[1,10], [0,2]])),  mat(ZZ, [[2,-10], [0,1]]));
+TEST_ASSERT(adj(mat(QQ, [[1,10], [0,2]])),  mat(QQ, [[2,-10], [0,1]]));
+TEST_ASSERT(CharPoly(IdentityMat(ZZ,7),x),  (x-1)^7);
+
+PrintLn "\n-- MAT --> MatrixForOrdering --";
+TEST_ASSERT(IsPositiveGrading(FirstRows(IdentityMat(ZZ,3),1)),  false);
+TEST_ASSERT(IsPositiveGrading(IdentityMat(ZZ,3)),  true);
+TEST_ASSERT(MakeTermOrdMat(ConcatVer(RowMat(ZZ,[1,1,1]), LexMat(3))),  StdDegLexMat(3));
+TEST_ASSERT(MakeTermOrdMat(RowMat([1,1,1])),  StdDegRevLexMat(3));
+
+PrintLn "\n-- IDEAL --";
+use Qxy;
+TEST_ASSERT(ideal(Qxy, [])* x, ideal(Qxy, []));
+TEST_ASSERT((x^2+2) * ideal(Qxy, []), ideal(Qxy, []));
+TEST_ASSERT(ideal(x^2+2) * ideal(Qxy, []), ideal(Qxy, []));
+TEST_ASSERT(ideal(Qxy, []) * ideal(x^2+2), ideal(Qxy, []));
+TEST_ASSERT(ideal(Qxy, []) * ideal(Qxy, []), ideal(Qxy, []));
+TEST_ASSERT(RingOf(ideal(x-1)), RingOf(x-1));
+TEST_ASSERT(gens(ideal(x-1)), [x-1]);
+TEST_ASSERT(gens(ideal(x-1, x+1)), [x-1, x+1]);
+TEST_ASSERT(gens(ideal(R128xy, [RingElem(R128xy,"x+1"), 2])), [one(R128xy)]);
+TEST_ASSERT(gens(ideal(R128xy, [1])),  [one(R128xy)]);
+TEST_ASSERT(GBasis(ideal([x-1, x+1])), [1]);
+TEST_ASSERT(LF(ideal([x^2-y, x*y-x])), ideal([x^2, y^2, x*y]));
+TEST_ASSERT(EqSet(QuotientBasis(ideal([x^2,x*y,y^3])), [1,x,y,y^2]), true);
+TEST_ASSERT(IsZeroDim(ideal([x^3-2, y^2-1])),  true);
+TEST_ASSERT(elim([x], ideal(x-y,x+y)),  ideal(y));
+TEST_ASSERT(colon(ideal((x-1)*(y-1)), ideal((y-1),zero(CurrentRing))),  ideal(x-1));
+TEST_ASSERT(saturate(ideal(x,y-1), ideal(x,y-2)),  ideal(x,y-1));
+TEST_ASSERT(IsHomog(ideal(x^2-y,y)),  true);
+TEST_ASSERT(IsHomog(ideal(x^2-y,y^2)),  false);
+TEST_ASSERT(NR(y, [x-y, x]),  y);
+TEST_ASSERT(DivAlg(x^2*y +x*y^2 +y^2, [x*y-1,y^2-1]).quotients, [x+y,1]);
+TEST_ASSERT(NF(y, ideal(x-y, x)),  0);
+use Qxyz ::= QQ[x,y,z];
+TEST_ASSERT(len(MinGens(ideal(x-y, x*(x-y), x^2-y^2))), 1);
+TEST_ASSERT(len(MinGens(ideal(x-y, x*(x-y), x-z, y-z))), 2);
+TEST_ASSERT(homog(ideal(x^2-y, x^2-1), z),   ideal(y -z, x^2 -z^2));
+TEST_ASSERT(homog(ideal(x^2-x+1, x-1), y),  ideal(RingElem(CurrentRing,1)));
+TEST_ASSERT(IsInRadical(y*z-x^3,ideal(x^4*y^2+z^2-4*x*y^3*z-2*y^5*z,x^2+2*x*y^2+y^4)),  True);
+TEST_ASSERT(MinPowerInIdeal(y*z-x^3,ideal(x^4*y^2+z^2-4*x*y^3*z-2*y^5*z,x^2+2*x*y^2+y^4)),  3);
+TEST_ASSERT($NotBuiltin.BettiMatrix(ideal(x,y,z^2)),matrix(ZZ,[[2,0,0],[1,1,0],[0,2,0],[0,0,1]]));
+TEST_ASSERT(IsRadical(ideal(32027*x-1, 32057*y-1,z)), true);
+L := [y^2-2, x^2-y-z, x*y*z - y-1];
+TEST_ASSERT(EqSet(GBasis(ideal(L)), GBasisByHomog(ideal(L))), true);
+TEST_ASSERT(IdealOfProjectivePoints(Qxyz,mat(QQ,[[0,1,0],[1,1,0]])),ideal(z,x^2-x*y));
+
+PrintLn "\n-- IDEAL: monomial ideals (PPVector) --";
+TEST_ASSERT(IsContained(ideal(x*y, y^3, x*y^2), ideal(x,y^2)),  true);
+TEST_ASSERT(IsElem(x, ideal(x*y)),  false);
+TEST_ASSERT(ideal(x*y)^9,  ideal(x^9*y^9));
+TEST_ASSERT(intersect(ideal(x*y), ideal(y*y)),  ideal(x*y*y));
+TEST_ASSERT(colon(ideal(x*y), ideal(y)),  ideal(x));
+TEST_ASSERT(ideal(x*y):ideal(y),  ideal(x));
+TEST_ASSERT(saturate(ideal(x*y^2), ideal(y)),  ideal(x));
+TEST_ASSERT(saturate(ideal(x*y^2), ideal(one(CurrentRing))),  ideal(x*y^2));
+TEST_ASSERT(saturate(ideal(x*y^2), ideal(2*one(CurrentRing))),  ideal(x*y^2));
+TEST_ASSERT(saturate(ideal(x), ideal(x,y)),  ideal(x));
+TEST_ASSERT(radical(ideal(x^4*y^2, z^4)), ideal(x*y, z));
+
+
+PrintLn "\n-- IDEAL: Hilbert --";
+TEST_ASSERT(deg(HilbertNumQuot(ideal(x^2,y^2))),  4);
+TEST_ASSERT(HilbertNumQuot(ideal(x^2,y^2)),  untagged(HilbertSeriesQuot(ideal(x^2,y^2))).num);
+TEST_ASSERT(untagged(HilbertSeries(CurrentRing/ideal((x-y)^4, (x+y+z)^4))),  Record[DenFactors := Record[multiplicities := [3], factors := [-indet(RingQQt(1),1) +1], RemainingFactor := 1], num := indet(RingQQt(1),1)^8 -2*indet(RingQQt(1),1)^4 +1]);
+TEST_ASSERT(HVector(CurrentRing/ideal((x-y)^4, (x+y+z)^4)),  [1, 2, 3, 4, 3, 2, 1]);
+TEST_ASSERT(RegularityIndex(HilbertFn(CurrentRing/ideal(CurrentRing,[]))),  -2);
+TEST_ASSERT(HilbertPoly(Qxyz/ideal(x,y^2)),  2);
+-- Hilbert on fine-graded ring
+QxyzLex := NewPolyRing(QQ, "x,y,z", LexMat(3), 3);
+TEST_ASSERT(HasPositiveGrading(QxyzLex), true);
+use QxyzLex;
+TEST_ASSERT(wdeg(x^2),  [2,0,0]);
+TEST_ASSERT(dim(QxyzLex/ideal(x,y)),  1);
+TEST_ASSERT(dim(QxyzLex/ideal(x-1)),  2);  ----- controllare "overflow"
+TEST_ASSERT(multiplicity(QxyzLex/ideal(x-1)),  1);
+TEST_ASSERT(deg(HilbertNumQuot(ideal(x^2,y^2))),  4);
+TEST_ASSERT(untagged(HilbertSeries(CurrentRing/ideal(x^4, x^2*z^4))), Record[DenFactors := Record[multiplicities := [1, 1, 1], factors := RingElems(RingQQt(3),"-t[1]+1, -t[2]+1, -t[3]+1"), RemainingFactor := 1], num := RingElem(RingQQt(3), "t[1]^4*t[3]^4 -t[1]^2*t[3]^4 -t[1]^4 +1")]);
+
+PrintLn "\n-- IDEAL: toric --";
+F2wxyz ::= ZZ/(2)[w,x,y,z];
+use F2wxyz;
+TEST_ASSERT(toric(ideal(x*z-y^2, x*w-y*z), [y]), ideal(-y^2 + x*z, -y*z + x*w, z^2 - y*w));
+TEST_ASSERT(toric(ideal(x*z-y^2, x*w-y*z)), ideal(-y^2 + x*z, -y*z + x*w, z^2 - y*w));
+TEST_ASSERT(toric([[1,3,2],[3,4,8]]),  ideal(w^16 - x^2*y^5));
+TEST_ASSERT(EqSet(HilbertBasisKer(mat([[1,1,-1]])), [[0, 1, 1], [1, 0, 1]]),  True);
+
+PrintLn "\n-- IDEAL: monomial ideals --";
+TEST_ASSERT(AlexanderDual(ideal(x*y)), ideal(x,y));
+TEST_ASSERT(PrimaryDecomposition(ideal(x*y)), [ideal(y), ideal(x)]);
+TEST_ASSERT(IsFactorClosed([1,x,x*y,y]), true);
+TEST_ASSERT(IsFactorClosed([1,x,x*y]), false);
+
+
+PrintLn "\n-- RINGHOM --";
+P ::= Qxy[z];
+Pab ::= P[a,b];
+TEST_ASSERT(CanonicalHom(ZZ, P)(RingElem(ZZ, 4)),  RingElem(P,4));
+TEST_ASSERT(CanonicalHom(Qxy, P)(RingElem(Qxy, "x")),  RingElem(P, "x"));
+TEST_ASSERT(ChainCanonicalHom(Qxy, Pab)(RingElem(Qxy, "x")),  RingElem(Pab, "x"));
+TEST_ASSERT(PolyRingHom(Qxy, Pab, CanonicalHom(QQ,Pab), "2,1")(RingElem(Qxy,"x")),  2);
+TEST_ASSERT(PolyRingHom(Qxy, Pab, CanonicalHom(QQ,Pab), [2,1])(RingElem(Qxy,"x")),  2);
+QxyIntoP := CanonicalHom(Qxy,P);
+TEST_ASSERT(QxyIntoP(IdentityMat(Qxy,3)),  IdentityMat(P,3));
+use Qxy;
+TEST_ASSERT(eval(x^2+y, [2]),  y+4);
+
+PrintLn "\n-- QuotientRing --";
+S ::= QQ[a,b,c];
+RmodI := NewQuotientRing(Qxy,  "x^2-1");
+SmodJ := NewQuotientRing(S,  "a^2-1");
+phi := PolyAlgebraHom(Qxy,S, "a,b");
+psi := InducedHom(RmodI, CanonicalHom(S,SmodJ)(phi));
+TEST_ASSERT(phi(RingElem(Qxy,"x")),  RingElem(S,"a"));
+TEST_ASSERT(psi(RingElem(RmodI,"x")),  RingElem(SmodJ,"a"));
+TEST_ASSERT(CanonicalRepr(RingElem(SmodJ,"a")),  RingElem(S,"a"));
+TEST_ASSERT(DefiningIdeal(SmodJ),  ideal(RingElem(S,"a^2-1")));
+TEST_ASSERT(BaseRing(SmodJ),  S);
+Qx ::= QQ[x];  -- univariate
+RmodI := NewQuotientRing(Qx, "x^2-1");
+TEST_ASSERT(IsZeroDivisor(RingElem(RmodI,"x-1")),  true);
+phi := PolyAlgebraHom(Qx,S, "a");
+psi := InducedHom(RmodI, CanonicalHom(S,SmodJ)(phi));
+TEST_ASSERT(phi(RingElem(Qx,"x")),  RingElem(S,"a"));
+TEST_ASSERT(psi(RingElem(RmodI,"x")),  RingElem(SmodJ,"a"));
+TEST_ASSERT(CanonicalRepr(RingElem(SmodJ,"a")),  RingElem(S,"a"));
+TEST_ASSERT(DefiningIdeal(SmodJ),  ideal(RingElem(S,"a^2-1")));
+TEST_ASSERT(BaseRing(SmodJ),  S);
+QQi := NewQuotientRing(RingQQt(2), "t[1]^2+1, t[2]^2");
+TEST_ASSERT((1/(RingElem(QQi,"t[1]"))) * RingElem(QQi,"t[1]"),  1);
+TEST_ASSERT(IsZeroDivisor(RingElem(QQi,"t[2]")),  true);
+TEST_ASSERT(IsIntegralDomain(QQi),  false);  // because IsZeroDivisor was true - QuotientRing.C
+QQi := NewQuotientRing(RingQQt(2), "t[1]^2+1, t[2]^2+1");
+TEST_ASSERT((1/(RingElem(QQi,"t[1]"))) * RingElem(QQi,"t[1]"),  1);
+QQi := NewQuotientRing(RingQQt(1), "t^2+1");
+TEST_ASSERT((1/(RingElem(QQi,"t"))) * RingElem(QQi,"t"),  1);
+QQix ::= QQi[x];
+TEST_ASSERT((1/(RingElem(QQix,"t"))) * RingElem(QQix,"t"),  1);
+QQii := NewQuotientRing(RingQQt(1), "(t^2+1)^2");
+TEST_ASSERT((1/(RingElem(QQii,"t"))) * RingElem(QQii,"t"),  1);
+
+PrintLn "\n-- MODULE --";
+Use R ::= QQ[x,y,z];
+F := NewFreeModule(R, 3);  V := ModuleElem(F, [x,y,1-x]);
+TEST_ASSERT(RingOf(F), R);
+TEST_ASSERT(RingOf(V), R);
+TEST_ASSERT(IsZero(V), False);
+TEST_ASSERT(0*V, zero(F));
+TEST_ASSERT(IsZero(V-V), True);
+TEST_ASSERT(V+V, 2*V);
+//TEST_ASSERT(GBasis(SubmoduleRows(F,mat([[x,z,0],[z,y,0]]))), gens(SubmoduleRows(F,mat([[z,y,0],[x,z,0],[0,x*y-z^2,0]]))));
+TEST_ASSERT(GBasis(SubmoduleRows(F,mat([[z,z,0],[z,y,0]]))), gens(SubmoduleRows(F,mat([[z,z,0],[0,y-z,0]]))));
+TEST_ASSERT(LT(SubmoduleRows(F,mat([[z,z,0],[z,y,0]]))), SubmoduleRows(F,mat([[z,0,0],[0,y,0]])));
+TEST_ASSERT(GBasis(SubmoduleRows(F,mat([[z,x,0],[z,y,0]]))), gens(SubmoduleRows(F,mat([[z,y,0],[z,x,0],[z*(x-y),0,0]]))));
+TEST_ASSERT(LT(SubmoduleRows(F,mat([[z,x,0],[z,y,0]]))), SubmoduleRows(F,mat([[0,y,0],[0,x,0],[z*x,0,0]])));
+TEST_ASSERT(ModuleElem(F,[z,x,0]) IsIn SubmoduleRows(F,mat([[z,x,0],[0,x-y,0]])), true);
+TEST_ASSERT(ModuleElem(F,[z,y,0]) IsIn SubmoduleRows(F,mat([[z,x,0],[0,x-y,0]])), true);
+TEST_ASSERT(IsContained(SubmoduleRows(F,mat([[z,y,0]])),SubmoduleRows(F,mat([[z,x,0],[0,x-y,0]]))), true);
+TEST_ASSERT(SubmoduleRows(F,mat([[z,x,0],[z,y,0]]))=SubmoduleRows(F,mat([[z,x,0],[0,x-y,0]])), true);
+TEST_ASSERT(SubmoduleRows(F,mat([[z,x,0],[z,y,0]]))=SubmoduleRows(F,mat([[z,x,0],[0,x-y,x]])), false);
+TEST_ASSERT(IsElem(ModuleElem(F,[z,x,0]),SubmoduleRows(F,mat([[z,x,0],[0,x-y,x]]))), true);
+TEST_ASSERT(IsHomog(SubmoduleRows(F,mat([[z,x,0],[z,y,0]]))), true);
+TEST_ASSERT(IsHomog(SubmoduleRows(F,mat([[z,x^2,0],[z,y,0]]))), false);
+TEST_ASSERT(IsHomog(SubmoduleRows(F,mat([[z,x,0],[z^2,z*x,y]]))), true);
+TEST_ASSERT(SubmoduleOfMinGens(SubmoduleRows(F,mat([[z,x,0],[z^2,z*x,y^2]]))), SubmoduleRows(F,mat([[z,x,0],[z^2,z*x,y^2]])));
+TEST_ASSERT(EqSet(MinGens(SubmoduleRows(F,mat([[x,x,0],[0,x,0],[x,0,0]]))), gens(SubmoduleRows(F,mat([[0,x,0],[x,0,0]])))), true);
+//TEST_ASSERT(SyzOfGens(F,ideal([x, 0, y])),SubmoduleRows(F, mat([[0, 1, 0], [y, 0, -x]])));
+// make test for syz0 redmine #1206
+
+
+PrintLn "\n-- MORE TESTS --";
+TEST_ASSERT(gcd(RingElems(S, "a, b")), 1);
+
+PrintLn "\n------ done ------";
+If PrintInfo Then
+  PrintLn TestCount, " tests in ", DecimalStr(CpuTime()-T0), "s";
+EndIf;
+
+
+------------------------------------------------------------
+Use R ::= QQ[x,y,z];
+------------------------------------------------------------

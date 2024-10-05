@@ -1,0 +1,135 @@
+      MatrixOps
+      Copyright (c)  2009,2012,2019,2020  John Abbott and Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{MatrixOps}{John Abbott}
+
+
+
+== User documentation for MatrixOps ==
+%======================================================================
+
+``MatrixOps`` gathers together a number of operations on matrices; in
+most cases these operations are happy to accept a ``MatrixView``
+(see [[MatrixView]]) as argument.
+
+When not specified, a matrix argument is of type ``ConstMatrixView``.
+
+=== Matrix accessors ===
+
+- ``M[i,j]`` read the ``(i,j)``-entry of matrix ``M``
+- ``SetEntry(M,i,j, val)``  set the ``(i,j)``-entry of matrix ``M``
+- ``GetRow(M,i)``  return the ``i``-th row of ``M`` as a ``vector<RingElem>``
+- ``GetCol(M,j)``  return the ``j``-th col of ``M`` as a ``vector<RingElem>``
+- ``GetRows(M)``  return the rows of ``M`` as a ``vector<vector<RingElem>>``
+- ``GetCols(M)``  return the cols of ``M`` as a ``vector<vector<RingElem>>``
+- ``FlattenByRows(M)``  return entries of ``M`` in a ``vector<RingElem>`` in order 1st row, 2nd row, etc
+- ``FlattenByCols(M)``  return entries of ``M`` in a ``vector<RingElem>`` in order 1st col, 2nd col, etc
+
+Note that ``GetRow``, ``GetCol``, ``GetRows``, ``GetCols``, ``FlattenByRows`` and ``FlattenByCols`` make copies of the matrix entries.
+
+
+=== Matrix Arithmetic ===
+
+There are two ways of multiplying two matrices together.  The infix
+operators return a [[DenseMatrix]]; the procedural version may be
+slightly faster than the infix operator.
+- ``mul(matrix& lhs, M1, M2)`` -- a procedure equivalent to ``lhs = M1*M2;``, note that ``lhs`` might be a ``SparseMatrix`` **(not yet implemented)**
+- ``operator*(M1, M2)``  -- the product ``M1*M2``
+- ``operator+(M1, M2)``  -- the sum ``M1+M2``
+- ``operator-(M1, M2)``  -- the difference ``M1-M2``
+- ``power(M, n)``  compute ``n``-th power of ``M``; if ``n`` is negative then ``M`` must be invertible
+- ``operator*(n, M1)``   -- scalar multiple of ``M1`` by ``n`` (integer or RingElem)
+- ``operator*(M1, n)``   -- scalar multiple of ``M1`` by ``n`` (integer or RingElem)
+- ``operator/(M1, n)``   -- scalar multiple of ``M1`` by ``1/n`` (where ``n`` is integer or RingElem)
+- ``operator-(M1)``      -- scalar multiple of ``M1`` by -1
+
+
+=== Matrix norms ===
+
+Here are some matrix norms.  The result is an element of the ring
+containing the matrix elements.  Note that ``FrobeniusNormSq`` gives the
+**square** of the Frobenius norm (so that the value surely lies in the
+same ring).
+- ``FrobeniusNormSq(M)``  -- the **square** of the Frobenius norm
+- ``OperatorNormInfinity(M)`` -- the infinity norm, ring must be ordered
+- ``OperatorNorm1(M)`` -- the one norm, ring must be ordered
+
+
+=== Sundry functions ===
+
+Here are some fairly standard functions on matrices.
+- ``det(M)``      -- determinant of ``M`` (M must be square)
+- ``IsZeroDet(M)``  -- equivalent to ``IsZero(det(M))`` (but may be faster)
+- ``HadamardBoundSq(M)`` -- computes row and column bounds in a ``struct`` (fields ``myRowBoundSq`` and ``myColBoundSq``)
+- ``rk(M)``       -- rank of ``M`` (the base ring must be an integral domain)
+- ``inverse(M)``  -- inverse of ``M`` as a [[DenseMatrix]]
+- ``adj(M)``      -- classical adjoint of ``M`` as a [[DenseMatrix]]; sometimes called "adjugate".
+- ``rref(M)`` -- compute a reduced row echelon form of ``M`` (orig. matrix is unchanged); matrix must be over a field
+- ``PseudoInverse(M)`` -- PseudoInverse of ``M`` as a [[DenseMatrix]].
+                   I suspect that it requires that the matrix be of full rank.
+- ``LinSolve(M,rhs)``  -- solve for ``x`` the linear system ``M*x = rhs``; result is a [[DenseMatrix]]; if no soln exists, result is the 0-by-0 matrix
+- ``LinKer(M)``  -- solve for ``x`` the linear system ``M*x = 0``; returns a [[DenseMatrix]] whose columns are a base for ``ker(M)``
+- ``LinKerZZ(M)``  -- solve for ``x`` the linear system ``M*x = 0``; returns a [[DenseMatrix]] whose columns are a ZZ-base for integer points in ``ker(M)``
+
+
+==== Further sundry functions ====
+
+Here are some standard operations where the method used is specified explicitly.
+It would usually be better to use the generic operations above, as those should
+automatically select the most appropriate method for the given matrix.
+- ``det2x2(M)``  -- only for 2x2 matrices
+- ``det3x3(M)``  -- only for 3x3 matrices
+- ``det4x4(M)``  -- only for 4x4 matrices
+- ``det5x5(M)``  -- only for 5x5 matrices
+- ``DetByGauss(M)`` -- matrix must be over an integral domain
+- ``RankByGauss(std::vector<long>& IndepRows, M)``
+- ``InverseByGauss(M)`` -- some restrictions (needs gcd)
+- ``AdjointByDetOfMinors(M)``
+- ``AdjointByInverse(M)`` --  base ring must be integral domain
+- ``LinSolveByGauss(M,rhs)`` -- solve a linear system using gaussian elimination
+                    (base ring must be a field), result is a [[DenseMatrix]]
+- ``LinSolveByHNF(M,rhs)`` -- solve a linear system using Hermite NormalForm
+                    (base ring must be a PID), result is a [[DenseMatrix]]
+- ``LinSolveByModuleRepr(M,rhs)`` -- solve a linear system using module element representation, result is a [[DenseMatrix]]
+
+
+- ``void GrammSchmidtRows(MatrixView& M)``  -- NYI
+- ``void GrammSchmidtRows(MatrixView& M, long row)``  -- NYI
+
+
+== Maintainer documentation for MatrixOps ==
+%======================================================================
+
+Most impls are quite straightforward.
+
+``power`` is slightly clever with its iterative impl of binary powering.
+
+``LinSolveByGauss`` is a little complicated because it tries to handle all
+cases (//e.g.// full rank or not, square or more rows than cols or more cols than rows)
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Can we make a common "gaussian elimination" impl which is called by the
+various algorithms needing it, rather than having several separate
+implementations?
+
+Is the procedure ``mul`` really any faster than the infix operator?
+
+== Main changes ==
+%======================================================================
+
+**2012**
+- June: Added negation, multiplication and division of a matrix by a scalar.
+- April: Added LinSolve family (incl. LinSolveByGauss, LinSolveByHNF, LinSolveByModuleRepr)
+-
+
+**2011**
+- May: Added power fn for matrices: cannot yet handle negative powers.
+- March: added multiplication by RingElem
+-
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

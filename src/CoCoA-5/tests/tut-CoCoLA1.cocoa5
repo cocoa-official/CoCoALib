@@ -1,0 +1,292 @@
+------------------------------------------------------------
+-- TUTORIAL 1
+------------------------------------------------------------
+-- CHARACTERISTIC POLYNOMIAL AND MINIMAL POLYNOMIAL
+------------------------------------------------------------
+
+-- We represent vector space homomorphisms with matrices
+
+-- Assignment of a matrix
+-- standard constructor: list of rows
+M := mat([ [0, 1], [-1, 0] ]);  -- assignment does not print
+M;  -- same as "print M;"
+
+-- NOTE: for convenience, if the given coefficients are
+-- just integers, the matrix is defined over the ring QQ
+
+-- other constructors for a matrix
+MakeMatByRows(2, 2, [0, 1,  -1, 0]);
+MakeMatByCols(2, 2, [0, -1,  1, 0]);
+
+// ? mat -- manual for entries with keywords containing "mat"
+
+// ? returning mat -- .. containing "returning mat"
+
+// ? BlockMat 
+I2 := IdentityMat(QQ, 2);
+Z  := ZeroMat(QQ, 2, 2);
+
+------------------------------------------------------------
+-- now we consider the QQ-vectorspace homomorphism QQ^6 --> QQ^6
+--   defined by A:
+A := BlockMat([[M, Z, I2],
+	       [Z, M, Z],
+	       [Z, Z, M]]);
+A;
+
+--------------------------------------------------
+-- we need a POLYNOMIAL RING with (at least) an indeterminate
+-- for characteristic and minimal polynomial of a matrix
+
+-- STANDARD SYNTAX: a normal function call
+QQz := NewPolyRing(QQ, "z");
+-- or, equivalently, SPECIAL SYNTAX with "::="
+QQz ::= QQ[z];
+
+use QQz;
+
+----------------------------
+-- CHARACTERISTIC POLYNOMIAL
+CharPoly(A, z);
+--> z^6 +3*z^4 +3*z^2 +1
+
+-- this is, by definition:
+det(z * IdentityMat(QQz, 6) - mat(QQz, A));
+-- NOTE: mat(QQz, A) is the canonical image of A (over QQ) into QQ[z]
+
+--++++++++++++++++++++++++++++++++++++++++++++++++++
+-- CoCoA language: lower case or upper case?
+
+-- the general rule is:
+--   if it is a single word: lower case
+--     e.g. det(..), mat(..), ideal(..)
+--   if it is more words: "CamelCase"
+--     e.g. CharPoly(..), NewPolyRing(..), BlockMat(..)
+
+-- many single words are *both* upper and lower case
+--   for backward compatibility
+--++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-- minimal polynomial
+MPA := MinPoly(A, z);  MPA;
+--> z^4 +2*z^2 +1
+
+-- here we define it!!  basic version
+define EvalPolyInMat(f, M)
+  ResM := ZeroMat(RingOf(M), NumRows(M), NumCols(M));
+  foreach summand in monomials(f) do
+    ResM := ResM + LC(summand) * M^deg(summand);
+  endforeach;
+  return ResM;
+enddefine; -- EvalPolyInMat
+
+EvalPolyInMat(MPA, A); --> zero matrix
+
+-------------------------------------------------
+-- here we re-define with some input checks
+define EvalPolyInMat(f, M)
+  i := UnivariateIndetIndex(f);
+  if i = 0 then error("Poly must be univariate"); endif;
+  if NumRows(M)<>NumCols(M) then error("Mat must be square"); endif;
+  -- same as basic version
+  ResM := ZeroMat(RingOf(M), NumRows(M), NumCols(M));
+  foreach summand in monomials(f) do
+    ResM := ResM + LC(summand) * M^deg(LPP(summand));
+  endforeach;
+  return ResM;
+enddefine; -- EvalPolyInMat
+-------------------------------------------------
+
+EvalPolyInMat(MPA, A);
+
+-- we need to find the smallest linear combination of the powers of A
+-- A^0, A^1, A^2, ...  we "flatten" them into rows of length 6*6
+
+flatten(GetRows(A^0));
+flatten(GetRows(A^1));  -- and so on..
+
+MM := mat([flatten(GetRows(A^0)),
+	      flatten(GetRows(A^1)),
+	      flatten(GetRows(A^2))
+	      ]);
+MM;
+LinKerBasis(transposed(MM));  --> 0
+
+MM := mat([flatten(GetRows(A^i))  |  i in 0..3]);
+LinKerBasis(transposed(MM));  --> 0
+
+MM := mat([flatten(GetRows(A^i))  |  i in 0..4]);
+LinKerBasis(transposed(MM));  --> solution!
+-- [[-1, 0, -2, 0, -1]]
+
+-- this means that...
+-1*A^0 + 0*A^1 - 2*A^2 + 0*A^3 - 1*A^4;  -- ... is the zero matrix
+
+-- using our nice function EvalPolyInMat
+EvalPolyInMat(-1 -2*z^2 -z^4, A);
+
+-- we can check with the general function "IsZero":
+IsZero(EvalPolyInMat(-1 -2*z^2 -z^4, A));
+--> true
+
+-- so the minimal polynomial is 1 + 2*z^2 + 1*z^4 (monic)
+
+------------------------------------------------------------
+-- now we consider the QQ-vectorspace homomorphism QQ^6 --> QQ^6
+--   defined by B:
+B := BlockMat([[M, I2, Z],
+	       [Z, M, I2],
+	       [Z, Z, M]]);
+B;
+
+-- characteristic polynomial
+CharPoly(B, z);
+MinPoly(B, z);
+
+------------------------------------------------------------
+-- now we compare:
+
+CharPoly(A, z) = CharPoly(B, z);
+--> true
+factor(CharPoly(A, z));
+--> record[RemainingFactor := 1, factors := [z^2 +1], multiplicities := [3]]
+-- i.e. CharPoly(A, z) = (z^2 +1)^3
+
+factor(MinPoly(A, z));
+--> record[RemainingFactor := 1, factors := [z^2 +1], multiplicities := [2]]
+
+factor(MinPoly(B, z));
+--> record[RemainingFactor := 1, factors := [z^2 +1], multiplicities := [3]]
+
+-------------------------------------------------------------
+-- THEOREM CAYLEY-HAMILTON:
+-- (a) MinPoly divides CharPoly
+-- (b) MinPoly and CharPoly have the same irreducible factors
+-------------------------------------------------------------
+
+-- another example:
+M := MakeMatByCols(3,3, [1,0,1, 0,-2,0, -3,0,-3]);
+CharPoly(M, z);
+factor(It);  -- "It" is the last returned result
+MinPoly(M, z);
+factor(It);
+
+M := MakeMatByCols(3,3, [1,0,0, 0,-3,4, 0,1,0]);
+CharPoly(M, z);
+factor(It).factors;
+MinPoly(M, z);
+factor(It).factors;
+
+-- EXERCISE: experiment with other matrices
+-- EXERCISE: how can I invent a matrix with deg(MinPoly) < deg(CharPoly)?
+
+------------------------------------------------------------
+-- BIGKER
+
+LinKerBasis(A);  -- indeed A is the matrix of an injective homomorphism
+BigKerBasis(A);
+
+C :=  mat([[1, 0, 0],
+	   [0, 0, 0],
+	   [0, 1, 0]]);
+LinKerBasis(C);
+C^2;
+LinKerBasis(C^2);
+C^3;  -- same as C^2, so C^n=C^2 for all n>2
+-- so we have....
+BigKerBasis(C);
+
+-- EXERCISE: experiment with other matrices
+
+------------------------------------------------------------
+-- DEFINITION: EIGENVALUE, EIGENFACTOR, EIGENSPACE
+
+A := MakeMatByCols(3,3, [1,0,5, 0,0,2, 0,1,0]);
+CharPoly(A, z);
+factor(It).factors;  -- "It" is the last printed result
+--> [z -1, z^2 -2]  -- these are called EIGENFACTORs
+
+eigenfactors(A, z);
+
+--------------------------------------
+-- new function
+define EigenfactorsTut(M, x)
+  return factor(CharPoly(M,x)).factors;
+enddefine; -- eigenfactors
+
+EigenfactorsTut(A, z);
+--------------------------------------
+
+--> 1 is an EIGENVALUE  (+/- square root of 2 are not in QQ!)
+
+-- EIGENSPACE of eigenfactor (z-1)
+A1 := EvalPolyInMat(z-1, A);
+LinKer(A1);
+LinKerBasis(A1);
+-- EIGENSPACE of eigenfactor (z^2-2):
+A2 := EvalPolyInMat(z^2-2, A);
+LinKerBasis(A2);
+
+-- the EIGENVECTORs are the non-zero elements in the eigenspaces
+
+--the GENERELIZED EIGENSPACE is the BigKerBasis (instead of LinKer)
+-- GEN EIGENSPACE of (z-1)
+BigKerBasis(A1);
+
+-- GEN EIGENSPACE of (z^2-2):
+BigKerBasis(A2);
+
+------------------------------------------------------------
+A := MakeMatByCols(3,3, [1,0,0, 0,0,1, 0,0,0]);
+F := factor(MinPoly(A, z));
+p := F.factors;  p;
+m := F.multiplicities;  m;
+
+-- THEOREM (Generalized eigenspace decomposition)
+
+-- (b)  restriction of p_i(phi) to BigKerBasis(p_i(phi)) is nilpotent
+
+A1 := EvalPolyInMat(p[1], A);   A1;  -- endomorphism
+Gen1 := BigKerBasis(A1);  Gen1; -- subvectorspace
+A1 * transposed(mat(Gen1));
+
+A2 := EvalPolyInMat(p[2], A);   A2;  -- endomorphism
+Gen2 := BigKerBasis(A2);  Gen2; -- subvectorspace
+A2 * transposed(mat(Gen2));  --> not 0
+A2^2 * transposed(mat(Gen2));  --> 0
+
+-- (c)  restriction of p_i(phi) to BigKerBasis(p_j(phi)) is isomorphism
+A1 * transposed(mat(Gen2));  -- maximum rank
+A2 * transposed(mat(Gen1));  -- maximum rank
+
+-- (d) if m[i]=1 then <LinKerBasis(Ai)> = <BigKerBasis(Ai)>
+m;
+LinKerBasis(A1);
+BigKerBasis(A1);
+
+LinKerBasis(A2);
+BigKerBasis(A2);
+
+--------------------------------------------------
+-- Commendable Endomorphism
+
+-- DEFINITION phi is COMMENDABLE if dim(Eig(p_i)) = deg(p_i)
+
+A := mat([[1, 1],
+	  [0, 1]]);
+F := factor(MinPoly(A, z));
+p := F.factors;  p; --> degree = 1
+m := F.multiplicities;  m;
+LinKerBasis(EvalPolyInMat(p[1], A));  --> dimension = 1
+-- dim(Eig(z-1)) = 1
+
+-------------------------------------------------------------
+-- THEOREM Characterization of commendable endomorphisms
+-- (b) MinPoly(phi) = CharPoly(phi)
+MinPoly(A, z) = CharPoly(A, z);
+
+
+--------------------------------------------------
+
+-- DEFINITION ideal of algebraic relations
+-- BMForMat (???)

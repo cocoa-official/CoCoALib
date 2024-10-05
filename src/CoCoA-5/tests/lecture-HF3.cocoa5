@@ -1,0 +1,157 @@
+----------------------------------------------------------------------
+-- Hilbert Functions 3
+-- From power series to Hilbert functions
+----------------------------------------------------------------------
+
+-- INTEGER FUNCTIONS AND INTEGER VALUED POLYNOMIALS
+
+-- An integer function is a function ZZ --> ZZ
+-- An integer valued polynomial is a polynomial in QQ[t]
+--   whose evaluation is integer for any integer agrument.
+
+-- An integer function is an infinite object, so we first
+-- look at integer valued polynomials.
+
+use R ::= QQ[t,x,y,z];
+
+-- The coefficients of this polynomial are not integer,
+-- but it is an integer valued polynomial
+--      binomial(t, K)  =  (t)(t-1)(t-2)...(t-K+1)/ K!
+P := binomial(t,2);  P;
+binomial(1,2);
+binomial(2,2);
+binomial(3,2);
+binomial(4,2);
+binomial(5,2); // ....
+
+-- The FIRST DIFFERENCE of P is defined as
+-- DeltaP(i) = P(i) - P(i-1)
+-- In our example:
+P - subst(P, [[t, t-1]]);
+
+-- The r-th DIFFERENCE of P is defined recursively as delta(delta(r-1, P))
+define delta(R, P)
+  toplevel t;
+  if R <= 0 then error("R must be positive!"); endif;
+  if R = 1 then return P - subst(P, t, t-1); endif;
+  return delta(1, delta(R-1, P));
+enddefine; -- delta
+
+delta(1,P);
+delta(2,P);
+delta(3,P);
+
+-- An INTEGER LAURENT FUNCTION OF POLYNOMIAL TYPE is a particular 
+-- type of integer functions which can be finitely represented:
+-- F : ZZ --> ZZ  such that there exist i_0, i_1 (int) and P (int.val.poly)
+-- F(i) = 0     for i < i_0
+-- F(i) = P(i)  for i >= i_1
+
+-- The REGULARITY INDEX of an integer function of polynomial type
+-- is min{i | F(i) = P(i)}
+
+-- For simplicity and without loss of generality here we study the
+-- integer Laurent function such that  F(i) = 0  for  i < 0
+
+-- For example:
+I := ideal(t^3, x*y*z, y^2);
+HilbertFn(R/I);
+
+-- From 2nd lecture we learned how to compute
+HP := HilbertSeries(R/I);
+HP;
+untagged(HP).num;
+--> 1 - t^2 - 2t^3 + t^4 + t^5 + t^6 - t^7
+
+-- Now we see how to compute the Hilbert function!
+----------------------------------------------------------------------
+
+QQt ::= QQ[t];
+FieldQQt := NewFractionField(QQt);
+use FieldQQt;
+
+-- FIRST: AN APPROXIMATION
+(1 - t^2 - 2*t^3 + t^4 + t^5 + t^6 - t^7)/(1-t)^4;
+--> (-t^5 - t^4 + 2t^2 + 2t + 1)/(t^2 - 2t + 1)
+
+-- where 1/(1-t) = 1 +t +t^2 +t^3 +t^4 +.... (up to degree 4)
+-- so the first coefficient of the series are
+(-t^5 - t^4 + 2*t^2 + 2*t + 1) * (1 +t +t^2 +t^3 +t^4)^2;
+--> ..... 18t^4 + 14t^3 + 9t^2 + 4t + 1
+
+-- The FIBONACCI NUMBERS can be encoded into a rational series,
+-- but the denominator is not a power of (1-t).
+-- So this integer function is not of polynomial type.
+-- 1/(1 -t -t^2)
+subst(1 +t +t^2 +t^3 +t^4 +t^5  +t^6  +t^7,  [[t,  t +t^2]]);
+--> ..... 21t^7 + 13t^6 + 8t^5 + 5t^4 + 3t^3 + 2t^2 + t + 1
+
+----------------------------------------
+-- Given a series  HN/(1-t)^n  we simplify it and get SHN/(1-t)^d
+-- with SHN(1) != 0.  Then we can have these cases:
+
+-- deg(Den) = 0
+-- If  the series is  SHN/(1-t)^0  the function is simply
+-- written as the coefficients of SHN (the H-VECTOR):
+use QQt;
+SHN := 1 + 2*t + 2*t^2 - t^4 - t^5;
+HV := coefficients(SHN, [t^N | N in 0..deg(SHN)]);
+HV;
+-- The value of the function for  i > deg(SHN)  is 0,
+-- so we write a complete description of the function like this
+HF := record[FirstValues := HV, Poly := 0];
+HF;
+-- And the regularity index is deg(SHN)+1
+
+----------------------------------------
+-- deg(Den) = 1
+-- If the series is  SHN/(1-t)  the function is given by the coefficients
+-- of the series SHN * (1 +t +t^2 +t^3 +...)
+SHN := 1 + 2*t + 2*t^2 - t^4 - t^5;
+HF;
+-- and the first values are:
+L := [ sum(first(HF.FirstValues,I)) | I in 1..len(HF.FirstValues) ];
+L;
+-- And the following values are 3, 3, 3, ....
+-- so we write a complete description of the function like this
+HF := record[FirstValues := first(L, len(L)-1), Poly := 3];
+HF;
+-- And the regularity index is deg(SHN)+1 -1
+
+----------------------------------------
+-- deg(Den) = 2
+-- If the series is  SHN/(1-t)^2  the function is given by the coefficients
+-- of the series SHN * (1 +t +t^2 +t^3 +...) * (1 +t +t^2 +t^3 +...)
+SHN := 1 + 2*t + 2*t^2 - t^4 - t^5;
+HF;
+-- and the first values are:
+L := [ sum(first(HF.FirstValues,I)) | I in 1..len(HF.FirstValues) ];
+L;
+-- And the following values are 18+3, 18+2*3, ...
+-- so we write a complete description of the function like this
+HF := record[FirstValues := first(L, len(L)-1), Poly := 18+3*(t-4)];
+HF;
+-- And the regularity index is deg(SHN)+1 -2
+
+-- And we have the result of the example above!
+use R;
+I := ideal(t^3, x*y*z, y^2);
+HP := HilbertSeries(R/I);  HP;
+HilbertFn(R/I);
+
+
+-- from 1st lecture
+-- EXERCISE
+-- Consider P/I, where
+use R ::= QQ[x,y,z];
+I := ideal(x^3, x*y, y^4, y*z^2, y^3*z, z^3);
+-- Compute the Hilbert function of P/I
+HilbertFn(R/I);
+
+-- EXERCISE
+-- Consider P/I, where
+use R ::= QQ[t,x,y,z,w];
+I := ideal(x^2*y, z^3*t*w);
+-- Compute HPNum of R/I
+-- Compute the Hilbert function of R/I
+HilbertFn(R/I);

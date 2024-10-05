@@ -1,0 +1,655 @@
+Package $mat
+
+export AdjacentMinors;
+export matrix;
+export mat;
+export BlockMat;
+export ColMat;
+export RowMat;
+export DiagMat;
+export ConcatHorList;
+export ConcatVerList;
+export MakeMatByRows;
+export MakeMatByCols;
+export minors;
+export MinPoly;
+export NewMatFilled;
+//export LexMat;
+export AlmostQR;
+export CharPoly;
+export LinKerBasis;
+//export GetRows; built-in 2021-05
+//export GetCols; built-in 2021-05
+export pfaffian;
+//export resultant; built-in 2021-10
+export eigenfactors;
+export eigenvectors;
+
+Alias 	Misc 	:= $misc;
+
+--------------------------------------------------------------------
+Define About()
+  PrintLn "    Version  : CoCoA-4.7.2";
+  PrintLn "    Date     : 1 June 2007";
+  PrintLn "    Added    : CharPoly(M,X)";
+  PrintLn "    Added    : Eigenvectors(M,X)";
+EndDefine;
+--------------------------------------------------------------------
+
+Define Man()
+  PrintLn "***OBSOLETE***";
+  PrintLn "   M := mat([[1,2,3], [4,5,6]]);";
+  PrintLn "   $mat.ExtendRows(M,4);";
+  PrintLn "   $mat.PushRows(M,4);";
+  PrintLn "   $mat.DirectSum(M, mat([[1111, 2222], [3333, 44444]]));";
+  PrintLn "   $mat.ColumnVectors(M);";
+  PrintLn "   BlockMatrix([[M,0], [0,mat([[1111, 2222], [3333, 44444]])]]);";
+  PrintLn;
+  PrintLn "   Resultant( x^2-y^2, (x+y)^3, x);";
+  PrintLn;
+  PrintLn "   Use QQ[a,b,c,d,e,f];";
+  PrintLn "   B := 230498234098234098234098234098234;";
+  PrintLn "   M := mat([";
+  PrintLn "     [ 0, a/b, bB, c ],";
+  PrintLn "     [ -a/b, 0, d, e],";
+  PrintLn "     [ -bB, -d, 0, 1/2],";
+  PrintLn "     [ -c, -e, -1/2, 0]";
+  PrintLn "   ]);";
+  PrintLn "   Pfaff(M);";
+  PrintLn "   Pfaff(Complement(M,1,1));";
+EndDefine;
+
+--------------------------------------------------------------------
+
+-- it is easier to deal with mixed ring lists at top level
+
+Define RingForMat(L)
+  Rs := RingsOf(L);
+  If IsSubset(Rs, [INT, RAT]) Then Return RingQQ(); endif;
+  Rs := diff(Rs, [INT,RAT]);
+  if len(Rs) = 1 then return Rs[1]; endif;
+  MaxID := max([RingID(R) | R in Rs]);
+  return [R in Rs | RingID(R) = MaxID][1];
+EndDefine;
+
+Define CheckType(Obj, ArgPos, TypeExp)
+  If type(Obj)<>TypeExp Then
+    ErrMsg := "Argument " + sprint(ArgPos) +
+    ": expected type " + sprint(TypeExp) +
+    ", but found " + sprint(type(Obj));
+    error(ErrMsg);
+  EndIf;
+EndDefine; -- CheckType
+
+Define matrix(R, Opt L)
+  if not(IsDefined(L)) then return matrix(RingForMat(R), R); endif;
+  CheckType(R,1,RING);
+  if type(L) = MAT then return ApplyCanHomMat(R,L); endif;
+  if type(L) = MODULE then
+    error("matrix(MODULE) not allowed, use GensAsCols or GensAsRows instead");
+  endif;
+  if L=[] then
+    error("use ZeroMat(R, 0, NC) for making matrix with 0 rows");
+  endif;
+  NR := len(L);
+  NC := len(L[1]);
+  M := NewDenseMat(R, NR, NC);
+  For i := 1 To NR Do SetRow(ref M, i, L[i]); EndFor;
+  Return M;
+EndDefine; -- matrix
+
+
+Define mat(X, Opt Y)
+  If IsDefined(Y) Then Return matrix(X,Y); EndIf;
+  Return matrix(X);
+EndDefine; -- mat
+
+
+Define ApplyCanHomMat(R, M)
+  phi := CanonicalHom(RingOf(M), R);
+  Return phi(M);
+EndDefine; -- ApplyCanHomMat
+  
+
+Define DiagMat(X, Opt Y)
+  If IsDefined(Y) Then R:=X; L:=Y; Else L:=X; R:=RingForMat(L); EndIf;
+  NR := len(L);
+  M := NewDenseMat(R, NR, NR);
+  For I := 1 To NR Do  M[I,I] := L[I]; EndFor;
+  Return M;
+EndDefine; -- DiagMat
+
+
+Define RowMat(X, Opt Y)
+  if not(IsDefined(Y)) then return RowMat(RingForMat(X), X); endif;
+  M := NewDenseMat(X, 1, len(Y));
+  SetRow(ref M, 1, Y);
+  Return M;
+EndDefine; -- RowMat
+
+
+Define ColMat(X, Opt Y)
+  if not(IsDefined(Y)) then return ColMat(RingForMat(X), X); endif;
+  M := NewDenseMat(X, len(Y), 1);
+  SetCol(ref M, 1, Y);
+  Return M;
+EndDefine; -- ColMat
+
+
+-- Define Submat(M,Rows,Cols)
+--   Return mat([ [ M[I,J] | J In Cols ] | I In Rows ]);
+-- EndDefine; -- Submat
+
+
+Define MakeMatByRows(NRows, NCols, L)
+  If len(L) <> NRows*NCols Then
+    error("list of entries has length "+sprint(len(L))+
+	  "; expected "+sprint(NRows)+"*"+sprint(NCols));
+  EndIf;
+  M := NewDenseMat(RingForMat(L), NRows, NCols);
+  I := 1;
+  For R := 1 To NRows Do
+    For C := 1 To NCols Do  M[R,C] := L[I];  incr(ref I);  EndFor;
+  EndFor;
+  Return M;
+EndDefine; -- MakeMatByRows
+
+
+Define ConcatHorList(L)
+  If L=[] Then error("Empty list"); EndIf;
+  If len(L)=1 Then Return L[1]; EndIf;
+  Return ConcatHor(L[1], ConcatHorList(tail(L)));
+EndDefine; -- ConcatHorList
+
+  
+Define ConcatVerList(L)
+  If L=[] Then error("Empty list"); EndIf;
+  If len(L)=1 Then Return L[1]; EndIf;
+  Return ConcatVer(L[1], ConcatVerList(tail(L)));
+EndDefine; -- ConcatVerList
+
+  
+Define MakeMatByCols(NRows, NCols, L)
+  If len(L) <> NRows*NCols Then
+    error("list of entries has length "+sprint(len(L))+
+	  "; expected "+sprint(NRows)+"*"+sprint(NCols));
+  EndIf;
+  M := NewDenseMat(RingForMat(L), NRows, NCols);
+  I := 1;
+  For C := 1 To NCols Do
+    For R := 1 To NRows Do  M[R,C] := L[I];  incr(ref I);  EndFor;
+  EndFor;
+  Return M;
+EndDefine; -- MakeMatByCols
+
+
+-- Define DirectSum(M1, M2)
+--   Return mat(concat($.ExtendRows(M1, len(M2[1])),
+-- 	     $.PushRows(M2, len(M1[1]))  ));
+-- EndDefine; -- DirectSum
+
+
+-- Define BlockMatrix(LL)
+--   Rows := [ min([len(A)|A In L And type(A) IsIn [MAT,LIST]]) | L In LL ];
+--   Columns := [ min([len(L[J,1]) | L In LL And type(L[J]) IsIn [MAT,LIST] ])
+-- 	      | J In 1..len(LL[1]) ];
+--   For I := 1 To len(LL) Do
+--     For J := 1 To len(LL[1]) Do
+--       M := LL[I,J];
+--       If M = 0 Then
+-- 	LL[I,J] := ZeroMat(QQ,Rows[I],Columns[J])
+--       Elif len(M)<>Rows[I] Or len(M[1])<>Columns[J] Then
+-- 	error("BlockMatrix: Wrong size");
+--       EndIf;
+--     EndFor;
+--   EndFor;
+--   Return mat(ConcatLists([ list($.ConcatRows(L)) | L In LL]));
+-- EndDefine; -- BlockMatrix
+
+
+Define BlockMat(L)
+  Return ConcatVerList([ConcatHorList(row) | row in L]);
+EndDefine; -- BlockMat
+
+  
+-- Define ColumnVectors(M)   /// obsolete - not used 2021-11-26
+--   Return [ Vector(row) | row In GetCols(M) ];
+-- EndDefine; -- ColumnVectors
+
+
+-- Define TensorMat(A,B)
+--   If type(A) <> MAT Or type(B) <> MAT Then error("TensorMat: arguments must be matrices"); EndIf;
+--   RowNum:=len(A);
+--   ColNum:=len(A[1]);
+--   T1:=[[A[I,J]*B|J In 1..ColNum]|I In 1..RowNum];
+--   Return $.BlockMatrix(T1);
+-- EndDefine;
+
+
+------[ orderings & gradings ]--------------------------------------------
+
+Define PositiveGrading4(WM)
+  If not(IsPositiveGrading(WM)) Then
+    error("Not a PositiveGrading: ", WM);
+  EndIf;
+  Ws := WM[1];
+  Foreach Row In tail(GetRows(WM)) Do
+    Ws := Ws + Row;
+    If [ W In Ws | W<=0 ] = [] Then
+      Return mat(concat([Ws], GetRows(WM)));
+    EndIf;
+  EndForeach;
+  Ws := WM[1];
+  Foreach Row In tail(GetRows(WM)) Do
+//    PrintLn Ws;
+    Factors := [ div(-Row[I],Ws[I])+1 | I In 1..len(Row) And Row[I] < 0];
+    If Factors = [] Then F := 1; Else F := min(Factors); EndIf;
+    Ws := F*Ws + Row;
+    If [ W In Ws | W<=0 ] = [] Then
+      Return mat(concat([Ws], WM));
+    EndIf;
+  EndForeach;
+  error("PositiveGrading: Should never get here");
+EndDefine; -- PositiveGrading
+
+Define IsFirstNonZeroInColPositive(M)
+   NumRows := len(M);
+   NumCols := len(M[1]);
+   For C := 1 To NumCols Do
+     For R := 1 To NumRows Do
+       If M[R,C] > 0 Then Break; EndIf;
+       If M[R,C] < 0 Or R = NumRows Then Return False; EndIf;
+     EndFor;
+   EndFor;
+   Return True;
+EndDefine;
+
+------[ orderings & gradings ]--------------------------------------------
+
+-- Define IsSymmetric(M)
+--   If len(M) <> len(M[1]) Then
+--     error("IsSymmetric: matrix must be square: " + sprint(M));
+--   EndIf;
+--   For I := 1 To len(M) Do
+--     For J := I+1 To len(M) Do
+--       If M[I,J] <> M[J,I] Then Return False; EndIf;
+--     EndFor;
+--   EndFor;
+--   Return True;
+-- EndDefine; -- IsSymmetric
+
+-- Define IsAntiSymmetric(M)
+--   If len(M) <> len(M[1]) Then
+--     error("IsAntiSymmetric: matrix must be square: " + sprint(M));
+--   EndIf;
+--   For I := 1 To len(M) Do
+--     For J := I To len(M) Do
+--       If M[I,J] <> -M[J,I] Then Return False; EndIf;
+--     EndFor;
+--   EndFor;
+--   Return True;
+-- EndDefine; -- IsAntiSymmetric
+
+-- Define IsDiagonal(M)
+--   If len(M) <> len(M[1]) Then
+--     error("IsDiagonal: matrix must be square: " + sprint(M));
+--   EndIf;
+--   For I := 1 To len(M) Do
+--     For J := I To len(M) Do
+--       If I<>J And M[I,J]<>0 Then Return False; EndIf;
+--     EndFor;
+--   EndFor;
+--   Return True;
+-- EndDefine; -- IsDiagonal
+
+----------------------------------------------------------------------
+
+Define Complement(M,I,J)
+  Return mat([ WithoutNth(R,J) | R In WithoutNth(GetRows(M),I) ]);
+EndDefine; -- Complement
+
+Define Bip(M,J)
+  Return $.Complement($.Complement(M,1,1),J-1,J-1);
+EndDefine; -- Bip
+
+Define pfaffian(M)
+  If not(IsAntiSymmetric(M)) Then error("Pfaffian: matrix must be antisymmetric"); EndIf;
+  N := NumRows(M);
+  If mod(N,2)=1 Then Return 0; EndIf;
+  If N = 2 Then Return M[1,2]; EndIf;
+  Return sum([(-1)^J*M[1,J]*pfaffian($.Bip(M,J))| J In 2..N]);
+EndDefine;
+
+----------------------------------------------------------------------
+
+
+--------------[  auxiliary  ]--------------
+
+Define ExtendRows(M, N)
+  Return mat([concat(M[I], NewList(N, 0)) | I In 1..len(M)]);
+EndDefine; -- ExtendRows
+
+Define PushRows(M, N)
+  Return mat([concat(NewList(N, 0), M[I]) | I In 1..len(M)]);
+EndDefine; -- PushRows
+
+Define ConcatRows(L)
+  ResMat := NewList(len(L[1]));
+  For I := 1 To len(ResMat) Do
+    ResMat[I] := ConcatLists([ M[I] | M In L ]);
+  EndFor;
+  Return mat(ResMat);
+EndDefine; -- ConcatRows
+
+Define ConcatCols(L)
+  Return mat(ConcatLists([GetRows(M) | M In L]));
+EndDefine; -- ConcatCols
+
+-----------------------------------------------------------------------------
+
+-- "Clever" det routine.
+Define DetOrig(M)
+  If type(M) <> MAT Then error("Det: arg must be a matrix"); EndIf;
+  If len(M) <> len(M[1]) Then error("Det: matrix must be square"); EndIf;
+  L := flatten(GetRows(M));
+  EntryTypes := MakeSet(shape(L));
+  If EntryTypes = [INT] Then
+    // Matrix of integers
+    Return $builtin.det(M);
+  EndIf;
+  If IsSubset(EntryTypes, [INT, RAT]) Then
+    // Matrix of rationals
+    Return $.DetQ(M);
+  EndIf;
+  // Default case -- horribly slow for matrices bigger than about 8x8.
+  Return $builtin.det(M);
+EndDefine; -- Det
+
+// Function for determinant of matrix of rationals
+Define DetQ(M)
+  N := len(M);
+  // Should have len(M[1]) = N;
+  Denom := 1;
+  // Loop to clear denoms in each row of M.
+  For I := 1 To N Do
+    CommonDenom := LCM([den(E) | E In M[I]]);
+    M[I] := M[I]*CommonDenom;
+    Denom := Denom*CommonDenom;
+  EndFor;
+  Return $builtin.det(M)/Denom;
+EndDefine; -- DetQ
+
+-----------------------------------------------------------------------------
+-- CharPoly And Eigenvectors
+
+Define CharPoly(M, X)
+  If type(M) <> MAT Then error("Charpoly: arg must be a matrix"); EndIf;
+  NRows := NumRows(M);
+  If NRows <> NumCols(M) Then error("CharPoly: matrix must be square"); EndIf;
+  If not(IsIndet(X)) Then error("CharPoly: 2nd arg must be an indeterminate"); EndIf;
+
+  R := RingOf(M);
+  Kx := RingOf(X);
+  If (IsZZ(R) or IsQQ(R) or R=CoeffRing(Kx)) Then
+    M := CanonicalHom(R, Kx)(M);
+  EndIf;
+  R := RingOf(M);
+  If R <> Kx Then error("CharPoly(M,X): rings of M and X are incompatible"); EndIf;
+--   L := flatten(GetRows(M));
+--   EntryTypes := MakeSet(shape(L));
+--   If BaseRing(M) = ZZ Then
+--     // Matrix of integers
+--     Pts := [[N] | N In 0..D];
+--     Vals := [$builtin.det(N*identity(D)-M) | N In 0..D];
+--     F := interpolate(Pts, Vals);
+--     Return subst(F, indet(1), X);
+--   EndIf;
+--   If IsSubset(EntryTypes, [INT, RAT]) Then
+--     // Matrix of rationals (and perhaps some integers)
+--     CommonDenom := LCM([den(E) | E In flatten(GetRows(M))]);
+--     M := CommonDenom*M;
+--     Pts := [[N] | N In 0..D];
+--     Vals := [$builtin.det(N*identity(D)-M) | N In 0..D];
+--     F := interpolate(Pts, Vals);
+--     Return subst(F, indet(1), CommonDenom*X)/CommonDenom^D;
+--   EndIf;
+--   R := RingOf(M);
+--   If IsZZ(R) Or IsQQ(R) Then
+--     M := CanonicalHom(R, owner(X))(M);
+--   EndIf;
+  // Default case -- horribly slow for matrices bigger than about 8x8.
+  Return det(X*IdentityMat(Kx,NRows) - M);
+EndDefine; -- CharPoly
+
+
+// M must be square matrix, lambda must be an indeterminate.
+define eigenfactors(M, lambda)
+  If type(M) <> MAT Or NumRows(M) <> NumCols(M) Then
+    ERROR("eigenfactors: 1st arg must be a square matrix");
+  EndIf;
+  If not(IsIndet(lambda)) Then
+    ERROR("eigenfactors: 2nd arg must be an indeterminate");
+  EndIf;
+  return factor(CharPoly(M,lambda)).factors;
+enddefine; -- eigenfactors
+
+  
+// M must be square matrix of numbers, lambda must be an indeterminate.
+Define eigenvectors(M, lambda)
+  If type(M) <> MAT Or NumRows(M) <> NumCols(M) Then
+    ERROR("eigenvectors: 1st arg must be a square matrix");
+  EndIf;
+  If not(IsIndet(lambda)) Then
+    ERROR("eigenvectors: 2nd arg must be an indeterminate");
+  EndIf;
+  Rx := RingOf(lambda);
+  CRing := CoeffRing(Rx);
+  // Compute basis for nullspace of M-lambda*I in alg extn gen by each factor.
+  Ans := [];
+  D := NumRows(M);
+  EVRing ::= CRing[v[1..D],lamb],Lex; --> BUG!!! should use new symbols!
+  v := indets(EVRing, "v");
+  V := ColMat(v);
+  immerse := CanonicalHom(RingOf(M), EVRing);
+  MV := immerse(M)*V;
+  ImageList := NewList(NumIndets(Rx), 0);
+  l := last(indets(EVRing));
+  ImageList[IndetIndex(lambda)] := l;
+  phi := PolyAlgebraHom(Rx, EVRing, ImageList);
+  InvImageList := NewList(NumIndets(EVRing), 0);
+  InvImageList[D+1] := lambda;
+  InvPhi := PolyAlgebraHom(EVRing, Rx, InvImageList);
+  facs := factor(CharPoly(M, lambda));
+  For i:=1 To len(facs.factors) Do
+    f := facs.factors[i];
+    If deg(f) = 1 And characteristic(Rx) = 0 Then
+      append(ref Ans, Record[MinPoly:=f, eigenspace:=$.RationalEigenSpace(M, f)]);
+    Else
+      IrredFactor := phi(f);
+      I0 := ideal(IrredFactor) + ideal([MV[k,1] - l*v[k] | k In 1..D]);
+      MaxDim := facs.multiplicities[i]; // eigenspace has max dim equal to multiplicity of factor
+      EVecs := [];
+      FirstNonZero := 1;
+      While FirstNonZero <= D And len(EVecs) < MaxDim Do
+	I := I0 + ideal(EVRing,[v[k] | k In 1..(FirstNonZero-1)]) + ideal(v[FirstNonZero]-1);
+	If not(1 IsIn I) Then
+	  append(ref EVecs, [NF(v[K], I) | K In 1..D]);
+	EndIf;
+	FirstNonZero := FirstNonZero + 1;
+      EndWhile;
+      append(ref Ans, Record[MinPoly:=f, eigenspace:=[InvPhi(vec) | vec In EVecs]]);
+    EndIf;
+  EndFor;
+  Return Ans;
+EndDefine; -- EigenVectors
+
+
+Define RationalEigenSpace(M, LinearFactor)
+  If NumTerms(LinearFactor) = 1 Then Return LinKer(M); EndIf;
+  C := coefficients(LinearFactor);
+  lambda := -C[2]/C[1];
+  D := NumRows(M);
+  Return LinKer(M-lambda*IdentityMat(RingOf(M),D));
+EndDefine; -- EigenSpace
+
+-----------------------------------------------------------------------------
+
+Define NewMatFilled(nr, nc, entry)
+  Return MakeMatByRows(nr, nc, NewList(nr*nc, entry));
+EndDefine;
+
+-----------------------------------------------------------------------------
+-- QR decomposition
+
+Define AlmostQR(MFE)
+  OrigBasis := transposed(MFE);
+  NR := NumRows(OrigBasis);
+  -- Gram-Schmidt
+  OrthBasis := [];
+  Coeffs := [];
+  For I := 1 To NR Do
+    RowI := GetRow(OrigBasis,I);
+    P := $.ProjAndCoeffs(RowI, OrthBasis);
+    append(ref OrthBasis, RowI-P.proj);
+    append(ref Coeffs, ConcatLists([P.coeffs,[1],NewList(NR-I,0)]));
+  EndFor;
+  --  PrintLn "OrthBasis = ", OrthBasis;
+  Dec := Record[Q:=transposed(mat(OrthBasis)), R:=transposed(mat(Coeffs))];
+  -- PrintLn "Dec = ", Dec;
+  Return Dec;
+EndDefine; -- QR
+
+Define ProjAndCoeffs(V, Basis)
+  If Basis = [] Then Return Record[proj:=V*0, coeffs:=[]]; EndIf;
+  Coeffs := [ScalarProduct(V,W)/ScalarProduct(W,W) | W In Basis];
+  Proj := sum([Coeffs[i]*Basis[i] | i In 1..len(Basis)]);
+  Return Record[proj:=Proj, coeffs:=Coeffs];
+EndDefine; -- ProjAndCoeffs
+
+
+Define IntSquareFactor(N)  -- should think of a better name and interface
+  Ans := Record[Simple:=1, Square:=1];
+  If N=1 Then Return Ans; EndIf;
+  SF := FactorINT_TrialDiv(N,N);
+  Facs := SF.factors;
+  E := SF.multiplicities;
+  For I := 1 To len(Facs) Do
+    Ans.Square := Ans.Square * (Facs[I])^div(E[1],2);
+    Ans.Simple := Ans.Simple * (Facs[I])^mod(E[I],2);
+  EndFor;
+  Return Ans;
+EndDefine; -- IntSquareFactor
+
+
+Define SimplifySquareFactorsInAQR(Ref Dec)
+  TrQ := transposed(Dec.Q);
+  SqDiagMat := TrQ * Dec.Q;
+  For I := 1 To NumRows(SqDiagMat) Do
+    SII := AsRAT(SqDiagMat[I,I]);
+    N := $.IntSquareFactor(num(SII));
+    D := $.IntSquareFactor(den(SII));
+    F := N.Square/D.Square;
+    If F<>1 Then
+      -- PrintLn "*** ",F;
+      SetRow(ref TrQ,   I, (1/F) * GetRow(TrQ,I)); -- mult col
+      SetRow(ref Dec.R, I,   F   * GetRow(Dec.R, I)); -- mult row
+      SqDiagMat[I,I] := SqDiagMat[I,I]/(F^2);
+    EndIf;
+  EndFor;
+  Dec.Q := transposed(TrQ);
+  Dec.SqDiag := [SqDiagMat[I,I] | I In 1..NumRows(SqDiagMat)];
+EndDefine; -- SimplifySquareFactors
+
+
+Define minors(M, N)
+  Minors_OldSyntax := "WARNING: minors(INT,MAT) is obsolescent, use minors(MAT, INT)";
+  If type(M)=INT And type(N)=MAT Then
+    PrintLn Minors_OldSyntax;
+    X := M;  M := N;  N := X;
+  EndIf;
+  Minors_ERR := "Matrix too small";
+  If N>NumRows(M) Or N>NumCols(M) Then error(Minors_ERR); EndIf;
+  Rows := subsets(1..NumRows(M), N);
+  Cols := subsets(1..NumCols(M), N);
+  Return flatten([[ det(submat(M,R,C)) | R In Rows] | C In Cols]);
+EndDefine; -- minors
+
+
+define AdjacentMinors(M, n)
+  Minors_ERR := "Matrix too small";
+  if n>NumRows(M) or n>NumCols(M) then error(Minors_ERR); endif;
+  MaxRow := NumRows(M)-n+1;
+  MaxCol := NumCols(M)-n+1;
+  return flatten([[ det(submat(M,i..(i+n-1),j..(j+n-1))) | i in 1..MaxRow] | j in 1..MaxCol]);
+enddefine; -- AdjacentMinors
+
+
+define LinKerBasis(M)
+  if not(type(M) isin [LIST, MAT]) then
+    error("MAT or LIST expected");
+  endif;
+  if type(M) = MAT then
+    return GetCols(LinKer(M));
+  endif;
+  Ps := RingsOf(M);
+  if len(Ps) <> 1 then error("more than one ring for argument list"); endif;
+  if type(Ps[1]) = TYPE or not(IsPolyRing(Ps[1])) then
+    error("expected LIST/MAT over a poly ring");
+  endif;
+  X := indets(Ps[1]);
+  return LinKerBasis(mat([coefficients(f, X) | f in M]));
+enddefine; -- LinKerBasis
+  
+
+//----------------------------------------------------------------------
+// MinPoly
+  
+-- MinPoly di una matrice M
+Define MinPoly(M, X)
+  If type(M) <> MAT Then error("MinPoly: arg must be a matrix"); EndIf;
+  NRows := NumRows(M);
+  If NRows <> NumCols(M) Then error("MinPoly: matrix must be square"); EndIf;
+  If not(IsIndet(X)) Then error("MinPoly: 2nd arg must be an indeterminate"); EndIf;
+  R := RingOf(M);
+  if R = RingOf(X) then return MinPolyInKx(M, X); endif;
+  K := CoeffRing(RingOf(X));
+  If (IsZZ(R) or IsQQ(R)) Then
+    M := CanonicalHom(R, K)(M);
+    R := K;
+  EndIf;
+  If R <> K Then error("MinPoly(M,X): rings of M and X are not compatible"); EndIf;
+  A := ColMat(K, flatten(GetRows(IdentityMat(K, NumRows(M))),1));
+  MD := M;  -- M^1
+  While True Do
+    B := ColMat(K, flatten(GetRows(MD),1));
+    soln := LinSolve(A,B);
+    If NumCols(soln) <> 0 Then Break; EndIf;
+    A := ConcatHor(A, B);
+    MD := MD*M; -- M^D
+  EndWhile;
+  P := owner(X);
+  phi := CoeffEmbeddingHom(P);
+  D := NumRows(soln);
+  Return X^D - sum([phi(soln[J][1])*X^(J-1) | J In 1..D]);
+EndDefine; -- MinPoly
+
+
+define MinPolyInKx(M, X)
+  foreach row in GetRows(M) do
+    foreach entry in row do
+      if not(IsZero(entry)) and deg(entry,X)>0 then
+	error("matrix depends on given indet");
+      endif;
+    endforeach;
+  endforeach;
+  TmpK := NewFractionField(RingOf(X));
+  TmpKx := NewPolyRing(TmpK, ["TmpIndetForMinPoly"]);
+  MP := ClearDenom(MinPoly(mat(TmpK,M), indet(TmpKx,1)));
+  -- if we had partial homs phi: Kx --> R it would just be  x -> X
+  C := CoeffListWRT(MP, indet(TmpKx,1));
+  return sum([num(LC(C[i]))*X^(i-1) | i in 1..len(C) and not(IsZero(C[i]))]);
+enddefine; -- MinPolyInKx
+
+EndPackage;
+
+----------------------------------------------------------------------

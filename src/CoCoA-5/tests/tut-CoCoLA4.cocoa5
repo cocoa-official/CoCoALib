@@ -1,0 +1,259 @@
+------------------------------------------------------------
+-- TUTORIAL 4
+------------------------------------------------------------
+-- SOLVING ZERO DIMENSIONAL SYSTEMS
+------------------------------------------------------------
+
+-- ring for 0-dimensional ideal
+P ::= QQ[x,y,z];
+
+------------------------------------------------------------
+-- RATIONAL SOLUTIONS
+------------------------------------------------------------
+use P;
+
+I := IntersectList([ideal(z^2-4, y^3-8, (z-x)*(x-3)),
+		    ideal(x^2-1, y^2-1, x+y+z)
+		    ]);
+indent(I);
+
+--------------------------------------------------
+-- THE "BAD" ALGORITHM (brute force)
+
+EFx := eigenfactors(MultiplicationMat(x, I),  x);
+Xs := [NR(x,[f]) | f in EFx and deg(f)=1 ];  Xs;
+
+EFy := eigenfactors(MultiplicationMat(y, I),  y);
+Ys := [NR(y,[f]) | f in EFy and deg(f)=1 ];  Ys;
+
+EFz := eigenfactors(MultiplicationMat(z, I),  z);
+Zs := [NR(z,[f]) | f in EFz and deg(f)=1 ];  Zs;
+
+define IsSolution(XYZ, I)
+  foreach g in gens(I) do
+    if not(IsZero(eval(g, XYZ))) then return false; endif;
+  endforeach;
+  return true;
+enddefine; -- IsSolution
+
+foreach XYZ in CartesianProductList([Xs,Ys,Zs]) do
+  if IsSolution(XYZ, I) then println "yes :-) ", XYZ;
+  else println "-- no :-( ", XYZ;  --> emacs prints it red!
+  endif;
+endforeach;
+
+--------------------------------------------------
+-- THE "GOOD" ALGORITHM
+
+-- input: the "polynomial system" I
+S := [I];
+
+----------
+X := x; -- fix the first indeterminate
+
+J := I;  -- S contains just the ideal I
+
+EF := eigenfactors(MultiplicationMat(X, J),  X);
+println "----> EF = ", EF;
+LinFac := [ ideal(l) | l in EF and deg(l)=1 ]; -- linear factors
+println "----> LinFac = ", LinFac;
+NewS := [ ideal(ReducedGBasis(J + L)) | L in LinFac ];
+
+S := NewS;  indent(S);
+
+----------
+X := y; -- fix the second indeterminate
+NewS := [];
+foreach J in S do
+  println "----> J = ", J;
+  EF := eigenfactors(MultiplicationMat(X, J),  X);
+  println "----> EF = ", EF;
+  LinFac := [ ideal(l) | l in EF and deg(l)=1 ]; -- linear factors
+  println "----> LinFac = ", LinFac;
+  NewS := concat(NewS, [ ideal(ReducedGBasis(J + L)) | L in LinFac ]);
+endforeach;
+S := NewS;  indent(S);
+
+----------
+X := z; -- fix the third indeterminate
+NewS := [];
+foreach J in S do
+  println "----> J = ", J;
+  EF := eigenfactors(MultiplicationMat(X, J),  X);
+  println "----> EF = ", EF;
+  LinFac := [ ideal(l) | l in EF and deg(l)=1 ]; -- linear factors
+  println "----> LinFac = ", LinFac;
+  NewS := concat(NewS, [ ideal(ReducedGBasis(J + L)) | L in LinFac ]);
+endforeach;
+S := NewS;  indent(S);
+
+
+foreach J in S do
+  println NF(x,J), " ", NF(y,J), " ", NF(z,J);
+endforeach;
+
+RationalSolve(gens(I));
+
+-- EXERCISE: try with other 0-dimensional ideals
+-- EXERCISE: write the function RationalSolve_tut
+
+-- ------------------------------------------------------------
+-- -- SPLITTING A POLYNOMIAL
+-- ------------------------------------------------------------
+-- FFp := NewZZmod(101);
+-- use Kt ::= FFp[t];
+-- f := t^2 +3;
+-- IsIrred(f); --> true
+
+-- L := Kt/ideal(f);
+-- Use L;
+
+-- p := characteristic(L);
+-- e := LogCardinality(L);
+
+-- Use L[x];
+-- x^2 +3 = product([ x-t^(p^i) | i in 0..e-1]);
+-- --> L is a splitting field of f(x)
+
+-- ------------------------------------------------------------
+-- -- ALGORITHM (COMPUTING SOLUTIONS OVER FINITE FIELDS)
+-- ------------------------------------------------------------
+
+-- Use L[x,y,z];
+-- M := IntersectList([ideal(z^2-4, y^3-8, (z-x)*(x-3)),
+-- 		    ideal(x^2-1, y^2-1, x+y+z)
+-- 		    ]);
+-- indent(I);
+-- RingOf(I);
+-- describe RingOf(I);
+-- -- PROBLEM. Find the L-rational solutions of I:
+
+-- Ktx ::= FFp[t, x,y,z];
+-- -- read "I" here:  (no homomorphism L[x,y,z]-->FFp[t, x,y,z]!)
+-- -- one should make a proper mathematical construction,
+-- -- but there is a trick: (string)print it and read it in Ktx
+-- G := gens(I);
+-- Gtx := [ ReadExpr(Ktx, sprint(g)) | g in G ];
+-- indent(Gtx);
+
+-- -- EXERCISE: what it is the proper mathematical construction?
+
+-- J := ideal(Gtx) + ideal(ReadExpr(Ktx, sprint(f)));
+-- RingOf(J);
+-- describe RingOf(J);
+-- PrDec := PrimaryDecomposition0(J);  indent(PrDec, 2);
+
+-- lascerei perdere....
+
+----------------------------------------------------------------------
+-- APPROXIMATION
+
+-- EXAMPLE 1
+
+use P;
+f1 := *** 3x^2 -y^2 +2yz -z^2 -8x -8y +5z-5 ***;
+f2 := *** x^3 -6x^2 -6xy-4y^2  +z^2  +3x +7y-7z +15 ***;
+f3 := *** z^3  +4x^2 +2xy-3z^2 -13x-5y +6z +5 ***;
+
+I := ideal(f1, f2, f3);
+
+-- input: the "polynomial system" I
+S := [I];
+
+----------
+X := x; -- fix the first indeterminate
+
+J := I;  -- S contains just the ideal I
+
+EF := eigenfactors(MultiplicationMat(X, J),  X);
+print "----> EF = "; indent(EF);
+NewS := [ ideal(ReducedGBasis(J + ideal(f))) | f in EF ];
+
+S := NewS;  indent(S);
+-->   ideal(z -1, y +1, x -2) --> rational solution
+
+
+use Plex ::= QQ[x,y,z], lex;
+phi := PolyAlgebraHom(P, Plex, indets(Plex));
+
+J := ideal(phi(gens(S[1])));
+RGB := ReducedGBasis(J);  indent(RGB);
+--> shape lemma: linear in x and y, and z^15 ...
+
+gz := last(RGB);
+IsIrred(gz);  --> J is maximal in QQ[x,y,z]
+--> this is the best we can do with exact computations
+
+-- APPROXIMATION:
+RR := RealRootsApprox(gz, 10^(-30));
+indent(RR);
+--> three real roots for gz = 0
+
+indent([DecimalStr(r, 30) | r in RR]);
+
+foreach r in RR do
+  Jr := ideal(diff(RGB, [gz])) + ideal(z-r);
+  Sol := [NF(x,Jr), NF(y,Jr), NF(z,Jr)];
+  println [DecimalStr(c) | c in Sol];
+endforeach;
+
+-- EXAMPLE 2
+
+I := IntersectList([ideal(z^2-y, y^2-8, (y-x)*(x-3)),
+		    ideal(x^2-3, y^3-1, x+y+z)
+		    ]);
+indent(I);
+
+-- the "good" algorithm for all real solutions:
+--------------------------------------------------
+-- input: the "polynomial system" I
+S := [I];
+
+----------
+X := x; -- fix the first indeterminate
+
+J := I;  -- S contains just the ideal I
+
+EF := eigenfactors(MultiplicationMat(X, J),  X);
+println "----> EF = ", EF;
+RealFac := [ ideal(f) | f in EF and RealRootsApprox(f)<>[] ];
+println "----> RealFac = ", RealFac;
+NewS := [ ideal(ReducedGBasis(J + L)) | L in RealFac ];
+
+S := NewS;  indent(S);
+
+----------
+X := y; -- fix the second indeterminate
+NewS := [];
+foreach J in S do
+  println "----> J = ", J;
+  EF := eigenfactors(MultiplicationMat(X, J),  X);
+  println "----> EF = ", EF;
+  RealFac := [ ideal(f) | f in EF and RealRootsApprox(f)<>[] ];
+  println "----> RealFac = ", RealFac;
+  NewS := concat(NewS, [ ideal(ReducedGBasis(J + L)) | L in RealFac ]);
+endforeach;
+S := NewS;  indent(S);
+
+----------
+X := z; -- fix the third indeterminate
+NewS := [];
+foreach J in S do
+  println "----> J = ", J;
+  EF := eigenfactors(MultiplicationMat(X, J),  X);
+  println "----> EF = ", EF;
+  RealFac := [ ideal(f) | f in EF and RealRootsApprox(f)<>[] ];
+  println "----> RealFac = ", RealFac;
+  NewS := concat(NewS, [ ideal(ReducedGBasis(J + L)) | L in RealFac ]);
+endforeach;
+S := NewS;  indent(S);
+
+-- and now....
+-- EXERCISE: write all rational solutions
+-- EXERCISE: write all (approximate) real solutions
+
+-- EXERCISE: try with other 0-dimensional ideals
+
+-- EXERCISE: experiment with all what you have learned!!
+
+--   enjoy CoCoA!

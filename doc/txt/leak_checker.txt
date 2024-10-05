@@ -1,0 +1,103 @@
+      leak_checker
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{leak-checker}{John Abbott}
+
+
+
+== User documentation ==
+%======================================================================
+
+leak_checker is a standalone program included with the distribution
+of the CoCoA library.  It can help track down memory leaks.  If you
+have never used leak_checker before, it may be helpful to try the
+small example given in the file debug_new.txt.
+
+This program scans output produced by a program run either with the
+debugging versions of ``new/delete`` (see [[debug_new]])
+or using [[MemPool]]s with debugging level set high enough that each
+allocation/deallocation produces a verbose report (see [[MemPool]]).
+``leak_checker`` pairs up every ``free`` message with its corresponding
+``alloc`` message, and highlights those ``alloc`` messages which do
+not have a corresponding ``free`` message.  In this way probable memory
+leaks can be tracked down.
+
+To use leak_checker with the debugging version of global new/delete, see
+the file [[debug_new]] (which includes a small example to try).  To use
+leak_checker with MemPools, you must compile with the CPP flag
+CoCoA_MEMPOOL_DEBUG set -- this probably entails recompiling all your
+code; see [[MemPool]] for details.  In either case, with debugging
+active your program will run rather more slowly than usual, and will
+probably produce large amounts of output detailing every single
+allocation/deallocation of memory -- for this reason it is best to use
+smaller test cases if you can.  Put the output into a file, say ``memchk``.
+
+Now, executing ``leak_checker memchk`` will print out a summary of how
+many alloc/free messages were found, and how many unpaired ones were
+found; beware that leak_checker may take a long time if your program's
+output details many allocations and deallocations.  The file ``memchk``
+will be modified if unpaired alloc/free messages were found: an
+exclamation mark is placed immediately after the word ALLOC (where
+previously there was a space), thus a search through the file memchk
+for the string ``ALLOC!`` will find all unpaired allocation messages.
+
+Each allocation message includes a sequence number (``seq=...``).  This
+information can be used when debugging.  For instance, if the program
+leak_checker marks an unpaired allocation with sequence number 500
+then a debugger can be used to interrupt the program the 500th time
+the allocation function is called (the relevant function is
+either debug_new::msg_alloc or CoCoA::MemPool::alloc).  Examining the running
+program's stack should fairly quickly identify precisely who requested
+the memory that was never returned.  Obviously, to use the debugger it
+is necessary to compile your program with the debugger option set: with
+gcc this option corresponds to the flag ``-g``.
+
+
+WARNING: debug_new handles ALL new/delete requests including those arising
+from the initialization of static variables within functions (and also
+those arising from within the system libraries).  The leak_checker program
+will mark these as unfreed blocks because they are freed only after main
+has exited (and so cannot be tracked by debug_new).
+
+
+== Maintainer documentation ==
+%======================================================================
+
+This was formerly a C program (as should be patently evident from
+the source code).  It requires a file name as input, and then scans
+that file for messages of the form
+```
+ALLOC 0x....
+FREED 0x....
+```
+(such messages are produced by the global operators new/delete in debug_new.C
+and also by the verbose version of MemPool (with debug level >= 3))
+It then attempts to match up pointer values between ALLOC and FREED
+messages.  Finally the file is scanned again, and any ALLOC or FREED
+messages which were not matched up are modified by adding an exclamation
+mark (!) immediately after the word ALLOC or FREED.
+
+The matching process is relatively simplistic.  During an initial scan of
+the file all ALLOC/FREED messages are noted in two arrays: one indicating
+the type of message, the other containing the pointer value.  Initially the
+two types are UNMATCHED_ALLOC and UNMATCHED_FREE, as the matching process
+proceeds some of these will become MATCHED_ALLOC or MATCHED_FREE
+(accordingly); obviously the types are changed in pairs.
+
+The matching process merely searches sequentially (from the first entry to
+the last) for pointer values of type UNMATCHED_FREE.  For each such value it
+then searches back towards the first entry looking for an UNMATCHED_ALLOC
+with the same pointer value.  If one is found, then both types are switched
+to MATCHED_xxx.  If none is found, the UNMATCHED_FREE is left as such.  The
+main loop then resumes the search for the next UNMATCHED_FREE to try to
+pair up.  This approach does get slow when there are very many ALLOC/FREED
+messages, but I do not see any simple way of making it faster.
+
+
+== Bugs, shortcomings, and other ideas ==
+%======================================================================
+
+This program gets painfully slow on large files.  It is also rather crude,
+though quite effective at its job.
+

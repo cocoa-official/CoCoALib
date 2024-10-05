@@ -1,0 +1,220 @@
+Package $points -- computations with ideals of points
+
+Export GenericPoints;
+Export IdealOfPoints_OLD;
+
+Define About()
+  PrintLn "    Author: J Abbott";
+  PrintLn "    Date: 1 July 1999  (corrected use of \"End\"  4 July 2002)  ";
+EndDefine;
+
+-----------------------------------------------------------------------------
+-- This is only tedious interface code; the real stuff is written in C and
+-- is directly accessible via the "built-in" function "BuchbergerMoeller".
+-- Be careful calling that function as it does not check its argument;
+-- it returns either an empty list (meaning that duplicate points were
+-- supplied in the input) or a two element list whose first element is the
+-- GBasis and the second is the list of separators.
+
+Define BuchbergerMoeller(PolyR, Pts)
+  error("BuchbergerMoeller: Please be patient, we're working on it");
+EndDefine; -- BuchbergerMoeller
+
+
+Define BuchbergerMoellerArgCheck(Ref L, PolyR, FnName)
+  If L = [] Then Return; EndIf;
+  ErrMsg := FnName+": argument must be a list of points with rational coords";
+  If type(L) <> LIST Then error(ErrMsg); EndIf;
+  Tmp := MakeSet([type(X) | X In L]);
+  If Tmp <> [LIST] Then error(ErrMsg); EndIf;
+  LenPt := MakeSet([len(X) | X In L]);
+  If len(LenPt) <> 1 Then error(FnName+": points must lie in the same space"); EndIf;
+  LenPt := LenPt[1];
+  If NumIndets(PolyR) < LenPt Then error(FnName+": current ring has too few indeterminates"); EndIf;
+  For I:=1 To len(L) Do
+    For J:=1 To LenPt Do
+      If type(L[I][J]) = RINGELEM And L[I][J] = LC(L[I][J]) Then
+        NoPrint := IsRational(L[I][J], LC(L[I][J]));
+      EndIf;
+      If not(type(L[I][J]) IsIn [INT,RAT]) Then error(ErrMsg); EndIf;
+    EndFor;
+  EndFor;
+EndDefine;
+
+
+Define CommonDenoms(PolyR, ref L)
+  If L = [] Then Return 1; EndIf;
+  P := characteristic(PolyR);
+  Nvars := len(L[1]);
+  Ans := NewList(Nvars);
+  Npoints := len(L);
+  For I:=1 To Nvars Do
+    LCM := 1;
+    For J:=1 To Npoints Do
+      If type(L[J][I]) = RAT Then
+        LCM := lcm(LCM, den(L[J][I]));
+      EndIf;
+    EndFor;
+    Ans[I] := LCM;
+    If P <> 0 And mod(LCM, P) = 0 Then error("Point has zero denominator"); EndIf;
+    For J:=1 To Npoints Do
+      L[J][I] := LCM*L[J][I]; -- assumes automatic retraction to INT
+      If P <> 0 Then L[J][I] := mod(L[J][I], P); EndIf;
+    EndFor;
+  EndFor;
+  Return Ans;
+EndDefine;
+
+
+Define IdealOfPoints_OLD(PolyR, P)
+  If P = [] Then Return ideal(1); EndIf;
+  $points.BuchbergerMoellerArgCheck(ref P, PolyR, "IdealOfPoints");
+  Denoms := $points.CommonDenoms(PolyR, ref P);
+  Tmp := BuchbergerMoeller(1, P);
+  If Tmp = [] Then error("IdealOfPoints: points must be distinct"); EndIf;
+  Tmp[2] := []; -- to avoid wasting memory
+  Rescale := [[indet(PolyR,J), Denoms[J]*indet(PolyR,J)] | J In 1..len(Denoms)];
+  GB := subst(Tmp[1], Rescale);
+  GB := [monic(F) | F In GB];
+  Tmp := []; -- to avoid wasting memory
+  I := ideal(GB);
+  I.GBasis := GB;
+  Return I;
+EndDefine;
+
+
+-- Define IdealOfProjectivePoints(PolyR, P)
+--   If P = [] Then Return ideal(1); EndIf;
+--   $points.BuchbergerMoellerArgCheck(P, PolyR, "IdealOfProjectivePoints");
+--   Denoms := $points.CommonDenoms(PolyR, ref P);
+--   Tmp := BuchbergerMoeller(0, P);
+--   If Tmp = [] Then error("IdealOfProjectivePoints: points must be distinct (and with at least one non-zero coord)"); EndIf;
+--   Tmp[2] := []; -- to avoid wasting memory
+--   Rescale := [[indet(PolyR,J), Denoms[J]*indet(PolyR,J)] | J In 1..len(Denoms)];
+--   GB := subst(Tmp[1], Rescale);
+--   GB := [monic(F) | F In GB];
+--   Tmp := []; -- to avoid wasting memory
+--   I := ideal(GB);
+--   I.GBasis := GB;
+--   Return I;
+-- EndDefine;
+
+
+Define SeparatorsOfPoints(PolyR, P)
+  If P = [] Then Return []; EndIf;
+  $points.BuchbergerMoellerArgCheck(P, PolyR, "SeparatorsOfPoints");
+  Pcopy := P;
+  Denoms := $points.CommonDenoms(PolyR, ref Pcopy);
+  Tmp := BuchbergerMoeller(1, Pcopy);
+  If Tmp = [] Then error("SeparatorsOfPoints: points must be distinct"); EndIf;
+  Tmp[1] := []; -- to avoid wasting memory
+  Rescale := [[indet(I), Denoms[I]*indet(I)] | I In 1..len(Denoms)];
+  S := subst(Tmp[2], Rescale);
+  Tmp := []; -- to avoid wasting memory
+  For I:=1 To len(S) Do S[I] := S[I]/eval(S[I], P[I]); EndFor;
+  Return S;
+EndDefine;
+
+
+Define SeparatorsOfProjectivePoints(PolyR, P)
+  If P = [] Then Return []; EndIf;
+  $points.BuchbergerMoellerArgCheck(P, PolyR, "SeparatorsOfProjectivePoints");
+  Pcopy := P;
+  Denoms := $points.CommonDenoms(PolyR, ref Pcopy);
+  Tmp := BuchbergerMoeller(0, Pcopy);
+  If Tmp = [] Then error("SeparatorsOfProjectivePoints: points must be distinct (and with at least one non-zero coord)"); EndIf;
+  Tmp[1] := []; -- to avoid wasting memory
+  Rescale := [[indet(I), Denoms[I]*indet(I)] | I In 1..len(Denoms)];
+  S := subst(Tmp[2], Rescale);
+  Return S;
+EndDefine;
+
+
+Define IdealAndSeparatorsOfPoints(PolyR, P)
+  If P = [] Then Return Record[points := P, ideal := ideal(1), separators := []]; EndIf;
+  $points.BuchbergerMoellerArgCheck(P, PolyR, "IdealAndSeparatorsOfPoints");
+  Pcopy := P;
+  Denoms := $points.CommonDenoms(PolyR, ref Pcopy);
+  Tmp := BuchbergerMoeller(1, Pcopy);
+  If Tmp = [] Then error("IdealAndSeparatorsOfPoints: points must be distinct"); EndIf;
+  Rescale := [[indet(J), Denoms[J]*indet(J)] | J In 1..len(Denoms)];
+  S := subst(Tmp[2], Rescale);
+  For J:=1 To len(S) Do S[J] := S[J]/eval(S[J], P[J]); EndFor;
+  Tmp[2] := []; -- to avoid wasting memory
+  GB := subst(Tmp[1], Rescale);
+  GB := [monic(F) | F In GB];
+  Tmp := []; -- to avoid wasting memory
+  I := ideal(GB);
+  I.GBasis := GB;
+  Return Record[points := P, ideal := I, separators := S];
+EndDefine; -- IdealAndSeparatorsOfPoints
+
+
+
+Define IdealAndSeparatorsOfProjectivePoints(PolyR, P)
+  If P = [] Then Return Record[points := P, ideal := ideal(1), separators := []]; EndIf;
+  $points.BuchbergerMoellerArgCheck(P, PolyR, "IdealAndSeparatorsOfProjectivePoints");
+  Pcopy := P;
+  Denoms := $points.CommonDenoms(PolyR, ref Pcopy);
+  Tmp := BuchbergerMoeller(0, Pcopy);
+  If Tmp = [] Then error("IdealAndSeparatorsOfProjectivePoints: points must be distinct"); EndIf;
+  Rescale := [[indet(J), Denoms[J]*indet(J)] | J In 1..len(Denoms)];
+  S := subst(Tmp[2], Rescale);
+  Tmp[2] := []; -- to avoid wasting memory
+  GB := subst(Tmp[1], Rescale);
+  GB := [monic(F) | F In GB];
+  Tmp := []; -- to avoid wasting memory
+  I := ideal(GB);
+  I.GBasis := GB;
+  Return Record[points := P, ideal := I, separators := S];
+EndDefine; -- IdealAndSeparatorsOfProjectivePoints
+
+
+
+-----------------------------------------------------------------------------
+-- Sundry other handy functions more or less related to those above.
+
+Define Interpolate(Points, Values)
+  If len(Points) <> len(Values) Then error("Interpolate: different number of points and values"); EndIf;
+  If len(Points) = 0 Then Return 0; EndIf;
+  S := $points.SeparatorsOfPoints(Points);
+  Return sum([Values[I]*S[I] | I In 1..len(Points)]);
+EndDefine;
+
+
+Define GenericPoints(PolyR, N, Opt Range)
+  TopLevel ERR;
+  GenericPoints_ERR := "First argument must be a polynomial ring";
+  If type(PolyR) <> RING Then error(GenericPoints_ERR); EndIf;
+  If not(IsPolyRing(PolyR)) Then error(GenericPoints_ERR); EndIf;
+//  N := Cast(ARGV[1], INT);
+  P := characteristic(PolyR);
+  If IsDefined(Range) Then
+//    Range := Cast(ARGV[2], INT);
+    If Range < 1 Then Range := 100; EndIf;
+    If P <> 0 And Range >= P Then Range := P-1; EndIf;
+  Else
+    If P <> 0 Then Range := P-1;  Else Range := 100; EndIf;
+  EndIf;
+  If P <> 0 Then Lo := 0; Hi := Range; Else Lo := -Range; Hi := Range; EndIf;
+  V := NumIndets(PolyR);
+  Ans := NewList(N);
+//  M := Identity(V);
+  M := [[ 0 | J In 1..V] | K In 1..V];
+  For J:=1 To NumIndets(PolyR) Do M[J,J] := 1; EndFor;
+  For I:=1 To min(V, N) Do
+    Ans[I] := M[I];
+  EndFor;
+  If N <= V Then Return Ans; EndIf;
+  Ans[V+1] := NewList(V, 1);
+  For I:=V+2 To N Do
+    Ans[I] := [random(Lo, Hi) | J In 1..V];
+  EndFor;
+  Return Ans;
+EndDefine;
+
+
+
+EndPackage;
+
+

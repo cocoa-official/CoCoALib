@@ -1,0 +1,349 @@
+      ring
+      Copyright (c)  2005,2010,2012 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ring}{John Abbott, Anna M. Bigatti}
+
+
+== User documentation ==
+%======================================================================
+
+The primary use for a variable of type ``ring`` is simply to specify
+the ring to which [[RingElem]] variables are associated.
+
+CoCoALib requires that the user specify first the rings in which to
+compute, then values in those rings can be created and manipulated.
+We believe that this explicit approach avoids any possible problem of
+ambiguity.
+
+The file ``ring.H`` introduces several classes used for representing rings
+and their elements.  A normal user of the CoCoA library will use
+principally the classes ``ring`` and [[RingElem]]: an object of type
+``ring`` represents a mathematical ring with unity, and objects of type
+[[RingElem]] represent values from some ring.  To make the documentation
+more manageable it has been split into two: this file describes operations
+directly applicable to rings, whereas a separate file describes the
+operations on a [[RingElem]].  Documentation about the creation and use of
+homomorphisms between rings can be found in [[RingHom]].
+
+The documentation here is very general in nature: it applies to all rings
+which can be created in the CoCoA library.  To find out how to create rings,
+and for more specific documentation about the various special types of ring
+CoCoALib offers, look at the relevant file: see the subsection below about
+**//Types of Ring//** ([[ring inheritance]]).
+
+While the CoCoA library was conceived primarily for computing with
+commutative rings, the possibility of creating and using certain
+non-commutative rings exists.  The documentation for these rings is kept
+separately in [[RingWeyl]].
+
+
+=== Examples ===
+
+Here is a list of example programs (to be found in the ``examples/``
+subdirectory) illustrating the creation and use of various sorts of ring
+and their elements
+- [ex-ring1.C ../../examples/index.html#ex-ring1.C]
+- [ex-ring2.C ../../examples/index.html#ex-ring2.C]
+- [ex-RingElem1.C ../../examples/index.html#ex-RingElem1.C]
+- [ex-RingFp1.C   ../../examples/index.html#ex-RingFp1.C]
+- [ex-RingFp2.C   ../../examples/index.html#ex-RingFp2.C]
+- [ex-RingQ1.C    ../../examples/index.html#ex-RingQ1.C]
+- [ex-RingTwinFloat1.C ../../examples/index.html#ex-RingTwinFloat1.C]
+- [ex-RingWeyl1.C ../../examples/index.html#ex-RingWeyl1.C]
+- [ex-RingZZ1.C ../../examples/index.html#ex-RingZZ1.C]
+-
+
+=== Types of ring (inheritance structure) ===[inheritance]
+
+- [[RingZZ]]
+- [[RingTwinFloat]]
+- [[FractionField]]
+ - generic
+ - [[RingQQ]]
+- [[QuotientRing]]
+ - generic
+ - [[RingFp]]
+ - [[RingFpLog]]
+ - [[RingFpDouble]]
+ - Simple algebraic extensions (not yet implemented)
+- [[PolyRing]]
+ - [[DenseUPolyRing]]
+  - [[DenseUPolyClean]]
+ - [[SparsePolyRing]]
+  - [[RingWeyl]]
+  - [[DistrMPolyClean]]
+  - [[DistrMPolyInlPP]]
+  - DistrMPolyInlFpPP
+  -
+ -
+-
+
+=== Pseudo-constructors ===
+%----------------------------------------------------------------------
+
+The default initial value for a ``ring`` is the ring of integers (``RingZZ``).
+
+You can specify explicitly the initial value using one of the various ring pseudo-constructors:
+
+ | ``RingZZ()``             | see [[RingZZ constructors]] |
+ | ``RingQQ()``             | see [[RingQQ constructors]] |
+ | ``NewZZMod(n)``          | see [[QuotientRing constructors]] |
+ | ``NewRingTwinFloat(n)``  | see [[RingTwinFloat constructors]] |
+ | ``NewFractionField(R)``  | see [[FractionField constructors]] |
+ | ``NewQuotientRing(R,I)`` | see [[QuotientRing constructors]] |
+
+
+=== Operations on Rings ===[operations]
+%----------------------------------------------------------------------
+
+Let ``R`` and ``R2`` be two variable of type ``ring``.
+
+- ``RingID(R)``         -- the identification of ``R`` (as a ``long``)
+- ``characteristic(R)`` -- the characteristic of ``R`` (as a [[BigInt]])
+- ``symbols(R)``        -- a std::vector of the symbols in ``R``
+                          (//e.g.// Q(a)[x,y] contains the symbols a, x, and y)
+- ``R = R2``           -- assign ``R2`` to ``R`` (so they both refer to the same identical internal impl)
+- ``R == R2``          -- test whether ``R`` and ``R2`` are **identical**
+       	                  (//i.e.// they refer to the same internal impl)
+- ``R != R2``          -- the logical negation of ``R == R2``
+-
+
+
+ | ``zero(R)``     | the zero element of ``R`` |
+ | ``one(R)``      | the one element of ``R``  |
+ | ``BaseRing(R)`` | the ring from which ``R`` was built  |
+
+
+In CoCoALib all rings are built starting from ZZ by applying various
+"constructors" (//e.g.// fraction field, quotient ring).  The function
+``BaseRing`` gives the immediate predecessor in the chain of
+constructions.
+
+
+==== Queries ====
+
+In some cases the best algorithm to use may depend on whether the ring in
+which we are computing has certain properties or not; so CoCoALib offers
+some functions to ask a ring ``R`` about its properties:
+
+- ``IsCommutative(R)``     -- a boolean, true iff ``R`` is commutative
+- ``IsIntegralDomain(R)``  -- a boolean, true iff ``R`` has no zero divisors
+- ``IsIntegralDomain3(R)`` -- a 3-state boolean, like ``IsIntegralDomain`` but fast, gives ``uncertain3`` if cannot determine proper answer quickly
+- ``IsTrueGCDDomain(R)``   -- a boolean, true iff ``R`` is a true GCD domain (**note**: fields are //not// true GCD domains)
+- ``IsOrderedDomain(R)``   -- a boolean, true iff ``R`` is arithmetically ordered
+- ``IsField(R)``           -- a boolean, true iff ``R`` is a field
+- ``IsFiniteField(R)``     -- a boolean, true iff ``R`` is a finite field
+- ``LogCardinality(R)``    -- the integer k such that ``card(R)`` = p^k where p is ``char(R)``; error if ``R`` is not a finite field.
+-
+
+NOTE: a pragmatic approach is taken: //e.g.// ``IsOrderedDomain`` is true only
+if comparisons between elements can actually be performed using the CoCoA library.
+
+==== Queries and views ====
+
+It may also be important to discover practical structural details of a ``ring``
+(//e.g.// some algorithms make sense only for a polynomial ring).  The
+following query functions ``Is...`` tell you how the ``ring`` is implemented,
+and the //view// functions ``As...`` give access to the specific operations:
+
+- ``IsZZ(R)``             -- see [[RingZZ query]]
+- ``IsQQ(R)``             -- see [[RingQQ query]]
+- ``IsDenseUPolyRing(R)`` -- see [[DenseUPolyRing query]]
+- ``IsFractionField(R)``  -- see [[FractionField query]]
+- ``IsPolyRing(R)``       -- see [[PolyRing query]]
+- ``IsQuotientRing(R)``   -- see [[QuotientRing query]]
+- ``IsSparsePolyRing(R)`` -- see [[SparsePolyRing query]]
+-
+
+In general the function "IsXYZ" should be read as "Is internally
+implemented as XYZ": for instance ``IsQuotientRing`` is true only if the
+internal implementation is as a quotient ring, so if ``ZZ`` denotes the ring
+of integers and ``R = ZZ[x]/ideal(x)`` then ``R`` and ``ZZ`` are obviously
+isomorphic but ``IsZZ(R)`` gives ``false`` and ``IsZZ(Z)`` gives ``true``,
+while conversely ``IsQuotientRing(R)`` gives ``true`` and
+``IsQuotientRing(ZZ)`` gives ``false``.
+
+
+=== ADVANCED USE OF RINGS ===
+%----------------------------------------------------------------------
+
+The rest of this section is for more advanced use of ``ring``s (//e.g.// by
+CoCoA library contributors).  If you are new to CoCoA, you need not read
+this subsection.
+
+
+==== Writing C++ classes for new types of ring ====
+%----------------------------------------------------------------------
+
+An important convention of the CoCoA library is that the class ``RingBase``
+is to be used as an abstract base class for all rings.  You are strongly
+urged to familiarize yourself with the maintainer documentation if you want
+to understand how and why rings are implemented as they are in the CoCoA
+library.
+
+The first decision to make when implementating a new ring class for
+CoCoALib is where to place it in the ring inheritance structure.  This
+inheritance structure is a (currently) tree with all concrete classes at
+the leaves, and all abstract classes being internal nodes.  Usually the new
+concrete ring class is attached to the structure by making it derive from
+one of the existing abstract ring classes.  You may even decide that it is
+appropriate to add a new abstract ring class to this structure, and to make
+the new concrete class derive from this new abstract class.
+
+**Note:** I have note used multiple inheritance in the structure, largely
+  because I do not trust multiple inheritance (not doubt due in part to my
+  ignorance of the topic).
+
+
+Once you have decided where to attach the new concrete class to the
+structure, you will have to make sure that all pure virtual functions in the
+abstract class are implemented.  Almost all instances of concrete rings are
+built through pseudo-constructors (the rings ZZ and QQ are exceptional cases).
+
+An **important detail** of the constructor for a new concrete ring is that
+the reference count of the new ring object must be incremented to 1 at the
+start of the constructor body (or more precisely, before any self
+references are created, //e.g.// when creating the zero and one elements of
+the ring); without this "trick" the constructor is not exception safe.
+
+**NOTE** Every concrete ring creates a copy of its zero and one elements
+(kept in auto_ptrs ``myZeroPtr`` and ``myOnePtr``).  This common
+implementation detail cannot (safely) be moved up into ``RingBase`` because
+during destruction by default the data members of ``RingBase`` are
+destroyed after the derived concrete ring.  It seems much safer simply to
+duplicate the code for each ring implementation class.
+
+
+
+== Maintainer documentation ==
+%======================================================================
+(**NB** consider consulting also [[QuotientRing]], [[FractionField]]
+and [[PolyRing]])
+
+The design underlying rings and their elements is more complex than I
+would have liked, but it is not as complex as the source code may make
+it appear.  The guiding principles are that the implementation should be
+flexible and easy/pleasant to use while offering a good degree of
+safety; extreme speed of execution was not a goal (as it is usually
+contrary to good flexibility) though an interface offering slightly
+better run-time efficiency remains.
+
+Regarding flexibility: in CoCoALib we want to handle polynomials whose
+coefficients reside in (almost) any commutative ring.  Furthermore, the
+actual rings to be used will be decided at run-time, and cannot
+restricted to a given finite set.  We have chosen to use C++ inheritance
+to achieve the implementation: the abstract class ``RingBase`` defines the
+interface that every concrete ring class must offer.
+
+Regarding ease of use: since C++ allows the common arithmetic operators
+to be overloaded, it is essential that these work as expected for
+elements of arbitrary rings -- with the caveat that ``/`` means **exact division**,
+as this is the only reasonable interpretation.  Due to problems of
+ambiguity, arithmetic between elements of different rings is forbidden:
+//e.g.// let f be in QQ[x,y] and g in ZZ[y,x], where should f+g reside?
+
+The classes in the file ring.H are closely interrelated, and there is no
+obvious starting point for describing them -- you may find that you need
+to read the following more than once to comprehend it.  Here is a list
+of the classes:
+
+ | ``ring``              | value represents a ring; it is a smart pointer |
+ | ``RingBase``          | abstract class //defining what a ring is// |
+ | ``RingElem``          | value represents an element of a ring |
+ | ``ConstRefRingElem``  | const-reference to a RingElem |
+ | ``RingElemConstRawPtr`` | raw pointer to a //const// ring value |
+ | ``RingElemRawPtr``    | raw pointer to a ring value |
+
+The class ``RingBase`` is of interest primarily to those wanting to
+implement new types of ring (see relevant section below); otherwise you
+probably don't need to know about it.  Note that ``RingBase`` includes an
+intrusive reference counter -- so every concrete ring instance will have
+one.  ``RingBase`` also includes a machine integer field containing a
+unique numerical ID -- this is so that distinct copies of otherwise
+identical rings can be distinguished when output (//e.g.// in OpenMath).
+
+The class ``ring`` is used to represent mathematical rings (//e.g.// possible
+values include ZZ, QQ, or QQ[x,y,z]).  An object of type ``ring`` is just a
+reference counting smart pointer to a concrete ring implementation
+object -- so copying a ring is fairly cheap.  In particular two rings
+are considered equal if and only if they refer to the same identical
+concrete ring implementation object.  In other files you will find
+classes derived from ``ring`` which represent special subclasses of rings,
+for instance ``PolyRing`` is used to represent polynomial rings.  The
+intrusive reference count, which must be present in every concrete ring
+implementation object, is defined as a data member of ``RingBase``.
+
+For the other classes see [[RingElem]].
+
+**NOTE** an earlier implemetation of rings memorized some ``RingHom``
+values in data members of the ring object; this caused problems with
+circular reference counts, so was eliminated.
+
+
+==== Further comments about implementation aspects of the above classes. ====
+
+Recall that ``ring`` is essentially a smart pointer to a ``RingBase``
+object, //i.e.// a concrete implementation of a ring.  Access to the
+implementation is given via ``operator->``.  If necessary, the pointer may
+also be read using the member function ``myRingPtr``: this is helpful for
+defining functions such as ``IsPolyRing`` where access to the pointer is
+required but ``operator->`` cannot be used.
+
+
+The class ``RingBase`` declares a number of pure virtual functions for
+computing with ring elements.  Since these functions are pure they must
+all be fully defined in any instantiable ring class (//e.g.// RingZZImpl or
+RingFpImpl).  These member functions follow certain conventions:
+
+: **RETURN VALUES**:
+   most arithmetic functions return no value, instead the
+   result is placed in one of the arguments (normally the first argument
+   is the one in which the result is placed), but functions which return
+   particularly simple values (//e.g.// booleans or machine integers) do
+   indeed return the values by the usual function return mechanism.
+
+: **ARG TYPES**:
+   ring element values are passed as //raw pointers//
+   (//i.e.// a wrapped ``void*`` pointing to the actual value).  A read-only
+   arg is of type ``RingElemConstRawPtr``, while a writable arg is of type
+   ``RingElemRawPtr``.  When there are writable args they normally appear
+   first.  For brevity there are typedefs ``ConstRawPtr`` and ``RawPtr`` in
+   the scope of ``RingBase`` or any derived class.
+
+: **ARG CHECKS**:
+   sanity checks on the arguments are **not conducted** (//e.g.// the
+   division function assumes the divisor is non-zero).  These member
+   functions are supposed to be fast rather than safe.  However, if the
+   compilation flag ``CoCoA_DEBUG`` was set then some checks may be performed.
+
+
+In a few cases there are non-pure virtual member functions in
+``RingBase``.  They exist either because there is a simple universal
+definition or merely to avoid having to define inappropriate member
+functions (//e.g.// gcd functions when the ring cannot be a gcd domain).
+Here is a list of them:
+
+ | ``IamTrueGCDDomain()``        | defaults to not ``IamField()``  |
+ | ``IamOrderedDomain()``        | defaults to false               |
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+There is no description of what the various mem fns are supposed to do!!
+There is something incomplete in [[RingElem]]
+
+Printing rings is unsatisfactory.  Need a mechanism for specifying a
+print name for a ring; and also a mechanism for printing out the full
+definition of the ring avoiding all/some print names.  For instance,
+given the definitions ``R = QQ(x)`` and ``S = R[a,b]`` we see that
+``S`` could be printed as ``S``, ``R[a,b]`` or ``QQ(x)[a,b]``.  We
+should allow at least the first and the last of these possibilities.
+
+Should (some of) the query functions return ``bool3`` values?
+What about properties which are hard to determine?
+
+The fn ``IsFiniteField`` is not very smart; it recognises only prime
+finite fields, and simple algebraic extensions of them.
+

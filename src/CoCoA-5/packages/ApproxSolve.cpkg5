@@ -1,0 +1,275 @@
+package $ApproxSolve;
+
+export ApproxSolve;
+export ApproxSolveTF;
+export ApproxSolveVerify;
+
+----------------------------------------------------------------------
+  PrintDebug := false;
+  RR_precision := -1; // normally a power of 1/2
+----------------------------------------------------------------------
+
+define ApproxSolve(I)
+//  return CheckAndCall(I, $.ApproxSolve, $.RecApproxSolve_0dim);
+  return CheckAndCall(I, $.ApproxSolve, $.ApproxSolveAndCheck_0dim);
+enddefine; -- ApproxSolve
+  
+
+define ApproxSolveTF(I)
+  return CheckAndCall(I, $.ApproxSolveTF, $.RecApproxSolveTF_0dim);
+enddefine; -- ApproxSolveTF
+
+
+define CheckAndCall(I, MainFunc, InternalFunc)
+  If type(I) = LIST then
+    $RationalPoints.RationalSolveArgCheck(I, "ApproxSolve");
+    return MainFunc(ideal(I));
+  endif;
+  P := RingOf(I);
+  if not(IsQQ(CoeffRing(P))) then error("CoeffRing must be QQ"); endif;
+  ListX := $RationalPoints.FindIndets(gens(I));
+  if len(ListX) <> NumIndets(P) then
+    if EqSet(ListX, first(indets(P), len(ListX))) then
+      R := NewPolyRing(CoeffRing(P), SymbolRange("x",1,len(ListX)));
+      phi := PolyAlgebraHom(P,R,concat(indets(R),NewList(NumIndets(P)-len(ListX), zero(R))));
+      return record[indets:=ListX, AffinePts := MainFunc(phi(gens(I))).AffinePts];
+    endif;
+  endif;
+  LTI := LT(I);
+  if not(IsZeroDim(LTI)) then error("not zero dimensional"); endif;
+  radI := radical(I);
+  return record[indets:=indets(P), AffinePts := InternalFunc(radI,[])];
+enddefine; -- CheckAndCall
+
+
+define ApproxSolveVerify(System, soln)
+  if type(System)=IDEAL then System := gens(System); endif;
+  return [[FloatStr(eval(f, s)) | f in System ] | s in soln ];
+enddefine;
+
+// Check if f(pt) is small compared to coeffs of f
+define IsPolyValueSmall(f, pt)
+  SmallCoeff := min([abs(c) | c in coefficients(f)]);
+  SmallCoeff := min(1, SmallCoeff);
+  val := AsRAT(eval(f, pt));
+  return abs(val/SmallCoeff) < 10^(-6);
+enddefine; -- IsPolyValueSmall
+  
+define IsGoodSoln(PolySys, pt)
+  foreach f in PolySys do
+    if not(IsPolyValueSmall(f,pt)) then return false; endif;
+  endforeach;
+  return true;
+enddefine; -- IsGoodSoln
+
+define AreGoodSolns(PolySys, pts)
+  foreach pt in pts do
+    if not(IsGoodSoln(PolySys,pt)) then return false; endif;
+  endforeach;
+  return true;
+enddefine; -- AreGoodSolns
+
+----------------------------------------------------------------------
+define RATApprox(a)
+  if IsZero(a) then return 0; endif;
+  ME := MantissaAndExponent2(LC(a));
+  return ME.mantissa*2^(-ME.NumDigits+ME.exponent+1);
+enddefine; -- RATApprox
+  
+  
+define RecApproxSolveTF_0dim(I, UniPolys)
+  if VerbosityLevel() >= 20 then fn := "RecApproxSolveTF_0dim: "; endif;
+  P := RingOf(I);
+  for i := len(UniPolys)+1 to NumIndets(P) do
+    x := indet(P,i);
+    if VerbosityLevel() >= 20 then PrintLn fn, "trying ", x; endif;
+    MP := MinPolyQuot(x, I, x);
+    F := factor(MP);
+    if len(F.factors)<>1 then
+      if VerbosityLevel() >= 20 then PrintLn fn, "split: "; indent(F); endif;
+      return ConcatLists([RecApproxSolveTF_0dim(I+ideal(f),[]) | f in F.factors]);
+    endif;
+-- already radical:  we take advantage of all the clever things in radical
+    if max(F.multiplicities) > 1 then
+      error("not radical????");
+--       MP := product(F.factors);
+--       I := I+ideal(MP);
+    endif;
+    append(ref UniPolys, MP);
+  endfor;
+  m := multiplicity(P/I);
+  J := I+ideal(UniPolys); // helps TwinFloat -- should do incr GB?
+  for i := 1 to NumIndets(P) do
+    if deg(UniPolys[i])=m then
+      if VerbosityLevel() >= 20 then
+	PrintLn fn, "MinPoly(", indet(P,i), ") has right deg";
+      endif;
+      return ApproxSolveTFWithRoots(J, // helps TwinFloat
+				    indet(P,i),
+				    RealRootsApprox(UniPolys[i], 10^(-10000)));
+    endif;
+  endfor;
+  repeat -- random linear form needs more precision
+    l := sum([random(-8,8)*xi | xi in indets(P)]);
+    if VerbosityLevel() >= 20 then PrintLn "trying ", l; endif;
+    MP := MinPolyQuot(l, I, indet(P,1));
+    if VerbosityLevel() >= 20 and not(IsIrred(MP)) then
+      PrintLn " --MinPoly not irreducible--";
+    endif;
+    if deg(MP)=m then
+      return ApproxSolveTFWithRoots(J,
+				    l,
+				    RealRootsApprox(MP, 10^(-10000)));
+    endif;
+  endrepeat;
+enddefine; -- RecApproxSolve2_0dim
+
+
+define ApproxSolveTFWithRoots(I, x, RRA)
+  P := RingOf(I);
+  solutions := [];
+  foreach r in RRA do
+    append(ref solutions, TryPrecision(I+ideal(x-r)));
+  endforeach;
+  return [ [RATApprox(a) | a in soln] | soln in solutions];
+enddefine; -- ApproxSolveTFWithRoots
+
+
+define TryPrecision(I)
+  if VerbosityLevel() >= 20 then fn := "TryPrecision: "; endif;
+  P := RingOf(I);
+  precision := 64;
+  X := SymbolRange("x",1,NumIndets(P));
+  repeat
+    try
+      RRx := NewPolyRing(NewRingTwinFloat(precision), X);
+//    RRx := NewPolyRing(NewRingTwinFloat(precision), X,LexMat(NumIndets(P)),0);
+//// QQEmbeddingHom
+      phi := PolyRingHom(P, RRx, CanonicalHom(RingQQ(),RRx), indets(RRx));
+      J := ideal(phi(gens(I)));
+      ans := [NF(indet(RRx,i),J) | i in 1..NumIndets(RRx)];
+      if VerbosityLevel() >= 20 then println "Succeeded with precision: ", precision; endif;
+      return ans;
+    uponerror E do
+      If "insufficient precision" IsIn GetErrMesg(E) Then
+	if VerbosityLevel() >= 20 then
+	  PrintLn fn,"insufficient precision -> ",precision;
+	endif;	
+	precision := precision * 2;
+      Else
+	Return E;
+      EndIf;
+    endtry;
+  endrepeat;
+enddefine; -- TryPrecision
+
+//-------------------------------------------------------
+  
+define ApproxSolveAndCheck_0dim(I, L)
+// ignore L it is just an empty list
+  $.RR_precision := 2^(-25);
+  repeat
+    $.RR_precision := $.RR_precision^2;
+    if VerbosityLevel() >= 20 then println "(Outer loop) Trying root prec: ", FloatStr($.RR_precision); endif;
+    solns := RecApproxSolve_0dim(I, []);
+  until AreGoodSolns(gens(I), solns);
+  return solns;
+enddefine; -- ApproxSolveAndCheck_0dim
+  
+
+define RecApproxSolve_0dim(I, UniPolys)
+  if VerbosityLevel() >= 20 then fn := "RecApproxSolve_0dim: "; endif;
+  P := RingOf(I);
+  for i := len(UniPolys)+1 to NumIndets(P) do
+    x := indet(P,i);
+    if VerbosityLevel() >= 20 then PrintLn fn,"trying ", x; endif;
+    MP := MinPolyQuot(x, I, x);
+    F := factor(MP);
+    if len(F.factors)<>1 then
+      if VerbosityLevel() >= 90 then PrintLn fn,"split: "; indent(F); endif;
+      return ConcatLists([RecApproxSolve_0dim(I+ideal(f),[]) | f in F.factors]);
+    endif;
+-- already radical:  we take advantage of all the clever things in radical
+    if max(F.multiplicities) > 2 then
+      error("not radical????");
+--       if VerbosityLevel()>=50 then PrintLn fn,"radical: ",F;endif;
+--       MP := product(F.factors);
+--       I := I+ideal(MP);
+    endif;
+    append(ref UniPolys, MP);
+  endfor;
+  return ApproxSolve_0DimRad(I, UniPolys);
+enddefine; -- RecApproxSolve2_0dim
+
+
+define ApproxSolve_0DimRad(RadI, UniPolys)
+  if VerbosityLevel() >= 20 then fn := "ApproxSolve_0DimRad: "; endif;
+  P := RingOf(RadI);
+  NumSols := multiplicity(P/LT(RadI));
+  for n := NumIndets(P) to 1 step -1 do
+    if VerbosityLevel() >= 20 then PrintLn fn,"trying ",indet(P,n); endif;
+    if deg(UniPolys[n]) = NumSols then
+      return NormalPositionSolve(RadI, n, UniPolys[n]);
+    endif;
+  endfor;
+  N := NumIndets(P);
+  repeat
+    LinPoly := indet(P,N) + sum([random(-7,7)*indet(P,i) | i in 1..(N-1)]);
+    if VerbosityLevel() >= 20 then PrintLn fn,"trying ", LinPoly; endif;
+    NewI := subst(RadI, [[indet(P,N), LinPoly]]);
+    UP := UnivariatePoly(NewI, N);
+    if deg(UP) = NumSols then
+      Pts := NormalPositionSolve(NewI, N, UP);
+//      /**/indent(ApproxSolveVerify(NewI, Pts));
+      return [ concat(first(Pt, N-1), [AsRAT(eval(LinPoly, Pt))]) | Pt In Pts ];
+    endif;
+//    decr(ref N);
+  endrepeat;
+enddefine; -- ApproxSolve0DimRad
+
+
+Define UnivariatePoly(J, N)
+  P := RingOf(J);
+  return MinPolyQuot(indet(P,N), J, indet(P,N));  // 2016
+EndDefine; -- UnivariatePoly
+
+
+define NormalPositionSolve(I, n, UP)
+  if VerbosityLevel() >= 20 then fn := "NormalPositionSolve: "; endif;
+  P := RingOf(I);
+  N := NumIndets(P);
+  QQ := RingQQ();
+  QQx ::= QQ[x[1..N]], lex;
+  X := indets(QQx);
+  if n = N then
+    if VerbosityLevel() >= 20 then PrintLn fn,"last indet is OK"; endif;
+    phi := PolyAlgebraHom(P, QQx, X);
+//    return ApplyShapeLemma(ideal(QQx, phi(gens(I)))+ ideal(phi(UP)));
+    return ApplyShapeLemma(ideal(QQx, phi(GBasis(I)))+ ideal(phi(UP)));
+  endif;
+  if VerbosityLevel() >= 20 then PrintLn fn,"swap ", X[n], " ", X[N]; endif;
+  swap(ref X[n], ref X[N]);
+  phi := PolyAlgebraHom(P, QQx, X);
+//  Pts := ApplyShapeLemma(ideal(QQx, phi(gens(I))));
+  Pts := ApplyShapeLemma(ideal(QQx, phi(GBasis(I))));
+  for i := 1 to len(Pts) do swap(ref Pts[i,n], ref Pts[i,N]); endfor;
+  return Pts;
+enddefine; -- NormalPositionSolve
+
+
+define ApplyShapeLemma(I)
+  if VerbosityLevel() >= 99 then fn := "ApplyShapeLemma: "; endif;
+  x := indets(RingOf(I));
+  n1 := len(x)-1;
+  RGB := ShapeLemma(I);
+  L := SortedBy(RGB, func(A,B) return LT(A)>LT(B); endfunc);
+  Zvalues := RealRootsApprox(last(L), $.RR_precision);
+  WithZ := func(L,Z) return concat(L,[Z]); endfunc;
+  S := [ WithZ([AsRAT(-eval(L[i],WithZ([0|j in 1..n1],z))) | i in 1..n1], z) | z In Zvalues];
+//  if VerbosityLevel()>=99 then indent(ideal(RGB)); endif;
+  if VerbosityLevel()>=99 then indent(ApproxSolveVerify(ideal(RGB), S)); endif;
+  return S;
+enddefine; -- ShapeLemma
+  
+----------------------------------------------------------------------
+endpackage;

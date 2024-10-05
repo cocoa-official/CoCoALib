@@ -1,0 +1,35 @@
+Use QQ[x,y,z];
+
+----------------------------------------------------------------------
+PrintLn "ex segm fault for error with multiline list input 10-05-2011";
+Try
+  gcd([2,
+      "b"]);
+UponError e Do  PrintLn GetErrMesg(e);
+EndTry
+  
+----------------------------------------------------------------------
+PrintLn "ex segm fault for error on args in NewMat 30-01-2012";
+R ::= QQ[x,y,z];
+Try  ZeroMat(R,2,"a"); UponError e Do PrintLn GetErrMesg(e); EndTry
+Try  ZeroMat(2,3,2); UponError e Do PrintLn GetErrMesg(e); EndTry
+Try  ZeroMat(R,"a",2); UponError e Do PrintLn GetErrMesg(e); EndTry
+
+----------------------------------------------------------------------
+PrintLn "ex segm fault on first and last on short lists 04-07-2012";
+Try  first([]); UponError e Do PrintLn GetErrMesg(e); EndTry
+Try  last([]);  UponError e Do PrintLn GetErrMesg(e); EndTry
+Try  first([],2);  UponError e Do PrintLn GetErrMesg(e); EndTry
+Try  last([],2);   UponError e Do PrintLn GetErrMesg(e); EndTry
+
+----------------------------------------------------------------------
+PrintLn "\nStill alive!";
+----------------------------------------------------------------------
+
+-- Try // changed interface: args are indets instead of indices
+--   PrintLn "ex segm fault indices out of range in ContentWRT/CoefficientsWRT";
+--   ***ContentWRT(xyz-xz^2, [-2])***;
+-- UponError e Do
+--   PrintLn GetErrMesg(e); PrintLn;
+-- EndTry
+

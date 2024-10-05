@@ -1,0 +1,96 @@
+      ModuleTermOrdering
+      Copyright (c)  2005 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ModuleTermOrdering}{Anna Bigatti}
+
+
+
+== User documentation for ModuleTermOrdering ==
+%======================================================================
+
+An object of the class ModuleTermOrdering represents an ordering on
+the module monoid of module terms, i.e. such that the
+ordering respects the operation ....  
+In CoCoALib orderings and gradings are intimately linked (for gradings
+see also [[degree]] and [[PPOrdering]]).
+
+Currently, the most typical use for a ModuleTermOrdering object is as
+a constructor argument to a concrete [[FreeModule]].  At the moment
+there are ? functions which create new ``ModuleTermOrderings``:
+
+Pseudo-constructors: (where ``PPO`` is a [[PPOrdering]], ``shifts`` is a
+``vector<degree>``, ``perm`` is ``std::vector<long>``, ``NumComponents`` is a ``long``)
+```
+  NewWDegTOPos(PPO, NumComponents);
+  NewPosWDegTO(PPO, NumComponents);
+  NewWDegPosTO(PPO, NumComponents);
+  NewWDegTOPos(PPO, shifts);
+  NewWDegPosTO(PPO, shifts);
+  NewPosWDegTO(PPO, shifts);
+  NewWDegTOPos(PPO, perm);
+  NewWDegPosTO(PPO, perm);
+  NewWDegTOPos(PPO, shifts, perm);
+  NewWDegPosTO(PPO, shifts, perm);
+```
+where 
+```
+  WDeg is the degree (incl. the shifts)
+  TO   is the PPOrdering (incl. the degree, i.e. the first GrDim rows)
+  Pos  is the position (according to the "score" given by perm [NYI])
+```
+
+=== Example ===
+%----------------------------------------------------------------------
+```
+  P = Q[x,y] with StdDegLex (==> GradingDim = 1)
+  P(-2) (+) P(-1)  i.e. P^2 with shifts = [(2), (1)], and WDegTOPos
+  v1 = [x,0],   v2 = [0,y^2]:
+  WDeg(v1) = WDeg(x)+2 = 3,  WDeg(v2) = WDeg(y^2)+1 = 3
+  x < y^2 according to StdDegLex  (NB: not "Lex"!)
+  so v1 < v2
+```
+
+The operations on a ModuleTermOrdering object are:
+```
+  out << MTO;      // output the MTO object to channel out
+  const std::vector<degree>& shifts(const ModuleTermOrdering& O);
+  long NumComponents(const ModuleTermOrdering& MTO);
+  long GradingDim(const ModuleTermOrdering& MTO);
+  const PPOrdering& ModPPOrdering(const ModuleTermOrdering& MTO);
+
+  bool IsWDegTOPos(const ModuleTermOrdering& MTO);// true iff MTO is implemented as WDegTOPos
+  bool IsPosWDegTO(const ModuleTermOrdering& MTO);
+  bool IsWDegPosTO(const ModuleTermOrdering& MTO);
+```
+
+output and OpenMath output is still questionable.
+
+
+== Maintainer documentation for ModuleTermOrdering ==
+%======================================================================
+
+The general ideas behind the implementations of ModuleTermOrdering and
+ModuleTermOrderingBase are analogous to those used for ring and RingBase.
+ModuleTermOrdering is a simple reference counting smart-pointer class, while
+ModuleTermOrderingBase hosts the intrusive reference count (so that
+every concrete derived class will inherit it).  [See SmartPtrIRC.txt]
+
+The only remaining observation to make about the simple class
+ModuleTermOrdering is that I have chosen to disable assignment -- I
+find it hard to imagine when it could be useful to be able to assign
+ModuleTermOrderings, and suspect that allowing assignment is more
+likely to lead to confusion and poor programming style.
+
+There are ? concrete ModuleTermOrderings in the namespace CoCoA::MTO.  The
+implementations are all simple and straightforward except for the matrix
+ordering which is a little longer and messier but still easy enough to
+follow.
+
+See also the CoCoAReport "Free Modules".
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+=== do we need a class "shifts"? ===
+----------------------------------------------------------------------

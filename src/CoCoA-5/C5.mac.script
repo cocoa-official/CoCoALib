@@ -1,0 +1,4 @@
+#!/bin/sh
+PercorsoBase=`dirname "$0"`
+cd "${PercorsoBase}"
+DYLD_FRAMEWORK_PATH=${PercorsoBase}/../Frameworks ./C5.bin

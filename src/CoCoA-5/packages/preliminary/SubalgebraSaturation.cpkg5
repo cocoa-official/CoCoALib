@@ -1,0 +1,183 @@
+package $SubalgebraSaturation
+
+export SubalgebraSaturateGens_g;
+export SubalgebraSatInterreduction;
+export SubalgebraSatComputeNewGens;
+export Relg;
+export TmpCheckInput;
+
+---------------------
+
+-- define SatReduce(g, G, embed_P_SElim, J)
+--   return sat_a0(SAGBIReduce(g, G, embed_P_SElim, J));
+-- enddefine; -- SatReduce
+
+  
+define monic0(g) 
+  if IsZero(g) then return g; else return monic(g); endif;
+enddefine; -- monic0
+  
+  
+define SubalgebraSatInterreduction(ref G, g)
+  FnName := "SubalgebraSatInterreduction: ";
+  if len(G) = 1 then return; endif;
+  repeat
+    G := [h in G | not(IsConstant(h)) and h<>g];
+    SortBy(ref G, func(A,B) return LT(A)<LT(B); endfunc);
+    NewG := [g];  -- g is in K[G], and must not be saturated by g
+    if VerbosityLevel()>=90 then println FnName, " NewG = ", NewG; endif;
+    for i := 1 to len(G) do
+      LTGi_orig := LT(G[i]);
+      f_before := G[i];
+      if VerbosityLevel()>=90 then println FnName, "G[", i,"] before = ", f_before; endif;
+      if VerbosityLevel()>=90 then println FnName, "G[", i,"] before = ", LT(f_before), "..."; endif;
+//      f := SAGBIReduceLT(G[i], NewG);
+      f := SAGBIReduce(G[i], NewG);
+      if VerbosityLevel()>=30 then
+	if f_before = f then println "  --> after = before";
+	elif f = 0 then println "  --> 0";
+	else println "  --> after = ", LT(f), "...";
+	endif;
+      endif
+      if not(IsZero(f)) then
+	append(ref NewG, monic(sat_g(f, g)));
+	if VerbosityLevel()>=90 then println "  --> NewG = ", NewG; endif;
+	if LT(f) < LT(last(NewG)) then
+	  for j := i+1 to len(G) do append(ref NewG, G[j]); endfor;
+	  if VerbosityLevel()>=30 then println " --> break & restart"; endif;
+	  break;
+	endif;
+      endif;
+      if i = len(G) then G := NewG; return; endif;
+    endfor;
+    G := NewG;
+  endrepeat;
+enddefine; -- SubalgebraSatInterreduction
+
+
+define ArePPs(L)
+  foreach t in L do
+    if not(IsMonomial(t)) or not(IsOne(LC(t))) then
+      return false;
+    endif;
+  endforeach;
+  return true;
+enddefine; -- ArePPs
+
+
+define MakeElimIdeal(ref embed_P_SElim, ref J, G)
+  P := RingOf(G[1]);
+  n := NumIndets(P);
+  W := RowMat(concat([wdeg(indet(P,i))[1] | i in 1..n],
+		     [wdeg(gg)[1] | gg in G]));
+  symbols := concat(SymbolRange("e",1,n), SymbolRange("g",1,len(G)));
+  if IsHomog(G) then
+    if VerbosityLevel()>80 then println "MakeElimIdeal: homog"; endif;
+    SElim := NewPolyRing(CoeffRing(P), symbols, ElimHomogMat(1..n,  W), 1);
+  else
+    if VerbosityLevel()>80 then println "MakeElimIdeal: non-homog"; endif;
+    SElim := NewPolyRing(CoeffRing(P), symbols, ElimMat(1..n,  W), 1);
+  endif;
+  SElim_A := indets(SElim, "e");
+  SElim_X := indets(SElim, "g");
+  embed_P_SElim  := PolyAlgebraHom(P, SElim, SElim_A);
+  J := ideal([SElim_X[i]-embed_P_SElim(G[i]) | i in 1..len(G)]);
+enddefine; -- MakeElimIdeal
+
+
+-- controllare come ottimizzare con toric in modo robusto
+define Relg(L, g)
+  P := RingOf(g);
+  Modg :=  QuotientingHom(NewQuotientRing(RingOf(g), ideal(g)));
+  L := [CanonicalRepr(Modg(f)) | f in L];
+  wdeg0 :=
+  func(f) if IsZero(f) then return 1; else return wdeg(f)[1]; endif; endfunc;
+  W := RowMat([wdeg0(f) | f in L]);
+  println L;
+  println W;
+  RelRing := NewPolyRing(CoeffRing(P), SymbolRange("x",1,len(L)), MakeTermOrdMat(W),1);
+ ---- FARE ottimizzazione per monomiali <<<<------------------------
+//  if ArePPs(L) then return toric(RelRing, L); endif;
+  KER := ker(Modg(PolyAlgebraHom(RelRing, P, L)));
+  if IsHomog(gens(KER)) then return ideal(RelRing, MinGens(KER)); endif;
+  return ideal(RelRing, MinSubsetOfGens(KER));
+enddefine; -- Rel
+
+  
+define SubalgebraSatComputeNewGens(G, g)
+  FnName := "SubalgebraSatComputeNewGens: ";
+  P := RingOf(g);
+  G_NotConst := [f in G | not(IsConstant(f))];
+  t0 := CpuTime();
+  RelSetIdeal := Relg(G_NotConst, g);
+  if VerbosityLevel()>= 40 then println "time Relg = ", TimeFrom(t0); endif;
+  eval_rel := PolyAlgebraHom(RingOf(RelSetIdeal), P, G_NotConst);
+  if VerbosityLevel()>= 40 then print FnName, "RelSet = "; indent(RelSetIdeal);endif;
+  -- reduction
+  MakeElimIdeal(ref embed_P_SElim, ref J, G_NotConst); // full rem
+  phi_P_El := PolyAlgebraHom(P, RingOf(J), indets(RingOf(J), "e"));
+  phi_El_P := PolyAlgebraHom(RingOf(J), P, concat(indets(P), G_NotConst));
+  El := product(indets(RingOf(J),"e"));
+  if VerbosityLevel()>= 40 then
+////    t0 := CpuTime(); GBJ := GBasis(J); println "time elim-GB J = ", TimeFrom(t0);
+  endif;
+  NewPolys := [];
+  Kx := NewPolyRing(CoeffRing(P), SymbolRange("x", 1, len(G_NotConst)));
+  psi := PolyAlgebraHom(Kx, P, G_NotConst);
+  countReduce := 0;
+  foreach rel in gens(RelSetIdeal) do
+    h := sat_g(eval_rel(rel), g);
+    if IsConstant(h) then continue; endif;
+    if VerbosityLevel()>=90 then println FnName, "rel --> h = ", h; endif;
+--     println "--------------------";
+--     println "eval_rel(rel) = ", eval_rel(rel);
+--     println "h = ", h;
+--     println "sat_x(SAGBIReduceLT(h, G1), g) = ", sat_x(SAGBIReduceLT(h, G1), a0);
+--     println "preimage0(psi, h) = ", preimage0(psi, h);
+--     println "--------------------";
+    //    if not(IsInImage(psi, h)) then append(ref NewPolys, monic(h)); endif;
+////    NFh := [ m in monomials(NF(phi_P_El(h),J)) | deg(gcd(m,El))>=1 ];
+////    if VerbosityLevel()>=90 then println FnName, "rel --> NFh = ", NFh; endif;
+////    if NFh<>[] then
+    NFh := SAGBIReduce(h, G_NotConst);
+    incr(ref countReduce);
+    if NFh<>0 then
+      append(ref NewPolys, monic(sat_g(NFh, g)));
+      if VerbosityLevel()>=90 then println FnName, "rel --> NFh = ", last(NewPolys); endif;
+    endif;
+  endforeach;
+  if VerbosityLevel()>= 40 then println "countReduce = ", countReduce; endif;
+  return MakeSet(NewPolys);
+enddefine; -- SubalgebraSatComputeNewGens
+
+
+define SubalgebraSaturateGens_g(G, g)
+  FnName := "SubalgebraSaturateGens_g: ";
+  TmpCheckInput(ref G, g); -- aggiunge g a G
+  -- start ----------------------------
+  repeat
+    SubalgebraSatInterreduction(ref G, g);  -- semplificazione
+    if VerbosityLevel()>= 40 then print FnName, "SatInterreducedGens = "; indent(G); endif;
+    NG := SubalgebraSatComputeNewGens(G, g);
+    if VerbosityLevel()>= 40 then println FnName, "NewGens = "; indent(NG); endif;
+    if VerbosityLevel()>= 40 then println FnName, "NewGens wdeg = ", [ wdeg(LT(f)) | f in NG]; endif;
+    if NG=[] then return G; endif;
+    G := concat(G, NG);
+  endrepeat;
+enddefine; -- SubalgebraSaturateGens_g
+
+
+define TmpCheckInput(ref G, g)
+  FnName := "TmpCheckInput: ";
+  R := RingsOf(G);
+  if len(R)>1 then error(FnName+"more than 1 ring for gens"); endif;
+-- temporary
+  G := [monic(f) | f in G];
+  g := monic(g);
+  if not(g isin G) then append(ref G, g); endif;
+enddefine; -- TmpCheckInput
+
+
+  
+endpackage;
+

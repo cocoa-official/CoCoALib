@@ -1,0 +1,1115 @@
+//   Copyright (c)  2005-2008,2014  John Abbott
+
+//   This file is part of the source of CoCoALib, the CoCoA Library.
+
+//   CoCoALib is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   CoCoALib is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with CoCoALib.  If not, see <http://www.gnu.org/licenses/>.
+
+
+#include "CoCoA/OrdvArith.H"
+#include "CoCoA/CanonicalHom.H"
+#include "CoCoA/DenseMatrix.H"
+#include "CoCoA/IntOperations.H"
+#include "CoCoA/MatrixArith.H"
+#include "CoCoA/MatrixForOrdering.H"
+#include "CoCoA/PPOrdering.H"
+#include "CoCoA/QuotientRing.H"
+#include "CoCoA/RingFp.H"
+#include "CoCoA/RingHom.H"
+#include "CoCoA/RingQQ.H"
+#include "CoCoA/RingZZ.H"
+#include "CoCoA/assert.H"
+#include "CoCoA/config.H"
+#include "CoCoA/convert.H"
+#include "CoCoA/degree.H"
+#include "CoCoA/error.H"
+#include "CoCoA/matrix.H"
+
+
+#include <iostream>
+using std::ostream;
+using std::endl;
+//#include <vector>
+using std::vector;
+#include <limits>
+using std::numeric_limits;
+#include <algorithm>
+using std::find;
+//using std::swap;
+
+
+#include <omp.h>
+// extern int omp_get_max_threads();
+// extern int omp_get_thread_num();
+
+
+namespace CoCoA
+{
+
+  OrdvArith::base::base(long NumIndets, long GradingDim, long NumOrdvEntries):
+    IntrusiveReferenceCount(),
+    myNumIndets(NumIndets),
+    myGradingDim(GradingDim),
+    myOrdvBuffers(omp_get_max_threads(), vector<OrdvElem>(NumOrdvEntries)),
+    myExpvBuffers(omp_get_max_threads(), vector<long>(NumIndets))
+  {
+    CoCoA_ASSERT(NumIndets > 0);
+    CoCoA_ASSERT(NumIndets < 1000000); // complain about ridiculously large number of indets
+    CoCoA_ASSERT(GradingDim <= NumIndets);
+    CoCoA_ASSERT(NumOrdvEntries >= NumIndets);
+    myBitsPerOrdvEntry = numeric_limits<SmallExponent_t>::digits;
+    myPackingDensity = numeric_limits<OrdvElem>::digits / myBitsPerOrdvEntry;
+    CoCoA_ASSERT(myPackingDensity >= 1);
+    // Recompute myBitsPerOrdvEntry; this may increase the value (safely, of course)...
+    myBitsPerOrdvEntry = numeric_limits<OrdvElem>::digits / myPackingDensity;
+    CoCoA_ASSERT(myPackingDensity == 1 || myBitsPerOrdvEntry < numeric_limits<OrdvElem>::digits);
+    if (myPackingDensity == 1) // special case because shift op not defined if shift >= wordsize
+      myOrdvMask = numeric_limits<OrdvElem>::max();
+    else
+      myOrdvMask = (static_cast<OrdvElem>(1) << myBitsPerOrdvEntry) - 1;
+    CoCoA_ASSERT(myOrdvMask != 0);
+    // Reset myOrdvWords to the correct value...
+    myOrdvWords = 1 + (NumOrdvEntries-1)/myPackingDensity;
+    myOrdvWordsForCmp = 1 + (myNumIndets-1)/myPackingDensity;
+
+    myRefCountZero();
+  }
+
+
+  OrdvArith::base::~base()
+  {}
+
+
+  inline vector<OrdvArith::OrdvElem>& OrdvArith::base::myOrdvBuffer() const
+  {
+    return myOrdvBuffers[omp_get_thread_num()];
+  }
+
+  inline vector<long>& OrdvArith::base::myExpvBuffer() const
+  {
+    return myExpvBuffers[omp_get_thread_num()];
+  }
+
+
+  void OrdvArith::base::myAssignZero(OrdvElem* ordv) const
+  {
+    for (long i=0; i < myOrdvWords; ++i)
+      ordv[i] = 0;
+  }
+
+
+  void OrdvArith::base::myAssign(OrdvElem* dest, const OrdvElem* src) const
+  {
+    for (long i=0; i < myOrdvWords; ++i)
+      dest[i] = src[i];
+  }
+
+
+  void OrdvArith::base::mySwap(OrdvElem* ordv1, OrdvElem* ordv2) const
+  {
+//    if (ordv1 == ordv2) return; // worth checking this special case???
+    for (long i=0; i < myOrdvWords; ++i)
+      std::swap(ordv1[i], ordv2[i]);
+  }
+
+
+  void OrdvArith::base::myMulIndetPower(OrdvElem* ordv, long var, long exp) const
+  {
+    CoCoA_ASSERT(exp >= 0);
+    CoCoA_ASSERT(0 <= var && var < myNumIndets);
+    vector<long> PowerExpv(myNumIndets);  // should be member of OrdvArith::base?  Use myExpvBuffer???
+    PowerExpv[var] = exp;
+    vector<OrdvElem> PowerOrdv(myOrdvWords);  // should be member of OrdvArith::base?  Use myOrdvBuffer????
+    myAssignFromExpv(&PowerOrdv[0], PowerExpv);
+    myMul(ordv, ordv, &PowerOrdv[0]);
+  }
+
+
+  void OrdvArith::base::myPower(OrdvElem* ordv, const OrdvElem* ordv1, long LongExp) const
+  {
+    CoCoA_ASSERT(LongExp >= 0);
+    const OrdvElem exp = static_cast<OrdvElem>(LongExp);
+    if (exp > myOrdvMask)
+      CoCoA_ERROR(ERR::ExpTooBig, "OrdvArith::myPower");
+    // ??? Is it worth uncommenting these two shortcuts???
+    // if (pow == 0) { myAssignZero(ordv); return; }
+    // if (pow == 1) { myAssign(ordv, ordv1); return; }
+
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv1, myNumIndets);
+    for (long i=0; i < myNumIndets; ++i)
+    {
+      // Check for ordv element overflow.
+      if (OrdvBuffer[i] > 0 && myOrdvMask/OrdvBuffer[i] < exp)
+        CoCoA_ERROR(ERR::ExpTooBig, "OrdvArith::myPower");
+      OrdvBuffer[i] *= exp;
+    }
+    myCompress(ordv, OrdvBuffer);
+  }
+
+
+  long OrdvArith::base::myStdDeg(const OrdvElem* ordv) const
+  {
+    vector<long>& ExpvBuffer = myExpvBuffer();
+    myComputeExpv(ExpvBuffer, ordv);
+    long d=0;
+    for (long i=0; i < myNumIndets; ++i)
+      d += ExpvBuffer[i];  // ignore possible overflow
+    return d;
+  }
+
+
+  void OrdvArith::base::myWDeg(degree& d, const OrdvElem* ordv) const
+  {
+    CoCoA_ASSERT(GradingDim(d) == myGradingDim);
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myGradingDim);
+    for (long i=0; i < myGradingDim; ++i)
+      SetComponent(d, i, OrdvBuffer[i]);
+  }
+
+
+  int OrdvArith::base::myCmpWDegPartial(const OrdvElem* ordv1, const OrdvElem* ordv2, long PartialGrDim) const  // assumes GrDim >= 0
+  {
+    CoCoA_ASSERT(0 <= PartialGrDim && PartialGrDim <= myGradingDim);
+    const long last = PartialGrDim/myPackingDensity;
+    for (long i=0; i < last; ++i)
+      if (ordv1[i] != ordv2[i]) return (ordv1[i] > ordv2[i])?1:-1;
+    const long ShiftCount = (last+1)*myPackingDensity - PartialGrDim;
+    if (ShiftCount == myPackingDensity) return 0;
+    CoCoA_ASSERT(myPackingDensity > 1 && myBitsPerOrdvEntry < numeric_limits<OrdvElem>::digits);
+    // Reach here only if myPackingDensity > 1, so myBitsPerOrdvEntry < wordsize
+    const OrdvElem last1 = ordv1[last] >> (ShiftCount*myBitsPerOrdvEntry);
+    const OrdvElem last2 = ordv2[last] >> (ShiftCount*myBitsPerOrdvEntry);
+    if (last1 == last2) return 0;
+    if (last1 > last2) return 1;
+    return -1;
+  }
+
+
+  bool OrdvArith::base::myIsZero(const OrdvElem* ordv) const
+  {
+    for (long i=0; i < myOrdvWordsForCmp; ++i)
+      if (ordv[i] != 0) return false;
+    return true;
+  }
+
+
+  // Simple rather than efficient.
+  bool OrdvArith::base::myIsIndet(long& index, const OrdvElem* ordv) const
+  {
+    vector<long>& ExpvBuffer = myExpvBuffer();
+    myComputeExpv(ExpvBuffer, ordv);
+
+    long j = myNumIndets;
+    for (long i = 0; i < myNumIndets; ++i)
+    {
+      if (ExpvBuffer[i] == 0) continue;
+      if (j != myNumIndets || ExpvBuffer[i] != 1) return false;
+      j = i;
+    }
+    if (j == myNumIndets) return false;
+    index = j;
+    return true;
+  }
+
+
+  OrdvArith::OrdvElem OrdvArith::base::myOrdvGetNth(const OrdvElem* ordv, long n) const
+  {
+    CoCoA_ASSERT(n < myOrdvWords*myPackingDensity);
+    const long posn = n/myPackingDensity;
+    const long n_shifts = myPackingDensity-1 - (n%myPackingDensity);
+    const OrdvElem tmp = ordv[posn] >> (n_shifts * myBitsPerOrdvEntry);  // NB shift amount is less than word width!
+    return (tmp & myOrdvMask);
+  }
+
+
+  void OrdvArith::base::myCompress(OrdvElem* ordv, const vector<OrdvElem>& buffer) const
+  {
+    if (myPackingDensity == 1)
+    {
+      std::copy(buffer.begin(), buffer.end(), ordv);
+      return;
+    }
+    long posn = 0;
+    for (long i=0; i < myOrdvWords; ++i)
+    {
+      OrdvElem word = 0; // this value is totally irrelevant, it gets shifted into "hyperspace"
+      for (long j=0; j < myPackingDensity; ++j)
+      {
+        word <<= myBitsPerOrdvEntry; // ok because myBitsPerOrdvEntry < wordsize!!!
+	if (posn < myNumIndets) word += buffer[posn];
+	++posn;
+      }
+      ordv[i] = word;
+    }
+  }
+
+
+  void OrdvArith::base::myDecompress(vector<OrdvElem>& buffer, const OrdvElem* ordv, long NumCompts) const
+  {
+    if (myPackingDensity == 1)
+    {
+      std::copy(&ordv[0], &ordv[NumCompts], buffer.begin());
+      return;
+    }
+    long BasePosn = 0;
+    for (long i=0; i < myOrdvWords; ++i)
+    {
+      OrdvElem word = ordv[i];
+      for (long j=myPackingDensity; j-- > 0;)
+      {
+	if (BasePosn + j < NumCompts)
+          buffer[BasePosn + j] = (word & myOrdvMask);
+        word >>= myBitsPerOrdvEntry;  // ok because myBitsPerOrdvEntry < wordsize!!!
+      }
+      BasePosn += myPackingDensity;
+    }
+  }
+
+
+
+  //---------------------------------------------------------------------------
+  // LexImpl
+
+  OrdvArith::LexImpl::LexImpl(long NumIndets):
+    base(NumIndets, 0, NumIndets)
+  {}
+
+
+  void OrdvArith::LexImpl::myAssignFromExpv(OrdvElem* ordv, const vector<long>& expv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    for (long i=0; i < myNumIndets; ++i)
+      OrdvBuffer[i] = expv[i];
+    myCompress(ordv, OrdvBuffer);
+  }
+
+
+  void OrdvArith::LexImpl::myComputeExpv(vector<long>& expv, const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    for (long i=0; i < myNumIndets; ++i)
+      expv[i] = IntegerCast<long>(OrdvBuffer[i]);
+  }
+
+
+  long OrdvArith::LexImpl::myExponent(const OrdvElem* ordv, long var) const
+  {
+    return IntegerCast<long>(myOrdvGetNth(ordv, var));
+  }
+
+
+  void OrdvArith::LexImpl::myOutputSelf(ostream& out) const
+  {
+    out << "OrdvArith::LexImpl(" << myNumIndets << ")";
+  }
+
+
+
+  //---------------------------------------------------------------------------
+  // StdDegLexImpl
+
+  OrdvArith::StdDegLexImpl::StdDegLexImpl(long NumIndets):
+    base(NumIndets, 1, NumIndets)
+  {}
+
+
+  void OrdvArith::StdDegLexImpl::myAssignFromExpv(OrdvElem* ordv, const vector<long>& expv) const
+  {
+    OrdvElem deg = expv[0];
+    for (long i=1; i < myNumIndets; ++i)
+    {
+      CoCoA_ASSERT("Exponent overflow" && deg <= myOrdvMask-expv[i]);
+      deg += expv[i];
+    }
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    OrdvBuffer[0] = deg;
+    for (long i=1; i < myNumIndets; ++i)
+      OrdvBuffer[i] = expv[i-1];
+
+    myCompress(ordv, OrdvBuffer);
+  }
+
+
+  void OrdvArith::StdDegLexImpl::myComputeExpv(vector<long>& expv, const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    OrdvElem expN = OrdvBuffer[0];
+    for (long i=1; i < myNumIndets; ++i)
+    {
+      const OrdvElem& ordvi = OrdvBuffer[i];
+      expN -= ordvi;
+      expv[i-1] = ordvi;
+    }
+    expv[myNumIndets-1] = expN;
+  }
+
+
+  long OrdvArith::StdDegLexImpl::myStdDeg(const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, 1);
+    return OrdvBuffer[0];
+  }
+
+
+  long OrdvArith::StdDegLexImpl::myExponent(const OrdvElem* ordv, long var) const
+  {
+    if (var < myNumIndets-1) return IntegerCast<long>(myOrdvGetNth(ordv, var+1));
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    OrdvElem ans = OrdvBuffer[0];
+    for (long i=1; i < myNumIndets; ++i)
+      ans -= OrdvBuffer[i];  // NB this cannot underflow if degree has not overflowed
+    return IntegerCast<long>(ans);
+  }
+
+
+  void OrdvArith::StdDegLexImpl::myOutputSelf(ostream& out) const
+  {
+    out << "OrdvArith::StdDegLexImpl(" << myNumIndets << ")";
+  }
+
+
+
+  //---------------------------------------------------------------------------
+  // StdDegRevLexImpl
+
+  OrdvArith::StdDegRevLexImpl::StdDegRevLexImpl(long NumIndets):
+    base(NumIndets, 1, NumIndets)
+  {}
+
+
+  void OrdvArith::StdDegRevLexImpl::myAssignFromExpv(OrdvElem* ordv, const vector<long>& expv) const
+  {
+    OrdvElem deg = expv[0];
+    for (long i=1; i < myNumIndets; ++i)
+    {
+      CoCoA_ASSERT("Negative exponent" && expv[i] >= 0);
+      CoCoA_ASSERT("Exponent overflow" && static_cast<unsigned long>(expv[i]) <= myOrdvMask-deg);
+      deg += expv[i];
+    }
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    OrdvBuffer[0] = deg;
+    for (long i=1; i < myNumIndets; ++i)
+      OrdvBuffer[i] = deg - expv[myNumIndets - i];
+
+    myCompress(ordv, OrdvBuffer);
+  }
+
+
+  void OrdvArith::StdDegRevLexImpl::myComputeExpv(vector<long>& expv, const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    const OrdvElem deg = OrdvBuffer[0];
+    OrdvElem exp0 = (2-myNumIndets)*deg; // may HARMLESSLY become "negative" or "overflow"
+    for (long i=1; i < myNumIndets; ++i)
+    {
+      const OrdvElem ordvi = OrdvBuffer[i];
+      exp0 += ordvi;
+      expv[myNumIndets-i] = deg - ordvi;
+    }
+    expv[0] = exp0;
+  }
+
+
+  long OrdvArith::StdDegRevLexImpl::myStdDeg(const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, 1);
+    return OrdvBuffer[0];
+  }
+
+
+  long OrdvArith::StdDegRevLexImpl::myExponent(const OrdvElem* ordv, long var) const
+  {
+    if (var != 0) return IntegerCast<long>(myOrdvGetNth(ordv, 0) - myOrdvGetNth(ordv, myNumIndets-var));
+
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    OrdvElem ans = (2-myNumIndets)*OrdvBuffer[0]; // may HARMLESSLY become "negative" or overflow
+    for (long i=1; i < myNumIndets; ++i)
+      ans += OrdvBuffer[i];
+    return IntegerCast<long>(ans);
+  }
+
+
+  void OrdvArith::StdDegRevLexImpl::myOutputSelf(ostream& out) const
+  {
+    out << "OrdvArith::StdDegRevLexImpl(" << myNumIndets << ")";
+  }
+
+
+
+  //---------------------------------------------------------------------------
+  // StdDegRevLexImpl2
+
+  OrdvArith::StdDegRevLexImpl2::StdDegRevLexImpl2(long NumIndets):
+    base(NumIndets, 1, NumIndets)
+  {}
+
+
+  void OrdvArith::StdDegRevLexImpl2::myAssignFromExpv(OrdvElem* ordv, const vector<long>& expv) const
+  {
+    OrdvElem PartialSum = 0;
+    long j = myNumIndets-1;
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    for (long i=0; i < myNumIndets; ++i, --j)
+    {
+      CoCoA_ASSERT("Exponent overflow" && IntegerCast<OrdvElem>(expv[i]) <= myOrdvMask-PartialSum);
+      PartialSum += expv[i];
+      OrdvBuffer[j] = PartialSum;
+    }
+
+    myCompress(ordv, OrdvBuffer);
+  }
+
+
+  void OrdvArith::StdDegRevLexImpl2::myComputeExpv(vector<long>& expv, const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    expv[0] = OrdvBuffer[myNumIndets-1];
+    long i = myNumIndets-1;
+    for (long j=1; j < myNumIndets; ++j, --i)
+      expv[i] = OrdvBuffer[j-1] - OrdvBuffer[j];
+  }
+
+
+  long OrdvArith::StdDegRevLexImpl2::myStdDeg(const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, 1);
+    return OrdvBuffer[0];
+  }
+
+
+  long OrdvArith::StdDegRevLexImpl2::myExponent(const OrdvElem* ordv, long var) const
+  {
+    if (var == 0) return IntegerCast<long>(myOrdvGetNth(ordv, myNumIndets-1));
+    return IntegerCast<long>(myOrdvGetNth(ordv, myNumIndets-var-1) - myOrdvGetNth(ordv, myNumIndets-var));
+  }
+
+
+  void OrdvArith::StdDegRevLexImpl2::myOutputSelf(ostream& out) const
+  {
+    out << "OrdvArith::StdDegRevLexImpl2(" << myNumIndets << ")";
+  }
+
+
+
+  //---------------------------------------------------------------------------
+  // MatrixOrderingImpl
+
+  OrdvArith::MatrixOrderingImpl::MatrixOrderingImpl(long NumIndets, long GradingDim, const matrix& /*OrderMatrix*/):
+    base(NumIndets, GradingDim, NumIndets)
+  {
+    CoCoA_ERROR(ERR::NYI, "MatrixOrderingImpl");
+//     CoCoA_ASSERT(myGradingDim < NumRows(OrderMatrix));
+//     CoCoA_ASSERT(NumRows(OrderMatrix) == NumIndets);
+//     CoCoA_ASSERT(NumCols(OrderMatrix) == NumIndets);
+//       // Check that the matrix entries are non-negative
+//     for (long i=0; i < myNumIndets; ++i)
+//       for (long j=0; j < myNumIndets; ++j)
+//         CoCoA_ASSERT(myOrderMatrix[i][j] >= 0);
+   }
+
+
+  void OrdvArith::MatrixOrderingImpl::myAssignFromExpv(OrdvElem* ordv, const vector<long>& expv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    for (long i=0; i < myNumIndets; ++i)
+    {
+      OrdvBuffer[i] = 0;
+      for (long j=0; j < myNumIndets; ++j)
+        OrdvBuffer[i] += myOrderMatrix[i][j]*expv[j];
+    }
+
+    myCompress(ordv, OrdvBuffer);
+  }
+
+
+  void OrdvArith::MatrixOrderingImpl::myComputeExpv(vector<long>& expv, const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    for (long i=0; i < myNumIndets; ++i)
+    {
+      long deg = 0;
+      for (long j=0; j < myNumIndets; ++j)
+        deg += myAdjointOrderMatrix[i][j] * OrdvBuffer[j];
+      expv[i] = deg/myOrderMatrixDet;
+    }
+  }
+
+
+  long OrdvArith::MatrixOrderingImpl::myExponent(const OrdvElem* ordv, long var) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    OrdvElem ans = 0;
+    for (long j=0; j < myNumIndets; ++j)
+      ans += myAdjointOrderMatrix[var][j] * OrdvBuffer[j];
+    ans /= myOrderMatrixDet;
+    return IntegerCast<long>(ans);
+  }
+
+
+
+  void OrdvArith::MatrixOrderingImpl::myOutputSelf(ostream& out) const
+  {
+    out << "OrdArith::MatrixOrdering(GradingDim=" << myGradingDim << ", ";
+//     out << "PPOrdering(GRADING=matrix([";
+//     for (long i=0; i < myGradingDim; ++i)
+//     {
+//       if (i > 0) out << ", ";
+//       out << "[";
+//       for (long j=0; j < myNumIndets; ++j)
+//       {
+//         if (j > 0) out << ", ";
+//         out << myOrderMatrix[i][j];
+//       }
+//       out << "]";
+//     }
+//     out << "]), ";
+    out << "matrix([";
+    for (long i=0; i < myNumIndets; ++i) //??? start from myGradingDim???
+    {
+      if (i > 0) out << ", ";
+      out << "[";
+      for (long j=0; j < myNumIndets; ++j)
+      {
+        if (j > 0) out << ", ";
+        out << myOrderMatrix[i][j];
+      }
+      out << "]";
+    }
+    out << "]))";
+  }
+
+
+
+
+  //--------------------  MatrixOrderingMod32749Impl --------------------
+
+  OrdvArith::MatrixOrderingMod32749Impl::MatrixOrderingMod32749Impl(long NumIndets, long GradingDim, const matrix& OrderMatrix):
+    base(NumIndets, GradingDim, NumIndets)
+  {
+    CoCoA_ASSERT(NumRows(OrderMatrix) == NumIndets);
+    CoCoA_ASSERT(NumCols(OrderMatrix) == NumIndets);
+    CoCoA_ASSERT(IsZZ(BaseRing(OrderMatrix))||IsQQ(BaseRing(OrderMatrix)));
+    const QuotientRing Fp = NewRingFp(32749,GlobalSettings::NonNegResidues);
+    matrix M(NewDenseMat(Fp, NumIndets, NumIndets));
+    RingHom phi = CanonicalHom(BaseRing(OrderMatrix), Fp);
+
+    if (!IsTermOrdering(OrderMatrix))
+      CoCoA_ERROR(ERR::NotTermOrdering, "OrdvArith::MatrixOrderingMod32749Impl::MatrixOrderingMod32749Impl");
+    for (long i=0; i < GradingDim; ++i)
+      for (long j=0; j < NumCols(OrderMatrix); ++j)
+        if (sign(OrderMatrix(i,j)) < 0)  CoCoA_ERROR(ERR::NYI, "MatrixOrderingMod32749Impl: temporarily forcing weights to be non-negative");
+    matrix PosOrdMat(NewIntegerOrdMat(NewPositiveMat(OrderMatrix)));
+    for (long i=0; i < myNumIndets; ++i)
+      for (long j=0; j < myNumIndets; ++j)
+        SetEntry(M, i, j, phi(PosOrdMat(i, j)));
+    matrix InvM = inverse(M);
+
+    BigInt tmp;
+    myOrderMatrix.resize(myNumIndets, vector<int>(myNumIndets));
+    myInverseOrderMatrix.resize(myNumIndets, vector<int>(myNumIndets));
+    for (long i=0; i < myNumIndets; ++i)
+      for (long j=0; j < myNumIndets; ++j)
+      {
+        myOrderMatrix[i][j] = ConvertTo<long>(PosOrdMat(i,j));
+        myInverseOrderMatrix[i][j] = ConvertTo<long>(InvM(i,j));
+      }
+
+#ifdef CoCoA_DEBUG
+    // Verify that myOrderMatrix is all non-negative
+    for (long i=0; i < NumRows(M); ++i)
+      for (long j=0; j < NumCols(M); ++j)
+        CoCoA_ASSERT(myOrderMatrix[i][j] >= 0);
+    // Verify that myOrderMatrix*myInverseOrderMatrix is the identity
+    for (long i=0; i < myNumIndets; ++i)
+    {
+      for (long j=0; j < myNumIndets; ++j)
+      {
+        int prod_ij = 0;
+        for (long k=0; k < myNumIndets; ++k)
+          prod_ij += (myOrderMatrix[i][k] * myInverseOrderMatrix[k][j])%32749;
+        if (i == j) CoCoA_ASSERT("BAD INVERSE" && prod_ij%32749 == 1);
+        else        CoCoA_ASSERT("BAD INVERSE" && prod_ij%32749 == 0);
+      }
+    }
+#endif
+    myRefCountZero();
+  }
+
+
+  void OrdvArith::MatrixOrderingMod32749Impl::myAssignFromExpv(OrdvElem* ordv, const vector<long>& expv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    for (long i=0; i < myNumIndets; ++i)
+    {
+      OrdvBuffer[i] = 0;
+      for (long j=0; j < myNumIndets; ++j)
+        OrdvBuffer[i] += myOrderMatrix[i][j]*expv[j];
+    }
+
+    myCompress(ordv, OrdvBuffer);
+  }
+
+
+  void OrdvArith::MatrixOrderingMod32749Impl::myComputeExpv(vector<long>& expv, const OrdvElem* ordv) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    for (long i=0; i < myNumIndets; ++i)
+    {
+      unsigned long deg = 0;
+      for (long j=0; j < myNumIndets; ++j)
+      {
+        deg += (myInverseOrderMatrix[i][j] * OrdvBuffer[j]);
+        if (deg>46336*32749) deg -= 46336*32749;
+      }
+      expv[i] = deg%32749;
+    }
+  }
+
+
+  long OrdvArith::MatrixOrderingMod32749Impl::myExponent(const OrdvElem* ordv, long var) const
+  {
+    vector<OrdvElem>& OrdvBuffer = myOrdvBuffer();
+    myDecompress(OrdvBuffer, ordv, myNumIndets);
+    OrdvElem ans = 0;
+    for (long j=0; j < myNumIndets; ++j)
+    {
+      ans += (myInverseOrderMatrix[var][j] * OrdvBuffer[j]);
+      if (ans > 46336*32749) ans -= 46336*32749;
+    }
+    return ans%32749; // no need to use IntegerCast here, overflow can never occur
+  }
+
+
+  void OrdvArith::MatrixOrderingMod32749Impl::myOutputSelf(ostream& out) const
+  {
+    out << "OrdvArith::MatrixOrdering(GradingDim=" << myGradingDim << ", ";
+//     out << "PPOrdering(GRADING=matrix([";
+//     for (long i=0; i < myGradingDim; ++i)
+//     {
+//       if (i > 0) out << ", ";
+//       out << "[";
+//       for (long j=0; j < myNumIndets; ++j)
+//       {
+//         if (j > 0) out << ", ";
+//         out << myOrderMatrix[i][j];
+//       }
+//       out << "]";
+//     }
+//     out << "]), ";
+    out << "matrix([";
+    for (long i=0; i < myNumIndets; ++i)
+    {
+      if (i > 0) out << ", ";
+      out << "[";
+      for (long j=0; j < myNumIndets; ++j)
+      {
+        if (j > 0) out << ", ";
+        out << myOrderMatrix[i][j];
+      }
+      out << "]";
+    }
+    out << "]))";
+  }
+
+
+//   void OrdvArith::MatrixOrderingMod32749Impl::mySetMatrix(const matrix& M)
+//   {
+//     CoCoA_ASSERT(NumRows(M) == myNumIndets);
+//     CoCoA_ASSERT(NumCols(M) == myNumIndets);
+//     BigInt tmp;
+
+//     for (long i=0; i < myNumIndets; ++i)
+//       for (long j=0; j < myNumIndets; ++j)
+//       {
+//         if (!IsInteger(tmp, M(i, j)))
+//           CoCoA_ERROR("entry of MatrixOrdering is not integer","MatrixOrderingMod32749Impl");
+//         if (!convert(myInverseOrderMatrix[i][j], tmp))
+//           CoCoA_ERROR("entry of MatrixOrdering is not integer","MatrixOrderingMod32749Impl");
+//       }
+//   }
+
+
+//   void OrdvArith::MatrixOrderingMod32749Impl::mySetInverseMatrixTmp(const matrix& /*M*/)
+//   { /*???*/  }
+
+
+
+  //---------------------------------------------------------------------------
+
+  OrdvArith::reference NewOrdvArith(const PPOrdering& PPO)
+  {
+    if (IsLex(PPO)) return OrdvArith::reference(new OrdvArith::LexImpl(NumIndets(PPO)));
+    if (IsStdDegLex(PPO)) return OrdvArith::reference(new OrdvArith::StdDegLexImpl(NumIndets(PPO)));
+    if (IsStdDegRevLex(PPO)) return OrdvArith::reference(new OrdvArith::StdDegRevLexImpl(NumIndets(PPO)));
+
+    // If we get here, we have a matrix ordering.
+
+    const long n = NumIndets(PPO);
+    const long g = GradingDim(PPO);
+
+    matrix M(GetMatrix(PPO));
+
+    CoCoA_ASSERT(NumRows(M) == n);
+    CoCoA_ASSERT(NumCols(M) == n);
+    CoCoA_ASSERT(g <= n);
+
+    return OrdvArith::reference(new OrdvArith::MatrixOrderingMod32749Impl(n, g, M));
+
+    // (1) Get matrix M out of the ordering.
+    // (2) Make an equivalent matrix M2 which is strictly positive
+    // (3) Build a MatrixOrderingImpl object with M2, but also need
+    //     the transformation matrix to be able to calculate degrees!!
+  }
+
+
+  std::ostream& operator<<(std::ostream& out, const OrdvArith::reference& OA)
+  {
+    OA->myOutputSelf(out);
+    return out;
+  }
+
+
+} // end of namespace CoCoA
+
+
+// RCS header/log
+// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/OrdvArith.C-OpenMP,v 1.1 2014/06/17 10:11:04 abbott Exp $
+// $Log: OrdvArith.C-OpenMP,v $
+// Revision 1.1  2014/06/17 10:11:04  abbott
+// Summary: Renamed from OrdvArith-OpenMP.C
+// Author: JAA
+//
+// Revision 1.2  2014/04/30 16:09:44  abbott
+// Summary: Removed pointless include
+// Author: JAA
+//
+// Revision 1.1  2014/04/02 10:54:02  abbott
+// Summary: Special version for OpenMP (sometimes faster, sometimes slower); probably never be used
+// Author: JAA
+//
+// Revision 1.34  2014/01/29 13:06:08  abbott
+// Summary: Removed irrelevant #include directive
+// Author: JAA
+//
+// Revision 1.33  2014/01/28 16:53:36  abbott
+// Significant change: code is now threadsafe.
+// Uses CPP flag CoCoA_THREADSAFE_HACK to select between single-threaded & multi-threaded
+// code; single-threaded uses a "global" buffer.
+//
+// Revision 1.32  2013/05/27 13:09:35  abbott
+// Added include directive for config.H.
+//
+// Revision 1.31  2013/04/24 09:15:08  abbott
+// Added an assertion.
+//
+// Revision 1.30  2013/03/27 11:37:04  abbott
+// Added new (faster, cleaner) impl for StdDegRevLex.  Still no doc though.
+//
+// Revision 1.29  2013/03/26 15:45:37  abbott
+// NOT YET COMPLETE -- just checking in so that CVS compiles!!!
+//
+// Revision 1.28  2013/03/15 10:56:39  abbott
+// Changed OrdvElem into unsigned long.
+// Corrected evil/subtle bug in CmpWDegPartial.
+//
+// Revision 1.27  2013/02/26 21:40:43  abbott
+// Fixed evil subtle bug: shift operator<< and operator>> are UNDEFINED if
+// shift amount is greater than or equal to wordsize.  NASTY!!!
+// Added overflow check in power function.
+// Some minor cleaning.
+//
+// Revision 1.26  2012/05/28 09:18:21  abbott
+// Created IntOperations which gathers together all operations on
+// integers (both big and small).  Many consequential changes.
+//
+// Revision 1.25  2012/04/02 17:06:00  bigatti
+// -- allowing QQ for BaseRing of oder matrices
+//
+// Revision 1.24  2012/03/30 17:29:01  bigatti
+// -- accepting matrices over QQ
+//
+// Revision 1.23  2012/02/10 10:28:08  bigatti
+// -- changed RingZ.H, RingQ.H --> RingZZ.H, RingQQ.H
+//
+// Revision 1.22  2012/02/08 16:12:37  bigatti
+// -- changed: Z,Q -> ZZ,QQ
+//
+// Revision 1.21  2011/08/14 15:52:17  abbott
+// Changed ZZ into BigInt (phase 1: just the library sources).
+//
+// Revision 1.20  2011/05/19 14:41:09  abbott
+// Matrix impl now explicitly requests non-neg residues when creating RingFp.
+//
+// Revision 1.19  2011/03/16 15:30:09  abbott
+// Removed two "unsigned" (exponent args).
+//
+// Revision 1.18  2011/03/16 13:22:15  abbott
+// Added comments (about GrDim) for myCmpWDegPartial.
+//
+// Revision 1.17  2011/03/10 17:25:51  bigatti
+// -- added CoCoA_ASSERT in myCmpWDegPartial
+//
+// Revision 1.16  2011/03/10 16:39:34  abbott
+// Replaced (very many) size_t by long in function interfaces (for rings,
+// PPMonoids and modules).  Also replaced most size_t inside fn defns.
+//
+// Revision 1.15  2009/12/23 18:53:52  abbott
+// Major change to conversion functions:
+//   convert(..) is now a procedure instead of a function
+//   IsConvertible(..) replaces the former convert(..) function
+//   Added new NumericCast conversion function (placeholder for BOOST feature)
+//   Consequent changes in code which uses these features.
+//
+// Revision 1.14  2009/09/22 14:01:33  bigatti
+// -- added myCmpWDegPartial (ugly name, I know....)
+// -- cleaned up and realigned code in PPMonoid*.C files
+//
+// Revision 1.13  2009/07/24 14:21:42  abbott
+// Added an include directive (became necessary after cleaning up other files).
+//
+// Revision 1.12  2009/03/16 07:28:21  bigatti
+// -- fixed a CoCoA_ASSERT on GradingDim
+//
+// Revision 1.11  2008/05/30 12:44:14  abbott
+// Moved "ordering matrices" into their ownn special file.
+//
+// Revision 1.10  2008/04/21 11:23:11  abbott
+// Separated functions dealing with matrices and PPOrderings into a new file.
+// Added matrix norms, and completed adjoint.
+//
+// Revision 1.9  2008/04/18 15:35:57  abbott
+// (long overdue) Major revision to matrices
+//
+// Revision 1.8  2008/04/08 15:26:42  abbott
+// Major revision to matrix implementation: added matrix views.
+// Lots of changes.
+//
+// Revision 1.7  2008/03/26 16:52:04  abbott
+// Added exponent overflow checks (also for ordvs) when CoCoA_DEBUG is active.
+//
+// Revision 1.6  2007/12/05 11:06:24  bigatti
+// -- changed "size_t StdDeg/myStdDeg(f)" into "long"  (and related functions)
+// -- changed "log/myLog(f, i)" into "MaxExponent/myMaxExponent(f, i)"
+// -- fixed bug in "IsOne(ideal)" in SparsePolyRing.C
+//
+// Revision 1.5  2007/12/04 14:27:07  bigatti
+// -- changed "log(pp, i)" into "exponent(pp, i)"
+//
+// Revision 1.4  2007/10/30 17:14:07  abbott
+// Changed licence from GPL-2 only to GPL-3 or later.
+// New version for such an important change.
+//
+// Revision 1.3  2007/09/25 16:32:30  abbott
+// Several minor changes to silence gcc-4.3:
+//    more #includes,
+//    and fixed a template problemm in RegisterServerOps.C
+//
+// Revision 1.2  2007/03/23 18:38:42  abbott
+// Separated the "convert" functions (and CheckedCast) into their own files.
+// Many consequential changes.  Also corrected conversion to doubles.
+//
+// Revision 1.1.1.1  2007/03/09 15:16:11  abbott
+// Imported files
+//
+// Revision 1.15  2007/03/08 18:22:29  cocoa
+// Just whitespace cleaning.
+//
+// Revision 1.14  2007/03/07 13:44:15  bigatti
+// -- minor cleanup
+//
+// Revision 1.13  2007/03/02 10:47:53  cocoa
+// First stage of RingZ modifications -- tests do not compile currently, Anna will fix this.
+//
+// Revision 1.12  2007/02/10 18:44:03  cocoa
+// Added "const" twice to each test and example.
+// Eliminated dependency on io.H in several files.
+// Improved BuildInfo, and added an example about how to use it.
+// Some other minor cleaning.
+//
+// Revision 1.11  2006/11/27 14:26:44  cocoa
+// -- reorganised #include files
+//
+// Revision 1.10  2006/11/27 13:06:23  cocoa
+// Anna and Michael made me check without writing a proper message.
+//
+// Revision 1.9  2006/11/24 17:12:05  cocoa
+// -- reorganized includes of header files
+//
+// Revision 1.8  2006/11/23 17:33:10  cocoa
+// -- changed: OrdvArith::base is now a class (instead of typedef)
+//
+// Revision 1.7  2006/11/16 11:27:20  cocoa
+// -- reinserted myRefCountZero(): sometimes really necessary, in general safe
+//
+// Revision 1.6  2006/11/14 17:21:44  cocoa
+// -- commented out myRefCountZero() (not necessary?)
+//
+// Revision 1.5  2006/10/16 23:18:59  cocoa
+// Corrected use of std::swap and various special swap functions.
+// Improved myApply memfn for homs of RingDistrMPolyInlPP.
+//
+// Revision 1.4  2006/10/06 14:04:15  cocoa
+// Corrected position of #ifndef in header files.
+// Separated CoCoA_ASSERT into assert.H from config.H;
+// many minor consequential changes (have to #include assert.H).
+// A little tidying of #include directives (esp. in Max's code).
+//
+// Revision 1.3  2006/08/07 21:23:25  cocoa
+// Removed almost all publicly visible references to SmallExponent_t;
+// changed to long in all PPMonoid functions and SparsePolyRing functions.
+// DivMask remains to sorted out.
+//
+// Revision 1.2  2006/06/21 17:07:10  cocoa
+// Fixed IsIndet bug -- why are there three almost identical copies of code?
+//
+// Revision 1.1.1.1  2006/05/30 11:39:37  cocoa
+// Imported files
+//
+// Revision 1.9  2006/05/02 14:40:19  cocoa
+// -- Changed "not" into "!" becuase of M$Windoze (by M.Abshoff)
+//
+// Revision 1.8  2006/04/05 17:26:04  cocoa
+// -- added code to deal with ordering matrix with negative entries
+//
+// Revision 1.7  2006/03/15 18:09:31  cocoa
+// Changed names of member functions which print out their object
+// into myOutputSelf -- hope this will appease the Intel C++ compiler.
+//
+// Revision 1.6  2006/03/12 21:28:34  cocoa
+// Major check in after many changes
+//
+// Revision 1.5  2006/03/07 09:55:10  cocoa
+// -- changed: OrdvArith::MatrixOrderingMod32749Impl gives NYI error if
+//    matrix has negative entries
+//
+// Revision 1.4  2006/02/20 22:41:20  cocoa
+// All forms of the log function for power products now return SmallExponent_t
+// (instead of int).  exponents now resizes the vector rather than requiring
+// the user to pass in the correct size.
+//
+// Revision 1.3  2006/02/15 19:46:41  cocoa
+// Corrected check of positivity of input ordering matrix
+// (in matrix ordering mod 32749).
+//
+// Revision 1.2  2005/12/31 12:22:17  cocoa
+// Several minor tweaks to silence the Microsoft compiler:
+//  - added some missing #includes and using directives
+//  - moved some function defns into the right namespace
+//  - etc.
+//
+// Revision 1.1.1.1  2005/10/17 10:46:54  cocoa
+// Imported files
+//
+// Revision 1.6  2005/10/14 15:25:07  cocoa
+// Major tidying and cleaning to small prime finite fields.
+// Several consequential changes.  Improved their documentation.
+//
+// Added Makefile and script to include/CoCoA/ directory to
+// keep library.H up to date.
+//
+// Revision 1.5  2005/08/08 16:36:32  cocoa
+// Just checking in before going on holiday.
+// Don't really recall what changes have been made.
+// Added IsIndet function for RingElem, PPMonoidElem,
+// and a member function of OrdvArith.
+// Improved the way failed assertions are handled.
+//
+// Revision 1.4  2005/07/01 16:08:15  cocoa
+// Friday check-in.  Major change to structure under PolyRing:
+// now SparsePolyRing and DUPolyRing are separated (in preparation
+// for implementing iterators).
+//
+// A number of other relatively minor changes had to be chased through
+// (e.g. IndetPower).
+//
+// Revision 1.3  2005/06/23 15:42:41  cocoa
+// Fixed typo in GNU fdl -- all doc/*.txt files affected.
+// Minor corrections to PPMonoid (discovered while writing doc).
+//
+// Revision 1.2  2005/06/22 14:47:56  cocoa
+// PPMonoids and PPMonoidElems updated to mirror the structure
+// used for rings and RingElems.  Many consequential changes.
+//
+// Revision 1.1.1.1  2005/05/03 15:47:31  cocoa
+// Imported files
+//
+// Revision 1.7  2005/04/20 15:40:48  cocoa
+// Major change: modified the standard way errors are to be signalled
+// (now via a macro which records filename and line number).  Updated
+// documentation in error.txt accordingly.
+//
+// Improved the documentation in matrix.txt (still more work to be done).
+//
+// Revision 1.6  2005/04/19 14:06:04  cocoa
+// Added GPL and GFDL licence stuff.
+//
+// Revision 1.5  2005/03/11 18:39:36  cocoa
+// -- fixed: myCmpDeg
+//
+// Revision 1.4  2005/03/02 18:46:41  cocoa
+// Added new types ConstRefMatrix, and RefMatrix following along
+// the lines of ConstRefRingElem and RefRingElem.  The semantics
+// should be a bit clearer now.
+//
+// Revision 1.3  2005/02/15 18:19:11  cocoa
+// -- fixed base::myCmpDeg (if (ShiftCount==0) return 0;)
+//
+// Revision 1.2  2005/02/11 14:15:20  cocoa
+// New style ring elements and references to ring elements;
+// I hope I have finally got it right!
+//
+// Revision 1.1.1.1  2005/01/27 15:12:13  cocoa
+// Imported files
+//
+// Revision 1.7  2004/11/29 16:22:35  cocoa
+// -- added function for computing adjoint and inverse for DenseMatrix
+//    (so adjoint/inverse matrix is computed by OrdvArith and is no
+//    longer needed by PPOrdering)
+//
+// Revision 1.6  2004/11/11 13:38:27  cocoa
+// -- change: cout --> GlobalLogput()
+//
+// Revision 1.5  2004/11/05 16:37:27  cocoa
+// -- change: inverse matrix computed modulo 32749 using RingHom
+//
+// Revision 1.4  2004/11/03 17:50:31  cocoa
+// -- added  mySetMatrix and mySetInverseMatrixTmp  for MatrixOrderingMod32749Impl
+//
+// Revision 1.3  2004/11/02 15:05:30  cocoa
+// -- new: base::myGetExpvBuffer()
+// -- new: base::myComputeExpvBuffer
+// -- fixed: reference count in destructor
+// -- new field: myExpvBuffer
+// -- changed: class base is now protected
+//
+// Revision 1.2  2004/10/29 15:29:30  cocoa
+// -- added MatrixOrderingMod32749Impl (not tested)
+//
+// Revision 1.1  2004/10/21 17:16:37  cocoa
+// Fairly major change: new OrdvArith namspace with various members,
+//   new global typedef  SmallExponent_t (defined in config.H).
+//

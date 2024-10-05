@@ -1,0 +1,54 @@
+package $FoldString; -- same name as the file (not necessary, but nice)
+
+export FoldToList; -- very slow!
+export FoldToListInput;
+
+----------------------------------------------------------------------
+-- put your code here ------------------------------------------------
+  
+// WARNING: this fn is MUCH SLOWER than FoldToListInput for long inputs
+define FoldToList(str, opt W)
+  if type(str) <> STRING then error("1st arg mustbe STRING"); endif;
+  out := OpenOString();
+  width := 60; // default value
+  if IsDefined(W) then
+    if type(W) <> INT or W < 1 then error("2nd arg must be positive integer"); endif;
+    width := W;
+  endif;
+  print fold(str,width) on out;
+  lines := close(out);
+  L := [];
+  input := OpenIString(lines);
+  while not(IsAtEOF(input)) do
+    line := GetLine(input);
+    append(ref L, line);
+  endwhile;
+  return L;
+enddefine; -- FoldToList
+
+
+define FoldToListInput(str, opt W)
+  if type(str) <> STRING then error("1st arg mustbe STRING"); endif;
+  out := OpenOString();
+  width := 60; // default value
+  if IsDefined(W) then
+    if type(W) <> INT or W < 1 then error("2nd arg must be positive integer"); endif;
+    width := W;
+  endif;
+  print fold(str,width) on out;
+  lines := close(out);
+  input := OpenIString(lines);
+  out := OpenOString();
+  first := true;
+  print "[" on out;
+  while not(IsAtEOF(input)) do
+    line := GetLine(input);
+    if not(first) then print ",\n" on out; else  first := false; endif;
+    print "\"", line, "\"" on out;
+  endwhile;
+  print "]" on out;
+  return close(out);
+enddefine; -- FoldToListInput
+
+----------------------------------------------------------------------
+endpackage;

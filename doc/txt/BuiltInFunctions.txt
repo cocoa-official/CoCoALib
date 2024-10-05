@@ -1,0 +1,222 @@
+    BuiltInFunctions
+      Copyright (c)  2013 Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{BuiltInFunctions}{code: Giovanni Lagorio, Anna M Bigatti; doc: Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- ``BuiltInFunctions.C`` and  ``BuiltInOneLiners.C`` ;-)
+
+
+== User documentation ==
+%======================================================================
+(Very rough set of notes about adding new functions to CoCoA-5)
+
+Typical situation: I have a function ``FooFunc`` implemented in CoCoALib
+and want to make it a CoCoA-5 function (called ``FooFunc``).
+There are these possible scenarios I might want in CoCoA-5:
++ a **simple** function (not overloaded) with CoCoA-5 data types
++ a **simple** function (not overloaded) with //almost// CoCoA-5 data types
++ an **overloaded** function (same name, works on different types)
++ a function with **variable number** of arguments
++ full flexibility
+
+
+Examples:
++ ``IsInvertible`` (takes a ``RINGELEM`` returns a ``BOOL``),
+``LinSolve`` (takes two ``MAT`` returns a ``MAT``).
++ ``CoeffOfTerm`` (takes two ``RINGELEM`` returns a ``RINGELEM``, but in CoCoALib takes a ``PPMonoidElem`` and a [[RingElem]]),
+``RingQQt`` (takes an ``INT`` -- a ``BigInt`` for CoCoALib -- but in CoCoALib takes a ``long``).
++ ``GBasis`` (takes an ``IDEAL`` or ``MODULE``)
++ ``indets`` (takes a ``RING`` or a ``RING`` and a ``STRING``)
++ ``VersionInfo`` (returns a ``RECORD``)
+
+
+=== 1 one-liner: DECLARE_COCOALIB_FUNCTION ===
+
+This is the easiest case: the porting is implemented in just one line
+specifying:
+- number of arguments
+- name of the function
+- input types
+-
+
+the return type is deduced by the omonymous CoCoALib function
+
+Example: from ``BuiltInOneLiners.C``
+```
+DECLARE_COCOALIB_FUNCTION1(IsInvertible, RINGELEM)
+DECLARE_COCOALIB_FUNCTION2(LinSolve, MAT, MAT)
+```
+
+=== 2 one-liner: DECLARE_COCOALIBFORC5_FUNCTION ===
+
+CoCoA-5 has a simpler (less structured) hierarchy of types, so, for example,
+``PPMonoidElem``s are represented by [[RingElem]]s, and machine integers
+(like ``long``) are represented by [[BigInt]].
+
+So a function taking a non-existing type in CoCoA-5 has a intermediate
+implementation, ``FooFunc_forC5``, in ``CoCoALibSupplement.C`` with the
+CoCoA-5 datatypes.
+This should also mean that there is a //good reason// not to have such
+implementation available in CoCoALib itself
+(//e.g.// not mathematically clean, or inefficient).
+
+Example: from ``BuiltInOneLiners.C``
+```
+DECLARE_COCOALIBFORC5_FUNCTION1(RingQQt, INT)
+DECLARE_COCOALIBFORC5_FUNCTION2(CoeffOfTerm, RINGELEM, RINGELEM)
+```
+
+=== 3 overloading ===
+
+Allowing different types in input (with fixed number of arguments)
+
+Example: from ``BuiltInFunctions.C``  (NB: ``END_STD_BUILTIN_FUNCTION``)
+
+In CoCoA-5 ``GBasis`` takes an ``IDEAL`` or a ``MODULE``
+```
+DECLARE_STD_BUILTIN_FUNCTION(GBasis, 1) {
+  int which;
+  intrusive_ptr<RightValue> x = runtimeEnv->evalArgAsT1orT2<IDEAL, MODULE>(ARG(0), which);
+  switch (which) {
+  case 1: return Value::from(GBasis(RefTo<ideal>(x)));
+  default:return Value::from(TidyGens(RefTo<module>(x)));
+  }
+}
+END_STD_BUILTIN_FUNCTION
+```
+In CoCoA-5 ``LT`` takes an ``IDEAL``, a ``MODULE``, a ``RINGELEM``, or a ``MODULEELEM``
+```
+DECLARE_STD_BUILTIN_FUNCTION(LT, 1) { // AMB
+  int which;
+  intrusive_ptr<RightValue> v = runtimeEnv->evalArgAsT1orT2orT3orT4<RINGELEM,
+                                                                    MODULEELEM,
+                                                                    IDEAL,
+                                                                    MODULE>
+                                                                (ARG(0), which);
+  switch (which) {
+  case 1: return Value::from(LT_forC5(RefTo<RingElem>(v)));
+  case 2: return Value::from(LT_forC5(RefTo<ModuleElem>(v)));
+  case 3: return Value::from(LT(RefTo<ideal>(v)));
+  case 4: return Value::from(LT(RefTo<module>(v)));
+  default: throw RuntimeException(ERRORMissingCode(v),invocationExpression);
+  }
+}
+END_STD_BUILTIN_FUNCTION
+```
+
+=== 4 variable number of arguments  ===
+
+Example: from ``BuiltInFunctions.C`` (NB: without ``END_STD_BUILTIN_FUNCTION``)
+```
+// variable number of args
+DECLARE_ARITYCHECK_FUNCTION(indets) { return (1<=nArg) && (nArg<=2); }
+DECLARE_BUILTIN_FUNCTION(indets) { // AMB+JAA
+  invocationExpression->checkNumberOfArgs(1,2);
+  intrusive_ptr<RING> R = runtimeEnv->evalArgAs<RING>(ARG(0));
+  if (invocationExpression->args.size()==1)
+    return Value::from(indets((runtimeEnv->evalArgAs<RING>(ARG(0)))->theRing));
+  return Value::from(indets((runtimeEnv->evalArgAs<RING>(ARG(0)))->theRing,
+                            runtimeEnv->evalArgAs<STRING>(ARG(1))->theString));
+}
+```
+
+
+
+=== 5 other  ===
+
+``VersionInfo`` (returns a ``RECORD``)
+
+Let ``TTTT`` (``T1``, ``T2``, ..)
+be a CoCoA-5 type with corresponding CoCoALib type ``tttt``.
+
+- ``runtimeEnv->evalArgAs<TTTT>(ARG(0));``
+returns a pointer ``intrusive_ptr<TTTT>``
+which will be accessed as ``x->theTttt`` of CoCoALib type ``tttt``.
+
+- ``runtimeEnv->evalArgAsListOf<TTTT>(ARG(1));`` -- all elements must be of type ``TTTT`` and returns ``vector<tttt>``
+
+- ``runtimeEnv->evalArgAsListOfRingElem(ARG(2), R->theRing);`` -- all elements must be in the same [[ring]] (accepts also ``INT`` and ``RAT``).
+- ``runtimeEnv->evalArgAsListOfRingElem(ARG(0));`` -- guesses the ring
+- ``runtimeEnv->evalArgAsT1orT2<T1,T2>(ARG(0), n)`` or
+  - ``runtimeEnv->evalArgAsT1orT2orT3<T1,T2,T3>(ARG(0), n)``
+  - ... or ...
+  - ``runtimeEnv->evalArgAsT1orT2orT3orT4orT5orT6orT7<T1,T2,T3,T4,T5,T6,T7>(ARG(0), n)``
+returns a pointer ``intrusive_ptr<RightValue>`` and puts in ``n`` the
+index of the type found.
+Throws a meaningful error is the type found is not in the list.
+
+
+- ``RefTo<tttt>(v)`` where ``v`` is a ``intrusive_ptr<RightValue>``
+(generic right value): casts the pointer to specific type and call the
+reference ``->theTttt`` of CoCoALib type ``tttt``.
+(Defined in ``BuiltinFunctions.H``)
+
+```
+DECLARE_STD_BUILTIN_FUNCTION(IsOne, 1) {
+  int which;
+  intrusive_ptr<RightValue> v = runtimeEnv->evalArgAsT1orT2orT3<INT,
+                                                                RAT,
+                                                                RINGELEM>
+                                                             (ARG(0), which);
+  switch (which) {
+  case 1: return Value::from(IsOne(RefTo<BigInt>(v)));
+  case 2: return Value::from(IsOne(RefTo<BigRat>(v)));
+  case 3: return Value::from(IsOne(RefTo<RingElem>(v)));
+  default: throw RuntimeException(ERRORMissingCode(v),invocationExpression);
+  }
+}
+END_STD_BUILTIN_FUNCTION
+```
+
+
+== Maintainer documentation ==
+%======================================================================
+
+*For overloaded functions explicitely*:
+Explicitely define all cases and make an extra default case
+for safety (gives protection in development when one type has been forgotten)
+```
+DECLARE_STD_BUILTIN_FUNCTION(LT, 1) {
+  int which;
+  intrusive_ptr<RightValue> v = runtimeEnv->evalArgAsT1orT2orT3orT4<.....>
+                                                                (ARG(0), which);
+  switch (which) {
+  case 1: ...
+  case 2: ...
+  case 3: ...
+  case 4: ...
+  default: throw RuntimeException(ERRORMissingCode(v),invocationExpression);
+  }
+}
+END_STD_BUILTIN_FUNCTION
+```
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+- Can we make it even simpler?
+- Should ``RefTo<tttt>`` work also for ``intrusive_ptr<TTTT>``?
+-
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- July (before ICMS in Seoul)
+  - Type names have been changed from ``TtttValue`` to ``TTTT``
+    (e.g. ``IdealValue`` to ``IDEAL``).
+  - For overloaded functions: ``PtrCastTttt`` has been changed into
+    ``RefTo<tttt>``
+    (e.g. ``PtrCastBigInt`` to ``RefTo<BigInt>``,
+     and  ``PtrCastIdeal``  to ``RefTo<ideal>``).
+  - member field ``theInteger/theRational`` have been changed into
+    ``theBigInt/theBigRat``
+
+%vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

@@ -1,0 +1,85 @@
+    ProgressReporter
+      Copyright (c)  2014,2024  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ProgressReporter}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-ProgressReporter1.C ../../examples/index.html#ex-ProgressReporter1.C]
+-
+
+== User documentation ==
+%======================================================================
+``ProgressReporter`` is a simple utility to help keep track of progress
+in a long iterative computation; it prints out a short "progress
+report" at roughly the indicated time intervals.
+
+To respect the chosen time interval ``ProgressReporter`` assumes that
+successive iterations do not vary wildly in computational cost.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+- ``ProgressReporter(t)``  -- create a reporter which prints at intervals of roughly ``t`` seconds (``t`` is a ``double``)
+
+
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+There is essentially one operation: let ``report`` be a ``ProgressReporter``
+
+- ``report()``  -- print a progress report if enough time has elapsed
+- ``report(arg1)``  -- print a progress report (incl. value of ``arg1`` of type ``long``) if enough time has elapsed
+- ``report(arg1, arg2)``  -- print a progress report (incl. values of ``arg1, arg2`` of type ``long``)
+    if enough time has elapsed
+- ``report.myReset()``  -- if the same ``ProgressReporter`` object is to be used inside more than one loop, then call this before every loop (except the first one)
+
+The calls to ``report(...)`` are designed to be cheap when it is not time to produce a report.
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The only "tricky part" was trying to make reports appear at round values
+of the internal counter.  It is a little messy, but not hard.
+
+The mem fns ``operator()`` are inline so that most non-printing calls should
+be very cheap.  It seems useful to let the user supply some extra values to
+be printed.
+
+``increase125`` increases its arg to next number of the form 10^n, 2*10^n or
+5*10^n; ``decrease125`` decreases the arg to the next lowest number of that
+form.
+
+
+Initially I tried to make the printed times close to multiples of the
+specified interval, but this led to "surprising" behaviour if some CPU
+time had been used before starting the loop --  the first report could
+be printed after much less than the chosen interval (and the corresponding
+number of iterations would be much smaller than expected).  Now the code
+simply says next print time is one interval from the previous print time
+(so average print intervals will be slightly longer than desired).
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Should ``increase125`` and ``decrease125`` be moved to utils?
+
+
+== Main changes ==
+%======================================================================
+
+**2024**
+- June (v0.99850): added myReset (like for CpuTimeLimit)
+
+**2014**
+- april (v0.99534): first release
+
+

@@ -1,0 +1,254 @@
+Package $maximal;
+
+export IsRadical;
+//export Radical0dim_old;
+//export IsMaximal;
+//export IsPrimary;
+//export IsPrimary_old;
+export IsPrimaryRatSol;
+
+// temporary
+//export Radical0dimDRL_random; 
+-- export Radical0dimDRL_indets; 
+-- export IsRadical0dimDRL_random;
+-- export IsRadical0dimDRL_indets;
+
+------------------------------------------------------------
+
+-- define IsPrimary(I)
+--   if not(IsZeroDim(I)) then
+--     error("IsPrimary: implemented only for 0-dimensional ideals");
+--   endif;
+--   return IsPrimary0dim(I);
+-- enddefine; -- IsPrimary
+
+  
+Define IsRadical(I)
+  if AreGensMonomial(I) then
+    return IsRadical_tmp(I);
+  endif;  
+  if not(IsZeroDim(I)) then
+    return I = radical(I); // is there anything better?
+  endif;
+  return IsRadical_tmp(I);
+EndDefine; -- IsRadical
+
+-------------------------------------------------------------
+  
+-----------  IsPrimary0dim --------------------------------------
+//now in cocoalib
+-- define IsPrimary0dim_old(I)
+--   if VerbosityLevel()>0 then fn := "IsPrimary0dim: "; endif;
+--   J := I;
+--   P := RingOf(J);
+--   d := multiplicity(P/J);
+--   foreach x in indets(P) do
+--     if VerbosityLevel()>=20 then PrintLn fn,"trying ", x; endif;
+--     MP := MinPolyQuot(x, J, x);
+--     F := $PrimaryDecomposition0.myfactor(MP);
+--     if len(F.factors)<>1 then return false; endif;
+--     if deg(MP)=d then return true; endif;
+--     if not(IsOne(F.multiplicities[1])) then
+--       if VerbosityLevel()>=30 then PrintLn fn,"MinPoly not square-free";endif;
+-- /////////////////            J := J + ideal(F.factors[1]);
+--       J := IdealOfGBasis(J) + ideal(F.factors[1]);
+--       d := multiplicity(P/J);
+--       if deg(F.factors[1])=d then return true; endif;
+--     endif;
+--   endforeach;
+--   if VerbosityLevel()>=30 then PrintLn fn,"now ideal J is radical"; endif;
+--   p := characteristic(P);
+--   if p <> 0 then
+--     if not(IsFiniteField(CoeffRing(P))) then error("not yet implemented for infinite field of characteristic p"); endif;
+--     return IsPrimaryFin(J);
+--   endif;
+--   n := NumIndets(P); // now we have char=0
+--   z := indet(P,1); // the indet for minpoly  
+--   repeat
+--     L := sum([ random(-n,n)*x | x in indets(P) ]);
+--     if VerbosityLevel()>=20 then PrintLn fn,"-- trying ", L; endif;
+--     MP := MinPolyQuot(L, J, z);
+--     if not(IsIrred(MP)) then return false; endif;
+--     if deg(MP) = d then return true; endif;
+--     n := n*2;
+--   endrepeat;
+-- enddefine; -- IsPrimary0dim
+
+
+-- define IsPrimaryFin(I)
+--   if VerbosityLevel()>0 then fn := "IsPrimaryFin: "; endif;
+--   P := RingOf(I);  
+--   d := multiplicity(P/I);
+--   return NumCols(LinKer(FrobeniusMat(I)-IdentityMat(CoeffRing(P),d))) = 1;
+-- enddefine; -- IsPrimaryFin
+  
+-----------------------------------
+-- define IsPrimary_old(I)
+--   if VerbosityLevel()>0 then fn := "IsPrimary_old: "; endif;
+--   if not(IsZeroDim(I)) then error("only for 0-dimensional ideals"); endif;
+--   P := RingOf(I);
+--   d := multiplicity(P/I);
+--   z := indet(P,1); // any: the indet for minpoly
+--   L := indet(P,NumIndets(P)); // a simple linear form
+--   if VerbosityLevel()>=20 then println fn,"trying ", L; endif;
+--   mp := MinPolyQuot(L, I, z); // as for Lex method
+--   if len($PrimaryDecomposition0.myfactor(mp).factors)<>1 then return false; endif;
+--   J := I;
+--   c := characteristic(P);
+--   if c=0 then c := 50; endif;
+--   while  deg(mp)<>multiplicity(P/J) do
+-- //    println "not normal position";
+--     J := J + ideal(EvalUniPolyMod(product(SqFreeFactor(mp).factors), L, J));
+--     L := ScalarProduct(RandomTuple(-c..c,NumIndets(P)), indets(P));
+--     if VerbosityLevel()>=20 then println fn,"trying ", L; endif;
+--     mp := MinPolyQuot(L, J, z);
+-- //    println (mp);
+--   endwhile;
+--   return len($PrimaryDecomposition0.factor(mp).factors)=1;
+-- enddefine; -- IsPrimary
+
+
+define IsPrimaryRatSol(I)
+  P := RingOf(I);
+  K := CoeffRing(P);
+  QB := QuotientBasis(I);
+--  println "len(QB) = ", len(QB);
+  GB := GBasis(I);
+  R ::= K[y[1..len(QB)]];
+  FFR := NewFractionField(R);
+  NewP ::= FFR[x[1..NumIndets(P)]];
+  phi := PolyRingHom(P, NewP, TmpChainCanonicalHom(K,FFR), indets(NewP));
+  F := ScalarProduct(TmpChainCanonicalHom(R,NewP)(indets(R)),
+		     phi(QB));
+--  println "F = ", F;
+  coeffNF := coefficients(NR(F^2-F, phi(GB)));
+  coeffNF := ideal([ num(c)/den(c) | c in coeffNF]);
+//  coeffNF := ideal(coefficients(NR(F^2-F, phi(GB))));
+--  println "coeffNF = "; indent(coeffNF);
+  m := multiplicity(R/coeffNF);
+--  println "multiplicity = ", m;
+  if m=2 then return true; endif;
+  RS := RationalSolve(gens(coeffNF));
+--  println "RS = "; indent(RS);
+  return len(RS)=2;
+enddefine; -- IsPrimaryRatSol
+
+
+  ----------------------------------------------------------
+
+
+//------------- IsRadical0dim, Radical0dimDRL ------------------------------
+  ///////// now in cocoalib
+-- define IsRadical0dim_old(I)
+--   P := RingOf(I);
+--   if HasGBasis(I) or OrdMat(P)=StdDegRevLexMat(NumIndets(P)) then
+--     return IsRadical0dimDRL(I);
+--   endif;
+--   P_drl := NewPolyRing(CoeffRing(P), IndetSymbols(P));
+--   phi := PolyAlgebraHom(P, P_drl, indets(P_drl));
+--   return IsRadical0dimDRL(ideal(phi(gens(I))));
+-- enddefine; -- IsRadical0dim
+
+  
+-- define Radical0dim_old(I)
+--   P := RingOf(I);
+--   if OrdMat(P)=StdDegRevLexMat(NumIndets(P)) then
+--     return Radical0dimDRL(I);
+--   endif;
+--   P_drl := NewPolyRing(CoeffRing(P), IndetSymbols(P));
+--   phi := PolyAlgebraHom(P, P_drl, indets(P_drl));
+--   psi := PolyAlgebraHom(P_drl, P, indets(P));
+--   RadI := Radical0dimDRL(ideal(phi(gens(I))));
+--   return ideal(psi(gens(RadI)));
+-- enddefine; -- Radical0dim
+
+
+-- Define IsRadical0dimDRL(I)
+--   if VerbosityLevel()>0 then fn := "IsRadical0dimDRL: "; endif;
+--   P := RingOf(I);
+--   if not(IsZeroDim(I)) then error("not 0-dimensional");  endif;
+--   d := multiplicity(P/I);
+--   foreach x in reversed(indets(P)) do
+--     if VerbosityLevel()>=20 then PrintLn fn,"trying ", x; endif;
+--     MP := MinPolyQuot(x, I, x);
+--     if not(IsSqFree(MP)) then return false; endif;
+--     if deg(MP) = d then return true; endif;
+--   endforeach;
+--   return true;
+-- EndDefine; -- IsRadical
+
+  
+-- define Radical0dimDRL(I)
+--   if VerbosityLevel()>0 then fn := "Radical0dimDRL: "; endif;
+--   P := RingOf(I);
+--   if not(IsZeroDim(I)) then error("not 0-dimensional");  endif;
+--   J := I;
+--   StartTime := CpuTime();
+--   d := multiplicity(P/J);
+--   if VerbosityLevel()>=20 then println fn,"multiplicity: ", d; endif;
+--   foreach x in indets(P) do
+--     if VerbosityLevel()>=20 then println fn,"trying ", x;
+--       if VerbosityLevel()>=50 then println "[time=",TimeFrom(StartTime),"]"; endif;
+--     endif;
+--     MP := MinPolyQuot(x, J, x);
+--     if not(IsSqFree(MP)) then
+--       if VerbosityLevel()>=40 then println fn,"deg(minpoly)=",deg(MP),"; it is not square-free"; endif;
+--       MP := radical(MP);
+-- /////////////////      J := J + ideal(MP);
+--       J := IdealOfGBasis(J) + ideal(NF(MP,J));
+--       d := multiplicity(P/J);
+--       if VerbosityLevel()>=20 then println fn,"new multiplicity: ", d; endif;
+--     endif;
+--     if deg(MP)=d then return J; endif;
+--   endforeach;
+--   return J;
+-- enddefine; -- Radical0dimDRL
+
+---------------------------------------------------------------------
+
+
+
+
+EndPackage;
+
+  
+-- define Radical0dimDRL_random(J)
+--   if VerbosityLevel()>0 then fn := "Radical0dimDRL_random: "; endif;
+--   P := RingOf(J);
+--   Kz := NewPolyRing(CoeffRing(P), "z");
+--   z := indet(Kz,1);
+--   if not(IsZeroDim(J)) then error("not 0-dimensional"); endif;
+--   d := multiplicity(P/J);
+--   repeat
+--     L := sum([random(1,100)*x | x in indets(P)]);
+--     if VerbosityLevel()>=2 then PrintLn fn,"trying ", L; endif;
+--     MP := MinPolyQuot(L, J, z);   // PrintLn "  -- MP = ", MP;
+--     if not(IsSqFree(MP)) then
+--       if VerbosityLevel()>=2 then PrintLn fn,"not sqfree, deg = ",deg(MP); endif;
+--       MP := radical(MP);
+--       if VerbosityLevel()>=2 then PrintLn fn,"rad done, deg = ",deg(MP); endif;
+--       MP_L := EvalUniPolyMod(MP, L, J);
+--       if VerbosityLevel()>=2 then PrintLn fn,"Horner deg = ", deg(MP_L); endif;
+--       J := J + ideal(MP_L);
+--       d := multiplicity(P/J);
+--       if VerbosityLevel()>=2 then PrintLn fn,"mult = ", d; endif;
+--     endif;
+--     if deg(MP)=d then return J; endif;
+--   endrepeat;
+--   return J;
+-- enddefine; -- Radical0dimDRL_random
+
+
+-- Define IsRadical0dimDRL_random(I)
+--   P := RingOf(I);
+--   z := last(indets(P));
+--   if not(IsZeroDim(I)) then error("not 0-dimensional"); endif;
+--   d := multiplicity(P/I);
+--   repeat
+--     L := sum([random(1,100)*x | x in indets(P)]);
+--     if $.DEBUG then PrintLn "  -- trying ", L; endif;
+--     MP := MinPolyQuot(L, I, z);
+--     if not(IsSqFree(MP)) then return false; endif;
+--     if deg(MP) = d then return true; endif;
+--   endrepeat;
+-- EndDefine; -- IsRadical0dimDRL_random

@@ -1,0 +1,84 @@
+      SparsePoly0ps-MinPoly
+      Copyright (c)  2018 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SparsePoly0ps-MinPoly}{John Abbott}
+
+
+== Examples ==
+%======================================================================
+-
+
+
+== User documentation ==
+%======================================================================
+
+Let ``M`` denote a matrix.
+Let ``z`` denote an indeterminate in a polynomial ring.
+
+```  RingElem MinPoly(ConstMatrixView M, ConstRefRingElem z);
+the minimal polynomial (in ``z``) of ``M``.
+
+Let ``P`` denote a ``SparsePolyRing`` over ``Z/(p)`` or ``QQ``.
+Let ``I`` denote an ideal in ``P``.
+Let ``f`` denote an element of ``P``.
+Let ``fbar`` denote an element of ``P/I``.
+Let ``f`` denote an element of ``P``.
+Let ``NumChecks`` denote a ``VerificationLevel``.
+
+- ``RingElem MinPoly(fbar, z)`` --
+the minimal polynomial (in ``z``) of ``fbar``.
+
+- ``RingElem MinPolyQuot(f, I, z, NumChecks)`` --
+the minimal polynomial (in ``z``) of ``f`` modulo ``I``.
+Uses modular computation and ``MinPolyQuotDef``.
+The modular computation is verified over ``NumChecks`` new primes.
+For ``NumChecks``=0 there is full verification over ``QQ``.
+
+``RingElem MinPolyQuot(f, I, z)`` -- same as MinPolyQuot(f,I,z, 0)
+
+```
+  RingElem MinPolyQuotMat(ConstRefRingElem f, const ideal& I, ConstRefRingElem z);
+  RingElem MinPolyQuotDef(ConstRefRingElem f, const ideal& I, ConstRefRingElem z);
+  RingElem MinPolyQuotDefLin(ConstRefRingElem f, const ideal& I, ConstRefRingElem z);
+  RingElem MinPolyQuotElim(ConstRefRingElem f, const ideal& I, ConstRefRingElem z);
+  RingElem MinPolyMat(ConstRefRingElem fbar, ConstRefRingElem z);
+  RingElem MinPolyDef(ConstRefRingElem fbar, ConstRefRingElem z);
+  RingElem MinPolyElim(ConstRefRingElem fbar, ConstRefRingElem z);
+```
+specific implementations
+(not modular: computation actually in ``QQ`` if coeff are in ``QQ``)
+
+See article Abbott, Bigatti, Palezzato, Robbiano
+"Computing and Using Minimal Polynomials"
+("https://arxiv.org/abs/1702.07262")
+
+```
+  matrix FrobeniusMat(const ideal& I);
+  matrix FrobeniusMat(const ideal& I, const std::vector<PPMonoidElem>& QB2);
+
+  std::vector<RingElem> ShapeLemma(const ideal& I);
+```
+
+
+=== Verbosity ===
+"MinPolyQuot" uses modular methods when coefficients are in "QQ".
+At level 80 it lists all primes used indicating any which are "bad".
+
+
+== Maintainer documentation ==
+%======================================================================
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== Main changes ==
+%======================================================================
+
+**2018**
+- August (v0.99600):
+ - added documentation
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

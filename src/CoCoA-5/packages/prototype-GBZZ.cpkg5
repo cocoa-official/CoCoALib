@@ -1,0 +1,363 @@
+package $GBoverZZ_prototype
+
+// Some test cases: in ZZ[x,y]
+// [-x*y +y^2 +x +y,  -x^2 -x*y -y^2 -x -1,  -x^2 +x*y -y^2 +x +y]
+// [-2*x^2 -x*y +y^2 +2*x +2*y,  -x^2 +x*y -2*x +y -1,  x^2 -2*x*y +2*y^2 +2*x +2*y]
+// [8*x^2 -5*x*y +5*y^2 +x -6*y -7,  9*x^2 -9*x*y +2*x -6*y +3,  6*x*y +y^2 +7*x +7*y +8] // TOUGH!
+// [x^3 -2*x^2*y -x*y^2 +y^3 -2*x^2 +y^2 +2*x +y +1,  -2*x^3 -2*x^2*y +x*y^2 -2*y^3 +x*y +y^2 -2*x -1,  x^3 -x^2*y -2*y^3 -x*y +y^2 +x -y +1] // "modular" version succeeded but took maybe an hour or more
+
+// Commented out functions which are not yet documented (or tested).
+//export GBoverZZ;
+export MinGBoverZZ;  /// BEST TO USE THIS FUNCTION!!!
+//export NRoverZZ;
+//export NFoverZZ;
+//export ExtendedGBoverZZ;
+
+define About()
+    PrintLn "original Authors: Elisa Palezzato, Michele Torielli and Florian Walsh";
+    PrintLn "Contains functions that compute strong Gröbner bases over the integers";
+enddefine;
+
+----------------------------------------------------------------------
+-- Exported functions (with input checking)
+----------------------------------------------------------------------
+
+define IsPID(R)
+  return IsZZ(R) or (IsPolyRing(R) and NumIndets(R) = 1 and IsField(CoeffRing(R)));
+enddefine; -- IsPID
+
+// over ZZ or over PID???
+define IsPolyRingOverZZ(P)
+  return IsPolyRing(P) and IsZZ(CoeffRing(P));
+enddefine; -- IsPolyRingOverZZ
+  
+
+
+define CleanListGens(L)
+  if IsEmpty(L) then error("CleanListGens: arg L must be non-empty list"); endif;
+  RL := RingsOf(L);
+  rings := [x in RL | type(x) = RING];
+  if IsEmpty(rings) then error("CleanListGens: gens list must contain at least 1 ringelem"); endif;
+  MaxRingID := max([RingID(R) | R in rings]);
+  P := [x in rings | type(x) = RING and RingID(x) = MaxRingID][1];
+  if not(IsPolyRingOverZZ(P)) then ///??? IsPID ???
+    error("CleanListGens: gens must be in polyring over ZZ");
+  endif;
+  L := [RingElem(P,x) | x in L];
+  return [x in L | x <> 0];
+enddefine; -- CleanListGens
+  
+
+define GBoverZZ(ListGens)
+  if type(ListGens) <> LIST or IsEmpty(ListGens) then
+    error("GBoverZZ: arg must be non-empty list of gens");
+  endif;
+  Generators := CleanListGens(ListGens);
+    return $.GBasisCore(Generators);
+enddefine;
+
+
+define ExtendedGBoverZZ(ListGens)
+  if type(ListGens) <> LIST or IsEmpty(ListGens) then
+    error("ExtendedGBoverZZ: arg must be non-empty list of gens");
+  endif;
+  Generators := CleanListGens(ListGens);
+    return $.ExtendedGBasisCore(Generators);
+enddefine;
+
+
+define NFoverZZ(f,reducers)
+  if type(reducers) <> LIST then error("NFoverZZ: arg2 must be list of reducers"); endif;
+  if type(f) <> RINGELEM or not(IsPolyRingOverZZ(RingOf(f))) then
+    error("NRoverZZ: arg 1 must be in polyring over ZZ");
+  endif;
+  reducers := CleanListGens(reducers);
+  return $.NFoverZZCore(f,reducers);
+enddefine;
+
+
+define MinGBoverZZ(ListGens)
+  if IsEmpty(ListGens) then error("MinGBoverZZ: arg must be non-empty list of gens"); endif;
+  Generators := CleanListGens(ListGens);
+    GB := $.GBasisCore(Generators);
+    return $.CleanListLMZZ(GB);
+enddefine;
+
+
+define NRoverZZ(f, reducers, opt ComputeQuots)
+  if type(reducers) <> LIST or IsEmpty(reducers) then
+    error("NRoverZZ: arg 2 must be non-empty list of reducers");
+  endif;
+  n := len(reducers);
+  reducers := CleanListGens(reducers); // BUG should not remove zeroes (if ComputeQuots)
+  if len(reducers) <> n then error("NRoverZZ: arg 2 reducers must be non-zero"); endif;
+  if not(IsDefined(ComputeQuots)) then ComputeQuots := false; endif;
+  return $.NRoverZZCore(f, reducers, ComputeQuots);
+enddefine;
+
+----------------------------------------------------------
+-- Internal functions not to be exported
+----------------------------------------------------------
+
+define NRoverZZCore(Poly, Generators, WithQuotients)
+  ZERO := zero(RingOf(Poly));
+    Quotients := NewList(len(Generators),0);
+    if IsZero(Poly) then
+        if WithQuotients then
+            return Record[Remainder := ZERO, Quotients := Quotients];
+        else
+            return 0;
+        endif;
+    endif;
+    Remainder := Poly;
+    Found := True;
+    while Found Do
+        Found := False;
+        I := 1;
+      while I <= len(Generators) and not(Found) Do
+	if IsZero(Generators[I]) then I:=I+1; continue; endif;
+            if IsDivisible(LM(Remainder), LM(Generators[I])) then
+                Quotients[I] := Quotients[I] + LM(Remainder)/LM(Generators[I]);
+                Remainder := $.SPolynomial(Remainder, Generators[I]);
+                if IsZero(Remainder) then
+                    if WithQuotients then
+                        return Record[Remainder := ZERO, Quotients := Quotients];
+                    else
+                        return Remainder;
+                    endif;
+                endif;
+                Found := True;
+            endif;
+            I := I + 1;
+        endwhile;
+    endwhile;
+    if WithQuotients then
+        return Record[Remainder := Remainder, Quotients := Quotients];
+    else
+        return Remainder;
+    endif;
+enddefine;
+
+
+define SPolynomial(F,G)
+    Numerator := lcm(LM(F),LM(G));
+    return (Numerator/LM(F)) * F - (Numerator/LM(G)) * G;
+enddefine;
+
+
+define GcdPolynomial(F,G)
+    TermLcm := lcm(LT(F),LT(G));
+    D := ExtGcd([AsINT(LC(F)),AsINT(LC(G))]);  // Late remove AsINT???
+    return ((D[1]*TermLcm)/LT(F))*F+((D[2]*TermLcm)/LT(G))*G;
+enddefine;
+
+
+define IsNecessaryGcdPair(F,G)
+  return (not(IsDivisible(LC(F), LC(G))) and not(IsDivisible(LC(G), LC(F))));
+enddefine;
+
+
+define IsNecessarySPair(F,G)
+  return (GCD(LM(F), LM(G)) <> 1);
+enddefine;
+
+
+define SymmRem(a,m)
+  if m = 0 then return a; endif;
+  a := mod(a,m);
+  double := 2*a;
+  if double < -m then return a+m; endif;
+  if double > m then return a-m; endif;
+  return a;
+enddefine; -- SymmRem
+  
+define ModularReduce(f, modulus)
+  if IsZero(f) then return f; endif;
+  C := [SymmRem(AsINT(c),modulus) | c in coefficients(f)];
+  S := support(f);
+  return ScalarProduct(C,S);
+enddefine; -- ModularReduce
+  
+
+define GBasisCore(Generators)
+    // Assume all gens are non-zero
+    modulus := 0; // updated if we find a constant
+    consts := [ConstantCoeff(f) | f in Generators and IsConstant(f) and not(IsZero(f))];
+    if consts <> [] then modulus := gcd(consts); GB := concat([modulus], Generators);
+    else
+      GB := Generators;
+    endif;
+    s := len(Generators);
+    Pairlist := flatten([[[i,j] | j in i+1..s] |i in 1..s-1],1);
+    while len(Pairlist) > 0 Do
+        Pair := Pairlist[1];
+        Remove(ref Pairlist, 1);
+      if IsZero(GB[Pair[1]]) or IsZero(GB[Pair[2]]) then continue; endif;
+        Polynomials := [];
+        if $.IsNecessaryGcdPair(GB[Pair[1]], GB[Pair[2]]) then
+            append(ref Polynomials, $.GcdPolynomial(GB[Pair[1]], GB[Pair[2]]));
+        endif;
+        if $.IsNecessarySPair(GB[Pair[1]], GB[Pair[2]]) then
+            append(ref Polynomials, $.SPolynomial(GB[Pair[1]], GB[Pair[2]]));
+        endif;
+        foreach Polynomial In Polynomials Do
+            Remainder := $.NRoverZZCore(Polynomial, GB, False);
+	    Remainder := ModularReduce(Remainder, modulus);
+            if not(IsZero(Remainder)) then
+                if LC(Remainder) < 0 then
+                    Remainder := -1 *Remainder;
+		endif;
+	      if IsConstant(Remainder) then
+		modulus := abs(AsINT(Remainder));
+		GB := [ModularReduce(g,modulus) | g in GB];//		GB[1] := modulus*monic(GB[1]);
+//???		GB := [g + Bool01(IsZero(g))*modulus | g in GB];
+	      endif;
+	      if VerbosityLevel() > 49 then
+  		    PrintLn "Modulus: M = ", modulus;
+		    PrintLn "Num pairs: ", len(Pairlist);
+		    PrintLn "GBasisCore: len(GB) = ", 1+len(GB);
+                    PrintLn "GBasisCore: Remainder = ",Remainder;
+	        endif;
+	      
+                append(ref GB, Remainder);
+                for I := 1 To len(GB)-1 Do
+                    append(ref Pairlist, [I, len(GB)]);
+                endfor;
+            endif;
+	endforeach;
+/*???*/  SortBy(ref Pairlist, func(a,b) return IsZero(GB[a[1]]) or IsZero(GB[a[2]]) or (not(IsZero(GB[b[1]])) and not(IsZero(GB[b[2]])) and LCM(LPP(GB[a[1]]),LPP(GB[a[2]]))<LCM(LPP(GB[b[1]]),LPP(GB[b[2]]))); endfunc);
+    endwhile;
+    return GB;
+enddefine;
+
+
+define SCoeffs(F,G)
+    Numerator := lcm(LM(F),LM(G));
+    return [Numerator/LM(F), Numerator/LM(G)];
+enddefine;
+
+
+define GcdCoeffs(F,G)
+    TermLcm := LCM(LT(F),LT(G));
+    D := ExtGcd(AsINT(LC(F)),AsINT(LC(G))); // Later remove AsINT???
+    return [(D[1]*TermLcm)/LT(F), (D[2]*TermLcm)/LT(G)];
+enddefine;
+
+
+define ExtendedGBasisCore(Generators)
+    TopLevel ZZ;
+  if Generators = [] then return Record[GB := [], Matrix := IdentityMat(ZZ,0)]; endif;
+  P := RingOf(Generators[1]);
+    Basis := Generators;
+    s := len(Generators);
+    Matrix := IdentityMat(P, s);
+    Pairlist := flatten([[[i,j] | j in i+1..s] |i in 1..s-1],1);
+    while len(Pairlist) > 0 Do
+        Pair := Pairlist[1];
+        Remove(ref Pairlist, 1);
+        if $.IsNecessarySPair(Basis[Pair[1]], Basis[Pair[2]]) then
+            SPoly := $.SPolynomial(Basis[Pair[1]], Basis[Pair[2]]);
+            Result := $.NRoverZZ(SPoly, Basis, True);
+            if not(IsZero(Result.Remainder)) then
+                Columns := GetCols(Matrix);
+                NewColumn := NewList(NumRows(Matrix));
+                for I := 1 To len(Basis) Do
+                    NewColumn := NewColumn - Result.Quotients[I] * Columns[I];
+                endfor;
+                Coeffs := $.SCoeffs(Basis[Pair[1]], Basis[Pair[2]]);
+                NewColumn := NewColumn + Columns[Pair[1]]*Coeffs[1] - Columns[Pair[2]]*Coeffs[2];
+                if LC(Result.Remainder) < 0 then
+                    Result.Remainder := -1 * Result.Remainder;
+                    NewColumn := -1 *NewColumn;
+                endif;
+                Matrix := ConcatHor(Matrix, Transposed(Mat([NewColumn])));
+                append(ref Basis, Result.Remainder);
+                for I := 1 To len(Basis)-1 Do
+                    append(ref Pairlist, [I, len(Basis)]);
+                endfor;
+            endif;
+        endif;
+
+        if $.IsNecessaryGcdPair(Basis[Pair[1]], Basis[Pair[2]]) then
+            GcdPoly := $.GcdPolynomial(Basis[Pair[1]], Basis[Pair[2]]);
+            Result := $.NRoverZZ(GcdPoly, Basis, True);
+            if not(IsZero(Result.Remainder)) then
+                Columns := GetCols(Matrix);
+                NewColumn := NewList(NumRows(Matrix));
+                for I := 1 To len(Basis) Do
+                    NewColumn := NewColumn - Result.Quotients[I] * Columns[I];
+                endfor;
+                Coeffs := $.GcdCoeffs(Basis[Pair[1]],Basis[Pair[2]]);
+                NewColumn := NewColumn + Columns[Pair[1]]*Coeffs[1] + Columns[Pair[2]]*Coeffs[2];
+                if LC(Result.Remainder) < 0 then
+                    Result.Remainder := -1 * Result.Remainder;
+                    NewColumn := -1 * NewColumn;
+                endif;
+                Matrix := ConcatHor(Matrix, Transposed(Mat([NewColumn])));
+                append(ref Basis, Result.Remainder);
+                for I := 1 To len(Basis)-1 Do
+                    append(ref Pairlist, [I, len(Basis)]);
+                endfor;
+            endif;
+        endif;
+    endwhile;
+    return Record[GB := Basis, Matrix := Matrix];
+enddefine;
+
+
+define NFoverZZCore(Poly, Generators)
+    GB := $.MinimalGBoverZZ(Generators);
+    RedPoly := $.NRoverZZ(Poly, GB);
+    Found := True;
+    while Found Do
+        Found := False;
+        I := 1;
+        Mons := Monomials(RedPoly);
+        while I <= len(Mons) and not(Found) Do
+            J := 1;
+            while J <= len(GB) and not(Found) Do
+                if IsDivisible(LT(Mons[I]), LT(GB[J])) then
+                    Quotient := Div(AsINT(LC(Mons[I])), AsINT(LC(GB[J])));
+                    RedPoly := RedPoly - Quotient*(LT(Mons[I])/LT(GB[J]))*GB[J];
+                    if IsZero(RedPoly) then
+                        return 0;
+                    endif;
+                    if not(IsZero(Quotient)) then
+                        Found := True;
+                    endif;
+                endif;
+                J := J + 1;
+            endwhile;
+            I := I + 1;
+        endwhile;
+    endwhile;
+    return RedPoly;
+enddefine;
+
+
+// [[JAA]] Removes from G any polys whose LM is divisible by LM of another poly
+  // not sure what happens if two polys have same LM [2024-05-20]
+// CALLED ONLY by MinGBoverZZ to "minimize" the resulting (strong?) GB
+// This fn currently ensures that no LM in g is a multiple of
+// another LM.  There is no tail reduction currently.
+define CleanListLMZZ(G)
+  G := NonZero(G); ////G := [g in G | not(IsZero(g))];
+  s := len(G);
+  if s=1 then return G; endif;
+  LessThanLMZZ := func(g1,g2)
+                      return (LT(g1)<LT(g2) or (LT(g1)=LT(g2) and abs(LC(g1))<abs(LC(g2))));
+                    endfunc;
+  SortBy(ref G, LessThanLMZZ);
+  B := flatten([[[i,j] | j in i+1..s] | i in 1..s-1], 1);
+  foreach couple in B do
+    if IsDivisible(LM(G[couple[2]]), LM(G[couple[1]])) then
+      G := WithoutNth(G,couple[2]);
+      return CleanListLMZZ(G);
+    endif;
+  endforeach;
+  return G;
+enddefine;
+
+
+endpackage;
+

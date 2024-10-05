@@ -1,0 +1,74 @@
+----------------------------------------------------------------------
+-- Interi molto grandi
+2^32-1; 
+2^64-1; 
+
+----------------------------------------------------------------------
+-- Numeri Razionali
+(1/3) * 3;
+0.3333333333333 * 3;
+
+----------------------------------------------------------------------
+-- Polinomi
+use QQ[x,y,z];
+
+(x-y)^2 * (x^4-4*z^4) / (x^2+2*z^2);
+factor(x^4 -2*x^3*y +x^2*y^2 -2*x^2*z^2 +4*x*y*z^2 -2*y^2*z^2);
+
+----------------------------------------------------------------------
+-- Sistemi di equazioni lineari
+PolySystem := ideal(x-y+z-2, 3*x-z+6, x+y-1);
+ReducedGBasis(PolySystem);
+
+----------------------------------------------------------------------
+-- Soluzioni intere non-negative
+M := mat([[3, -4, 7, -2], [2, -2, 5, -10]]);
+H := HilbertBasisKer(M);
+L := [A in H | A[4] <= 1];
+L;
+[ first(X,3) | X in L and X[4]=1 ];
+
+----------------------------------------------------------------------
+-- Chi è il mentitore?
+use ZZ/(2)[a,b,c];
+I1 := ideal(a, b-1);
+I2 := ideal(a-1, b);
+A := intersect(I1, I2);
+I3 := ideal(b, c-1);
+I4 := ideal(b-1, c);
+B := intersect(I3, I4);
+I5 := ideal(a, b, c-1);
+I6 := ideal(b-1, a, c);
+I7 := ideal(b, a-1, c);
+I8 := ideal(b-1, a-1, c);
+C := IntersectList(I5, I6, I7, I8);
+ReducedGBasis(A + B + C);
+
+----------------------------------------------------------------------
+-- Coloriamo la carta geografica
+use P ::= ZZ/(3)[x[1..6]];
+define F(X)  return X*(X-1)*(X+1);  enddefine;
+VerticesEq := [ F(x[I]) | I in 1..6 ];
+Edges := [[1,2],[1,3],[2,3], [2,4], [2,5], [3,4], [3,6],
+            [4,5], [4,6], [5,6]];
+EdgesEq := [ (F(x[A[1]])-F(x[A[2]]))/(x[A[1]]-x[A[2]])
+                  |  A in Edges ];
+I := ideal(VerticesEq) + ideal(EdgesEq) + ideal(x[1]-1, x[2]);
+ReducedGBasis(I);
+
+----------------------------------------------------------------------
+-- Formula di Erone
+use QQ[x[1..2],y,a,b,c,s];
+A := [x[1], 0];
+B := [x[2], 0];
+C := [ 0,   y];
+Hp := ideal(a^2 - (x[2]^2+y^2),  b^2 - (x[1]^2+y^2),
+            c   - (x[2]-x[1]),   2*s - c*y);
+E := elim(x[1]..y, Hp);
+F := monic(gens(E)[1]);
+F;
+
+Fs := factor(F - 16*s^2);
+EqSet(Fs.factors, [a +b -c, a -b +c, a +b +c, a -b -c]);
+
+----------------------------------------------------------------------

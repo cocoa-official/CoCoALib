@@ -1,0 +1,52 @@
+      SmartPtrIRCCOW
+      Copyright (c)  2010 John Abbott, Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SmartPtrIRCCOW}{John Abbott, Anna Bigatti}
+
+
+
+== User documentation for files SmartPtrIRCCOW ==
+%======================================================================
+
+The name ``SmartPtrIRCCOW`` stands for
+  //Smart Pointer with Intrusive Reference Count and Copy-on-write//.
+(or //Lazy Copy//).
+
+It is very similar to [[SmartPtrIRC]], where two cooperating classes
+are ``SmartPtrIRCCOW`` and ``IntrusiveReferenceCountCOWBase``, but
+also allows assigning, copying, and modifying.
+
+
+
+== Maintainer documentation for files SmartPtrIRCCOW ==
+%======================================================================
+
+The abstract class ``IntrusiveReferenceCountCOWBase`` inherits from
+``IntrusiveReferenceCount`` (see documentation for [[SmartPtrIRC]]),
+with an additional pure virtual function ``myClone`` which must be
+implemented by the concrete class returning a deep copy of the object.
+
+The template class ``SmartPtrIRCCOW<T>`` is implemented with one data member:
+```  private:     SmartPtrIRC<T> mySmartPtr;
+Which does (almost) all the work.
+The core for the //copy-on-write// behaviour is the member function:
+```  private:     void myDetach()
+which (if necessary) makes a new deep copy with reference count 1 and
+decrements the reference count of the original object.
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+
+
+== Main changes ==
+%======================================================================
+
+**2010**
+- ``0.9938`` first version July 2010 (experimental)
+
+
+%======================================================================

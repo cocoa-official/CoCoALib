@@ -1,0 +1,131 @@
+-----------------------------------------------------------------------
+-- double evaluation: https://cocoa.dima.unige.it/redmine/issues/946
+-----------------------------------------------------------------------
+TEST_NumAssert := 0;
+TEST_PrintInfo := false;
+
+define TEST_ASSERT(A,B)
+  toplevel TEST_NumAssert;
+  toplevel TEST_PrintInfo;
+  incr(ref TEST_NumAssert);
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B));
+  endif;
+  if TEST_PrintInfo then print "."; EndIf;
+enddefine; -- TEST_ASSERT
+
+use TEST_R ::= QQ[x,y];
+
+define f(x)
+  TopLevel TEST_NumEval;
+  incr(ref TEST_NumEval);
+  return x;
+enddefine; -- f
+
+TEST_NumEval := 0;
+TEST_NoPrint := ideal(TEST_R, GBasis(ideal(TEST_R, [f(x)]))); -- was OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := ideal(GBasis(ideal([f(x)]))); -- used to give 4
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := ideal(GBasis(ideal(f(x),x,x))); -- used to give 4
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := len([f(x)]); -- used to give 4
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := syz([f(x)]); -- used to give 2
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := homog([f(x)], x); -- used to give 4
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := gcd([f(x),x]); -- used to give 2
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := lcm(f(x),x);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := SyzOfGens(ideal(f(x),x));  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := CanonicalHom(ZZ,QQ)( [6,5,f(3)] );  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := CoefficientsWRT(x+x^2, [f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := elim([x,f(x)], ideal(x));  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_R3 := NewFreeModuleForSyz([x,f(x),1]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := SyzOfGens(TEST_R3, ideal(f(x),x,x-1));  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := ContentWRT(x, [f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := CoprimeFactorBasis([f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := lcm([f(x),x]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint :=  ElimMat([f(3)], mat([[1,5,2]]));  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := ElimMat([2], f(3));   -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_M := IdentityMat(TEST_R, 2);
+SetCol(ref TEST_M, 1, [x-1,f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := PolyAlgebraHom(TEST_R, TEST_R, [x-1,f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := PolyRingHom(TEST_R, TEST_R, CoeffEmbeddingHom(TEST_R), [x-1,f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := PolyAlgebraHom(TEST_R, TEST_R, "1,3")([x-1, f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := ModuleElem(TEST_R3, [x-1,0,f(x)]);  -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+TEST_NumEval := 0;
+TEST_NoPrint := NewPolyRing(QQ, f("x,y,z")); -- OK
+TEST_ASSERT(TEST_NumEval, 1);
+
+--  TO BE FIXED ------------------------------------------------------------
+
+TEST_NumEval := 0;
+TEST_NoPrint := submodule([ModuleElem(TEST_R3, [x-1,0,f(x)])]);  -- error -- gives 2  see submodule
+//TEST_ASSERT(TEST_NumEval, 1);
+

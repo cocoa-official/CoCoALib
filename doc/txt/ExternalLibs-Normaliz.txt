@@ -1,0 +1,200 @@
+      ExternalLibs-Normaliz
+      Copyright (c)  2010-2022 Anna Bigatti, Christof Soeger
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ExternalLibs-Normaliz}{Anna Bigatti, Christof Soeger}
+
+
+== User documentation ==
+%======================================================================
+
+**Normaliz** is a tool for computations in affine monoids, vector
+configurations, lattice polytopes, and rational cones.
+
+Here we should include the manual for the normaliz flags/functions,
+but we wait until **libnormaliz** interface is more stable.  For the
+moment look at the examples for available functions on
+``NormalizCone``s and setting flags.
+
+=== Examples ===
+- [ex-Normaliz1.C ../../examples/index.html#ex-Normaliz1.C]
+- [ex-Normaliz2.C ../../examples/index.html#ex-Normaliz2.C]
+
+
+=== Download and compile Normaliz ===
+
+ | [**libnormaliz** website https://www.normaliz.uni-osnabrueck.de/]
+
+Download and compile **Normaliz** following the instructions from the website.
+
+Altenatively, you can download the sources from Github:
+First time
+``` git clone https://github.com/Normaliz/Normaliz.git
+Update (from the Normaliz git folder)
+``` git pull
+
+==== Compilation suggestions ====
+
+(**2022-09-15** -- normaliz-3.9.4)
+
+This description covers two cases: standard system installation, and personal installation.
+We recommend you use the standard system installation if you can (//i.e.// if you are
+permitted to use the ``sudo`` command).
+
+For a system installation do the following:
+```
+cd normaliz-3.9.4
+./configure  --disable-openmp
+make -j2      #JAA:  took about 4 mins single-threaded
+make check    #JAA: recommended
+sudo make install  # This will request your password!
+```
+
+*NOTE*: Anna gets the following (harmless?) error when doing ``make check``
+``` clang: error: no such file or directory: '/usr/local/lib/libgmp.dylib'
+
+
+===== Specific version of GMP =====
+
+Normaliz requires the GMP library (with GMPXX too?).
+If you want Normaliz to use a specific installation of GMP
+try setting ``GMP_INSTALLDIR`` or using the configuration
+option ``--with-gmp=...``
+```
+cd normaliz-3.9.4
+export GMP_INSTALLDIR=/usr/local # if GMP is in /usr/local/lib/libgmp.a
+./configure  --disable-openmp  --with-gmp=$HOME/MySoftware
+...etc...
+```
+
+If you want to use a personal installation of GMP
+(see [[ExternalLibs-GMP]])
+
+==== Personal installation of libnormaliz ====
+
+First decide where you want libnormaliz to be installed;
+I use the directory ``/home/abbott/ExternalLibs/``.
+Below I shall write ``<install-dir>`` to mean the directory
+you have chosen
+```
+cd normaliz-3.9.4
+./configure  --disable-openmp  --prefix=<install-dir>
+# JAA also specified  --disable-shared  in line above
+make -j2      #JAA:  took about 4 mins single-threaded
+make check    #JAA: recommended
+make install
+```
+
+The lib file ``libnormaliz.a`` is in ``<install-dir>/lib/``;
+so **when you configure CoCoALib** you must give the full path
+``--with-libnormaliz=<install-dir>/lib/libnormaliz.a``
+
+
+
+==== More normaliz configuration options ====
+
+I used also ``--disable-shared`` (but do not use ``--disable-static``).
+
+For more normaliz configuration options type ``./configure --help``.
+
+
+
+==== Compilation suggestions for desperate cases ====
+
+**NEEDS UPDATING**
+Must put ``libnormaliz.a`` in ``<install-dir>/lib`` and headers in
+``<install-dir>/include``.  Poking around inside the normaliz source
+tree is not allowed any more!
+
+**Anna:** I still have problems on MSWindows/cygwin.
+Thanks to Winfried Bruns' support, this is what worked out in my desperate case:
+I added in ``source/Makefile.configuration``
+``-L/home/cocoa/GMP/lib/`` and ``-I/home/cocoa/GMP/include``
+then executed in ``source``:
+``` make -f Makefile.classic  OPENMP=no  NAKED=yes
+This produced ``libnormaliz.a`` in ``libnormaliz/``.
+Then I did
+```
+mkdir .libs
+mv libnormaliz/libnormaliz.a ./libs/
+```
+
+=== Compile CoCoALib with Normaliz ===
+
+Then configure and compile **CoCoALib** typing
+``` 
+cd CoCoALib-0.99
+./configure  --with-libnormaliz=<your_path_to>/libnormaliz.a
+make
+```
+
+2022-09-16: We hope soon to permit CoCoALib configuration with the option
+``./configure  --with-libnormaliz`` for a standard system installation.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+==== Some VERY old instructions -- might still be useful? ====
+
+*2022-09-16*
+
+**IMPORTANT**
+
+We are now "deprecating" using external libs which have been installed.
+If a system-wide installation is not possible (//e.g.// the user cannot
+run ``sudo``) then a personal installation should be made in a directory
+inside the user's filespace.  The notes below were relevant when we
+previously would allow use of non-installed external libs.
+
+
+*2020-03-20*
+
+Anna: I had problems so I did this
+```
+./configure --with-gmp=/Users/bigatti/0.99/gmp-6.1.2/ --enable-openmp=no --enable-shared=no --enable-fast-install=no --disable-libtool-lock 
+  <adjusted gmp path for include and lib in source/Makefile >
+cd source
+make
+```
+Then I have ``libnormaliz.a`` in ``.libs`` and that's all I need for cocoa.
+
+*OLD* (but I don't dare deleting it yet)
+
+I had problems following the given instructions, so I
+added
+```
+GMPFLAGS = -I /Users/bigatti/0.99/gmp-6.1.2/ -L/Users/bigatti/0.99/gmp-6.1.2/.libs -lgmpxx -lgmp
+```
+to ``source/Makefile.configuration`` and then
+compiled with 
+```OPENMP=no  make -f Makefile.classic
+Then I get the error
+```
+ld: library not found for -lcrt0.o
+```
+which is solved by removing ``-static`` from the last command, for example:
+```
+g++  -I /Users/bigatti/0.99/gmp-6.1.0/ -L/Users/bigatti/0.99/gmp-6.1.0/.libs -lgmpxx -lgmp -I /Users/bigatti/0.99/boost_1_61_0/ -L/Users/bigatti/0.99/boost_1_61_0/libs -std=c++11 -Wall -pedantic -O3 -funroll-loops -g        -Wno-unknown-pragmas   -I .  normaliz.o libnormaliz/libnormaliz.a  -I /Users/bigatti/0.99/gmp-6.1.0/ -L/Users/bigatti/0.99/gmp-6.1.0/.libs -lgmpxx -lgmp -I /Users/bigatti/0.99/boost_1_61_0/ -L/Users/bigatti/0.99/boost_1_61_0/libs -o normaliz
+```
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+We are still updating CoCoALib configuraton to use properly installed
+external libs.
+
+
+== Main changes ==
+%======================================================================
+
+**2011**
+- 26 July: new libnormaliz configuration (still a private copy)
+
+
+**2010**
+- 1 October: first inclusion
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

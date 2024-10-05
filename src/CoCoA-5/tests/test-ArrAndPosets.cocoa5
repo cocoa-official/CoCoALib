@@ -1,0 +1,353 @@
+--------------------------------------------------------------------
+-- Test for arrangements an posets
+--------------------------------------------------------------------
+TEST_PrintInfo := false;
+//TEST_PrintInfo := true; ---<<<<<<---------------------------------
+TEST_Verb := 0;
+--------------------------------------------------------------------
+if TEST_PrintInfo then SetVerbosityLevel(TEST_Verb); else SetVerbosityLevel(0); endif;
+TEST_NumAssert := 0;
+
+define TEST_ASSERT(A,B)
+  toplevel TEST_NumAssert;
+  toplevel TEST_PrintInfo;
+  incr(ref TEST_NumAssert);
+  if TEST_PrintInfo then
+    println "--TEST_NumAssert: ", TEST_NumAssert;
+  endif;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B)
+	  + "\n"+dashes()+"TEST_NumAssert: " +Sprint(TEST_NumAssert)+dashes());
+  endif;
+enddefine; -- TEST_ASSERT
+
+define TEST_Time()
+  toplevel TEST_PrintInfo;
+  toplevel t0;
+  if TEST_PrintInfo then println "--TEST_Time: \t", TimeFrom(t0), "s"; endif;
+enddefine; -- TEST_TimeFrom
+
+define TEST_PrintLn(str)
+  toplevel TEST_PrintInfo;
+  if TEST_PrintInfo then println str; endif;
+enddefine; -- TEST_TimeFrom
+--------------------------------------------------------------------
+
+TEST_PrintLn("-- Posets: --");
+TEST_PrintLn("1: ");
+P := [[],[1],[1,2],[1,2]];
+relP := [[1,2],  [2,3],  [2,4]];
+TEST_ASSERT(covers(relP),P);
+TEST_ASSERT(moebius(relP),[1,  -1,  0,  0]);
+TEST_ASSERT(IsPosetGraded(relP), true);
+TEST_ASSERT(PosetCharPoly(relP), RingElem(RingQQt(1),"t^2-t"));
+TEST_ASSERT(PosetPoincarePoly(relP), RingElem(RingQQt(1), "t+1"));
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("2: ");
+P := [[],[1],[1, 2],[1, 2],[1, 2, 3, 4]];
+relP := [[1,2],  [2,3],  [2,4], [3,5], [4,5]];
+TEST_ASSERT(covers(relP),P);
+TEST_ASSERT(moebius(relP),[1,  -1,  0,  0,  0]);
+TEST_ASSERT(IsPosetGraded(relP),true);
+TEST_ASSERT(PosetCharPoly(relP), RingElem(RingQQt(1),"t^3-t^2"));
+TEST_ASSERT(PosetPoincarePoly(relP), RingElem(RingQQt(1),"t+1"));
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("3: ");
+P := [[],[],[1,2],[2]];
+relP := [[1,3],[2,3],[2,4]];
+TEST_ASSERT(covers(relP),P);
+TEST_ASSERT(moebius(relP),[1,  1,  -2,  -1]);
+TEST_ASSERT(IsPosetGraded(relP),true);
+TEST_ASSERT(PosetCharPoly(relP), RingElem(RingQQt(1),"2*t-3"));
+TEST_ASSERT(PosetPoincarePoly(relP), RingElem(RingQQt(1),"3*t+2"));
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("4: ");
+P := [[2,3],[],[],[3]];
+relP := [[2,1],[3,1],[3,4]];
+TEST_ASSERT(covers(relP),P);
+TEST_ASSERT(moebius(relP),[-2,  1,  1,  -1]);
+TEST_ASSERT(IsPosetGraded(relP),true);
+TEST_ASSERT(PosetCharPoly(relP), RingElem(RingQQt(1),"2*t-3"));
+TEST_ASSERT(PosetPoincarePoly(relP), RingElem(RingQQt(1),"3*t+2"));
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("5: ");
+P := [[],[],[1,2],[2],[2,  4]];
+relP := [[1,3],  [2,3],  [2,4],  [4,5]];
+TEST_ASSERT(covers(relP),P);
+TEST_ASSERT(moebius(relP),[1,  1,  -2,  -1,  0]);
+TEST_ASSERT(IsPosetGraded(relP),false);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("6: ");
+P := [[],[1],[1,2],[1,2],[],[5],[1,  2,  4,  5]];
+relP := [[1,2],  [2,3],  [2,4],  [4,7],  [5,7],  [5,6]];
+TEST_ASSERT(covers(relP),P);
+TEST_ASSERT(moebius(relP),[1,  -1,  0,  0,  1,  -1,  -1]);
+TEST_ASSERT(IsPosetGraded(relP),false);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("7: ");
+P := [[2,3],[3],[]];
+relP := [[3,2],[2,1]];
+TEST_ASSERT(covers(relP),P);
+TEST_ASSERT(moebius(relP),[0, -1, 1]);
+TEST_ASSERT(IsPosetGraded(relP),true);
+-- use QQ[t];
+-- TEST_ASSERT(PosetCharPoly(relP,t),t^2-t);
+-- TEST_ASSERT(PosetPoincarePoly(relP,t),t+1);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("-- Arrangements: --");
+TEST_PrintLn("8: ");
+use S ::= QQ[x,y];
+A := [x, x-y, y];
+TEST_ASSERT(ArrFlats(A),[[ideal(zero(S))],[ideal(x),ideal(x-y),ideal(y)],[ideal(x,y)]]);
+TEST_ASSERT(ArrLattice(A),[[1,  2],  [1,  3],  [1,  4],  [2,  5],  [3,  5],  [4,  5]]);
+TEST_ASSERT(NumChambers(A),6);
+TEST_ASSERT(NumBChambers(A),0);
+TEST_ASSERT(IsArrCentral(A),true);
+TEST_ASSERT(IsArrFree(product(A)),true);
+TEST_ASSERT(IsArrFree(A),true);
+TEST_ASSERT(ArrDerModule(product(A)),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[x, 0], [y, x*y -y^2]]));
+TEST_ASSERT(ArrDerModule(A),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[x, 0], [y, x*y -y^2]]));
+TEST_ASSERT(ArrExponents(product(A)), [1, 2]);
+TEST_ASSERT(ArrExponents(A), [1, 2]);
+-- use QQ[t];
+-- TEST_ASSERT(ArrCharPoly(A,t),t^2-3*t+2);;
+-- TEST_ASSERT(ArrPoincarePoly(A,t),2*t^2 +3*t +1);
+-- TEST_ASSERT(ArrBettiNum(A),[1,3,2]);
+-- use QQ[X,Y];
+-- TEST_ASSERT(ArrTuttePoly(A,X,Y),X^2 +X +Y);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("9: ");
+use S ::= QQ[x,y];
+A := [x,x-1,y,y-1,x-y];
+TEST_ASSERT(ArrFlats(A),[[ideal(zero(S))],[ideal(x),ideal(x-1),ideal(y),ideal(y-1),ideal(x-y)],[ideal(y,x),ideal(y-1,x),ideal(y,x-1),ideal(y-1,x-1)]]);
+TEST_ASSERT(ArrLattice(A),[[1,2],[1,3],[1,4],[1,5],[1,6],[2,7],[2,8],[3,9],[3,10],[4,7],[4,9],[5,8],[5,10],[6,7],[6,10]]);
+TEST_ASSERT(NumChambers(A),12);
+TEST_ASSERT(NumBChambers(A),2);
+TEST_ASSERT(IsArrCentral(A),false);
+-- use QQ[t];
+-- TEST_ASSERT(ArrCharPoly(A,t),t^2 -5*t +6);;
+-- TEST_ASSERT(ArrPoincarePoly(A,t),6*t^2 +5*t +1);
+-- TEST_ASSERT(ArrBettiNum(A),[1,  5,  6]);
+-- use QQ[X,Y];
+-- TEST_ASSERT(ArrTuttePoly(A,X,Y),X^2 +X +Y);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("10: ");
+use S ::= QQ[x,y,z];
+A := [x,y,z,x-y,x+y,x-z,x+z,y-z,y+z];
+TEST_ASSERT(ArrFlats(A),[[ideal(zero(S))],[ideal(x),ideal(y),ideal(z),ideal(x-y),ideal(x+y),ideal(x-z),ideal(x+z),ideal(y-z),ideal(y+z)],[ideal(y,x),ideal(z,x),ideal(y-z,x),ideal(y+z,x),ideal(z,y),ideal(y,x-z),ideal(y,x+z),ideal(z,x-y),ideal(z,x+y),ideal(x-z,y-z),ideal(x+z,y+z),ideal(x-z,y+z),ideal(x+z,y-z)],[ideal(z,y,x)]]);
+TEST_ASSERT(IsArrCentral(A),true);
+TEST_ASSERT(IsArrFree(product(A)),true);
+TEST_ASSERT(IsArrFree(A),true);
+--------------------------------------------------------------------
+if TEST_PrintInfo then // additional tests
+--------------------------------------------------------------------
+TEST_ASSERT(ArrLattice(A),[[1,  2],  [1,  3],  [1,  4],  [1,  5],  [1,  6],  [1,  7],  [1,  8],  [1,  9],  [1,  10],  [2,  11],  [2,  12],  [2,  13],  [2,  14],  [3,  11],  [3,  15],  [3,  16],  [3,  17],  [4,  12],  [4,  15],  [4,  18],  [4,  19],  [5,  11],  [5,  18],  [5,  20],  [5,  21],  [6,  11],  [6,  19],  [6,  22],  [6,  23],  [7,  12],  [7,  16],  [7,  20],  [7,  22],  [8,  12],  [8,  17],  [8,  21],  [8,  23],  [9,  13],  [9,  15],  [9,  20],  [9,  23],  [10,  14],  [10,  15],  [10,  21],  [10,  22],  [11,  24],  [12,  24],  [13,  24],  [14,  24],  [15,  24],  [16,  24],  [17,  24],  [18,  24],  [19,  24],  [20,  24],  [21,  24],  [22,  24],  [23,  24]]);
+TEST_ASSERT(NumChambers(A),48);
+TEST_ASSERT(NumBChambers(A),0);
+TEST_ASSERT(ArrDerModule(product(A)),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[x, 0, 0],[y, x^2*y -y^3, 0],[z, x^2*z -z^3, x^2*y^2*z -x^2*z^3 -y^2*z^3 +z^5]]));
+TEST_ASSERT(ArrDerModule(A),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[x, 0, 0],[y, x^2*y -y^3, 0],[z, x^2*z -z^3, x^2*y^2*z -x^2*z^3 -y^2*z^3 +z^5]]));
+TEST_ASSERT(ArrExponents(product(A)), [1, 3, 5]);
+TEST_ASSERT(ArrExponents(A), [1, 3, 5]);
+-- use QQ[t];
+-- TEST_ASSERT(ArrCharPoly(A,t),t^3 -9*t^2 +23*t -15);;
+-- TEST_ASSERT(ArrPoincarePoly(A,t),15*t^3 +23*t^2 +9*t +1);
+-- TEST_ASSERT(ArrBettiNum(A),[1,  9,  23,  15]);
+-- use QQ[X,Y];
+-- TEST_ASSERT(ArrTuttePoly(A,X,Y),Y^6 +3*Y^5 +6*Y^4 +X^3 +3*X*Y^2 +10*Y^3 +6*X^2 +10*X*Y +12*Y^2 +8*X +8*Y);
+endif;
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("11: ");
+use S ::= QQ[x,y,z];
+A := [x,y,z,x+1];
+TEST_ASSERT(ArrFlats(A),[[ideal(zero(S))],  [ideal(x),  ideal(y),  ideal(z),  ideal(x +1)],  [ideal(y,  x),  ideal(z,  x),  ideal(z,  y),  ideal(y,  x +1),  ideal(z,  x +1)],  [ideal(z,  y,  x),  ideal(z,  y,  x +1)]]);
+TEST_ASSERT(ArrLattice(A),[[1,  2],  [1,  3],  [1,  4],  [1,  5],  [2,  6],  [2,  7],  [3,  6],  [3,  8],  [3,  9],  [4,  7],  [4,  8],  [4,  10],  [5,  9],  [5,  10],  [6,  11],  [7,  11],  [8,  11],  [8,  12],  [9,  12],  [10,  12]]);
+TEST_ASSERT(NumChambers(A),12);
+TEST_ASSERT(NumBChambers(A),0);
+TEST_ASSERT(IsArrCentral(A),false);
+-- use QQ[t];
+-- TEST_ASSERT(ArrCharPoly(A,t),t^3 -4*t^2 +5*t -2);;
+-- TEST_ASSERT(ArrPoincarePoly(A,t),2*t^3 +5*t^2 +4*t +1);
+-- TEST_ASSERT(ArrBettiNum(A),[1,  4,  5,  2]);
+-- use QQ[X,Y];
+-- TEST_ASSERT(ArrTuttePoly(A,X,Y),X^3);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("12: ");
+use S ::=QQ[x,y,z];
+A := [x-y,y-z,x-z,x+y+z];
+TEST_ASSERT(ArrFlats(A),[[ideal(zero(S))],  [ideal(x -y),  ideal(y -z),  ideal(x -z),  ideal(x +y +z)],  [ideal(y -z,  x -z),  ideal(x +(1/2)*z,  y +(1/2)*z),  ideal(y -z,  x +2*z),  ideal(x -z,  y +2*z)],  [ideal(y,  x,  z)]]);
+TEST_ASSERT(ArrLattice(A),[[1,  2],  [1,  3],  [1,  4],  [1,  5],  [2,  6],  [2,  7],  [3,  6],  [3,  8],  [4,  6],  [4,  9],  [5,  7],  [5,  8],  [5,  9],  [6,  10],  [7,  10],  [8,  10],  [9,  10]]);
+TEST_ASSERT(NumChambers(A),12);
+TEST_ASSERT(NumBChambers(A),0);
+TEST_ASSERT(IsArrCentral(A),true);
+TEST_ASSERT(IsArrFree(product(A)),true);
+--------------------------------------------------------------------
+if TEST_PrintInfo then // additional tests
+--------------------------------------------------------------------
+TEST_ASSERT(IsArrFree(A),true);
+TEST_ASSERT(ArrDerModule(product(A)),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[y +z, x, (1/3)*y^2 +(1/3)*y*z +(-2/3)*z^2],[x +z, y, (1/3)*y^2 +(1/3)*y*z +(-2/3)*z^2],[x +y, z, x*y +(1/3)*y^2 -x*z +(-2/3)*y*z +(1/3)*z^2]]));
+TEST_ASSERT(ArrDerModule(A),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[y +z, x, (1/3)*y^2 +(1/3)*y*z +(-2/3)*z^2],[x +z, y, (1/3)*y^2 +(1/3)*y*z +(-2/3)*z^2],[x +y, z, x*y +(1/3)*y^2 -x*z +(-2/3)*y*z +(1/3)*z^2]]));
+TEST_ASSERT(ArrExponents(product(A)), [1, 1, 2]);
+TEST_ASSERT(ArrExponents(A), [1, 1, 2]);
+-- use QQ[t];
+-- TEST_ASSERT(ArrCharPoly(A,t),t^3 -4*t^2 +5*t -2);
+-- TEST_ASSERT(ArrPoincarePoly(A,t),2*t^3 +5*t^2 +4*t +1);
+-- TEST_ASSERT(ArrBettiNum(A),[1,  4,  5,  2]);
+-- use QQ[X,Y];
+-- TEST_ASSERT(ArrTuttePoly(A,X,Y),X^3 +X^2 +X*Y);
+endif;
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("13: ");
+use S ::= QQ[x,y,z];
+A := [x,y,z,x-z,x+z,y-z,y+z];
+TEST_ASSERT(ArrFlats(A),[[ideal(zero(S))],  [ideal(x),  ideal(y),  ideal(z),  ideal(x -z),  ideal(x +z),  ideal(y -z),  ideal(y +z)],  [ideal(y,  x),  ideal(z,  x),  ideal(y -z,  x),  ideal(y +z,  x),  ideal(z,  y),  ideal(y,  x -z),  ideal(y,  x +z),  ideal(y -z,  x -z),  ideal(y +z,  x -z),  ideal(y -z,  x +z),  ideal(y +z,  x +z)],  [ideal(z,  y,  x)]]);
+--------------------------------------------------------------------
+if TEST_PrintInfo then // additional tests
+--------------------------------------------------------------------
+TEST_ASSERT(ArrLattice(A),[[1,  2],  [1,  3],  [1,  4],  [1,  5],  [1,  6],  [1,  7],  [1,  8],  [2,  9],  [2,  10],  [2,  11],  [2,  12],  [3,  9],  [3,  13],  [3,  14],  [3,  15],  [4,  10],  [4,  13],  [5,  10],  [5,  14],  [5,  16],  [5,  17],  [6,  10],  [6,  15],  [6,  18],  [6,  19],  [7,  11],  [7,  13],  [7,  16],  [7,  18],  [8,  12],  [8,  13],  [8,  17],  [8,  19],  [9,  20],  [10,  20],  [11,  20],  [12,  20],  [13,  20],  [14,  20],  [15,  20],  [16,  20],  [17,  20],  [18,  20],  [19,  20]]);
+TEST_ASSERT(NumChambers(A),32);
+TEST_ASSERT(NumBChambers(A),0);
+TEST_ASSERT(IsArrCentral(A),true);
+TEST_ASSERT(IsArrFree(product(A)),true);
+TEST_ASSERT(IsArrFree(A),true);
+TEST_ASSERT(ArrDerModule(product(A)),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[x, 0, 0],[y, y^3 -y*z^2, x^2*y -y*z^2],[z, 0, x^2*z -z^3]]));
+TEST_ASSERT(ArrDerModule(A),matrix( /*RingWithID(21234, "QQ[x,y]")*/ [[x, 0, 0],[y, y^3 -y*z^2, x^2*y -y*z^2],[z, 0, x^2*z -z^3]]));
+TEST_ASSERT(ArrExponents(product(A)), [1, 3, 3]);
+TEST_ASSERT(ArrExponents(A), [1, 3, 3]);
+-- use QQ[t];
+-- TEST_ASSERT(ArrCharPoly(A,t),t^3 -7*t^2 +15*t -9);
+-- TEST_ASSERT(ArrPoincarePoly(A,t),9*t^3 +15*t^2 +7*t +1);
+-- TEST_ASSERT(ArrBettiNum(A),[1,  7,  15,  9]);
+-- use QQ[X,Y];
+-- TEST_ASSERT(ArrTuttePoly(A,X,Y),Y^4 +X^3 +2*X*Y^2 +3*Y^3 +4*X^2 +4*X*Y +4*Y^2 +4*X +4*Y);
+endif;
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("14: ");
+use S ::= QQ[x,y,z];
+A := [x-1,y,z,x-z,x+z,y-z,y+z];
+TEST_ASSERT(ArrFlats(A),[[ideal(zero(S))],  [ideal(x -1),  ideal(y),  ideal(z),  ideal(x -z),  ideal(x +z),  ideal(y -z),  ideal(y +z)],  [ideal(y,  x -1),  ideal(z,  x -1),  ideal(x -1,  z -1),  ideal(x -1,  z +1),  ideal(y -z,  x -1),  ideal(y +z,  x -1),  ideal(z,  y),  ideal(y,  x -z),  ideal(y,  x +z),  ideal(z,  x),  ideal(y -z,  x -z),  ideal(y +z,  x -z),  ideal(y -z,  x +z),  ideal(y +z,  x +z)],  [ideal(z,  y,  x -1),  ideal(y,  x -1,  z -1),  ideal(y,  x -1,  z +1),  ideal(y -1,  x -1,  z -1),  ideal(y +1,  x -1,  z -1),  ideal(y +1,  x -1,  z +1),  ideal(y -1,  x -1,  z +1),  ideal(z,  y,  x)]]);
+--------------------------------------------------------------------
+if TEST_PrintInfo then // additional tests
+--------------------------------------------------------------------
+TEST_ASSERT(ArrLattice(A),[[1,  2],  [1,  3],  [1,  4],  [1,  5],  [1,  6],  [1,  7],  [1,  8],  [2,  9],  [2,  10],  [2,  11],  [2,  12],  [2,  13],  [2,  14],  [3,  9],  [3,  15],  [3,  16],  [3,  17],  [4,  10],  [4,  15],  [4,  18],  [5,  11],  [5,  16],  [5,  18],  [5,  19],  [5,  20],  [6,  12],  [6,  17],  [6,  18],  [6,  21],  [6,  22],  [7,  13],  [7,  15],  [7,  19],  [7,  21],  [8,  14],  [8,  15],  [8,  20],  [8,  22],  [9,  23],  [9,  24],  [9,  25],  [10,  23],  [11,  24],  [11,  26],  [11,  27],  [12,  25],  [12,  28],  [12,  29],  [13,  23],  [13,  26],  [13,  28],  [14,  23],  [14,  27],  [14,  29],  [15,  23],  [15,  30],  [16,  24],  [16,  30],  [17,  25],  [17,  30],  [18,  30],  [19,  26],  [19,  30],  [20,  27],  [20,  30],  [21,  28],  [21,  30],  [22,  29],  [22,  30]]);
+TEST_ASSERT(NumChambers(A),40);
+TEST_ASSERT(NumBChambers(A),4);
+TEST_ASSERT(IsArrCentral(A),false);
+-- use QQ[t];
+-- TEST_ASSERT(ArrCharPoly(A,t),t^3 -7*t^2 +17*t -15);
+-- TEST_ASSERT(ArrPoincarePoly(A,t),15*t^3 +17*t^2 +7*t +1);
+-- TEST_ASSERT(ArrBettiNum(A),[1,  7,  17,  15]);
+-- use QQ[X,Y];
+-- TEST_ASSERT(ArrTuttePoly(A,X,Y),X^3 +X*Y^2 +Y^3 +3*X^2 +3*X*Y +2*Y^2 +2*X +2*Y);
+endif;
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("15: ");
+// ArrCone
+use S ::= QQ[x,y,z,t];
+A := [x-1, x+y];
+TEST_ASSERT(ArrCone(A,t), [x -t,  x +y,  t]);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("16: ");
+// SolomonTeraoIdeal (OrlikTeraoIdeal - ArtinianOrlikTeraoIdeal)
+use QQ[x,y,z];
+A := [x, 3*x+y, x+y-z, z];
+TEST_ASSERT(SolomonTeraoIdeal(A, x^2+y^2+z^2), ideal(2*x^2 +2*y^2 +2*z^2,  2*x*z^2 +2*y*z^2 -2*z^3,  2*x*y*z +(2/3)*y^2*z +(-4/3)*y*z^2 +2*z^3,  2*x^2*y +(8/3)*x*y^2 +(2/3)*y^3 +(-4/3)*y*z^2 +2*z^3));
+-- TEST_ASSERT(OrlikTeraoIdeal(A), ideal(y[1]*y[2]*y[3] +y[1]*y[2]*y[4] -y[1]*y[3]*y[4] +2*y[2]*y[3]*y[4]));
+-- TEST_ASSERT(ArtinianOrlikTeraoIdeal(A), ideal(y[1]*y[2]*y[3] +y[1]*y[2]*y[4] -y[1]*y[3]*y[4] +2*y[2]*y[3]*y[4],  y[1]^2,  y[2]^2,  y[3]^2,  y[4]^2));
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("-- Multirrangements: --");
+TEST_PrintLn("17: ");
+// Example 9(a) from Ziegler's article on multiarrangements
+use R::=QQ[x,y];
+MultiA := [[x,2], [y,2], [x-y,1]];
+TEST_ASSERT(MultiArrDerModule(MultiA), matrix( /*RingWithID(41150, "QQ[x,y]")*/ [[x^2, 0], [y^2, x*y^2 -y^3]]));
+TEST_ASSERT(IsMultiArrFree(MultiA), true);
+TEST_ASSERT(MultiArrExponents(MultiA), [2, 3]);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("18: ");
+// Example 9(b) from Ziegler's article on multiarrangements
+use R::=QQ[x,y];
+MultiA := [[x,2], [y,2], [x-y,2]];
+TEST_ASSERT(MultiArrDerModule(MultiA),matrix( /*RingWithID(41287, "QQ[x,y]")*/[[x^2*y, x^3],[2*x*y^2 -y^3, 3*x*y^2 -2*y^3]]));
+TEST_ASSERT(IsMultiArrFree(MultiA), true);
+TEST_ASSERT(MultiArrExponents(MultiA), [3,  3]);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("19: ");
+// Example 10 (case1: alpha=-1) from Ziegler's article on multiarrangements
+use R::=QQ[x,y];
+MultiA := [[x,3], [y,3], [x-y,1], [x+y,1]];
+TEST_ASSERT(MultiArrDerModule(MultiA), matrix( /*RingWithID(43847, "QQ[x,y]")*/[[x^3, 0],[y^3, x^2*y^3 -y^5]]));
+TEST_ASSERT(IsMultiArrFree(MultiA), true);
+TEST_ASSERT(MultiArrExponents(MultiA), [3,  5]);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("20: ");
+// Example 14 from Ziegler's article on multiarrangements
+use R::=QQ[x,y,z];
+MultiA := [[x,2], [y,2], [x-y,2], [x-z,2], [y-z,2]];
+TEST_ASSERT(MultiArrDerModule(MultiA), matrix( /*RingWithID(46543, "QQ[x,y,z]")*/ [[x^3 -3*x^2*y, x^2*y^2, x^2*y*z, 0], [-3*x*y^2 +y^3, x^2*y^2, x^2*y^2 -2*x*y^3 +y^4 +2*x*y^2*z -y^3*z, 0], [-6*x*y*z +3*x*z^2 +3*y*z^2 -2*z^3, 2*x^2*y*z +2*x*y^2*z -x^2*z^2 -4*x*y*z^2 -y^2*z^2 +2*x*z^3 +2*y*z^3 -z^4, 2*x^2*y*z -x^2*z^2 -2*x*y*z^2 +2*x*z^3 +y*z^3 -z^4, x^2*y^2 -2*x^2*y*z -2*x*y^2*z +x^2*z^2 +4*x*y*z^2 +y^2*z^2 -2*x*z^3 -2*y*z^3 +z^4]]));
+TEST_ASSERT(IsMultiArrFree(MultiA), false);
+TEST_ASSERT(ArrExponents(MultiArrToArr(MultiA)), [1,2,2]);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("21: ");
+// Deletion:
+use R ::= QQ[x,y,z];
+A := [x,y,z,x-y,x+z];
+TEST_ASSERT(ArrDeletion(A,z),[x,  y,  x -y,  x +z]);
+TEST_PrintLn("--------------");
+
+TEST_PrintLn("22: ");
+// ArrToMultiArr and MultiArrToArr
+use R ::= QQ[x,y,z];
+A := [x,y,2*x+y,x-y,x+z];
+TEST_ASSERT(ArrToMultiArr(A,[2,2,2,2,2]), [[x,  2],  [y,  2],  [2*x +y,  2],  [x -y,  2],  [x +z,  2]]);
+TEST_ASSERT(MultiArrToArr([[x,  2],  [y,  2],  [2*x +y,  2],  [x -y,  2],  [x +z,  2]]), [x,  y,  2*x +y,  x -y,  x +z]);
+TEST_PrintLn("--------------");
+
+// Restriction: cannot be tested for the change of the ring
+-- TEST_ASSERT(ArrRestriction(A,2*x+y), [y[1],  y[1] -2*y[2]]);
+-- TEST_ASSERT(MultiArrRestrictionZiegler(A,2*x+y), [[y[1],  3],  [y[1] -2*y[2],  1]]);
+-- A := [x,z,x+z];
+-- TEST_ASSERT(ArrRestriction(A,x), [y[2]]);
+-- TEST_ASSERT(MultiArrRestrictionZiegler(A,1), [[y[2],  2]]);
+-- TEST_ASSERT(ArrRestriction(A,y), [y[1]]);
+-- TEST_ASSERT(MultiArrRestrictionZiegler(A,y), [[y[1],  2]]);
+-- TEST_ASSERT(MultiArrRestrictionZiegler(A,2*x+y), [[y[2],  2]]);
+
+TEST_PrintLn("-- Families of Arrangements: --");
+n:=4;
+use QQ[x[1..n]];
+TEST_ASSERT(ArrBoolean(CurrentRing, 4), [x[1],  x[2],  x[3],  x[4]]);
+TEST_ASSERT(ArrBraid(CurrentRing, 3), [x[1] -x[2],  x[1] -x[3],  x[2] -x[3]]);
+TEST_ASSERT(ArrTypeD(CurrentRing, 3), [x[1] -x[2],  x[1] +x[2],  x[1] -x[3],  x[1] +x[3],  x[2] -x[3],  x[2] +x[3]]);
+TEST_ASSERT(ArrTypeB(CurrentRing, 2), [x[1],  x[2],  x[1] -x[2],  x[1] +x[2]]);
+TEST_ASSERT(ArrShiA(CurrentRing, 3), [x[1] -x[2],  x[1] -x[3],  x[2] -x[3],  x[1] -x[2] -1,  x[1] -x[3] -1,  x[2] -x[3] -1]);
+TEST_ASSERT(ArrShiB(CurrentRing, 2), [x[1],  x[2],  x[1] -x[2],  x[1] +x[2],  x[1] -1,  x[2] -1,  x[1] -x[2] -1,  x[1] +x[2] -1]);
+TEST_ASSERT(ArrShiD(CurrentRing, 3), [x[1] -x[2],  x[1] +x[2],  x[1] -x[3],  x[1] +x[3],  x[2] -x[3],  x[2] +x[3],  x[1] -x[2] -1,  x[1] +x[2] -1,  x[1] -x[3] -1,  x[1] +x[3] -1,  x[2] -x[3] -1,  x[2] +x[3] -1]);
+TEST_ASSERT(ArrCatalanA(CurrentRing, 3), [x[1] -x[2],  x[1] -x[3],  x[2] -x[3],  x[1] -x[2] -1,  x[1] -x[3] -1,  x[2] -x[3] -1,  x[1] -x[2] +1,  x[1] -x[3] +1,  x[2] -x[3] +1]);
+TEST_ASSERT(ArrCatalanB(CurrentRing, 2), [x[1],  x[2],  x[1] -x[2],  x[1] +x[2],  x[1] -1,  x[2] -1,  x[1] -x[2] -1,  x[1] +x[2] -1,  x[1] +1,  x[2] +1,  x[1] -x[2] +1,  x[1] +x[2] +1]);
+TEST_ASSERT(ArrCatalanD(CurrentRing, 2), [x[1] -x[2],  x[1] +x[2],  x[1] -x[2] -1,  x[1] +x[2] -1,  x[1] -x[2] +1,  x[1] +x[2] +1]);
+TEST_ASSERT(ArrShiCatalanA(CurrentRing, 2, [-1,2]), [x[1] -x[2],  x[1] -x[2] -1,  x[1] -x[2] +1,  x[1] -x[2] +2]);
+TEST_ASSERT(ArrShiCatalanB(CurrentRing, 2, [-1,2]), [x[1],  x[2],  x[1] -x[2],  x[1] +x[2],  x[1] -1,  x[2] -1,  x[1] -x[2] -1,  x[1] +x[2] -1,  x[1] +1,  x[1] +2,  x[2] +1,  x[2] +2,  x[1] -x[2] +1,  x[1] -x[2] +2,  x[1] +x[2] +1,  x[1] +x[2] +2]);
+TEST_ASSERT(ArrShiCatalanD(CurrentRing, 2, [-1,2]), [x[1] -x[2],  x[1] +x[2],  x[1] -x[2] -1,  x[1] +x[2] -1,  x[1] -x[2] +1,  x[1] -x[2] +2,  x[1] +x[2] +1,  x[1] +x[2] +2]);
+TEST_ASSERT(ArrGraphical(CurrentRing, [[1,2],[1,4],[2,3]]), [x[1] -x[2],  x[1] -x[4],  x[2] -x[3]]);
+TEST_ASSERT(ArrSignedGraphical(CurrentRing, [[1,2],[1,4],[2,3]], [[2,4],[3,4]], [1,3,4]), [x[1] -x[2],  x[1] -x[4],  x[2] -x[3],  x[2] +x[4],  x[3] +x[4],  x[1],  x[3],  x[4]]);
+TEST_PrintLn("--------------");

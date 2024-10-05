@@ -1,0 +1,115 @@
+      ApproxPts
+      Copyright (c)  2006-2013 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ApproxPts}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-ApproxPts1.C ../../examples/index.html#ex-ApproxPts1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+``ApproxPts`` offers three functions for preprocessing sets of approximate
+points whose coordinates are given as values of type ``double``.  Given a
+large set of approximate points with considerable overlap of the error
+boxes of adjacent points, the preprocessing algorithms determine a smaller
+set of approximate points which preserve the geometrical disposition of the
+original points but with little or no overlap of the error boxes.  In general,
+the output points **do not form a subset** of the original points.
+
+Details of the underlying algorithms are in the article **Thinning Out**
+**Redundant Empirical Data** by Abbott, Fassino, Torrente, and published in
+//Mathematics in Computer Science// (vol. 1, no. 2, pp. 375-392, year
+2007).  For a fully detailed description of the methods and the context in
+which they were developed refer to **Laura Torrente's PhD thesis**:
+(//Applications of Algebra in the Oil Industry//, Scuola Normale Superiore
+di Pisa, 2009).  The thesis is available at the URL
+[Laura's thesis http://www.dima.unige.it/~torrente/PhDThesis.pdf]
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+Here is a quick summary of the functions.
+```
+ typedef ApproxPts::PointR ApproxPt;  // actually std::vector<RingElem>
+ vector<ApproxPt>  OriginalPoints;    // the coords of the original approx pts
+ vector<RingElem>  epsilon;           // epsilon[i] is semiwidth of error box in dimension i
+ vector<ApproxPt>  NewPoints;         // will be filled with the preprocessed points
+ vector<long>      weights;           // will be filled with the weights of the representatives
+
+ PreprocessPts(NewPoints, weights, OriginalPoints, epsilon);
+ PreprocessPtsGrid(NewPoints, weights, OriginalPoints, epsilon);
+ PreprocessPtsAggr(NewPoints, weights, OriginalPoints, epsilon);
+ PreprocessPtsSubdiv(NewPoints, weights, OriginalPoints, epsilon);
+```
+
+
+All the algorithms work by partitioning the original points into subsets,
+and then choosing the average of each subset as the representative of those
+original points.  The **weight** of each representative is just the number
+of original points in the corresponding partition.  The algorithms offer
+differing trade-offs between speed and number of representatives.
+
+
+: ``PreprocessPtsGrid`` This algorithm is the fastest but the results tend to be rather crude; it is possible that some of the preprocessed points are close together.  The subsets in the partition comprise all original points which are closer to a certain fixed grid point than to any other of the grid points.  In other words, viewing the grid as a lattice, the whole space can be covered by grid-translates of the fundamental region; the partitions comprise all original points lying in one of these grid-translates.
+
+: ``PreprocessPtsAggr`` This algorithm gives much better results than ``PreprocessPtsGrid`` but can take considerably longer, perhaps requiring an hour's computation for around 10000 original points.  The subsets in the partition are determined by an **iterative process of aggregation**.  Initially each subset contains a single original point, then iteratively the closest (mergeable) pair of subsets are united into a single new subset, and so on.
+
+
+: ``PreprocessPtsSubdiv`` This algorithm generally gives the best results (//i.e.// fewest output points, and best visual disposition of them).  However it can be rather slower than ``PreprocessPtsAggr`` in certain cases (//e.g.// when the input points are already fairly well separated).  It works best when only few preprocessed points are produced, which will happen if the original points are densely packed compared to their error neighbourhoods.  The subsets in the partition are determined by an **iterative process of subdivision**.  Initially there is a single subset containing all the original points, then if some original point is too far from the average of the subset to which it belongs, that point is moved to its own new subset, then a redistribution of all original points occurs (reassigning them to optimize the //goodness of representation//).
+
+: ``PreprocessPts`` makes a (not very) intelligent choice between ``PreprocessPtsAggr`` and ``PreprocessPtsSubdiv`` aiming to minimise the computation time.
+
+
+== Maintainer documentation for files ApproxPts.H and ApproxPts.C ==
+%======================================================================
+
+All the preprocessing algorithms rescale their inputs so that the error
+widths in each dimension are all equal to 1.  The main work is done with
+these rescaled points, and at the very end the results are scaled back.
+
+``PreprocessPtsGrid`` might be better if we were to use ``std::map``s, but
+it seems fast enough as is.  From the theory, each input point is
+associated to a unique grid point; ``GridNearPoint`` effects this
+association.  We build up a table of useful grid points by considering each
+input point in turn: if the associated grid point is already in our table
+of grid points, we simply append the new input point to the grid point's
+list of associated original points, otherwise we add the new grid point to
+the table and place the input point as the first element in its list of
+associated original points.  Finally we compute the averages of each list
+of original points associated to a fixed grid point.  These averages are
+our result along with the cardinalities of the corresponding list.
+
+``PreprocessPtsAggr`` implements an **aggregative algorithm**: initially the
+original points are split into subsets each containing exactly one original
+point, then iteratively nearby subsets are coalesced into larger subsets
+provided each original point of the two subsets is not too far from the
+"centre of gravity" of the coalesced set -- this proviso is necessary as
+otherwise there are pathological examples.
+
+``PreprocessPtsSubdiv`` implements a **subdivision algorithm**.  Initially all
+original points are placed into a single partition.  Then iteratively we seek
+the original point furthest from the average of its subset.  If this distance is
+below the threshold then we stop (all original points are sufficiently well
+represented by the averages of their subsets).  Otherwise we separate the worst
+represented original point into a new subset initially containing just itself.
+Now we redistribute the original points: we do this by minimizing the sum of
+the squares of the L2 distances of the original points from their respective
+representatives.
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+I do not like the typedef for ``ApproxPts::ApproxPt`` because the
+name seems very redundant; I am also uneasy about having a ``typedef``
+in a header file -- perhaps it should be a genuine class?
+
+The preprocessing algorithms should really receive input as a pair
+of iterators, and the output should be sent to an output iterator.
+But such an interface would rather uglify the code -- what to do???

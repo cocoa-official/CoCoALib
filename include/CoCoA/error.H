@@ -1,0 +1,806 @@
+#ifndef CoCoA_error_H
+#define CoCoA_error_H
+
+//   Copyright (c)  2005-2020  John Abbott and Anna M. Bigatti
+//   Authors:  2005-2010  John Abbott, 2010-2017 John Abbott, Anna M. Bigatti 
+
+//   This file is part of the source of CoCoALib, the CoCoA Library.
+//
+//   CoCoALib is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+//
+//   CoCoALib is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+//
+//   You should have received a copy of the GNU General Public License
+//   along with CoCoALib.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+// All errors should be thrown by calling the function "error"
+// as this makes debugging easier and doesn't adversely affect
+// run-time performance.  The function "error" will print a brief
+// message if CoCoA_DEBUG is set, and it will throw the error object.
+
+
+#include "CoCoA/exception.H"
+
+#include <string>
+//using std::string;
+#include <iosfwd>
+//using std::ostream;
+
+// UGLY WORKAROUND FOR SOLARIS BUG!!!
+// (some header file defines the preprocessor symbol ERR to be 13)
+#if defined(ERR)
+#  undef ERR
+#endif
+
+
+namespace CoCoA
+{
+
+  namespace ERR
+  {
+    struct ID
+    {
+      ID(const char* const ErrName, const char* const DefaultMesg): myName(ErrName), myDefaultMesg(DefaultMesg) {};
+      bool operator<(const ID& rhs) const noexcept;
+      bool operator==(const ID& rhs) const noexcept;
+      bool operator!=(const ID& rhs) const noexcept;
+      const char* const myName;
+      const char* const myDefaultMesg;
+    };
+
+    extern const ID
+    LANGUAGE,          // Not really an error message, just the name of the language
+      nonstandard,       // To create a nonstandard error message
+      UNKNOWN,           // To signal an error of unknown type -- can this ever be used???
+      ArgTooBig,         // Argument too large in a numerical function
+      AssertFail,        // An assertion failed
+      BadArg,            // The arg(s) given are unsuitable
+      BadArraySize,      // Unsuitable array size (incompatible with other arguments)
+      BadCodomain,       // Supplied RingHom has wrong codomain
+    //      BadColIndex, // Column index too large in a matrix
+      BadCompose,        // Attempt to compose maps with differing domain and codomain
+    //      BadComptIndex,     // Index too large accessing component of ModuleElem
+      BadConvert,        // Unable to convert value
+    //      BadDegIndex, // Index too large accessing degree component
+      BadDomain,         // Supplied RingHom has wrong domain
+      BadGlobalSettings, // ambiguous, duplicate or incompatible global settings
+    //      BadIndetIndex,     // Indeterminate index too large in a polynomial ring
+      BadIndex,          // Index out of range
+      BadIndetNames,     // Duplicate indet names or varied number of indices for a single name
+      BadInducingHom,    // Inducing hom has wrong domain
+      BadInducingHom2,   // Inducing hom has wrong codomain
+      BadInducingHomKer, // Inducing hom has unsuitable kernel
+      BadMatrixSetEntry, // Attempt to set a matrix entry where this is forbidden
+      BadMatrixSize,     // Matrix of the wrong size for the requested operation
+      BadModulus,        // modulus must be at least 2 and fit into a long
+      BadNumBase,        // Base for number conversion must be between 2 and 36 (incl)
+      BadNumIndets,      // Wrong number of indet names when creating a PPMonoid or PolyRing
+      BadOpenMath,       // OpenMath input did not contain the expected tag
+      BadPPMonoid,       // PPMonoid supplied is not of the right type
+      BadPPMonoidHomArg, // Argument given to PPMonoidHom is not in the domain
+      BadProbability,    // Probability P must satisfy  0 <= P <= 1
+      BadPwrZero,        // Attempt to compute 0^N where N is not strictly positive
+      BadPolyRingHomImages,// Unsuitable indet images for creating PolyRing hom (wrong number or wrong ring)
+      BadQuot,           // Attempt to compute a quotient which does not exist in a given ring/monoid
+      BadQuotRing,       // Attempt to quotient by ideal(1)
+      BadRing,           // Used ring does not have required properties
+      BadRingHomArg,     // Argument given to a RingHom is in the wrong ring
+      BadPartialRingHomArg,// Partial RingHom is undefined for this argument
+    //      BadRowIndex, // Row index too large in a matrix
+      BadSmallFpChar,    // Characteristic (for small finite field) too large or not prime
+      BadSymbolHead,     // Invalid symbolic name head (with illegal characters)
+      BadSymbolSubscript,// Symbolic name: subscript too large or name does not have that many subscripts
+      BadSymbolRange,    // Incompatible names given to range
+    //      BLASFailed,        // A BLAS function failed
+      CannotReconstruct,
+      CanonicalHomFail,  // Unable to construct canonical homomorphism
+      ConstMatEntry,     // Cannot assign to constant matrix entry
+      DeadMemPool,       // Attempt to use a MemPool after it has been destroyed
+      DivByZero,         // Division by zero or a zero-divisor
+      ReqNonEmpty,       // List or vector must be non-empty
+      ReqCoeffsInField,  // Coefficient ring must be a field
+      EmbedBigRatFailed, // Cannot embed rational number into ring
+      ExpTooBig,         // Exponent is too large
+      ExternalLib,       // Error in external library
+      GlobalManager1,    // No GlobalManager object has been created
+      GlobalManager2,    // May not create more than one GlobalManager object
+      IdealNotInRing,    // Incompatible ring and ideal
+      IncompatArgs,      // Args given are incompatible
+      IncompatDims,      // Incompatible dimenions
+      InputFail,         // An input operation failed
+      InsuffPrec,        // Insufficient precision when using RingTwinFloat values
+    ////???            IntDivByNeg,       // Integer division/remainder by negative divisor
+      InvertibleRingElem,// Non-invertible RingElem required
+      IterEnded,         // Attempt to advance an iter which has already reached the end
+      LapackFailed,      // A Lapack driver failed
+    //      LogZero,           // Cannot compute log of zero
+      MemPoolZero,       // Cannot use MemPool to manage blocks of zero size
+      MissNumLibs,       // Numerical libraries not configured in
+      MixedCoeffRings,   // Arithmetic operation between polys with different coeff rings
+      MixedDegrees,      // Arithmetic operation between incompatible degrees
+      MixedModules,      // Arithmetic operation between elements of different modules
+      MixedPolyIters,    // Comparison between iterators over different polys
+      MixedPPMs,         // Arithmetic operation between elements of different PPMonoids
+      MixedRings,        // Arithmetic operation between elements of different rings
+    //      MixedSizes,        // Operation between objects with different size ==> IncompatDims
+    //      ModulusLT2,        // Modulus must be >= 2
+      NegExp,            // Negative exponent
+      NoGlobalMgr,       // GlobalManager must be created before using CoCoALib
+      NotCommutative,    // Ring must be commutative
+      NotDenseUPolyRing, // Ring must be a dense univariate polynomial ring, but is not
+      NotElemFrF,        // Operation makes sense only for elements of a fraction field
+      NotElemGCDDomain,  // Operation makes sense only for elements of a GCD domain
+      ReqElemPolyRing,   // Operation makes sense only for elements of a polynomial ring
+      NotElemQuotientRing,// Operation makes sense only for elements of a quotient ring
+      ReqElemSparsePolyRing,// Operation makes sense only for elements of a sparse polynomial ring
+      ReqChar0,          // Characteristic must be 0
+      ReqFGModule,       // Module must be Finitely Generated, but is not
+      ReqField,          // Ring must be a field, but is not
+      NotFracField,      // Ring must be a FractionField, but is not
+      ReqFreeModule,     // Module must be free, but is not
+      ReqFullRank,       // Matrix must be full rank, but is not
+      ReqModuleSpPR,     // Module must be on a SparsePolyRing, but is not
+      ReqHomog,          // Input must be homogeneous
+      ReqIndet,          // Expected an indeterminate
+      NotIntegralDomain, // Ring must be an integral domain, but is not
+      NotInvMatrix,      // Matrix is not invertible
+      ReqMonomialGens,   // Ideal must be generated by monomials
+      ReqNonNegative,    // Value must be non-negative
+      ReqNonNegativeGrading,// Grading is not non-negative
+      ReqOrdDom,         // Ring must be ordered, but is not
+      ReqPolyRing,       // Ring must be a polynomial ring, but is not
+      ReqPositive,       // Value is not positive
+      ReqPositiveGrading,// Grading is not positive
+      NotQuotientRing,   // Ring must be a quotient ring, but is not
+      NotRingTwinFloat,  // Operation valid only over RingTwinFloat
+      ReqSparsePolyRing, // Ring must be a sparse polynomial ring, but is not
+      ReqSquareMatrix,   // Matrix must be square, but is not
+      ReqTermOrdering,   // Ordering is not a term-ordering
+      NotTrueGCDDomain,  // Ring must be a true GCD domain (and not a field), but is not
+      NotUnit,           // Operation is valid only for invertible elements
+      ReqUnivariate,     // Polynomial is not univariate
+      ReqNonZero,        // Value must be non-zero
+      ReqNonZeroGradingDim, // GradingDim (grading dimension) is 0
+      ReqGradingDim1,    // GradingDim (grading dimension) must be 1
+      ReqNonZeroModulus, // Numerical operation specified a zero modulus
+      ReqNonZeroRingElem,// Non-zero RingElem required
+      ReqZeroDim,        // Ideal must be 0-dimensional
+      NullPtr,           // Null pointer passed where forbidden
+      NYI,               // NOT YET IMPLEMENTED
+      OBSOLESCENT,       // obsolescent fn called (to avoid this error give option AllowObsolescentFns to GlobalManager)
+      OutOfRange,        // Argument is out of range (too big or too small)
+      PolyIterEnded,     // Attempt to use an off-the-end iterator
+      PPOrder,           // PP is not in the right order
+      ShouldNeverGetHere,// Execution should never have reached here
+      TimedOut;          // Computation exceeded given time limit
+  }
+
+  /*-----------------------------------------------------------------*/
+  /** \include error.txt  */
+  /*-----------------------------------------------------------------*/
+  // Struct to allow error context to be passed to a fn
+  // (e.g. if several fns share the same arg checking code)
+  struct ErrorContext
+  {
+  public:
+    ErrorContext(const char* fn, const char* file, long line): FnName(fn), FileName(file), LineNum(line) {}
+  public: // data members
+    const char* FnName;
+    const char* FileName;
+    long LineNum;
+  };
+
+  std::ostream& operator<<(std::ostream& out, const ErrorContext& ErrCtx);
+
+// Macro to create temporary object to convey error context
+#define CoCoA_ERROR_CONTEXT  ::CoCoA::ErrorContext(__func__, __FILE__, __LINE__)
+
+
+
+  class ErrorInfo: public exception
+  {
+  public:
+    ErrorInfo(const std::string& mesg, const std::string& func);
+    ErrorInfo(const std::string& mesg, const ErrorContext& ErrCtx);
+    ErrorInfo(const std::string& mesg, const std::string& func, const char* file, unsigned long line);
+    ErrorInfo(ERR::ID id, const std::string& func);
+    ErrorInfo(ERR::ID id, const ErrorContext& ErrCtx);
+    ErrorInfo(ERR::ID id, const std::string& MoreDetails, const ErrorContext& ErrCtx);
+    ErrorInfo(ERR::ID id, const std::string& func, const char* file, unsigned long line);
+    ~ErrorInfo() {}
+///???    const ERR::ID& id() const { return myID; }
+    bool operator==(const ERR::ID& id) const noexcept { return myID == id; }
+    bool operator!=(const ERR::ID& id) const noexcept { return myID != id; }
+    void myOutputSelf(std::ostream& out) const override;
+  private: // Data members (incl. myMessage & myContext from CoCoA::exception)
+    friend void ANNOUNCE(std::ostream& out, const ErrorInfo& err);
+    const ERR::ID myID;
+    const std::string myFile;
+    const unsigned long myLine;
+  private: // impl detail
+    static std::string ourJoinTogether(const std::string& MainDescr, const std::string& MoreDetails);
+  };
+
+  std::ostream& operator<<(std::ostream& out, const ErrorInfo& err);
+  void ANNOUNCE(std::ostream& out, const ErrorInfo& err);
+
+
+// Macro to avoid having to type explicitly __FILE__ and __LINE__
+#define CoCoA_STATIC_ERROR_MESG(ErrName, ErrID, FnName)  static const ::CoCoA::ErrorInfo ErrName(ErrID, FnName, __FILE__, __LINE__)
+
+// Helpful Macro: create error obj and throw it (puts in file name and line num)
+// !!! NOT YET -- NEEDS MORE THOUGHT !!!   #define CoCoA_THROW_ERROR(ErrID, FnName)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, CoCoA_ERROR_CONTEXT))
+#define CoCoA_THROW_ERROR(ErrID, FnName)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, FnName, __FILE__, __LINE__))
+#define CoCoA_THROW_ERROR1(ErrID)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, CoCoA_ERROR_CONTEXT))
+#define CoCoA_THROW_ERROR2(ErrID, MoreDetails)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, MoreDetails, CoCoA_ERROR_CONTEXT))
+#define CoCoA_THROW_ERROR_WITH_CONTEXT2(ErrID, context)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, context))
+#define CoCoA_THROW_ERROR_WITH_CONTEXT3(ErrID, MoreDetails, context)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, MoreDetails, context))
+
+// Macro below is obsolete: remove it by Dec 2025
+#define CoCoA_ERROR  OBSOLETE___USE_CoCoA_THROW_ERROR
+
+  namespace ErrorLanguage
+  {
+    void english(); // Set english as the language for error messages.
+    void italian(); // Set italian as the language for error messages.
+  }
+
+
+
+} // end of namespace CoCoA
+
+
+
+// RCS header/log in the next few lines.
+// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/error.H,v 1.83 2024/09/04 15:13:25 bigatti Exp $
+// $Log: error.H,v $
+// Revision 1.83  2024/09/04 15:13:25  bigatti
+// Summary: Error codes: added ReqGradingDim1
+//
+// Revision 1.82  2024/09/04 14:41:16  bigatti
+// Summary: Error codes: removed MixedSizes (into IncompatDims),
+// removed BLASFailed, addes ExternalLibs,
+// changed ExpectedCoeffsInField into ReqCoeffsInField
+//
+// Revision 1.81  2024/08/28 15:21:55  bigatti
+// Summary: Error renamed: Not ==> ReqSquareMatrix, ReqFullRank, ReqTermOrdering
+//
+// Revision 1.80  2024/08/28 13:23:34  bigatti
+// Summary: added ReqZeroDim
+//
+// Revision 1.79  2024/08/01 16:45:30  bigatti
+// Summary: error codes: Req(Elem)SparsePolyRing
+//
+// Revision 1.78  2024/07/31 08:36:33  bigatti
+// Summary: error codes: ReqHomog
+//
+// Revision 1.77  2024/07/23 16:38:28  bigatti
+// Summary: error codes: ERR::ReqMonomialGens, and using new CoCoA_THROW_ERROR1/2
+//
+// Revision 1.76  2024/07/22 15:43:57  abbott
+// Summary: Renamed macros CoCoA_THROW_ERROR_WITH_CONTEXT so that last char is num of args
+//
+// Revision 1.75  2024/07/15 16:47:00  bigatti
+// Summary: Error codes:  added CoCoA_THROW_ERROR1(ErrID);
+// Removed BadRowIndex, BadColIndex;  Renamed  ERR::Empty --> ERR::ReqNonEmpty
+//
+// Revision 1.74  2024/07/14 10:27:51  abbott
+// Summary: Added new ctor with extra strig arg (MoreDetails); also new macro
+//
+// Revision 1.73  2024/07/11 15:42:41  bigatti
+// *** empty log message ***
+//
+// Revision 1.72  2024/07/03 15:58:59  bigatti
+// Summary: removed ERR::ModulusLT2 and changed Not to Req for module related errors
+//
+// Revision 1.71  2024/07/03 09:44:11  bigatti
+// Summary: error codes (redmine 92):
+// removed BadIntedIndex, BadDegIndex, BadComptIndex
+//
+// Revision 1.70  2024/07/02 20:42:06  abbott
+// Summary: Renaming of errors (redmine 308)
+//
+// Revision 1.69  2024/07/02 15:29:21  bigatti
+// Summary: Changed error codes: LogZero into ReqNonZero
+//
+// and Not... into ReqNonNegative, ReqNonNegativeGrading, ReqPositive, ReqPositiveGrading
+// Specialized some BadArg with explicit codes
+// Tidied up some CoCoA_THROW_ERROR second argument (string)
+//
+// Revision 1.68  2024/07/02 09:57:57  bigatti
+// Summary: error codes, first batch:
+// ReqUnivariate, ReqNonZero, ReqNonZeroGradingDim, ReqNonZeroModulus,  ReqNonZeroRingElem
+//
+// Revision 1.67  2023/02/23 20:52:00  abbott
+// Summary: Added new ErrorContext struct & macro
+//
+// Revision 1.66  2022/02/18 14:11:51  abbott
+// Summary: Updated copyright notice (now restrictive; see redmine 1555)
+//
+// Revision 1.65  2022/02/14 16:46:35  abbott
+// Summary: Corrected copyright year range
+//
+// Revision 1.64  2021/10/30 17:27:13  abbott
+// Summary: Used keyword override (redmine 1625)
+//
+// Revision 1.63  2021/02/10 19:32:01  abbott
+// Summary: Added noexcept (redmine 1572)
+//
+// Revision 1.62  2020/06/26 15:03:38  abbott
+// Summary: Put CoCoA_ERROR macro back in, but it deliberately gives compile-time error (hopefully with helpful message)
+//
+// Revision 1.61  2020/06/22 15:39:57  abbott
+// Summary: Added new macro CoCoA_STATIC_ERROR_MESG
+//
+// Revision 1.60  2020/06/19 19:42:59  abbott
+// Summary: Cleaned; removed cruft
+//
+// Revision 1.59  2020/06/19 19:39:21  abbott
+// Summary: Now all throws go through new template fn ThrowException; seems to work
+//
+// Revision 1.58  2020/06/19 14:51:45  abbott
+// Summary: Eliminated macro CoCoA_THROW (caused trouble)
+//
+// Revision 1.57  2020/06/17 19:02:27  abbott
+// Summary: Removed cruft; added comment
+//
+// Revision 1.56  2020/06/17 15:49:21  abbott
+// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
+//
+// Revision 1.55  2020/02/11 17:16:17  abbott
+// Summary: All mem fns like myOutput now return void (redmine 969)
+//
+// Revision 1.54  2018/04/18 14:14:08  abbott
+// Summary: Added new errors: IncompatArgs and NullPtr
+//
+// Revision 1.53  2018/03/20 11:38:52  bigatti
+// -- added error "ExpectedCoeffsInField"
+//
+// Revision 1.52  2018/03/14 14:30:22  abbott
+// Summary: Added new error OutOfRange
+//
+// Revision 1.51  2017/11/29 20:34:16  abbott
+// Summary: Added SturmSeq and NumRealRoots
+//
+// Revision 1.50  2017/09/06 14:02:41  abbott
+// Summary: Added new ERR::TimedOut; TimeoutException derives from ErrorInfo
+//
+// Revision 1.49  2017/09/06 11:56:28  abbott
+// Summary: Changed ERR::SERIOUS into ERR::ShouldNeverGetHere
+//
+// Revision 1.48  2017/07/22 12:57:42  abbott
+// Summary: Updated rtn type of myOutputSelf
+//
+// Revision 1.47  2017/05/11 08:46:46  bigatti
+// -- added error ERR::CannotReconstruct
+// -- cleaned up code accordingly
+//
+// Revision 1.46  2017/05/09 13:51:30  bigatti
+// -- changed BadRingHomArg2 --> BadPartialRingHomArg
+//
+// Revision 1.45  2016/11/04 20:40:03  abbott
+// Summary: Renamed ERR::OBSOLETE to ERR::OBSOLESCENT
+//
+// Revision 1.44  2016/11/03 12:29:58  abbott
+// Summary: Added file for obsolescent fns; also there is a global flag saying whether to give error if calling one.
+//
+// Revision 1.43  2015/06/26 14:57:00  abbott
+// Summary: Now ErrorInfo derives from CoCoA::exception
+// Author: JAA
+//
+// Revision 1.42  2014/07/10 14:33:42  abbott
+// Summary: Removed unused error code NotRingZ (or NotRingZZ, there was a typo!)
+// Author: JAA
+//
+// Revision 1.41  2014/01/29 17:01:22  abbott
+// Summary: Removed rather pointless "(no message)" default string for message associated to an error code
+// Author: JAA
+//
+// Revision 1.40  2013/05/27 17:07:00  bigatti
+// -- new name for error of FreeModule over SparsePolyRing
+//
+// Revision 1.39  2013/05/20 15:58:17  abbott
+// Added new error code NotPositive.
+//
+// Revision 1.38  2013/02/21 16:56:49  bigatti
+// -- added ERR:Empty
+//
+// Revision 1.37  2013/02/13 09:08:58  bigatti
+// -- added ZeroGradingDim
+//
+// Revision 1.36  2013/01/21 13:37:29  abbott
+// Added new error IncompatDims.
+//
+// Revision 1.35  2012/05/24 14:53:35  bigatti
+// -- changed symbol "index" into "subscripts"
+//
+// Revision 1.34  2012/05/22 10:02:37  abbott
+// Removed IsGCDDomain; substituted by IsTrueGCDDomain.
+// Added IsFractionFieldOfGCDDomain.
+//
+// Revision 1.33  2012/03/26 11:51:35  abbott
+// Rephrased error message associated with ERR::NotIndet.
+//
+// Revision 1.32  2012/03/16 15:51:35  abbott
+// Added new error NotNonZero.
+//
+// Revision 1.31  2011/08/24 10:22:45  bigatti
+// -- renamed QQ --> BigRat
+//
+// Revision 1.30  2011/06/23 16:02:26  abbott
+// Minor changes to two error message strings.
+//
+// Revision 1.29  2011/05/03 09:54:44  abbott
+// Changed macro arg name (to improve readability).
+//
+// Revision 1.28  2011/03/16 13:22:43  abbott
+// Added new error "BadModulus".
+//
+// Revision 1.27  2011/01/19 16:13:06  bigatti
+// -- added ERR::ModulusLT2
+//
+// Revision 1.26  2010/12/17 16:09:15  abbott
+// Changed interface to ANNOUNCE function: now it requires the ostream to passed in.
+// A few other minor changes.
+//
+// Revision 1.25  2010/10/22 14:03:04  abbott
+// Major change to GMPAllocator -- it is now set/activated by the GlobalManager.
+// This is a Friday afternoon check-in... hope to check in cleaner code in the
+// next few days.
+//
+// Revision 1.24  2010/07/09 17:05:01  abbott
+// Added new error for PPMonoid homs.
+//
+// Revision 1.23  2010/04/27 16:07:50  bigatti
+// -- added 2 error messages for DynamicBitset
+//
+// Revision 1.22  2010/03/18 13:54:42  abbott
+// Added new error for OpenMath input problems.
+//
+// Revision 1.21  2010/02/03 12:02:44  bigatti
+// -- added NotMonomialGens
+//
+// Revision 1.20  2009/12/23 18:53:52  abbott
+// Major change to conversion functions:
+//   convert(..) is now a procedure instead of a function
+//   IsConvertible(..) replaces the former convert(..) function
+//   Added new NumericCast conversion function (placeholder for BOOST feature)
+//   Consequent changes in code which uses these features.
+//
+// Revision 1.19  2009/12/11 11:46:32  abbott
+// Changed fn  convert  into  IsConvertible.
+// Added template procedure  convert.
+// New version because change is not backward compatible.
+//
+// Revision 1.18  2009/12/03 17:26:35  abbott
+// Renamed EFGModule to FGModule.
+// Renamed ModuleBase member fns  myInit -> myNew, myKill -> myDelete.
+// Removed some cruft (old code that was not used by anyone).
+//
+// Revision 1.17  2009/10/29 18:47:58  abbott
+// Added IterEnded error code.
+//
+// Revision 1.16  2009/07/02 16:32:11  abbott
+// Consequential changes stemming from new class QQ, and modified interface to the member
+// function RingBase::myIsRational.  Also some new conversion functions.
+//
+// Revision 1.15  2009/05/20 14:25:30  abbott
+// Added new error for InputFailCheck.
+//
+// Revision 1.14  2008/12/16 21:11:43  abbott
+// Improved error message for bad symbol index -- there are two possible causes.
+//
+// Revision 1.13  2008/10/08 13:54:05  abbott
+// New minor version to reflect the backward-incompatible changes to CoCoA errors.
+//
+// Revision 1.12  2008/10/08 09:48:19  abbott
+// Final(?) minor refinement to CoCoA::ERR:ID internal layout.
+//
+// Revision 1.11  2008/10/07 15:45:22  abbott
+// Changed ErrorInfo objects so they include the name of their own error ID.
+// Changed catch statements to catch const objects.
+// Removed calls to the member fn which accessed the error ID member of an
+// ErrorInfo; now you simply compare directly with the error ID (makes the
+// code easier to read).
+//
+// Revision 1.10  2008/06/30 17:21:08  abbott
+// Added ugly workaround for Solaris ERR bug.
+//
+// Revision 1.9  2008/04/21 12:51:53  abbott
+// Added some new error codes.
+//
+// Revision 1.8  2008/03/12 16:35:18  bigatti
+// -- changed: IsHomogeneous --> IsHomog
+// -- changed: ERR:ZeroPoly --> ERR::ZeroRingElem
+//
+// Revision 1.7  2007/10/30 17:14:11  abbott
+// Changed licence from GPL-2 only to GPL-3 or later.
+// New version for such an important change.
+//
+// Revision 1.6  2007/10/05 14:35:16  bigatti
+// -- added error: NotDenseUPolyRing
+//
+// Revision 1.5  2007/09/24 14:18:07  abbott
+// Changed layout of comments.
+//
+// Revision 1.4  2007/06/21 21:29:47  abbott
+// Changed name of RingFloat into RingTwinFloat.
+//
+// Revision 1.3  2007/05/21 12:57:28  abbott
+// New class for passing machine integers as args; includes some simple
+// operations on machine integers (cmp, gcd, IsNegative,...).  Operations
+// between ZZ and machine integers modified to use the new class.  Inexact
+// integer division (of a ZZ) by a negative value now triggers an error;
+// new error for reporting inexact integer division by a negative value.
+//
+// Revision 1.2  2007/03/28 10:06:13  abbott
+// Now gives error when you use RingZ() or RingQ() without creating GlobalManager.
+//
+// Revision 1.1.1.1  2007/03/09 15:16:11  abbott
+// Imported files
+//
+// Revision 1.13  2007/03/08 11:07:12  cocoa
+// Made pseudo ctors for polynomial rings more uniform.  This allowed me to
+// remove an include of CoCoA/symbol.H  from the RingDistrM*.H files, but then
+// I had to put the include in several .C files.
+//
+// Revision 1.12  2007/03/05 21:34:36  cocoa
+// Ooops, forgot to check these in a few mins ago.  Revised names for hom pseudo-ctors; new error
+// for CanonicalHom.
+//
+// Revision 1.11  2007/03/05 16:17:11  bigatti
+// -- clenup for numerical code (and 3 new error codes)
+//
+// Revision 1.10  2007/03/03 14:07:23  bigatti
+// -- "foundations" renamed into "GlobalManager"
+//
+// Revision 1.9  2007/03/02 10:47:53  cocoa
+// First stage of RingZ modifications -- tests do not compile currently, Anna will fix this.
+//
+// Revision 1.8  2007/02/12 17:40:19  bigatti
+// -- added MissNumLibs
+//
+// Revision 1.7  2007/01/13 14:14:34  cocoa
+// Overhaul of RingHom code: it nows uses SmartPtrIRC, and printing is more logical.
+// Have not yet updated the documentation.
+//
+// Revision 1.6  2006/12/21 13:46:54  cocoa
+// Improved layout; added one new error code.
+//
+// Revision 1.5  2006/12/06 17:17:44  cocoa
+// -- removed #include "config.H"
+//
+// Revision 1.4  2006/10/06 10:10:15  cocoa
+// Corrected a comment.  Corrected position of #ifndef etc.
+//
+// Revision 1.3  2006/08/07 21:23:25  cocoa
+// Removed almost all publicly visible references to SmallExponent_t;
+// changed to long in all PPMonoid functions and SparsePolyRing functions.
+// DivMask remains to sorted out.
+//
+// Revision 1.2  2006/07/17 19:16:53  cocoa
+// New, better errors :-)
+//
+// Revision 1.1.1.1  2006/05/30 11:39:36  cocoa
+// Imported files
+//
+// Revision 1.6  2006/04/14 13:51:40  cocoa
+// Added a class for generating random bits (RandomBitStream in the file random.H).
+//
+// Revision 1.5  2006/04/07 16:44:52  cocoa
+// Considerably updated MemPool design -- it works, and I'm about to test
+// its efficiency against the old one.
+//
+// Revision 1.4  2006/04/04 13:01:02  cocoa
+// -- added: NotNonNegativeGrading, NotPositiveGrading
+//
+// Revision 1.3  2006/03/27 12:21:26  cocoa
+// Minor silly changes to reduce number of complaints from some compiler or other.
+//
+// Revision 1.2  2005/11/24 16:09:38  cocoa
+// -- added operator[] for ModuleElem
+//
+// Revision 1.1.1.1  2005/10/17 10:46:54  cocoa
+// Imported files
+//
+// Revision 1.8  2005/09/28 11:50:35  cocoa
+// -- new code for graded modules
+//
+// Revision 1.7  2005/08/08 16:36:32  cocoa
+// Just checking in before going on holiday.
+// Don't really recall what changes have been made.
+// Added IsIndet function for RingElem, PPMonoidElem,
+// and a member function of OrdvArith.
+// Improved the way failed assertions are handled.
+//
+// Revision 1.6  2005/07/19 15:30:20  cocoa
+// A first attempt at iterators over sparse polynomials.
+// Main additions are to SparsePolyRing, DistrMPoly*.
+// Some consequential changes to PPMonoid*.
+//
+// Revision 1.5  2005/07/15 16:34:33  cocoa
+// Added iterators for sparse polynomials.
+// The code compiles (and the old tests still run).
+// It'd Friday evening -- I'm going home before
+// getting any ideas about making the iterator code run.
+//
+// Revision 1.4  2005/07/08 15:09:29  cocoa
+// Added new symbol class (to represent names of indets).
+// Integrated the new class into concrete polynomial rings
+// and PPMonoid -- many consequential changes.
+// Change ctors for the "inline" sparse poly rings: they no
+// longer expect a PPMonoid, but build their own instead
+// (has to be a PPMonoidOv).
+//
+// Revision 1.3  2005/07/01 16:08:16  cocoa
+// Friday check-in.  Major change to structure under PolyRing:
+// now SparsePolyRing and DUPolyRing are separated (in preparation
+// for implementing iterators).
+//
+// A number of other relatively minor changes had to be chased through
+// (e.g. IndetPower).
+//
+// Revision 1.2  2005/06/27 14:55:24  cocoa
+// Cleaned up some more PPMonoid code.
+//
+// Revision 1.1.1.1  2005/05/03 15:47:30  cocoa
+// Imported files
+//
+// Revision 1.8  2005/04/29 15:42:02  cocoa
+// Improved documentation for GMPAllocator.
+// Added example program for GMPAllocator.
+// Added example program for simple ops on polynomials.
+// Added two new ctors for (principal) ideals (from long, and from ZZ).
+// Added (crude) printing for PPMonoids.
+// Updated library.H (#included GMPAllocator.H).
+//
+// Revision 1.7  2005/04/27 16:14:56  cocoa
+// Cleaned up example programs -- added "free use" permit.
+// Changed a couple of ErrorInfo object names, and added
+// ERR::NotTrueGCDDomain.
+//
+// Revision 1.6  2005/04/20 15:40:48  cocoa
+// Major change: modified the standard way errors are to be signalled
+// (now via a macro which records filename and line number).  Updated
+// documentation in error.txt accordingly.
+//
+// Improved the documentation in matrix.txt (still more work to be done).
+//
+// Revision 1.5  2005/04/19 14:06:04  cocoa
+// Added GPL and GFDL licence stuff.
+//
+// Revision 1.4  2005/03/11 16:44:18  cocoa
+// New abstract class structure for matrices.
+// New types of special matrix.
+//
+// Revision 1.3  2005/03/02 18:46:41  cocoa
+// Added new types ConstRefMatrix, and RefMatrix following along
+// the lines of ConstRefRingElem and RefRingElem.  The semantics
+// should be a bit clearer now.
+//
+// Revision 1.2  2005/02/22 12:50:40  cocoa
+// -- added: NotFullRank, NotIntDom, NotTermOrdering
+//
+// Revision 1.1.1.1  2005/01/27 15:12:13  cocoa
+// Imported files
+//
+// Revision 1.19  2004/11/25 16:14:21  cocoa
+// (1) Fixed definition of specialization of std::swap template function
+//     so that it compiles with gcc 3.4.3
+// (2) Implemented monomial function for polynomial rings.
+// (3) Added one(PPM) and PPM->myOne() functions.
+//
+// Revision 1.18  2004/11/19 17:43:50  cocoa
+// -- added matrix related errors
+//
+// Revision 1.17  2004/11/19 16:15:51  cocoa
+// (a) Removed unused error message about degree of zero;
+//     replaced it by a more general message about needing a
+//     non-zero polynomial (for various ops such as LC, LPP).
+// (b) Added some missing arg checking in LC, LPP and deg
+//     (for elems of a PolyRing).
+// (c) Updated some commented out code in GPair and GPoly.
+//
+// Revision 1.16  2004/11/19 15:14:09  cocoa
+// (a) Added new check to MemPool so that it can signal an
+//     error if one tries to use a MemPool after it has been
+//     destroyed.
+// (b) Improved makefile in TEST/ so that it checks output,
+//     and prints useful messages if the test fails.
+// (c) Tidied ring.txt a bit (still more to do).
+//
+// Revision 1.15  2004/11/12 15:49:29  cocoa
+// Tidying prior to 0.90 release.
+// (a) documentation improved (or marked as poor)
+// (b) sundry minor improvements to the code
+//
+// Revision 1.14  2004/11/11 14:16:37  cocoa
+// -- added \include *.txt for doxygen
+//
+// Revision 1.13  2004/11/11 11:56:09  cocoa
+// (1) Tidied makefiles, and introduced common.mki
+// (2) Improved several tests, and cleaned them so that they
+//     handle sanely any otherwise unhandled exceptions.
+//
+// Revision 1.12  2004/11/09 15:53:56  cocoa
+// -- added BadQuotRing("Attempt to quotient by ideal(1)")
+//
+// Revision 1.11  2004/11/05 15:37:56  cocoa
+// Added a couple of new errors.
+//
+// Revision 1.10  2004/11/03 18:01:55  cocoa
+// -- clarified behaviour of error()
+// -- added ANNOUNCE function
+// -- minor tidying
+//
+// Revision 1.8  2004/07/27 16:03:38  cocoa
+// Added IsCommutative test and IamCommutative member function
+// to all rings.  Tidied geobuckets a little.
+//
+// Revision 1.7  2004/07/20 15:04:06  cocoa
+// The next step in the new "ring element" conversion process:
+// handling the case of creating a "const RefRingElem" object
+// (since C++ refuses to do this properly itself).
+//
+// Revision 1.6  2004/07/14 16:40:42  cocoa
+// Separated RingFpLog from its implementation which now resides in
+// a new class: SmallFpLogImpl.  This is analogous to the change made
+// to RingFp yesterday.
+//
+// Some tidying and other sundry minor changes.
+//
+// Revision 1.5  2004/07/13 16:32:26  cocoa
+// First stage of major revamp of ring elements.
+// Implementation of RingFp has been split into "ring interface"
+// and "algorithms plus data structures".
+//
+// Revision 1.4  2004/06/29 17:10:22  cocoa
+// Partially tidied use of "protected" and "private" in various
+// base classes.  Checking in at the end of the day -- it works,
+// and I wouldn't want it to be lost next time point's disk
+// misbehaves.
+//
+// Revision 1.3  2004/05/27 16:14:02  cocoa
+// Minor revision for new coding conventions.
+//
+// Revision 1.2  2004/05/24 15:52:13  cocoa
+// Major update:
+//   new error mechanism
+//   many fixes
+//   RingHoms almost work now
+//   RingFloat much improved
+//
+// Revision 1.1.1.1  2003/09/24 12:55:43  cocoa
+// Imported files
+//
+// Revision 1.5  2003/06/23 16:15:05  abbott
+// Minor cleaning prior to public release.
+//
+// Revision 1.4  2002/11/13 15:37:49  abbott
+// Added a second field to CoCoAError to allow the location of an
+// error to be indicated.  Also a new accessor function "where" to
+// read the new field, and a query function saying whether the new
+// field has a non-trivial value (HasLocation).  The old constructor
+// remains, and is joined by a new one allowing the location field
+// to be specified.
+//
+// Revision 1.3  2002/01/25 15:16:59  abbott
+// Added class CoCoAError as a temporary solution; the standard library
+// exception classes do not seem to offer what we need.
+//
+// Revision 1.2  2001/12/07 15:56:48  abbott
+// error function now takes an exception as an argument, instead of a string.
+//
+// Revision 1.1  2001/11/26 19:13:24  abbott
+// Initial revision
+//
+
+#endif

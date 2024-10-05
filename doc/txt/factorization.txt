@@ -1,0 +1,128 @@
+      factorization
+      Copyright (c)  2012,2014 John Abbott, Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{factorization}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-factor1.C ../../examples/index.html#ex-factor1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+In CoCoALib ``factorization`` is a template class for representing
+(partial) factorizations.  Conceptually it comprises a **list of factors**
+and **their multiplicities**, and an extra **remaining factor** (which may be,
+for instance, an unfactorized part, or an invertible element).
+
+The class itself imposes few conditions: the factors in the list
+cannot be invertible or zero-divisors, and their multiplicities are
+all positive.  The remaining factor is a non-zero-divisor.  The exact
+characteristics of the factors depend on the function which generated
+the ``factorization``.  Naturally, the vectors returned by
+``myFactors`` and ``myMultiplicities`` will be of the same length.
+In particular, an **empty factorization is permitted** (//i.e.// with empty
+lists of factors and multiplicities).
+
+
+See also: the functions ``factor``, ``SqFreeFactor``, ``ContentFreeFactor`` (in section [[factor]]),
+and the functions ``factor`` (in section [[NumTheory]])
+
+
+=== Constructor ===
+%=======================================================
+
+- ``factorization(RemFactor)`` specifies an initial remaining factor, the factor/multiplicity lists are empty
+- ``factorization(facs, mults, RemFactor)`` specifies initial values for the 3 components
+
+
+
+=== Accessors ===[accessors]
+
+Let ``FactorInfo`` be of type ``factorization<T>``.  These are the accessor functions:
+- ``FactorInfo.myFactors()`` all the factors as a ``std::vector<T>`` (read-only)
+- ``FactorInfo.myMultiplicities()`` all the multiplicities as a ``std::vector<long>`` (read-only)
+- ``FactorInfo.myRemainingFactor()`` the remaining factor (read-only)
+
+
+For **better readability of code** using ``factorization`` we recommend using const ref
+aliases for the lists of factors and multiplicities; for instance
+```
+  const factorization<RingElem> FactorInfo = factor(f);
+  const vector<RingElem>& facs = FactorInfo.myFactors();
+  const vector<long>& mults = FactorInfo.myMultiplicities();
+  ...
+  // code using the arrays "facs" and "mults"
+```
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``FactorInfo`` be of type ``factorization<T>``.  These are the operations available:
+- ``FactorInfo.myAppend(fac, mult)`` appends a new factor with its multiplicity
+- ``FactorInfo.myNewRemainingFactor(RemFactor)`` sets ``RemFactor`` as the remaining factor
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+Being template code it's all in the header file.
+It's mostly fairly straightfoward.
+
+The main point to note is that ``ourCheckNotZeroDiv`` and ``ourCheckNotUnit``
+need to be written by hand for each instantiation -- this is enforced by the
+absence of a default template impl.  **Note that** the impls for ``DUPFp`` are
+defined in the file ``DUPFp.H``.
+
+The fn ``ourCheckCompatibility`` is needed for ``RingElem`` but not for other
+types (so the default impl is empty).  It simply checks that all the factors
+belong to the same ring (equiv. that they belong to ring of ``myRemainingFactorValue``).
+
+
+
+In CoCoALib there are just 4 instantiations of this template:
+- ``factorization<BigInt>`` for the fns ``factor`` & ``factor_TrialDiv`` & ``factor_PollardRho`` in ``NumTheory``
+- ``factorization<RingElem>`` for the fns ``factor`` and ``SqFreeFactor`` and ``ContentFreeFactor`` in ``PolyRing`` (actually ``TmpFactor``)
+- ``factorization<long>``
+- ``factorization<DUPFp>``
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+It would be safer to have pairs of factor-and-multiplicity rather than
+two separate vectors whose length must be the same.  However it may be
+less convenient for the user.
+
+Maybe add fn to get length of a ``factorization``? (same as length of ``myFactors()``)
+
+Maybe add fn to get ring of a ``factorization<RingElem>``?
+
+Maybe add fn to change the multiplicity of a factor?
+
+Bruns questioned the necessity of the restriction that factors be
+non-zero-divisiors and non-units.  JAA prefers to apply these restrictions
+for the time being, because it will be easier to relax the restrictions
+later than it would be to tighten them (might break some existing code).
+
+Bruns/Soeger asked whether requiring all factors to be in the same ring
+is necessary (esp. once CoCoA allows arithmetic between different rings).
+They cite the example of factors in ZZ[x] and remaining factor in QQ.
+
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- March: fields are now private: new accessor fns; new append fn, and new fn to update rem factor
+
+
+**2012**
+- October: chose "myMultiplicities" rather than "myExponents" as the field name.
+- April: first version of doc (v0.9950)
+

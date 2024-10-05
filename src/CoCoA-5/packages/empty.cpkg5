@@ -1,0 +1,26 @@
+package $empty; -- same name as the file (not necessary, but nice)
+
+-- All functions are public with package prefix: e.g. $empty.EmptyFn3(99);
+-- Export functions for *direct* public use: i.e. without prefix:
+-- e.g.  EmptyFn2()  instead of  $empty.EmptyFn2()
+
+export EmptyFn1;
+export EmptyFn2;
+
+----------------------------------------------------------------------
+-- put your code here ------------------------------------------------
+  
+define EmptyFn1(A, B)
+  print "EmptyFn1: just for demo (see packages/empty.cpkg5)";
+enddefine; -- EmptyFn1
+
+define EmptyFn2()
+  print "EmptyFn2: just for demo (see packages/empty.cpkg5)";
+enddefine; -- EmptyFn2
+
+define EmptyFn3(N)
+  print "EmptyFn3: just for demo (see packages/empty.cpkg5)";
+enddefine; -- EmptyFn3
+
+----------------------------------------------------------------------
+endpackage;

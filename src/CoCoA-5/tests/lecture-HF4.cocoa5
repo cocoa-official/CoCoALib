@@ -1,0 +1,337 @@
+----------------------------------------------------------------------
+-- Hilbert Functions 4
+-- Multigraded Hilbert Functions  and  diophantine systems
+----------------------------------------------------------------------
+
+use P ::= QQ[x,y,z];
+I := ideal(x^3, x*y, y*z^2);
+HilbertSeries(P/I);
+
+Qab ::= QQ[a,b];
+FieldQab := NewFractionField(Qab);
+phi := CanonicalHom(Qab, FieldQab);
+
+-- a 2-grading with whose first row is standard
+W := mat([[1,1,1], [1,2,0]]);
+P := NewPolyRingWeights(QQ, "x,y,z", W);
+use P;
+I := ideal(BringIn(gens(I)));
+
+HS := HilbertSeries(P/I);  HS;
+
+-- convert the internal format into a rational functions
+N := $hp.HSNumToPoly(Qab, HS);
+D := $hp.HSDenToPoly(Qab, HS);
+HS_W := phi(N)/phi(D);  HS_W;
+
+-- a 2-grading with whose first row is not standard
+A := [[2,1], [1,1]];
+AW := mat(A) * W;   AW;
+P := NewPolyRingWeights(QQ, "x,y,z", AW);
+use P;
+I := ideal(BringIn(gens(I)));
+use Qab;
+HilbertSeries(P/I);
+
+N := $hp.HSNumToPoly(Qab, HS);
+D := $hp.HSDenToPoly(Qab, HS);
+HS_AW := phi(N)/phi(D);  HS_AW;
+
+
+-- CHANGE OF GRADING
+-- Proposition
+-- HS_AW(a, b) = HS_W(a^A[1,1]*b^A[2,1],  a^A[1,2]*b^A[2,2])
+
+HS_AW;
+use FieldQab;
+L := [[a,  a^A[1,1] * b^A[2,1]],
+      [b,  a^A[1,2] * b^A[2,2]]];
+L;
+subst(HS_W, L);
+
+-- aside: Subst greates this homomorphism
+-- phi := PolyAlgebraHom(Qab, Qab,
+--                    [a^A[1,1] * b^A[2,1],
+--                     a^A[1,2] * b^A[2,2]]);
+phi := PolyAlgebraHom(Qab, FieldQab,
+                      [a^A[1,1] * b^A[2,1],
+                       a^A[1,2] * b^A[2,2]]);
+psi := InducedHom(FieldQab, phi);
+
+-- EXERCISE
+-- compute the Hilbert Series with respect to:
+--   mat([[-1,-1,-1], [-1,2,0]]);  -- Not positive grading!
+--   mat([[-1,-1,-1]]);  -- Not positive grading!
+--   mat([[0,3,1], [1,-2,0]]);  -- positive, but not accepted by cocoa-4
+--   identity(3);
+-- compare with
+  use P ::= QQ[x,y,z];
+  I := ideal(BringIn(gens(I)));
+////////  HilbertSeriesMultiDeg(P/I, W);
+
+----------------------------------------------------------------------
+
+-- TORIC IDEALS
+
+-- Some examples first!
+
+L := [3, 4, 5];
+-- compute the kernel of the homomorphism QQ[x,y,z] --> QQ[t]
+-- x -> t^3,  y -> t^4,  z -> t^5
+
+-- In general we need to compute an elimination
+use QQ[x[1..3],  t];
+// elim([t], ideal([ x[I] - t^L[I] | I In 1..3]));
+elim([t], ideal([ x[I] - t^L[I] | I in 1..3])) =
+ideal(x[2]^2 -x[1]*x[3], -x[1]^2*x[2] +x[3]^2, -x[1]^3 +x[2]*x[3]);
+
+-- With monomial images we use Toric
+use QQ[x[1..3]];
+// toric(RowMat(L));
+toric(RowMat(L)) =
+ideal(x[2]^2 -x[1]*x[3], -x[1]^2*x[2] +x[3]^2, -x[1]^3 +x[2]*x[3]);
+-- the generators form a Groebner basis wrt some ordering (don't know which!)
+
+M := mat([[0,1,2,3], [3,2,1,0]]);
+-- compute the kernel of the homomorphism QQ[x[1..4]] --> QQ[s,t]
+-- x[1] -> s^3,  x[2] -> s^2*t,  x[3] -> s*t^2,  x[4] -> t^3
+-- (twisted cubic)
+use QQ[x[1..4]];
+toric(M)
+= ideal(-x[2]*x[3] +x[1]*x[4], -x[3]^2 +x[2]*x[4], x[2]^2 -x[1]*x[3]);
+
+----------------------------------------------------------------------
+-- HILBERT BASES
+
+A := mat([[3, -5, 4]]);
+HilbertBasisKer(A);
+
+define LawrenceLifting(A)
+  R := RingOf(A);
+  N := NumCols(A);
+  return BlockMat2x2(     A,       ZeroMat(R, NumRows(A), N),
+                     IdentityMat(R, N),   IdentityMat(R, N));
+enddefine; -- LawrenceLifting
+
+-- compute the non-negative integer solutions of  A*x = 0
+LLA := LawrenceLifting(A);  LLA;
+
+use Qxw ::= QQ[x[1..NumCols(A)], w[1..NumCols(A)]];
+
+T := toric(LLA);
+T = ideal(
+  x[2]*x[3]^2*w[1] -x[1]*w[2]*w[3]^2,
+  x[1]^2*x[2]^2*x[3] -w[1]^2*w[2]^2*w[3],
+  -x[3]*w[1]^3*w[2] +x[1]^3*x[2]*w[3],
+  x[3]^3*w[1]^4 -x[1]^4*w[3]^3,
+  x[1]*x[2]^3*x[3]^3 -w[1]*w[2]^3*w[3]^3,
+  x[1]^5*x[2]^3 -w[1]^5*w[2]^3,
+  x[2]^4*x[3]^5 -w[2]^4*w[3]^5
+          );
+
+PW := product(indets(CurrentRing, "w"));  PW;
+
+PrimitiveSeparatedBinomials := [ B in ReducedGBasis(T) | gcd(LT(B), PW) = 1];
+//indent(PrimitiveSeparatedBinomials);
+EqSet(PrimitiveSeparatedBinomials,
+      [
+      x[1]^2*x[2]^2*x[3] -w[1]^2*w[2]^2*w[3],
+      x[1]*x[2]^3*x[3]^3 -w[1]*w[2]^3*w[3]^3,
+      x[1]^5*x[2]^3 -w[1]^5*w[2]^3,
+      x[2]^4*x[3]^5 -w[2]^4*w[3]^5
+      ]);
+
+H := [ first(exponents(LPP(B)), NumCols(A)) | B in PrimitiveSeparatedBinomials];
+//indent(H);
+EqSet(H,
+      [
+      [2, 2, 1],
+      [1, 3, 3],
+      [5, 3, 0],
+      [0, 4, 5]
+      ]);
+--------------------------------------------------
+B := mat([[2, 5, 3]]);
+-- compute the non-negative integer solutions of  B*x = 11
+A := mat([[2, 5, 3, -11]]);
+-- i.e. the non-negative integer solutions of A*x = 0 with x[4]=1
+LLA := LawrenceLifting(A);  LLA;
+
+use QQ[x[1..NumCols(A)], w[1..NumCols(A)]];
+
+T := toric(LLA); // indent(T);
+T = ideal(
+  x[1]*x[3]*w[2] -x[2]*w[1]*w[3],
+  x[2]*x[3]^2*x[4] -w[2]*w[3]^2*w[4],
+  -x[3]^2*w[1]^3 +x[1]^3*w[3]^2,
+  -x[2]^2*x[3]*x[4]*w[1] +x[1]*w[2]^2*w[3]*w[4],
+  x[1]^3*x[2]*x[4] -w[1]^3*w[2]*w[4],
+  x[1]*x[3]^3*x[4] -w[1]*w[3]^3*w[4],
+  -x[2]^3*x[4]*w[1]^2 +x[1]^2*w[2]^3*w[4],
+  -x[2]*x[3]*w[1]^4 +x[1]^4*w[2]*w[3],
+  x[1]^4*x[3]*x[4] -w[1]^4*w[3]*w[4],
+  x[1]^2*x[2]^2*x[4]*w[3] -x[3]*w[1]^2*w[2]^2*w[4],
+  -x[3]^3*w[1]^2*w[2] +x[1]^2*x[2]*w[3]^3,
+  x[1]*x[2]^4*x[4]^2 -w[1]*w[2]^4*w[4]^2,
+  -x[3]^4*w[1]*w[2]^2 +x[1]*x[2]^2*w[3]^4,
+  -x[2]^2*w[1]^5 +x[1]^5*w[2]^2,
+  x[1]*x[2]^3*x[4]*w[3]^2 -x[3]^2*w[1]*w[2]^3*w[4],
+  -x[3]^5*w[2]^3 +x[2]^3*w[3]^5,
+  x[2]^5*x[4]^2*w[3] -x[3]*w[2]^5*w[4]^2,
+  -x[3]^5*x[4]*w[1]^2 +x[1]^2*w[3]^5*w[4],
+  x[1]^2*x[2]^3*x[3]*x[4]^2 -w[1]^2*w[2]^3*w[3]*w[4]^2,
+  x[2]^4*x[4]*w[3]^3 -x[3]^3*w[2]^4*w[4],
+  x[1]^7*x[4]*w[3] -x[3]*w[1]^7*w[4],
+  -x[3]^6*x[4]*w[1]*w[2] +x[1]*x[2]*w[3]^6*w[4],
+  x[1]^8*x[4]*w[2] -x[2]*w[1]^8*w[4],
+  -x[3]^7*x[4]*w[2]^2 +x[2]^2*w[3]^7*w[4],
+  x[2]^6*x[3]*x[4]^3 -w[2]^6*w[3]*w[4]^3,
+  -x[3]^8*x[4]^2*w[1] +x[1]*w[3]^8*w[4]^2,
+  -x[2]^7*x[4]^3*w[1] +x[1]*w[2]^7*w[4]^3,
+  -x[3]^9*x[4]^2*w[2] +x[2]*w[3]^9*w[4]^2,
+  x[1]^11*x[4]^2 -w[1]^11*w[4]^2,
+  x[3]^11*x[4]^3 -w[3]^11*w[4]^3,
+  x[2]^11*x[4]^5 -w[2]^11*w[4]^5
+          );
+
+W := product(indets(CurrentRing, "w"));
+
+PrimitiveSeparatedBinomials := [ B in ReducedGBasis(T) | gcd(LT(B),W) = 1];
+//indent(PrimitiveSeparatedBinomials);
+EqSet(PrimitiveSeparatedBinomials,
+      [
+      x[2]*x[3]^2*x[4] -w[2]*w[3]^2*w[4],
+      x[1]*x[3]^3*x[4] -w[1]*w[3]^3*w[4],
+      x[1]^3*x[2]*x[4] -w[1]^3*w[2]*w[4],
+      x[1]^4*x[3]*x[4] -w[1]^4*w[3]*w[4],
+      x[1]*x[2]^4*x[4]^2 -w[1]*w[2]^4*w[4]^2,
+      x[1]^2*x[2]^3*x[3]*x[4]^2 -w[1]^2*w[2]^3*w[3]*w[4]^2,
+      x[2]^6*x[3]*x[4]^3 -w[2]^6*w[3]*w[4]^3,
+      x[1]^11*x[4]^2 -w[1]^11*w[4]^2,
+      x[3]^11*x[4]^3 -w[3]^11*w[4]^3,
+      x[2]^11*x[4]^5 -w[2]^11*w[4]^5
+      ]);
+  
+H := [ first(exponents(LPP(B)), NumCols(A)) | B in PrimitiveSeparatedBinomials];
+//indent(H);
+  EqSet(H,
+	[
+	[0, 1, 2, 1],
+	[1, 0, 3, 1],
+	[3, 1, 0, 1],
+	[4, 0, 1, 1],
+	[1, 4, 0, 2],
+	[2, 3, 1, 2],
+	[0, 6, 1, 3],
+	[11, 0, 0, 2],
+	[0, 0, 11, 3],
+	[0, 11, 0, 5]
+	]);
+  
+Sol := [ first(L, NumCols(A)-1) | L in H and last(L) = 1];
+//indent(Sol);
+  EqSet(Sol,
+	[
+	[0, 1, 2],
+	[1, 0, 3],
+	[3, 1, 0],
+	[4, 0, 1]
+	]);
+
+--------------------------------------------------
+B := mat([[4, -5, 3]]);
+-- compute the non-negative integer solutions of  B*x = 3
+A := mat([[4, -5, 3, -3]]);
+-- i.e. the non-negative integer solutions of A*x = 0 with x[3]=1
+LLA := LawrenceLifting(A);  LLA;
+
+use QQ[x[1..NumCols(A)], w[1..NumCols(A)]];
+
+T := toric(LLA);
+
+PW := product(indets(CurrentRing, "w"));
+
+PrimitiveSeparatedBinomials := [ B in ReducedGBasis(T) | gcd(LT(B), PW) = 1];
+//indent(PrimitiveSeparatedBinomials);
+  EqSet(PrimitiveSeparatedBinomials, [
+  x[3]*x[4] -w[3]*w[4],
+  x[1]^2*x[2]*x[4] -w[1]^2*w[2]*w[4],
+  x[1]*x[2]^2*x[3]^2 -w[1]*w[2]^2*w[3]^2,
+  x[1]^3*x[4]^4 -w[1]^3*w[4]^4,
+  x[1]^3*x[2]^3*x[3] -w[1]^3*w[2]^3*w[3],
+  x[2]^3*x[3]^5 -w[2]^3*w[3]^5,
+  x[1]^5*x[2]^4 -w[1]^5*w[2]^4
+	]);
+
+H := [ first(exponents(LPP(B)), NumCols(A)) | B in PrimitiveSeparatedBinomials];
+//indent(H);
+EqSet(H,[
+  [0, 0, 1, 1],
+  [2, 1, 0, 1],
+  [1, 2, 2, 0],
+  [3, 0, 0, 4],
+  [3, 3, 1, 0],
+  [0, 3, 5, 0],
+  [5, 4, 0, 0]
+      ]);
+  
+Sol := [ first(L, NumCols(A)-1) | L in H and last(L) = 1];
+//indent(Sol);
+EqSet(Sol, [
+  [0, 0, 1],
+  [2, 1, 0]
+      ]);
+  
+HomogSol := [ first(L, NumCols(A)-1) | L In H And last(L) = 0];
+//HomogSol;
+  EqSet(HomogSol, [[1, 2, 2], [3, 3, 1], [0, 3, 5], [5, 4, 0]]);
+
+--> infinitely many solutions in 2 families:
+-- Sol[1] + HomogSol  and  Sol[2] + HomogSol
+
+--------------------------------------------------
+-- compute how many matrices in Mat_2(NN) have both row sums = 2
+
+-- 1 ---------
+P ::= QQ[a[1..2, 1..2]];
+--> power-products of degree [2,2] wrt
+W := mat([[1,1,0,0], [0,0,1,1]]);
+P := NewPolyRingWeights(CoeffRing(P), IndetSymbols(P), W);
+use P;
+
+use Qab;
+HilbertSeries(P);
+(1 + a + a^2)^2 * (1 + b + b^2)^2;
+--> ... + 9a^2b^2 + ...
+
+-- 2 ---------
+use P ::= QQ[a[1..2, 1..2]];
+-- same sum in row 1 and row 2:  a[1,1]+a[1,2] = a[2,1]+a[2,2]
+A := mat([[1, 1, -1, -1]]);
+HB := HilbertBasisKer(A);  HB;
+--> the 4 matrices with sums = 1
+T := [MakeTerm(P,L) | L in HB];  T;
+use Qy ::= QQ[y[1..4]];  -- ker of  y_i --> T[i]
+I := toric(transposed(mat(HB)));  //I;
+  I = ideal(-y[2]*y[3] +y[1]*y[4]);
+HilbertFn(Qy/I, 2);
+--> 9  and the solutions are
+support(DensePoly(Qy, 2));
+L := diff(It, [y[1]*y[2]]);  L;
+use P;
+///image(L, RMap(T));
+MapIntoP := PolyAlgebraHom(Qy,P,T);
+MapIntoP(L);
+//PolyAlgebraHom(RingOf(L[1]),RingOf(T[1]),T)(L);
+
+-- 3 ---------
+-- solutions of the system:
+--   a[1,1]+a[1,2] = 2
+--   a[2,1]+a[2,2] = 2
+A := mat([[1,1,0,0, -2], [0,0,1,1, -2]]);
+A;
+HB := HilbertBasisKer(A);  HB;
+Sol := [ first(L, NumCols(A)-1) | L in HB and last(L) = 1];
+Sol;
+-- so the matrices are
+indent([ MakeMatByRows(2,2,L) | L in Sol ]);

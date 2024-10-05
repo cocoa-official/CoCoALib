@@ -1,0 +1,84 @@
+Ok := "Ok";
+Err := "*** ERROR ***";
+
+Print "Simple-func:";
+If Func (X) Return X*2; EndFunc (21) = 42 Then
+	PrintLn Ok;
+Else
+	PrintLn Err;
+EndIf
+
+Print "ComposeAndRun:";
+Define ComposeAndRun(Compose, F, G, Arg)
+	Return Compose(F, G)(Arg);
+EndDefine
+
+If ComposeAndRun(
+	// ImportByValue should work, while ImportByRef should raise an error
+	/* Compose = */ Func (F, G) Return Func (X) ImportByValue F,G; Return F(G(X)); EndFunc EndFunc,
+	// /* Compose = */ Func (F, G) Return Func (X) ImportByRef F,G; Return F(G(X)); EndFunc EndFunc,
+	/* F = */ Func (X) Return X+1; EndFunc,
+	/* G = */ Func (X) Return X*X; EndFunc,
+	/* Arg = */ 7) = 50 Then
+	PrintLn Ok;
+Else
+	PrintLn Err;
+EndIf
+
+L := [];
+For I:=1 To 10 Do
+	append(ref L, Func () ImportByValue I; Return I*I; EndFunc);
+EndFor
+PrintLn "Squares: ", [F() | F in L];
+
+
+-- Define Foo(X)
+-- 	F := Func () ImportByRef G; Return G(1); EndFunc;
+-- 	G := Func (X) ImportByRef F; If X=1 Then Return 42 Else Return F(); EndIf EndFunc;
+-- 	Return G(X);
+-- EndDefine
+-- PrintLn "Foo(3)=", Foo(3);
+
+-- Define F(X)
+-- 	Return Func () ImportByRef X; Return X; EndFunc;
+-- EndDefine
+-- F(222)();
+
+
+Names := [
+	Record[First:="John", Last:="Abbott"], 
+	Record[First:="Anna", Last:="Bigatti"], 
+	Record[First:="Giovanni", Last:="Lagorio"]
+	];
+
+Define BubbleSort(ref L, ExtractInfo, Ordered) 
+	Changed := true;
+	While Changed Do
+		Changed := false;
+		For I:=1 To len(L)-1 Do
+			If not(Ordered(ExtractInfo(L[I]), ExtractInfo(L[I+1]))) Then
+				Aux := L[I];
+				L[I] := L[I+1];
+				L[I+1] := Aux;
+				Changed := true;
+			EndIf
+		EndFor
+	EndWhile
+EndDefine
+
+FormatFun := Func (R) Return R.First + " " + R.Last; EndFunc;
+
+FormatList := Func (L) Return [ FormatFun(Elem) | Elem in L ]; EndFunc;
+
+PrintLn "Bubble-sorting...";
+pause();
+PrintLn "Original names: ", FormatList(Names);
+BubbleSort(ref Names, Func (R) Return R.First; EndFunc, Func (X, Y) Return X<=Y; EndFunc);
+PrintLn "Ordered by first name, ascending: ", FormatList(Names);
+BubbleSort(ref Names, Func (R) Return R.First; EndFunc, Func (X, Y) Return X>=Y; EndFunc);
+PrintLn "Ordered by first name, descending: ", FormatList(Names);
+BubbleSort(ref Names, Func (R) Return R.Last; EndFunc, Func (X, Y) Return X<=Y; EndFunc);
+PrintLn "Ordered by last name, ascending: ", FormatList(Names);
+BubbleSort(ref Names, Func (R) Return R.Last; EndFunc, Func (X, Y) Return X>=Y; EndFunc);
+PrintLn "Ordered by last name, descending: ", FormatList(Names);
+

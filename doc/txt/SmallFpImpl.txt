@@ -1,0 +1,174 @@
+      SmallFpImpl
+      Copyright (c)  2005,2010-2013,2015,2018 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SmallFpImpl}{John Abbott}
+
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-SmallFp1.C ../../examples/index.html#ex-SmallFp1.C]
+- [ex-SmallFp2.C ../../examples/index.html#ex-SmallFp2.C]
+- [ex-SmallFp3.C ../../examples/index.html#ex-SmallFp3.C]
+-
+
+== User documentation for SmallFpImpl ==
+%======================================================================
+
+The class ``SmallFpImpl`` is a very low level implementation class for fast
+arithmetic in a small, prime finite field.  It is **not intended** for use
+by casual CoCoALib users, who should instead see the documentation in
+[[QuotientRing]] (in particular the function ``NewZZmod``), or possibly the
+documentation in [[RingFp]], [[RingFpLog]], and [[RingFpDouble]].
+
+The class ``SmallFpImpl`` offers the possibility of efficient arithmetic in
+small, prime finite fields.  This efficiency comes at a cost: the interface
+is rather unnatural.  The emphasis is on speed rather than convenience;
+this speed depends on many functions being inlined.
+
+The overall structure is modelled on that of ``ring`` and ``RingElem``:
+namely, operations on values are via member functions of ``SmallFpImpl``.
+The class ``SmallFpImpl`` records the modulus, while the actual values are
+of type ``SmallFpImpl::value``, and record only the residue class.  Also
+see below for the special type ``SmallFpImpl::NonRedValue``.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+The ctor for a ``SmallFpImpl`` object takes 1 or 2 args:
+- ``SmallFpImpl(p)``  - create a ``SmallFpImpl`` for prime ``p``; error if ``p`` is not prime, or too large.
+- ``SmallFpImpl(p,conv)``  - specify export convention ``conv``: either ``SymmResidues`` or ``NonNegResidues``
+-
+
+The default export convention is ``SymmResidues`` (unless changed in the [[GlobalManager]]).
+  This convention may be either
+``GlobalSettings::SymmResidues`` or ``GlobalSettings::NonNegResidues``;
+the default convention is determined by the [[GlobalManager]].
+
+
+**Note** if the first argment is of type ``SmallPrime`` then the constructor
+skips testing for primality.
+
+
+=== Queries and views ===[queries]
+%----------------------------------------------------------------------
+Let ``ModP`` be a ``SmallFpImpl`` object.
+- ``SmallFpImpl::IsGoodCtorArg(p)`` -- returns ``true`` if ``p`` is a valid ``SmallFpImpl`` ctor arg; otherwise ``false``
+- ``SmallFpImpl::ourMaxModulus()``  -- returns largest ctor arg allowed by the implementation
+- ``ModP.myModulus()``  -- returns the prime ``p`` (as a ``long``)
+- ``ModP.myMaxIters()`` -- see section on unnormalized computation
+-
+
+
+=== Operations on Values ===[operations]
+%----------------------------------------------------------------------
+
+All operations (except for ``zero``, ``one``, ``IsZero``, ``IsOne``, ``==`` and ``!=``)
+must be effected by calling member functions of the ``SmallFpImpl`` class.
+The member function ``myReduce`` is effectively a ctor.  Here is a brief summary.
+```
+  long n;
+  BigInt N;
+  BigRat q;
+  SmallFpImpl::value a, b, c;
+
+  a = zero(SmallFp);        // equiv to a = ModP.myReduce(0);
+  b = one(SmallFp);         // equiv to b = ModP.myReduce(1);
+  IsZero(a);                // equiv to (a == ModP.myReduce(0))
+  IsOne(b);                 // equiv to (b == ModP.myReduce(1))
+  a == b;                   // test for equality
+  a != b;                   // logical negation of (a == b)
+
+  ModP.myReduce(n);         // reduce mod p
+  ModP.myReduce(N);         // reduce mod p
+  ModP.myReduce(q);         // reduce mod p
+
+  ModP.myExportNonNeg(a);   // returns the least non negative preimage (of type long), between 0 and p-1.
+  ModP.myExportSymm(a);     // returns a symmetric preimage (of type long), between -p/2 and p/2.
+  ModP.myExport(a);         // returns a preimage (of type long) between -p/2 and p-1; see note below!
+
+  ModP.myNegate(a);         // -a mod p, additive inverse
+  ModP.myRecip(a);          // inv(a), multiplicative inverse
+  ModP.myAdd(a, b);         // (a+b)%p;
+  ModP.mySub(a, b);         // (a-b)%p;
+  ModP.myMul(a, b);         // (a*b)%p;
+  ModP.myDiv(a, b);         // (a*inv(b))%p;  where inv(b) is inverse of b
+  ModP.myPower(a, n);       // (a^n)%p;  where ^ means "to the power of"
+  ModP.myIsZeroAddMul(a,b,c) // a = (a+b*c)%p; result is (a==0)
+  ModP.myAddMul(a,b,c)      // (a+b*c)%p
+```
+We suggest using the function ``myExport`` principally for values to be printed;
+in other contexts we recommend using ``myExportNonNeg`` if possible.
+Code calling ``myExport`` should assume only that the value returned is
+between ``-p/2`` and ``p-1``; the actual range of return values is determined
+by the convention specified when the ``SmallFpImpl`` object was constructed.
+
+
+
+=== Advanced Use: Unnormalized Computation ===
+
+The normal mod p arithmetic operations listed above always produce
+a normalized result, but this normalization incurs a run-time cost.
+In some loops (//e.g.// for an inner product) it may be possible to compute
+several iterations before having to normalize the result.
+
+``SmallFpImpl`` supports this by offering the type ``SmallFpImpl::NonRedValue``
+for unnormalized values; this type is effectively an unsigned integer,
+and such values may be added and multiplied without normalization
+(but also without overflow checks!) using the usual ``+`` and ``*`` operators
+(and also ``+=`` and ``*=``).
+
+``SmallFpImpl`` offers the following three functions to help implement
+a delayed normalization strategy.
+```
+    SmallFpImpl::NonRedValue a;
+    ModP.myNormalize(a);     -- FULL normalization of a, result is a SmallFpImpl::value
+    ModP.myHalfNormalize(a); -- *fast*, PARTIAL normalization of a, result is a NonRedValue
+    ModP.myMaxIters();   -- see comment below
+```
+
+The value of ``myMaxIters()`` is the largest number of unnormalized
+products (of normalized values) which may safely be added to a "half
+normalized" value without risking overflow.  The half normalization
+operation is quick (at most a comparison and a subtraction).
+Naturally, the final result must be fully normalized.  See example
+program ``ex-SmallFp1.C`` for a working implementation.
+
+
+== Maintainer documentation for SmallFpImpl ==
+%======================================================================
+
+Most functions are implemented inline, and no sanity checks are
+performed (except when ``CoCoA_DEBUG`` is enabled).  The constructor
+does do some checking.
+
+``SmallFpImpl::value_t`` **must** be an unsigned integral type; it is a
+typedef to a type specified in ``CoCoA/config.H`` -- this should allow
+fairly easy platform-specific customization.
+
+This code is valid only if the square of ``myModulus`` can be represented
+in a ``SmallFpImpl::value_t``; the constructor checks this condition.
+Most functions do not require ``myModulus`` to be prime, though division
+becomes only a partial map if it is composite; and the function
+``myIsDivisible`` is correct only if ``myModulus`` is prime.  Currently the
+constructor rejects non-prime moduli.
+
+The code assumes that each value modulo p is represented as the least
+non-negative residue (//i.e.// the values are represented as integers in
+the range 0 to p-1 inclusive).  This decision is linked to the fact
+that ``SmallFpImpl::value_t`` is an unsigned type.
+
+The constants ``myResidueUPBValue`` and ``myIterLimit`` are to allow efficient
+exploitation of non-reduced multiplication (//e.g.// when trying to
+compute an inner product modulo p).  See example program ``ex-SmallFp1.C``
+
+The return type of ``NumBits`` is ``int`` even though the result is
+always non-negative -- I do not like ``unsigned`` values.
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+Should there be a ``myIsMinusOne`` function?

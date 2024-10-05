@@ -1,0 +1,154 @@
+      ExternalLibs-BOOST
+      Copyright (c)  2016-2022  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ExternalLibs-BOOST}{Anna M. Bigatti}
+
+
+== User documentation ==
+%======================================================================
+
+**BOOST** (filesystem, system) is an **essential** external library for CoCoA-5.
+
+**BOOST is not used at all in CoCoALib.**  Currently (2022-12-14) BOOST is also
+not required for any of the optional external libraries.
+
+
+If you are lucky BOOST (or the necessary parts of it) are already installed
+on your computer.  The CoCoA ``configure`` script should find it automatically
+(and will check that all required sub-libraries are present).
+
+If you are not so lucky, you will have to install BOOST yourself.
+There are two approaches: use a package manager, or download the sources
+and compile BOOST yourself.  Using the package manager is likely simpler
+and quicker, but you will probably need "administrator rights".
+
+
+=== Install BOOST via Package Manager on Linux ===
+
+Different GNU/Linux systems have different package managers.
+Here we assume use of ``apt-get``; hopefully this suffices for most users.
+
+``` sudo  apt-get  install  libboost-dev  libboost-doc  libboost-filesystem-dev  libboost-system-dev
+
+
+
+=== Download and compile BOOST ===
+
+You can download the BOOST sources from ``http://www.boost.org/``.
+Current version is 1.81, and is about 135Mbytes.
+
+It is simplest to make a complete BOOST installation; that way you are
+sure to have everything you need -- but a full build can take a while,
+and occupy quite a lot of space on your disk.
+
+Alternatively, you can try building just those sub-libraries needed by CoCoA-5;
+at the moment CoCoA-5 uses the following BOOST sub-libraries:
+``filesystem`` and   ``system``.
+
+To build BOOST first use their script ``bootstrap.sh``, then use the script ``b2``.
+
+==== Special note for users of old MacBooks ====
+
+The ``b2`` script requires some extra options, so in the examples below
+**insert these extra two options**
+
+``` ./b2  architecture=x86  address-model=32_64  <remaining-options>
+
+
+==== Make a system-wide installation ====
+
+To make a system-wide installation you will need "administrator rights";
+if you do not have these rights, look at the next section about "personal installation".
+
+These steps should work:
+```
+ cd <BOOST_DIR>
+ ./bootstrap.sh
+ sudo ./b2  variant=release  threading=multi  link=static  install
+```
+
+Remember the note for old MacBooks!
+
+==== Personal installation ====
+
+Anyone can make a personal installation; if you do not have "administrator right"
+then you must do this.
+
+Before compiling you must decide where to put your personal installation;
+this must be somewhere inside your own filespace.  For example, I can choose
+to install BOOST into ``/home/john/software``
+
+Now I do the following steps: the ``prefix`` option says where to install BOOST
+```
+ cd <BOOST_DIR>
+ ./bootstrap.sh  --prefix=/home/john/software
+ ./b2  variant=release  threading=multi  link=static  install
+```
+
+Recall the note above about old MacBooks!
+
+
+==== Making a minimal installation ====
+
+I do not really recommend this.
+
+If you do not want to install the complete BOOST libraries then you
+can specify which ones by giving an option to ``bootstrap.sh``.
+For instance CoCoA-5 needs the sub-libraries ``filesystem`` and ``system``.
+
+The steps to follow then look like this:
+```
+ cd <BOOST_DIR>
+ ./bootstrap.sh  --with-libraries="filesystem,system"
+ ./b2  ... <options-for-b2>
+```
+
+=== Telling CoCoA-5 where BOOST is ===
+
+If you have a system-side installation, the CoCoA ``configure`` script should
+probably find it automatically.  If you made a personal installation then you
+must tell CoCoA where to find it: in the example above I chose to install
+BOOST into ``/home/john/software``, so I must tell CoCoA where it is:
+``` 
+cd CoCoALib-0.99
+./configure  --with-boost-hdr-dir=/home/john/software  <more-configure-options>
+make
+```
+
+
+
+=== More info ===
+http://www.technoboria.com/2009/12/compiling-boost-on-mac-os-x-for-64bit-builds/
+http://wiki.tiker.net/BoostInstallationHowto
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+While BOOST is an interesting and worthy project, we endeavour to
+avoid using it inside CoCoALib.
+
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+
+I found the following website useful:
+```
+http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
+```
+
+== Main changes ==
+%======================================================================
+
+**2022**
+- 14 Dec: considerably updated
+
+
+**2016**
+- 10 June: first version; added new note about ldconfig
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

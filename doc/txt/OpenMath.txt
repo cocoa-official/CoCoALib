@@ -1,0 +1,60 @@
+      OpenMath
+      Copyright (c)  2006  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{OpenMath}{John Abbott}
+
+
+
+== User documentation for OpenMath ==
+%======================================================================
+
+These files offer two types: ``OpenMathOutput`` for sending data in OpenMath format,
+and ``OpenMathInput`` for receiving data sent in OpenMath format.  Since OpenMath
+specifies more than one encoding, you must specify which encoding is to be used
+when creating one of these input/output channels.  Here are two (ugly) examples:
+```
+  OpenMathOutput OMOut(new OpenMathOutputXML(cout));
+  OpenMathInput OMIn(new OpenMathInputXML(cin));
+```
+These commands say that the XML encoding is to be used, and that ``cin``/``cout`` as
+the data transport mediums.  Once created, these OpenMath i/o channels can be
+used analogously to the standard C++ i/o channels.
+
+
+
+== Maintainer documentation for OpenMath ==
+%======================================================================
+
+``OpenMathInput`` and ``OpenMathOutput`` use the template class [[SmartPtrIRC]] as their
+implementations.  They are reference counting "smart pointers" (but I'm not sure
+why, perhaps just for simplicity?).
+
+There are six different ``operator<<`` for built in integer types because I
+needed at least two (one for ``long`` and one for ``unsigned long``) and the
+compiler complained about ambiguities for other integral types because it
+could have converted equally well to either ``long`` or ``unsigned long``.
+There are only two corresponding member functions, as the implementations
+of ``operator<<`` cast to either ``long`` or ``unsigned long``.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+Use ``boost::shared_ptr`` instead of [[SmartPtrIRC]]?
+
+Documentation woefully incomplete.  Actually the whole implementation needs a
+thorough revision, perhaps in collaboration with some others who are attemtping
+to implement OpenMath.
+
+Code written hastily, so incomplete, largely untested, does not follow the
+coding standards (esp. member fn names).
+
+Need a safer way to send "brackets" (e.g. OpenMath apply begin and end tokens).
+
+Should ``OpenMathSymbol`` have ctors with one ``string`` and one ``char*``?
+
+OpenMath attributes completely ignored.
+
+
+

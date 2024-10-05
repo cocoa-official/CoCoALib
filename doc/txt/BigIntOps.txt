@@ -1,0 +1,265 @@
+      BigIntOps
+      Copyright (c)  2012,2014,2017,2023 John Abbott and Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{BigIntOps}{John Abbott}
+
+
+== Examples ==[examples]
+%======================================================================
+- [ex-BigInt1.C   ../../examples/index.html#ex-BigInt1.C]
+- [ex-BigInt2.C   ../../examples/index.html#ex-BigInt2.C]
+- [ex-BigInt3.C   ../../examples/index.html#ex-BigInt3.C]
+-
+
+
+== User documentation ==
+%======================================================================
+
+Here is a collection of basic operations available for integer values;
+see also the more advanced functions in [[NumTheory]].
+
+CoCoALib functions which expect integer values will accept either
+machine integer values or [[BigInt]] values -- they may be mixed.  The
+return type is usually [[BigInt]]; the few cases where the return type
+is ``long`` are clearly indicated.  Remember that basic arithmetic
+operations between two machine integers are handled directly by C++
+(with its rules and restrictions //e.g.// overflow).
+
+If you want to write new functions which accept machine integers as
+arguments, take a look at the class [[MachineInt]] which is designed
+for this purpose (handling both signed and unsigned machine integers
+safely).
+
+
+
+=== Queries ===[queries]
+%----------------------------------------------------------------------
+- ``IsEven(n)``     -- true iff ``n`` is even
+- ``IsOdd(n)``      -- true iff ``n`` is odd
+- ``IsPowerOf2(n)`` -- true iff ``n`` is a power of 2
+- ``IsDivisible(n,d)`` -- true iff ``n`` is divisible by ``d`` (throws ``ERR::DivByZero`` if ``d`` is zero)
+- ``IsSquare(n)``   -- true iff ``n`` is a perfect square
+- ``IsPower(n)``    -- true iff ``n`` is a perfect k-th power for some k > 1
+- ``IsExactFloorRoot(X,n,r)`` -- true iff ``n`` is a perfect ``r``-th power, assigns ``FloorRoot(N,r)`` to ``X``; error if ``n < 0`` or if ``b < 1``
+-
+
+Only for [[BigInt]]
+- ``IsZero(N)``     -- true iff ``N`` is zero
+- ``IsOne(N)``      -- true iff ``N`` is 1
+- ``IsMinusOne(N)`` -- true iff ``N`` is -1
+-
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+==== Infix operators ====
++ normal arithmetic (potentially inefficient because of temporaries)
+ - ``=``    assignment
+ - ``+``    the sum
+ - ``-``    the difference
+ - ``*``    the product
+ - ``/``    integer quotient (**truncated** "towards zero")
+ - ``%``    remainder (same sign as LHS arg if non-zero); satisfies a = b*(a/b)+(a%b); **see also ``LeastNNegRemainder`` and ``SymmRemainder``** (below)
+
+
+**NOTE:**  **you cannot use** ``^`` **for exponentiation**; you must use the function ``power`` instead.  We decided this
+because it is too easy to write misleading code: for instance,
+``a*b^2`` is interpreted by the compiler as ``(a*b)^2``.  There is no
+way to make the C++ compiler use the expected interpretation.
+
+
++ arithmetic and assignment
+ - ``+=``, ``-=``, ``*=``, ``/=``, ``%=`` 
+   --  definitions as expected; if RHS is a [[BigInt]] LHS must be [[BigInt]]
+
++ arithmetic ordering
+ - ``==``, ``!=``
+ - ``<``, ``<=``, ``>``, ``>=``
+     -- comparison (using the normal arithmetic ordering)
+     -- see also the ``cmp`` function below.
+
++ increment/decrement
+ - ``++``, ``--`` (prefix, //e.g.// ``++a``)   use these if you can
+ - ``++``, ``--`` (postfix, //e.g.// ``a++``)  avoid these if you can, as they create temporaries
+
+
+
+==== cmp ====
+(three way comparison)
+- ``cmp(a, b)`` -- returns an ``int`` which is
+                      ``< 0``,   ``== 0``, or   ``> 0`` if
+                    ``a < b``, ``a == b``, or ``a > b`` respectively
+- ``CmpAbs(a,b)`` -- same as ``cmp(abs(a),abs(b))`` but might be faster.
+-
+
+==== Sundry standard functions ====
+
+**IMPORTANT NOTES**
+- **several basic number theoretical operations are defined in [[NumTheory]]**
+- **for random numbers see [[random]]**
+-
+
+The arguments of the functions below may be either a machine integer or a ``BigInt``.
+
+- ``abs(n)``         -- the absolute value of ``n``
+- ``sign(n)``        -- returns ``int`` with value  -1 if ``n<0``, 0 if ``n==0``, and +1 if ``n>0``
+- ``LeastNNegRemainder(x,m)``  -- least non-negative remainder; throws ``ERR::DivByZero`` if ``m==0``; result is ``long`` if ``m`` is a machine integer
+- ``SymmRemainder(x,m)``  -- symmetric remainder; throws ``ERR::DivByZero`` if ``m==0``; result is ``long`` if ``m`` is a machine integer
+- ``log(n)``         -- natural logarithm of ``n`` (as a ``double``); error if `` n <= 0``
+- ``LogAbs(n)``      -- equiv to ``log(abs(n))``
+- ``RoundDiv(n,d)``-- rounded division of ``n`` by ``d``, (currently halves round away from 0)
+- ``MultiplicityOf2(n)`` -- return a ``long`` being the multiplicity of 2 dividing ``n``; error if ``n==0``.
+- ``FloorSqrt(n)``     -- the integer part (floor) of the square root of ``n``
+- ``FloorLog2(n)`` -- same as ``FloorLogBase(n,2)``; see also ``SizeInBase`` below!
+- ``FloorLog10(n)`` -- same as ``FloorLogBase(n,10)``
+- ``FloorLogBase(n,b)``-- (returns ``long``) the integer part (floor) of ``log(abs(n))/log(b)``;
+                      error if ``n=0`` or ``b<2``
+- ``SmallPower(a, b)`` -- (returns ``long``) returns ``a`` to the power ``b`` (error if ``b<0``; **no check for overflow**) 
+-
+
+These functions always return [[BigInt]]
+- ``power(a, b)`` -- returns ``a`` to the power ``b`` (error if ``b<0``); ``power(0,0)`` gives 1
+- ``factorial(n)``   -- factorial for non-negative ``n``
+- ``primorial(n)``   -- primorial for non-negative ``n``
+- ``LogFactorial(n)``   -- approx natural log of ``factorial(n)`` (abs.err. < 5*10^(-8))
+- ``RangeFactorial(lo,hi)`` -- ``lo*(lo+1)*(lo+2)*...*hi``  NB both limits are included!
+- ``binomial(n, r)`` -- binomial coefficient
+- ``fibonacci(n)``   -- ``n``-th Fibonacci number
+- ``FloorRoot(N,r)`` -- floor of the ``r``-th root of ``N`` (error if ``N < 0`` or if ``r<2``); see also ``IsExactFloorRoot``
+-
+
+==== Conversion functions ====
+Only for [[BigInt]]
+- ``mantissa(N)`` -- ``N`` represented as a floating-point number.
+  	    If ``N`` is zero, produces 0.0.
+            If ``N>0``, produces a value between 0.5 and 0.999...;
+            otherwise (when ``N<0``) a value between -0.5 and -0.999...
+            The bits of the floating point result are the topmost
+            bits of the binary representation of ``N``.
+- ``exponent(N)`` -- result is a ``long`` whose value is the least integer e such that
+              2^e > abs(n).  If ``N`` is zero, result is zero.
+-
+
+==== Summation ====
+
+To sum many ``BigInt`` integers use a ``SumBigInt`` object.
+This class is **not thread-safe.**
+
+Let ``N`` be an integer, and ``SBI`` be a ``SumBigInt`` object.
+- ``SumBigInt()``   -- create a ``SumBigInt`` object with value 0
+- ``SBI += N``      -- accumulate ``N`` (big or small) into the sum inside ``SBI``
+- ``total(SBI)``    -- return the sum of the values accumulated
+- ``SBI.myTotal()`` -- equiv to ``SBI.myTotal()``
+-
+
+BUG: Currently there is no ``operator-=``; should there be?
+
+
+==== Procedures for arithmetic ====
+
+These procedures are ugly but may give a slight gain in speed.
+Use them only if you really must; it is probably better to use
+GMP directly if speed is so very important.
+
+We expect these procedures (except ``quorem``) to **become obsolete**
+when CoCoALib upgrades to the C++11 standard.
+
+Assignment is always to leftmost argument(s) ``a``, a [[BigInt]].
+Second and/or third argument of type [[BigInt]].
+- ``add(a, b, c)``   --  a = b+c
+- ``sub(a, b, c)``   --  a = b-c
+- ``mul(a, b, c)``   --  a = b*c
+- ``div(a, b, c)``   --  a = b/c  (truncated integer quotient)
+- ``mod(a, b, c)``   --  a = b%c  (remainder s.t. b = quot*c + rem)
+- ``quorem(a, b, c, d)`` --  same as a = c/d, b = c%d
+- ``divexact(a, b, c)`` --  a = b/c  (fast, but division must be exact)
+- ``power(a, b, c)`` --  a = b^c, where 0^0 gives 1
+- ``neg(a, b)``      --  a = -b
+- ``abs(a, b)``      --  a = abs(b)
+-
+
+
+=== Error Conditions and Exceptions ===
+%----------------------------------------------------------------------
+
+Error conditions are signalled by exceptions.  Examples of error conditions
+are impossible arithmetic operations such as division by zero, overly large
+arguments (//e.g.// second argument to binomial must fit into a machine
+``long``), and exhaustion of resources.
+
+Currently the exception structure is very simplistic:
+- exceptions indicating exhaustion of resources are those from the
+    system, this library does not catch them;
+- all other errors produce a ``CoCoA::ErrorInfo`` exception; for instance
+ | ``ERR::ArgTooBig``   | value supplied is too large for the answer to be computed |
+ | ``ERR::BadArg``      | unsuitable arg(s) supplied (or input number too large)    |
+ | ``ERR::BadNumBase``  | the base must be between 2 and 36                         |
+ | ``ERR::BadPwrZero``  | attempt to raise 0 to negative power                      |
+ | ``ERR::DivByZero``   | division by zero                                          |
+ | ``ERR::ExpTooBig``   | exponent is too large                                     |
+ | ``ERR::IntDivByNeg`` | inexact integer division by a negative divisor            |
+ | ``ERR::NegExp``      | negative exponent                                         |
+ | ``ERR::ZeroModulus`` | the modulus specified is zero                             |
+
+
+== Maintainer Documentation ==
+%======================================================================
+
+The implementation of ``cmp`` is more convoluted than I'd like; it must
+avoid internal overflow.
+
+The implementation of ``RoundDiv`` was more difficult than I had expected.
+Part of the problem was making sure that needless overflow would never
+occur: this was especially relevant in the auxiliary functions
+``uround_half_up`` and ``uround_half_down``.  It would be nice if a
+neater implementation could be achieved -- it seems strange that the
+C/C++ standard libraries do not already offer such a function.  The
+standard C functions ``lround`` almost achieves what is needed here, but
+there are two significant shortcomings: rounding is always away from zero
+(rather than towards +infinity), and there could be loss of accuracy if
+the quotient exceeds 1/epsilon.  There is also a standard function ``ldiv``
+which computes quotient and remainder, but it seems to be faster to compute
+the two values explicitly.
+
+NOTE: if you change rounding of halves, you must change TWO fns (``RoundDiv``
+for machine ints and ``RoundDiv`` for big ints).
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+The power functions could allow high powers of -1,0,1 (without complaining about
+the exponent being too big).  But is it worth it?
+
+Only partial access to all the various division functions offered by the
+C interface to GMP.  Many other GMP functions are not directly accessible.
+
+``IsExactFloorRoot`` has rather a lot of signatures.
+
+
+== Main changes ==
+%======================================================================
+
+**2023**
+- December (v0.99821)
+ - added ``SumBigInt``
+
+**2019**
+- April
+ - renamed ``iroot`` to ``FloorRoot`` (and only for non-negatives!)
+ - renamed ``IsExactIroot`` to ``IsExactFloorRoot`` (and only for non-negatives!)
+
+**2014**
+- March
+ - clarified that 0^0 gives 1
+
+**2012**
+- May (v0.9951):
+ - moved common operations on [[BigInt]] and [[MachineInt]]
+   together into ``IntOperations``
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

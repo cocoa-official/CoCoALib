@@ -1,0 +1,265 @@
+      GlobalManager
+      Copyright (c)  2007,2009-2012,2015,2016,2021  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{GlobalManager}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-empty.C ../../examples/index.html#ex-empty.C]  -- recommended structure for a program using CoCoALib
+- [ex-GMPAllocator1.C ../../examples/index.html#ex-GMPAllocator1.C]
+- [ex-GMPAllocator2.C   ../../examples/index.html#ex-GMPAllocator2.C]
+- [ex-obsolescent.C   ../../examples/index.html#ex-obsolescent.C]
+-
+
+== User Documentation ==
+%======================================================================
+
+A ``GlobalManager`` object does some very simple management of global values
+and settings used by CoCoALib.  You **must create exactly one** object of
+type ``GlobalManager`` **before** using any other feature of CoCoALib.
+Conversely, the ``GlobalManager`` object must be destroyed only **after**
+you have completely finished using CoCoALib values and operations.  An easy
+way to achieve this is to create a local variable of type ``GlobalManager``
+at the start of a top level procedure (//e.g.// ``main``) -- see the
+CoCoALib example programs listed above.
+
+**Shortcut:** most likely you will want to use one of the following at the start
+of your top-level procedure:
+```
+  GlobalManager CoCoAFoundations;                    // use default settings
+  GlobalManager CoCoAFoundations(UseNonNegResidues); // printing preference
+  GlobalManager CoCoAFoundations(UseGMPAllocator);   // faster but NOT THREADSAFE!
+```
+
+**Important Notes**
+- the ctor for ``GlobalManager`` is **NOT THREADSAFE**; it is the user's responsibility to avoid trying to create several instances simultaneously.
+- if you see a message about "CLEAN-UP FAILURE", see the relevant section below ([[GlobalManager cleanup]]).
+- if you really must put CoCoALib values in global variables, consider registering them for timely destruction (see [[GlobalManager RegisteringGlobals]]).
+-
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+The ctor for a ``GlobalManager`` has one (optional) argument.  This
+argument is used to specify the global settings, namely
++ the type of memory manager to use for GMP values (namely big integers and rationals), and
++ the printing convention for elements of rings of the form ZZ/m, //viz.// least non-negative residues or least magnitude (symmetric) residues.
++
+
+The current defaults are to use the system memory mananger and symmetric residues.
+
+
+==== Specifying the memory manager for BigInt values ====
+
+CoCoALib [[BigInt]] values are implemented using the GMP library which
+needs to have access to a memory manager.  There are three possibilities
+for specifying the memory manager for GMP:
+
+- ``UseSystemAllocatorForGMP`` (**default**) to use the system memory manager (//i.e.// ``malloc``)
+- ``UseGMPAllocator`` to use the "faster" CoCoALib custom memory manager
+- ``UseGMPAllocator(sz)`` to use the CoCoALib custom memory manager with a slice size of //sz// bytes
+-
+
+**IMPORTANT** Be very careful with ``UseGMPAllocator``:
+- if your program is multi-threaded or
+- if you store GMP values in global variables or
+- if your program uses another library which depends on GMP
+- make sure you do any global set-up for the other library(s) before creating ``CoCoA::GlobalManager`` (because its ctor does create some GMP values).
+
+
+==== Specifying the printing convention for modular integers ====
+
+CoCoALib lets you choose between two conventions for printing
+elements of rings of the form ZZ/m:
+
+- ``UseSymmResidues`` (**default**) symmetric residues (if ``m`` is even, the residue ``m/2`` is printed as positive)
+- ``UseNonNegResidues`` least non-negative residues (//i.e.// from ``0`` to ``m-1``)
+
+
+You may ask CoCoALib which convention has been chosen
+using  ``DefaultResidueRepr()`` see [[GlobalManager operations]] below.
+
+
+==== Permitting the use of obsolescent functions ====
+
+CoCoALib is actively evolving, and occasionally a function in an older version has
+to be changed (//e.g.// renamed, change of args).  These functions are placed in
+a special file for obsolescent functions; so you can keep using (temporarily!)
+these functions in your code, you can include the special header file
+``CoCoA/obsolescent.H`` in addition to ``CoCoA/library.H``, and then you must
+tell the ``GlobalManager`` to allow the functions to be called.
+
+- ``AllowObsolescentFns`` calling an obsolescent function is allowed (and prints a logging message)
+- ``ForbidObsolescentFns`` calling an obsolescent function will throw an error (``ERR::OBSOLESCENT``)
+
+
+The default is ``ForbidObsolescentFns``.
+
+
+==== Combining several global settings ====
+%=======================================================
+
+To specify more than one global setting the individual specifiers should be
+combined using ``operator+``, like this:
+``` GlobalManager CoCoAFoundations(UseNonNegResidues + UseGMPAllocator);
+
+Combining incompatible or redundant specifiers will produce a run-time
+error: an exception of type ``CoCoA::ErrorInfo`` having [[error]] code
+``ERR::BadGlobalSettings``.
+
+Similarly an exception will be thrown if you attempt to create more than one
+live ``GlobalManager`` object.  The exception is of type ``CoCoA::ErrorInfo``
+and has [[error]] code ``ERR::GlobalManager2``.
+
+
+=== CLEAN-UP FAILURE (at program end) ===[cleanup]
+
+The destructor for the ``GlobalManager`` destroys all registered globals,
+and then checks that all CoCoALib values have been destroyed; if not,
+then an error message is printed on ``cerr`` (NB, **no exception is thrown**
+since the code is inside a destructor); for debugging intercept the function
+``CoCoA::GlobalManager::DtorError`` which is the one that prints the message.
+If a clean-up failure occurs then the function ``CoCoA::GlobalManagerDtorFailed``
+will return ``true`` (otherwise ``false``).
+
+It is possible that the program will crash after printing the error message.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Once the ``GlobalManager`` has been created you can use the following functions:
+- ``DefaultResidueRepr()`` -- returns ``ResidueRepr::symmetric`` or ``ResidueRepr::NonNegative``
+- ``GlobalRandomSource()`` -- returns a global randomness source;
+  see [[random]] for a description of the permitted operations
+  on random source objects.
+-
+
+
+=== Registering Global Variables ===[RegisteringGlobals]
+%-------------------------------------------------------
+
+We advise using global variables as little as possible (because
+obscure problems can arise if you use CoCoALib together with another
+library which sets some global state).
+
+To help terminate cleanly a program using CoCoALib, you should
+register destructors for any global variables you use (which contain
+CoCoALib values).  There are two separate ways to do this:
++ ``RegisterDtorForGlobal(dtor)`` the dtor for ``GlobalManager`` will call ``dtor``
++ ``RegisterDtorForGlobal(dtor, ptr)`` the dtor for ``GlobalManager`` will call ``dtor(ptr)``
++
+
+These dtors are called in **reverse order of registration**.
+We recommend that you **use the first form** (which implies writing an explicit
+dtor fn for each global variable you use) since the second form may be removed
+in the future.
+
+
+=== The Purpose of the GlobalManager ===
+% =======================================================
+
+The concept of ``GlobalManager`` was created to handle in a clean and
+coherent manner (almost) all global values used by CoCoALib; in particular
+it was prompted by the decision to make the ring of integers a global value
+(and also the field of rationals).  The tricky part was ensuring the
+orderly destruction of [[RingZZ]] and [[RingQQ]] before ``main`` exits.
+Recall that C++ normally destroys globals after ``main`` has completed, and
+that the order of destruction of globals cannot easily be governed;
+destroying values in the wrong order can cause to the program to crash just
+before it terminates.  Another advantage of forcing destruction before
+``main`` exits is that it makes debugging very much simpler (//e.g.// the
+[[MemPool]] object inside ``RingZZImpl`` will be destroyed while the input
+and output streams are still functioning, thus allowing the [[MemPool]]
+destructor to report any anomalies).  And of course, it is simply good
+manners to clean up properly at the end of the program.
+
+
+== Maintainer Documentation ==
+%======================================================================
+
+To implement the restriction that only one ``GlobalManager`` may exist
+at any one time, the first instruction in the ctor checks that the
+global variable ``GlobalManager::ourGlobalDataPtr`` is null.  If it is
+null, it is immediately set to point the object being constructed.  At
+the moment, this check is not threadsafe.
+
+The ctor for ``GlobalManager`` is fairly delicate: //e.g.// the functions
+it calls cannot use the functions ``RingZZ()`` and ``RingQQ()`` since
+they will not work before the ``GlobalManager`` is registered.
+
+The two functions ``MakeUniqueCopyOfRingZZ`` and ``MakeUniqueCopyOfRingQQ``
+are supposed to be accessible only to the ctor of ``GlobalManager``; they
+create the unique copies of those two rings which will be stored in the
+global data.  The functions are defined in ``RingZZ.C`` and ``RingQQ.C``
+respectively but do not appear in the corresponding header files (thus
+making them "invisible" to other users).
+
+The dtor for ``GlobalManager`` checks that ``RingZZ`` and ``RingQQ`` are not
+referred to by any other values (//e.g.// ring elements which have been
+stored in global variables).  A rude message is printed on ``cerr`` if
+the reference counts are too high, and a program crash is likely once
+the ``GlobalManager`` has been destroyed.
+
+
+=== GMPMemMgr ===
+%======================
+
+The ``GMPMemMgr`` class performs the necessary steps for setting the
+memory manager for GMP values.  At the moment there are essentially
+two choices: use the system memory manager, or use a [[MemPool]] to handle
+the memory for small values.  The first parameter to the ctor for
+``GMPMemMgr`` says which sort of memory manager to use.  If the system
+allocator is chosen, then the ctor does nothing (since the GMP default
+is the system manager); similarly nothing is done when the ``GMPMemMgr``
+object is destroyed.  The second argument is completely ignored when
+the system allocator is chosen.
+
+The situation is more complicated if CoCoALib's custom allocator is to
+be used.  The second argument specifies the //slice size// (in bytes)
+which is to be used -- the implementation may automatically increase
+this value to the next convenient value (see also the documentation
+for [[MemPool]]).  The slice size defines what a GMP //small value// is:
+it is a value whose GMP internal representation fits into a single slice.
+The memory for small values is managed by a (global) ``MemPool``, while
+the memory for larger values is managed by the standard ``malloc`` family
+of functions.
+
+Since the only place a ``GMPMemMgr`` object appears is as a data field in a
+``GlobalManager``, we have an automatic guarantee that there will be at
+most one ``GMPMemMgr`` object in existence -- this fact is exploited
+(implicitly) in the ctor and dtor for ``GMPMemMgr`` when calling the GMP
+functions for setting the memory management functions.
+
+Of the ``alloc/free/realloc`` functions which are handed to GMP, only
+``CoCoA_GMP_realloc`` displays any complication.  GMP limbs can be stored
+either in memory supplied by the ``MemPool`` belonging to a ``GMPAllocator``
+object or in system allocated memory; a reallocation could cause the limbs
+to be moved from one sort of memory to the other.
+
+
+=== GlobalSettings ===
+
+The ``GlobalSettings`` class serves only to allow a convenient syntax for
+specifying the parameters to the ``GlobalManager`` ctor.  The only mild
+complication is the ``operator+`` for combining the ctor parameters, where
+we must check that nonsensical or ambiguous combinations are not built.
+
+
+== Bugs, Shortcomings, etc ==
+%======================================================================
+
+**2010 Sept 30**
+- The private copies of ``RingZZ`` and ``RingQQ`` are now direct
+members, previously they were owned via ``auto_ptr``s.  The new
+implementation feels cleaner, but has to include the definitions of
+``ring`` and ``FractionField`` in the header file.
+
+- You cannot print out a ``GlobalManager`` object; is this really a bug?
+
+- Should the ctor for ``GlobalManager`` set the globals which control
+debugging and verbosity in [[MemPool]]s?
+

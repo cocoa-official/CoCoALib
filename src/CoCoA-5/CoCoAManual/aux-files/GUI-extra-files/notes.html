@@ -1,0 +1,54 @@
+<html>
+<head>
+<title>Notes</title>
+<meta name="keywords" content="menus">
+<link rel="next" href="./uih.html" title="next page">
+<link rel="previous" href="./uih.html" title="previous page">
+</head>
+
+<body bgcolor=#FFFFFF text=#000000>
+<table width=100%>
+<tr bgcolor=#CCCCCC><td colspan=3 align=center><b><font size=7>Notes</font></b></td></tr>
+</table>
+
+<ol>
+<li><b><a name="interrupt">When can a computation can be interrupted?</a></b><br>
+	In principal, a <b>running</b> computation can always be interrupted. However, a computation that seems
+	to be running, may in fact have terminated a while ago. The reasons for this lies in the architecture
+	which will be explained below.
+	<p>
+	CoCoA consists of two components, the engine and the interface. These two components are both running
+	in separate threads and communicate asynchronously. Whenever the engine produces output, it posts an
+	event to the event queue of the interface, which then processes these events. Let's explain this using
+	a short example:
+  <pre>
+  For I := 1 To 20000 Do
+    Print I, " ";
+  EndFor;
+  </pre>
+	After you execute this command set, the engine produces text events which are then processed by the
+	interface. However, while the interface is processing these events, the engine might already have
+	terminated. But if that is the case, there is not computation to interrupt anymore. And thus you can't
+	stop the output from appearing.
+</li>
+<li><b><a name="measuring_time">Measuring execution time</a></b><br>
+	In addition to CoCoAs builtin <b>Time</b> keyword which measures the time the CoCoA engine needs to complete
+	a computation, CoCoA shows the total time needed to execute a command set and show the results on the screen
+	after each computation in the status bar. Because of the asynchronous architecture of CoCoA mentioned above
+	these times might differ greatly.
+</li>
+<li><b><a name="interactive_close">Interactive Document Close Dialog</a></b><br>
+	When you try to close CoCoA a dialog will be shown warning you that any unsaved changes to the Interactive
+	Document will be lost if you continue. You can prevent the showing of this dialog by selecting
+	"Don't show this dialog again". However, if you decide you want to see this dialog again everytime you quit
+	CoCoA, you have to quit CoCoA and change the <b>1</b> in the line
+<pre>
+  showInteractiveDocumentCloseWarning=1
+</pre>
+	of the configuration file (which is normally named .xcocoarc or wincocoa.ini) to a <b>0</b>.<br>
+	A future version of CoCoA will let you change this in the standard configuration dialog.
+</li>
+</ol>
+
+</body>
+</html>

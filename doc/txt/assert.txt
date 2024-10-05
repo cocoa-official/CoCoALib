@@ -1,0 +1,117 @@
+      assert
+      Copyright (c)  2007,2021  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{assert}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-PolyIterator2.C ../../examples/index.html#ex-PolyIterator2.C]
+-
+
+== User documentation for files assert.H and assert.C ==
+%======================================================================
+
+The file ``assert.H`` defines two preprocessor macros (ugh!):
+- ``CoCoA_ASSERT_ALWAYS(cond)``  evaluates ``cond`` as a boolean; if ``cond`` is false, a message is sent to ``cerr``, and an exception is thrown (``ERR::AssertFail``)
+- ``CoCoA_ASSERT(cond)`` if ``CoCoA_DEBUG`` is set then this is the same as ``CoCoA_ASSERT_ALWAYS``; otherwise it does nothing.
+
+
+We use the macro ``CoCoA_ASSERT_ALWAYS`` in the CoCoALib tests.
+Many internal CoCoALib functions use ``CoCoA_ASSERT`` for extra arg checking
+when ``CoCoA_DEBUG`` is set.
+
+The ``CoCoA_ASSERT`` macro does absolutely nothing (not even evaluating its
+argument) unless the compilation flag ``CoCoA_DEBUG`` is set.  If that flag
+is set then the macro evaluates its argument to a boolean result which
+is then tested: if the result is true nothing further happens; if the
+result is false then the function ``CoCoA::AssertionFailed`` is called with
+some arguments indicating which ``CoCoA_ASSERT`` macro call obtained the false
+value.  The ``AssertionFailed`` function prints out an informative message on
+``std::cerr`` and then throws a ``CoCoA::ERR::AssertFail`` exception.
+
+
+
+=== Debugging ===
+%----------------------------------------------------------------------
+
+During debugging, a debugger can be used to intercept calls to the
+function ``CoCoA::AssertionFailed`` which will stop the program just before
+throwing the ``CoCoA::ERR::AssertFail`` exception.  This should enable one
+to find more easily the cause of the problem.
+
+For example, in **gdb** type
+``` break CoCoA::AssertionFailed
+and then go ``up`` (perhaps repeatedly) to the offending line.
+
+
+== Maintainer documentation for files assert.H and assert.C ==
+%======================================================================
+
+The macro name ``CoCoA_ASSERT`` is rather cumbersome, but must contain the
+prefix ``CoCoA_`` since macro names cannot be placed in C++ namespaces.
+The two definitions of the macro (debugging and non-debugging cases)
+both look rather clumsy, but are done that way so that the macro expands
+into an expression which is syntactically a simple command.  The
+definition for the ``ALWAYS`` macro I took from ``/usr/include/assert.h``.
+
+The purpose of the procedure ``AssertionFailed`` is explained above in the
+user documentation (to facilitate interception of failed assertions).  The
+procedure never returns; instead it throws a CoCoALib exception with code
+``ERR::AssertFail``.  Before throwing the exception it prints out a message
+on ``std::cerr`` summarising what the assertion was, and where it was.
+Note the non-standard way of throwing the CoCoA exception: this allows the
+``ErrorInfo`` object to refer to the file and line where ``CoCoA_ASSERT`` was called
+(rather then to the line in ``assert.C`` where ``CoCoA_THROW_ERROR`` is called).
+The entire printed message is assembled into an ``ostringstream`` before being
+printed to ensure exception safety: either the whole message is printed or
+none of it is, since the printing step is an atomic operation.
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+Is the exception safe implementation of ``AssertionFailed`` excessive?
+
+You have to use explicitly ``#ifdef CoCoA_DEBUG`` if you want to have a
+loop or any other non-trivial piece of code executed only when debugging
+it turned on.
+
+
+The following (simplified but real) code excerpt is mildly problematic:
+```
+{
+  bool OK = ....;
+  CoCoA_ASSERT(OK);
+}
+```
+When compiled without debugging (//i.e.// ``CoCoA_DEBUG`` is zero) the compiler
+(gcc-3) complains that the variable ``OK`` is unusued.  It does not appear
+to be possible to make the macro "depend on its argument" in the
+non-debugging case without incurring the run-time cost of evaluating the
+argument (if the argument is just a variable the cost is negligible, but
+if it is a more complex expression then the cost could be considerable).
+The solution adopted was to modify the calling code like this:
+```
+{
+  bool OK;
+  OK = ....;
+  CoCoA_ASSERT(OK);
+}
+```
+Note that the apparently simpler code below **will not work** if the elided
+code (//i.e.// the ``....``) has a side effect since the elided code will not
+be called at all in the non-debugging case:
+```
+{
+  CoCoA_ASSERT(....);
+}
+```
+
+**POSSIBLE SOLUTION**: maybe ``CoCoA_ASSERT`` could compute ``sizeof(...)`` in the
+non-debugging case -- this should avoid evaluation of the argument, and
+will compile away to nothing.  **DISADVANTAGE** this may require extra
+include directives which could (in principle) be activated only if
+``CoCoA_DEBUG`` is set.  Also it did not work well for ``MatrixFpNonRed``
+because there are data-member which exist only if ``CoCoA_DEBUG`` is set.

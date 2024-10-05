@@ -1,0 +1,896 @@
+      RingElem
+      Copyright (c)  2005-2010,2012 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingElem}{John Abbott}
+
+
+== Examples ==
+%======================================================================
+- [ex-RingElem1.C ../../examples/index.html#ex-RingElem1.C]
+- [ex-RingFp1.C   ../../examples/index.html#ex-RingFp1.C]
+- [ex-RingFp2.C   ../../examples/index.html#ex-RingFp2.C]
+- [ex-RingQ1.C    ../../examples/index.html#ex-RingQ1.C]
+- [ex-RingTwinFloat1.C ../../examples/index.html#ex-RingTwinFloat1.C]
+- [ex-RingWeyl1.C ../../examples/index.html#ex-RingWeyl1.C]
+- [ex-RingZZ1.C ../../examples/index.html#ex-RingZZ1.C]
+- [ex-PolyRing3.C ../../examples/index.html#ex-PolyRing3.C]
+- [ex-SparsePolyOps1.C ../../examples/index.html#ex-SparsePolyOps1.C]
+- [ex-NF.C ../../examples/index.html#ex-NF.C]
+-
+
+== User documentation ==
+%======================================================================
+
+The file ``ring.H`` introduces several classes used for representing
+rings and their elements.  A normal user of the CoCoA library will use
+principally the classes [[ring]] and ``RingElem``: an object of type
+[[ring]] represents a mathematical ring with unity, and objects of
+type ``RingElem`` represent values from some ring.  To make the
+documentation more manageable it has been split into two: this file
+describes operations on a ``RingElem``, whereas a separate file
+describes the operations directly applicable to [[ring]]s.
+Documentation about the creation and use of homomorphisms between
+rings can be found in [[RingHom]].
+
+An object of type ``RingElem`` comprises two internal parts: the ring
+to which the value belongs, and the value itself.  For instance, this
+means that the zero elements of different rings are quite different
+objects.
+
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+
+Normally when creating a new ``RingElem`` we specify both the ring to
+which it belongs, and its initial value in that ring.  Let ``R`` be a
+[[ring]].  Let ``n`` be a machine integer or a [[BigInt]].  Let ``q``
+be a rational, //i.e.// a value of type [[BigRat]].  Let ``r2`` be a
+ring element.
+
+ | ``RingElem r;``        | the zero element of ``RingZZ()`` (special case) |
+ | ``RingElem r(R);``     | an element of ``R``, initially 0 |
+ | ``RingElem r(R, n);``  | an element of ``R``, initially the image of ``n`` |
+ | ``RingElem r(R, q);``  | an element of ``R``, initially the image of ``q`` (or error) |
+ | ``RingElem r(R, str);`` | an element of ``R``, initially the value of string ``str`` |
+ | ``RingElem r(R, s);``  | an element of ``R``, initially the value of [[symbol]] ``s`` |
+ | ``RingElem r(R, r2);`` | an element of ``R``, maps ``r2`` into ``R`` via ``CanonicalHom`` |
+ | ``RingElem r(R, MPZ);``  | an element of ``R``, initially the value of ``mpz_t MPZ`` |
+ | ``RingElem r(R, MPQ);``  | an element of ``R``, initially the value of ``mpq_t MPQ`` (or error) |
+
+**Note 1:** To create a ``RingElem`` from a value of type ``mpz_class`` you must do ``RingElem(R, MPZ.get_mpz_t())``; analogously for ``mpq_class``.
+
+**Note 2:** Construction from a rational may fail, //e.g.// if the denominator is a zero divisor in the ring; if it does fail then an exception is thrown (with code ``ERR::DivByZero``).
+
+**Note 3:** There is also a //string constructor// for making vectors:
+- ``RingElems(R, str)`` -- a ``vector<RingElem>`` of elements of ``R``, initially the values in string ``str`` (separated by commas)
+
+
+You can create a **copy** of a ring element in the usual way:
+ | ``RingElem r(r2);``    | a copy of ``r2``, element of the same ring |
+ | ``RingElem r = r2;``   | (alternative syntax, discouraged) |
+
+
+%If no ring is specified when creating a ``RingElem`` then the new value belongs to ``RingZZ()``:
+% | ``RingElem r(n);``     | an element of ``RingZZ()``, initially the image of ``n`` |
+% | ``RingElem r(q);``     | an element of ``RingZZ()``, initially the image of ``q`` |
+
+Naturally the last constructor works only if the denominator of the rational ``q`` is 1.
+
+These are not really constructors: you can get the zero and one of a
+[[ring]] directly using the following:
+
+ | ``zero(R)``     | the zero element of ``R`` |
+ | ``one(R)``      | the one element of ``R``  |
+
+
+
+=== Operations on RingElems ===[operations]
+%----------------------------------------------------------------------
+``RingElem``s are designed to be easy and safe to use; the various checks
+do incur a certain run-time overhead, so a faster alternative is offered
+(see below in the section //Fast and Ugly Code//).  Arithmetic operations
+between ``RingElem``s will fail if they do not belong to the same ring
+(the exception has code ``ERR::MixedRings``).
+
+
+==== Assignment & Swapping ====
+
+Assigning an integer or rational to a ``RingElem`` wil automatically map
+the value into the ring to which the ``RingElem`` belongs.
+ | ``r = n;``     | map ``n`` into ``owner(r)`` and assign the result |
+ | ``r = q;``     | map ``q`` into ``owner(r)`` and assign the result |
+ | ``r = r2;``    | ``r`` becomes a copy of ``r2`` -- afterwards ``owner(r)==owner(r2)`` |
+ | ``swap(r,s);`` | exchange the values (and the owning rings)        |
+
+
+
+==== Arithmetic ====
+
+Arithmetic operations between ``RingElem``s will fail if they do not belong
+to the same ring (the exception has code ``ERR::MixedRings``).  You may
+perform arithmetic between a ``RingElem`` and a machine integer, a ``BigInt`` value
+or a ``BigRat`` value --  the integer/rational is automatically mapped into the
+same ring as the ``RingElem``.
+
+Let ``r`` be a non-const ``RingElem``,
+and ``r1``, ``r2`` be potentially const ``RingElem``s.
+Assume they are all associated to the same ring.
+Then the operations available are: (meanings are obvious)
+
+- ``cout << r1``   -- output value of ``r1`` (decimal only, see notes)
+- ``r1 == r2``     -- equality test 
+- ``r1 != r2``     -- not-equal test 
+- ``-r1``          -- negation (unary minus) 
+- ``r1 + r2``      -- sum 
+- ``r1 - r2``      -- difference 
+- ``r1 * r2``      -- product 
+- ``r1 / r2``      -- quotient, division must be exact (see ``IsDivisible``)
+- ``r += r1``      -- equivalent to  ``r = r + r1`` 
+- ``r -= r1``      -- equivalent to  ``r = r - r1`` 
+- ``r *= r1``      -- equivalent to  ``r = r * r1`` 
+- ``r /= r1``      -- equivalent to  ``r = r / r1`` division must be exact (see ``IsDivisible``)
+- ``power(r1, n)`` -- ``n``-th power of ``r1``; ``n`` any integer, **NB** ``power(0,0)`` gives 1
+- ``r^n``          -- **THIS DOES NOT WORK!!!** it does not even compile, you must use ``power``
+-
+
+Attempting to compute a ``gcd`` or ``lcm`` in a ring which not an
+effective GCD domain will produce an exception with code ``ERR::NotTrueGCDDomain``.
+If ``r1`` or ``r2`` is a ``BigRat`` then an error is signalled at compile time.
+- ``gcd(r1, r2)``  -- an associate of the gcd
+- ``IsCoprime(r1, r2)``  -- true iff ``IsInvertible(gcd(r1,r2))``; for polynomials (over ``ZZ``) consider instead ``IsConstant(gcd(r1,r2))``
+- ``lcm(r1, r2)``  -- an associate of the lcm
+- ``GcdQuot(&gcd, &quot1, &quot2, r1, r2)`` -- procedure computes ``gcd`` and
+                                          ``quot1=r1/gcd`` and ``quot2=r2/gcd``, here ``r1`` and ``r2`` must be ``RingElem``.
+-
+
+There is a class called ``GCDFreeBasis_RingElem`` for computing a factor base
+of a set of ``RingElem`` from an effective GCD domain:
+- ``GCDFreeBasis_RingElem()``  default ctor; base is initially empty
+- ``GFB.myAddInfo(x)``  use also ``RingElem x`` when computing he factor base
+- ``GFB.myAddInfo(v)``  use also the elements of ``std::vector<RingElem> v`` when computing the factor base
+- ``FactorBase(GFB)``  returns the factor base obtained so far
+-
+
+
+==== Queries ====
+CoCoALib offers functions for querying various properties of ``RingElem``s,
+and about relationships between ``RingElems``.
+
+Let ``r1`` and ``r2`` be a (possibly const) ``RingElem``s, and
+let ``N`` be a variable of type [[BigInt]], and ``q`` a variable of type [[BigRat]]
+
+- ``owner(r1)``           -- the ring to which ``r1`` is associated
+- ``IsZero(r1)``          -- true iff ``r1`` is zero               
+- ``IsOne(r1)``           -- true iff ``r1`` is one                
+- ``IsMinusOne(r1)``      -- true iff ``-r1`` is one               
+- ``IsInvertible(r1)``    -- true iff ``r1`` has a multiplicative inverse
+- ``IsZeroDivisor(r1)``   -- true iff ``r1`` is zero-divisor               
+- ``IsDivisible(r1, r2)`` -- true iff ``r1`` is divisible by ``r2`` (throws ``ERR::DivByZero`` if ``r2`` is a zero-divisor)
+- ``IsDivisible(r, r1, r2)`` -- ``r = r1/r2``
+                             and returns true iff ``r1`` is divisible by ``r2``
+- ``IsDivisible_AllowFields(r1, r2)`` -- true iff ``r1`` is divisible by ``r2`` (throws ``ERR::DivByZero`` if ``r2`` is a zero-divisor)
+- ``IsDivisible_AllowFields(r, r1, r2)`` -- ``r = r1/r2``
+                             and returns true iff ``r1`` is divisible by ``r2``
+
+- ``IsInteger(N, r1)``    -- true iff ``r1`` is the image of an integer
+   (if true, a preimage is placed in ``N``, otherwise it is left unchanged)
+- ``IsRational(q, r1)``   -- true iff ``r1`` is the image of a rational
+   (if true, a preimage is placed in ``q``, otherwise it is left unchanged)
+- ``IsDouble(d, r1)``     -- true iff ``r1`` is the image of a rational 
+   whose approx is put into d (false if overflow and ``d`` unchanged)
+-
+
+Note that ``IsDivisible`` tests divisibility in the ring containing the
+values: so 1 is not divisible by 2 in [[RingZZ]], but their images in
+[[RingQQ]] would be divisible.  Also note that ``IsDivisible`` throws an
+exception if the test is in a field; use ``IsDivisible_AllowFields`` if
+you want to allow divisibility testing also in a field.
+
+
+==== Ordering ====
+
+If the ring is an ordered domain then these functions may also be
+used.  You can discover whether CoCoALib thinks that the ring ``R`` is
+arithmetically ordered by calling ``IsOrderedDomain(R)``: the value is
+``true`` iff ``R`` is arithmetically ordered.
+
+Note that comparison operations between ``RingElem``s will fail if they do not belong
+to the same ring (the exception has code ``ERR::MixedRings``).  You may
+perform comparisons between a ``RingElem`` and an integer or a rational --  the integer/rational is automatically mapped into the
+same ring as the ``RingElem``.
+
+Let ``r1`` and ``r2`` belong to an ordered ring.  Trying to use any
+of  these functions on elements belonging to a ring which is not ordered
+will produce an exception with code ``ERR::NotOrdDomain``.
+
+- ``sign(r1)`` -- value is -1, 0 or +1 according as ``r1`` is negative, zero or positive 
+- ``abs(r1)``            -- absolute value of ``r1`` 
+- ``floor(r1)``          -- greatest integer ``<= r1`` 
+- ``ceil(r1)``           -- least integer ``>= r1`` 
+- ``NearestInteger(r1)`` -- returns nearest integer ([[BigInt]]) to ``r1`` (halves round as in ``round``, see [[BigRat]]).
+- ``cmp(r1, r2)``        -- returns a value <0, =0, >0 according as ``r1-r2`` is <0, =0, >0
+- ``CmpAbs(r1, r2)``     -- equiv to ``cmp(abs(r1),abs(r2))``
+- ``CmpDouble(r1, z)``   -- compare a ring elem with a ``double``, result is <0, =0, >0 according as ``r1-z`` is <0, =0, >0 
+- ``r1 < r2``            -- standard inequalities 
+- ``r1 > r2``            -- ... 
+- ``r1 <= r2``           -- ... 
+- ``r1 >= r2``           -- ... 
+
+
+==== More operations on RingElems of a finite field ====[FiniteField]
+%--------------------------------------------------------------------
+
+If ``owner(r)`` is a finite field, or a polynomial ring whose coeffs are
+ini a finite field then the following functions may be used.  The ``P``
+in the names of these function refers to the characteristic of the ring.
+
+- ``IsPthPower(r1)``      -- true iff ``r1`` has a p-th root where p is the ring characteristic (see also ``PthRoot``)
+- ``PthRoot(r1)``         -- returns the p-th root of ``r1`` (error if no p-th root exists)
+-
+
+
+==== More operations on RingElems of a FractionField ====[FractionField]
+%----------------------------------------------------------------------
+
+ If ``owner(r)`` is a fraction field then the following functions may
+be used.  You can find out whether CoCoALib thinks that the ring ``R``
+is a fraction field by calling ``IsFractionField(R)``: the result is
+``true`` iff ``R`` is a fraction field.
+
+Let ``K`` denote a [[FractionField]]
+Let ``r`` denote an element of ``K``.
+- ``num(r)`` -- gives a copy of the numerator of ``r``
+                 as an element of ``BaseRing(K)``
+- ``den(r)`` -- gives a copy of the denominator of ``r``
+                 as an element of ``BaseRing(K)``
+-
+
+**Note:** the numerator and denominator are defined only upto
+multiples by a unit: so it is (theoretically) possible to have two
+elements of ``FrF`` which are equal but which have different
+numerators and denominators, for instance, (x-1)/(x-2) = (1-x)/(2-x)
+
+
+==== More operations on RingElems of a QuotientRing ====[QuotientRing]
+%----------------------------------------------------------------------
+
+If ``owner(r)`` is a quotient ring then the following function may be
+called.  You can find out whether CoCoALib thinks that the ring ``R``
+is a quotient ring by calling ``IsQuotientRing(R)``: the result is
+``true`` iff ``R`` is a quotient ring.
+
+In addition to the standard ``RingElem`` operations, elements of a
+[[QuotientRing]] may be used in other functions.
+
+Let ``RmodI`` denote a quotient ring.
+Let ``r`` denote a non-const element of ``RmodI``.
+
+- ``CanonicalRepr(r)`` -- produces a [[RingElem]] belonging to ``BaseRing(RmodI)``
+ whose image under ``QuotientingHom(RmodI)`` is ``r``.
+ For instance, if ``r`` = -3 in ZZ/(10) then this function could give 7 as
+ an element of [[RingZZ]].
+-
+
+==== More operations on RingElems of a RingTwinFloat ====[RingTwinFloat]
+%----------------------------------------------------------------------
+
+You can determine if an element belongs to a //twin-float// ring by
+calling ``IsRingTwinFloat(owner(r))``: this yields ``true`` iff ``r``
+belongs to a twin-float ring.
+
+Let ``x``, ``y`` be ``RingElem`` belonging to a ``RingTwinFloat``
+- ``MantissaAndExponent2(x)`` -- produce a ``MantExp2`` structure representing the
+  approximate value of ``x`` (for ``MantExp2`` see [[FloatApprox]])
+- ``DebugPrint(out, x)`` -- print out both components of ``x``
+- ``IsPracticallyEqual(x, y)`` --
+            returns true if ``IsZero(x-y)`` otherwise false.
+-
+
+In contrast the test ``x==y`` may throw a
+    ``RingTwinFloat::InsufficientPrecision`` while
+    ``IsPracticallyEqual`` will never throw this exception.
+    ``IsPracticallyEqual`` is intended for use in a termination
+    criterion for an iterative approximation algorithm (//e.g.// see
+    ``test-RingTwinFloat4.C``).
+
+
+==== More operations on RingElems of a PolyRing ====[PolyRing]
+%----------------------------------------------------------------------
+
+You can determine whether an element belongs to a //PolyRing// by
+calling ``IsPolyRing(owner(r))``: the result is ``true`` iff ``r``
+belongs to a poly ring.
+
+Let ``P`` denote a polynomial ring.
+Let ``f`` denote a non-const element of ``P``.
+Let ``f1``, ``f2`` denote const elements of ``P``.
+Let ``v`` denote a const vector of elements of ``P``.
+
+- ``IsMonomial(f)``    -- true iff ``f`` is non zero and of the form coeff*pp
+- ``AreMonomials(v)``  -- true iff ``v`` is non zero and of the form coeff*pp
+                          (if ``v`` is empty it returns true)
+- ``IsConstant(f)``    -- true iff ``f`` is "constant",
+                        i.e. the image of an element of the coeff ring.
+- ``IsIndet(f)``       -- equivalent to ``f`` == x[i]  for some index i
+- ``IsIndet(index, f)``  -- equivalent to ``f`` == x[i]; and sets index = i
+- ``IsIndetPosPower(f)``  -- true iff there is index ``i`` and exponent ``e`` such that ``f == x[i]^e``
+- ``IsEvenPoly(f)``    -- true iff ``f`` is even as a function
+- ``IsOddPoly(f)``     -- true iff ``f`` is odd as a function
+- ``IsIrred(f)``       -- true iff ``f`` is irreducible in P; **important** for polys applies only to "primtiive part" (ignores content)
+- ``IsPrimitivePoly(f)`` -- true iff ``f`` is irred (over finite field) and its roots are group gens of the field extn
+- ``owner(f1)``     -- the owner of ``f`` as a [[ring]].
+- ``NumTerms(f1)``  -- the number of terms in ``f1``.
+- ``StdDeg(f1)``    -- the standard degree of ``f1`` (deg(x[i])=1); **error** if ``f1`` is 0.
+- ``deg(f1)``       -- same as ``StdDeg(f1)``.
+- ``deg(f1, var)`` -- maximum degree of ``var``-th indet in ``f1`` where ``var`` is the
+                       index of the indet in ``P`` (result is of type long).
+- ``LC(f1)``        -- the leading coeff of ``f1``; it is an element of CoeffRing(P).
+- ``ConstantCoeff(f)``  -- the constant coeff of ``f``; may be zero, belongs to CoeffRing(P).
+- ``monic(f1)``     -- same as ``f1/LC(f1)``
+- ``content(f1)``   -- gcd of the coeffs of ``f1``; it is an element of CoeffRing(P).
+                       Content of zero poly is 0.  If coeffs are in a fraction field then content is ``c`` such that ``f1/c`` is a primitive polynomial.
+- ``FixedDivisor(f1)`` -- computes gcd of ``f1(n)`` as ``n`` ranges over all integers (aka. intrinsic content).
+- ``CommonDenom(f1)``  -- the simplest common denominator for the coeffs of ``f1``;
+                        it is an element of BaseRing(CoeffRing(P)); throws if
+                       CoeffRing is not a FractionField of a GCD domain.
+- ``ClearDenom(f1)``   -- ``f1``*``CommonDenom(f1)`` (same restrictions as above)
+- ``ClearDenom(Rx, f1)``  -- like ``ClearDenom(f1)`` but puts result in (SparsePoly)ring ``Rx``
+- ``prim(f1)``         -- same as ``g = ClearDenom(f1); return g/content(g);``
+- ``deriv(f1, var)``   -- formal derivative of ``f1`` wrt. indet having index ``var``.
+- ``deriv(f1, x)``     -- derivative of ``f1`` w.r.t. ``x``, ``x`` must be an indeterminate
+                         (also works for f1 in ``FractionField`` of a ``PolyRing``)
+-
+
+NOTE: to compute the //weighted degree// of a polynomial use the function
+``wdeg`` defined for ``RingElem`` of a [[SparsePolyRing]] (see below).
+
+
+==== More operations on RingElems of a SparsePolyRing ====[SparsePolyRing]
+%----------------------------------------------------------------------
+
+You can determine whether an element belongs to a //sparse poly ring// by
+calling ``IsSparsePolyRing(owner(r))``: the result is ``true`` iff ``r``
+belongs to a (sparse) poly ring.
+
+
+Let ``P`` denote a ``SparsePolyRing``.
+Let ``f`` denote a non-const element of ``P``.
+Let ``f1``, ``f2`` denote const elements of ``P``.
+Let ``expv`` be a ``vector<long>`` of size equal to the number of indeterminates.
+
+- ``owner(f1)``    -- the owner of ``f1`` as a ``ring``
+- ``NumTerms(f1)`` -- the number of terms in ``f1`` with non-zero coefficient.
+- ``UnivariateIndetIndex(f)`` -- if ``f`` is univariate in j-th indet returns j, o/w returns -1; throws error if ``f`` is constant
+- ``LPP(f1)``      -- the leading PP of ``f1``; it is an element of PPM(P).
+                      Also known as //LT(f)// or //in(f)//
+- ``LF(f1)``       -- the leading form of ``f1``; sum of all summands of highest weighted [[degree]]; gives error if ``f1`` is zero.
+- ``CutLF(f)``     -- like ``LF(f)``, but also modifies ``f`` to become ``f-LF(f)``.
+- ``HomogCompt(f,d)`` -- return homogeneous part of ``f`` of deg ``d`` (does not modify ``f``)
+- ``wdeg(f1)``     -- the weighted [[degree]] of the leading PP of ``f1``
+                        (see [KR] Sec.4.3); **error** if ``f1`` is 0.
+                  **NB** result is of type ``CoCoA::degree`` (see [[degree]]).
+                  (contrast with ``StdDeg(f1)`` and ``deg(f1)``
+                   defined for general [[PolyRing]])
+- ``CmpWDeg(f1, f2)``  -- compare the weighted degrees of the LPPs of ``f1`` and ``f2``;
+                          result is <0 =0 >0 according as deg(``f1``) < = > deg(``f2``)
+- ``IsHomog(f)``   -- says whether ``f`` is homogeneous wrt weighted [[degree]].
+- ``homog(f, h)``  -- returns ``f`` homogenized with indet ``h`` (requires
+                          ``GrDim``=1 and ``wdeg(h)``=1)
+- ``NR(f, v)``     -- returns the (normal) remainder of the Groebner Division
+                          Algorithm by ``v``.  If ``v`` is a GBasis this is
+                          the Normal Form (see ``NF`` in the doc for ``ideal``).
+- ``indet(P,v)``   -- returns the ``v``-th indet of ``P`` as a ``RingElem``
+- ``IndetPower(P,v,e)`` -- returns the ``e``-th power of the ``v``-th indet of ``P`` as a ``RingElem``
+- ``monomial(P,pp)`` -- returns ``pp`` as an element of ``P``
+- ``monomial(P,c,pp)`` -- returns ``c``*``pp`` as an element of ``P`` where
+                          ``c`` is an integer, rational or is in ``CoeffRing(P)`` and ``pp`` is in ``PPM(P)``.
+- ``monomial(P,c,expv)`` -- returns ``c*x[0]^expv[0]*x[1]^expv[1]*...`` where
+                        ``c`` is an integer, rational or is in ``CoeffRing(P)``, and x[i] are the indets of ``P``.
+-
+
+Let ``X`` be an indet (//i.e.// a ``RingElem`` in ``P``)
+ or a vector of indices (``vector<long>``)
+- ``IndetsProd(f)``  -- monomial which is product of all indets actually in ``f``
+- ``ContentWRT(f, X)`` -- the content of ``f`` wrt the indet(s) ``X``; result is a
+                          ``RingElem`` in ``P``
+- ``CoefficientsWRT(f, X)`` -- returns a ``vector<CoeffPP>``: each ``CoeffPP`` has fields ``myCoeff`` and ``myPP``
+where  ``myCoeff`` is an element of ``P`` and ``myPP`` is in ``PPM(P)`` being a power product of the indets in ``X``; the entries are in **decreasing order** of ``myPP``.
+- ``CoeffVecWRT(f, x)`` -- ``x`` must be an indet; returns a ``vector<RingElem>`` whose k-th entry contains the coeff of ``x^k`` as an element of ``P``; NB the coeff may be zero!
+- ``CoeffVecWRTSupport(f, B)`` -- returns a ``vector<RingElem>`` being the representation of ``f`` in the basis given by **REVERSE** of ``support(B)``; error if ``f`` is not in the span of the basis
+- ``CoeffHeight(f)`` -- returns the max of the absolute values of the coeffs of ``f``
+- ``IsPalindromic(f)`` -- returns ``true`` iff ``f`` is palindromic; error if ``f`` is not univariate
+- ``reverse(f)``  -- returns ``x^deg(f)*f(1/x)``; error if ``f`` is not univariate
+- ``reverse(f,t)``  -- returns ``f`` with each power product ``PP`` replaced ``t/PP``
+- ``graeffe(f)``  -- returns graeffe transformation of univariate ``f``; its roots are the squares of the roots of ``f``.
+- ``graeffe3(f)``  -- returns cubic graeffe transformation of univariate ``f``; its roots are the cubes of the roots of ``f``.
+- ``MinPoly`` -- [SparsePolyOps-MinPoly].
+
+
+
+**NB** For running through the summands (or terms) of a
+polynomial use ``SparsePolyIter``s (see [[SparsePolyRing]]).
+
+We have still doubts on the usefulness of these two functions:
+- ``CmpWDegPartial(f1, f2, i)`` -- compare the first ``i`` weighted
+                          degrees of the LPPs of ``f1`` and ``f2``;
+                          result is <0 =0 >0 according as ``deg(f1)`` < = > ``deg(f2)``
+- ``IsHomogPartial(f,i)`` -- says whether ``f`` is homogeneous wrt the
+                          first ``i`` components of the weighted degree
+
+
+Use the following two functions with great care: they throw an **error**
+if the [[PPOrdering]] is not respected: (the coefficient ``c`` may be 0)
+- ``PushFront(f, c, t)``-- add to ``f`` the term ``c``*t
+                        where t is a PP belonging to ``PPM(owner(f))``
+                        and **assuming** that t > ``LPP(f)`` or ``f``==0
+- ``PushBack(f, c, t)`` -- add to ``f`` the term ``c``*t
+                        where t is a PP belonging to ``PPM(owner(f))``
+                        and **assuming** that t < t' for all t' appearing in ``f``.
+- ``PushFront(f, c, expv)``-- add to ``f`` the term ``c``*t
+                        where t is the PP with exponent vector ``expv``,
+                        and **assuming** that t > ``LPP(f)`` or ``f``==0
+- ``PushBack(f, c, expv)`` -- add to ``f`` the term ``c``*t
+                        where t is the PP with exponent vector ``expv``,
+                        and **assuming** that t < t' for all t' appearing in ``f``.
+
+
+The corresponding member functions ``myPushFront/myPushBack`` will not
+check the validity of these assumptions, so they are sometimes considerably
+faster.  Since they do not check, use them with extra special care: they do
+have a ``CoCoA_ASSERT`` to perform checks when in DEBUG mode.
+
+
+==== More operations on RingElems of a DenseUPolyRing ====[DenseUPolyRing]
+%----------------------------------------------------------------------
+
+You can determine whether an element belongs to a //DenseUPolyRing// by
+calling ``IsDenseUPolyRing(owner(r))``: the result is ``true`` iff ``r``
+belongs to a poly ring.
+
+
+Let ``P`` denote a ``DenseUPolyRing``.
+Let ``f`` denote an element of ``P``.
+
+- ``monomial(P,c,exp)``  -- ``c``*x^``exp`` as an element of ``P``
+                    with ``c`` an integer or in ``CoeffRing(P)``
+                    ``exp`` a [[MachineInt]]
+- ``coeff(f,d)`` -- the ``d``-th coefficient of ``f``
+                      (as a ``ConstRingElem``, read-only)
+-
+
+**WARNING** Use this functions with great care:  no checks on size and degree
+
+Let ``f`` denote a //non-const// element of ``P``.
+
+- ``myAssignCoeff(f,c,d)`` -- assigns the ``d``-th coefficient
+                              in ``f`` to ``c``
+- ``myAssignZeroCoeff(f,d)``
+- ``myAssignNonZeroCoeff(f,c,d)``
+
+
+=== Notes on operations ===
+%----------------------------------------------------------------------
+
+Operations combining elements of different rings will cause a run-time
+**error**.
+
+In all functions involving two ``RingElem``s either ``r1`` or ``r2``
+may be replaced by a machine integer, or by a big integer (an element
+of the class [[BigInt]]).  The integer value is automatically mapped into
+the ring owning the ``RingElem`` in the same expression.
+
+The exponent ``n`` in the power function may be zero or negative, but a
+run-time error will be signalled if one attempts to compute a negative
+power of a non-invertible element.
+**NB** You cannot use ``^`` to compute powers -- see //Bugs// section.
+
+An attempt to perform an inexact division or to compute a GCD not in a 
+GCD domain will produce a run-time error.
+
+The printing of ring elements is always in decimal regardless of the
+``ostream`` settings (this is supposed to be a feature rather than a bug).
+
+
+
+At this point, if you are new to CoCoALib, you should probably look
+at some of the example programs in the ``examples/`` directory.
+
+
+
+=== Writing functions with RingElems as arguments ===
+%----------------------------------------------------------------------
+
+One would normally expect to use the type ``const RingElem&`` for
+read-only arguments which are ``RingElem``s, and ``RingElem&`` for
+read-write arguments.  Unfortunately, doing so would lead to problems
+with the CoCoA library.  **INSTEAD** you should use the types:
+ | ``ConstRefRingElem x`` | for read-only arguments:  morally ``const RingElem& x`` |
+ | ``RingElem& x``        | for read-write arguments |
+ | ``RingElem x``         | for read-only arguments which make a local copy |
+
+If you are curious to know why this non-standard quirk has to be used,
+read on.
+
+When accessing matrix elements or coefficients in a polynomial
+CoCoALib uses //proxies//: these are objects which should behave much
+like ``const RingElem`` values.  To allow easy use of such proxies in
+functions which want a read-only ``RingElem`` we use the type
+``ConstRefRingElem`` (which is actually ``const RingElemAlias&``) for
+the formal parameter.
+
+Internally, ring element values are really smart pointers to the true
+value.  Now the ``const`` keyword in C++ when applied to a pointer
+makes the pointer const while the pointed-to value remains alterable
+-- this is not the behaviour we want for ``const RingElem&``.  To get
+the desired behaviour we have to use another type: the type we have
+called ``ConstRefRingElem``.
+
+
+
+=== ADVANCED USE OF RingElem ===
+%----------------------------------------------------------------------
+
+The rest of this section is for more advanced use of [[ring]]s and
+``RingElem``s (//e.g.// by CoCoA library contributors).  If you are new to
+CoCoA, you need not read beyond here.
+
+
+==== Fast and Ugly Code ====
+%----------------------------------------------------------------------
+**WE DO NOT RECOMMEND** that you use what is described in this section.
+If you are curious to know a bit more how rings are implemented, you
+might find this section informative.
+
+``RingElem``s are designed to be easy and pleasant to use, but this
+convenience has a price: a run-time performance penalty (and a memory
+space penalty too).
+Both penalities may be avoided by using //raw values// but at a
+considerable loss of programming convenience and safety.  You should
+consider using raw values only if you are desperate for speed; even
+so, performance gains may be only marginal except perhaps for
+operations on elements of a simple ring (e.g. a small finite field).
+
+A ``RingElem`` object contains within itself an indication of the owning
+ring, and a //raw value// which is a pointer to where the real
+representation of the ring element value lies.  These raw values may be
+accessed via the //raw// function.  They may be combined arithmetically by
+calling member functions of the owning ring.  For instance, if x,y,z are
+all RingElem objects all BELONGING TO EXACTLY THE SAME RING then we can
+achieve
+```     x = y+z;
+slightly faster by calling
+```     owner(x)->my.Add(raw(x), raw(y), raw(z));
+
+It should now be clear that the syntax involved is cumbersome and
+somewhat obscure.  For the future maintainability of the code the
+simpler ``x = y+z;`` has many advantages.  Furthermore, should x,y,z
+somehow happen not all to lie in the same ring then ``x = y+z;`` will act
+in a reasonable way, whereas the supposedly faster call will likely lead
+to many hours of debugging grief.  The member functions for arithmetic
+(e.g. ``myAdd``) **DO NOT PERFORM** sanity checks on their arguments:
+e.g. attempting to divide by zero could well crash the program.
+
+If you use a //debugging version// of the CoCoA Library then some
+member functions do use assertions to check their arguments.  This is
+useful during development, but must not be relied upon since the
+checks are absent from the //non-debugging version// of the CoCoA
+Library.  See the file config.txt for more information.
+
+This fast, ugly, unsafe way of programming is made available for those who
+desperately need the speed.  If you're not desperate, don't use it!
+
+
+==== Fast, Ugly and Unsafe operations on raw values ====
+%----------------------------------------------------------------------
+Read the section //Fast and Ugly Code// before using any of these!
+
+Let ``r`` be a non-const raw value (//e.g.// ``raw(x)``, with ``x`` a
+``RingElem``), and ``r1``, ``r2`` potentially const raw values.
+Assume they are all owned by the ring ``R``.
+Then the functions available are:
+
+- ``R->myNew()``        -- //construct// a new element of R, value=0
+- ``R->myNew(n)``       -- //construct// a new element of R, value=n
+- ``R->myNew(N)``       -- //construct// a new element of R, value=N
+- ``R->myNew(r1)``      -- //construct// a new element of R, value=r1
+- ``R->myDelete(r)``    -- //destroy// r, element of R (frees resources)
+
+- ``R->mySwap(r, s)``       -- swaps the two values (s is non-const raw value)
+- ``R->myAssignZero(r)``    -- r = 0
+- ``R->myAssign(r, r1)``    -- r = r1
+- ``R->myAssign(r, n)``     -- r = n (n is a long)
+- ``R->myAssign(r, N)``     -- r = n (N is a [[BigInt]])
+- ``R->myNegate(r, r1)``    -- r = -r1
+- ``R->myAdd(r, r1, r2)``   -- r = r1+r2
+- ``R->mySub(r, r1, r2)``   -- r = r1-r2
+- ``R->myMul(r, r1, r2)``   -- r = r1*r2
+- ``R->myDiv(r, r1, r2)``   -- r = r1/r2 (division must be exact)
+- ``R->myIsDivisible(r, r1, r2)`` -- r = r1/r2, and returns true iff division was exact
+- ``R->myIsZeroDivisor(r)`` -- returns true iff r is a zero-divisor
+- ``R->myIsUnit(r1)``       -- IsUnit(r1)
+- ``R->myGcd(r, r1, r2)``   -- r = gcd(r1, r2)
+- ``R->myLcm(r, r1, r2)``   -- r = lcm(r1, r2)
+- ``R->myPower(r, r1, n)``  -- r = power(r1, n)  BUT n MUST be non-negative!!
+- ``R->myIsZero(r1)``       -- r1 == 0
+- ``R->myIsZeroAddMul(r, r1, r2)`` -- ((r += r1*r2) == 0)
+- ``R->myIsEqual(r1, r2)``  -- r1 == r2
+- ``R->myIsPrintAtom(r1)``  -- true iff ``r1`` does not need brackets
+                               when a num or denom of a fraction 
+- ``R->myIsPrintedWithMinus(r1)`` -- true iff the printed form of ``r1``
+                                     begins with a minus sign
+- ``R->myOutput(out, r1)``  -- out << r1
+- ``R->mySequentialPower(r, r1, n)`` -- normally it is better to use R->myPower(r, r1, n)
+- ``R->myBinaryPower(r, r1, n)`` -- normally it is better to use R->myPower(r, r1, n)
+
+
+
+== Maintainer documentation ==
+%======================================================================
+(**NB** consider consulting also [[QuotientRing]], [[FractionField]]
+and [[PolyRing]])
+
+The design underlying rings and their elements is more complex than I
+would have liked, but it is not as complex as the source code may make
+it appear.  The guiding principles are that the implementation should be
+flexible and easy/pleasant to use while offering a good degree of
+safety; extreme speed of execution was not a goal (as it is usually
+contrary to good flexibility) though an interface offering slightly
+better run-time efficiency remains.
+
+Regarding flexibility: in CoCoALib we want to handle polynomials whose
+coefficients reside in (almost) any commutative ring.  Furthermore, the
+actual rings to be used will be decided at run-time, and cannot
+restricted to a given finite set.  We have chosen to use C++ inheritance
+to achieve the implementation: the abstract class ``RingBase`` defines the
+interface that every concrete ring class must offer.
+
+Regarding ease of use: since C++ allows the common arithmetic operators
+to be overloaded, it is essential that these work as expected for
+elements of arbitrary rings -- with the caveat that ``/`` means exact
+division, being the only reasonable interpretation.  Due to problems of
+ambiguity arithmetic between elements of different rings is forbidden:
+e.g. let f in Q[x,y] and g in Z[y,x], where should f+g reside?
+
+The classes in the file ring.H are closely interrelated, and there is no
+obvious starting point for describing them -- you may find that you need
+to read the following more than once to comprehend it.  Here is a list
+of the classes:
+
+ | ``ring``              | value represents a ring; it is a smart pointer |
+ | ``RingBase``          | abstract class //defining what a ring is// |
+ | ``RingElem``          | value represents an element of a ring |
+ | ``RingElemAlias``     | reference to a ``RingElem`` belonging to someone else |
+ | ``ConstRefRingElem``  | C++ const-reference to a ``RingElemAlias`` |
+ | ``RingElemConstRawPtr`` | raw pointer to a //const// ring value |
+ | ``RingElemRawPtr``    | raw pointer to a ring value |
+
+For the first two see [[ring]].
+
+The classes ``RingElem`` and ``RingElemAlias`` are
+related by inheritance: they are very similar but differ in one important
+way.  The base class ``RingElemAlias`` defines the data members
+which are inherited by ``RingElem``.  The essential difference is that
+a ``RingElem`` owns the value whereas a ``RingElemAlias`` does not.
+The two data members are ``myR`` and ``myRawValue``: the first is the
+identity of ring to which the element belongs, and the second is the
+value in that ring (the value is stored in a format that only the
+owning ring can comprehend).  All operations on ring elements are
+effected by member functions of the ring to which the value belongs.
+
+The differing ownership inherent in ``RingElemAlias`` and ``RingElem``
+lead to several consequences.  The destructor of a ``RingElem`` will
+destroy in the internal representation of the value; in contrast, the
+destructor of a ``RingElemAlias`` does nothing.  A ``RingElemAlias``
+object becomes meaningless (& dangerous) if the owner of the value it
+aliases is destroyed.
+
+
+Why did I create ``RingElemAlias``?  The main reason was to allow
+matrices and iterators of polynomials to be implemented cleanly and
+efficiently.  Clearly a [[matrix]] should be the owner of the values
+appearing as its entries, but we also want a way of reading the matrix
+entries without having to copy them.  Furthermore, the matrix can use
+a compact representation: the ring to which its elements belong is
+stored just once, and not once for each element.  Analogous comments
+apply to the coefficients of a polynomial.
+
+
+As already stated above, the internal data layouts for objects of
+types ``RingElem`` and ``RingElemAlias`` are identical -- this is
+guaranteed by the C++ inheritance mechanism.  The subfield indicating
+the ring to which the value belongs is simply a ``ring``, which is
+just a reference counting smart pointer.  The subfield indicating the
+value is a raw pointer of type ``void*``; however, when the raw
+pointer value is to be handled outside a ring element object then it
+is wrapped up as a ``RingElemRawPtr`` or ``RingElemConstRawPtr`` --
+these are simply wrapped copies of the ``void*``.
+
+The classes ``RingElemRawPtr`` and ``RingElemConstRawPtr`` are used
+for two reasons.  One is that if a naked ``void*`` were used outside
+the ring element objects then C++ would find the call
+``RingElem(R,0)`` ambiguous because the constant ``0`` can be
+interpreted either as an integer constant or as a null pointer: there
+are two constructors which match the call equally well.  The other
+reason is that it discourages accidentally creating a ring element
+object from any old pointer; it makes the programmer think -- plus I
+feel uneasy when there are naked ``void*`` pointers around.  Note that
+the type of the data member ``RingElemConstRawPtr::myPtr`` is simply
+``void*`` as opposed to ``void const*`` which one might reasonably
+expect.  I implemented it this way as it is simpler to add in the
+missing constness in the member function
+``RingElemConstRawPtr::myRawPtr`` than it would be to cast it away in
+the ``myRawPtr`` function of ``RingElemRawPtr``.
+
+
+==== Further comments about implementation aspects of the above classes. ====
+
+The class ``RingBase`` declares a number of pure virtual functions for
+computing with ring elements.  Since these functions are pure they
+must all be fully defined in any instantiable ring class
+(e.g. ``RingZZImpl`` or ``RingFpImpl``).  These member functions follow
+certain conventions:
+
+: **RETURN VALUES**:
+   most arithmetic functions return no value, instead the
+   result is placed in one of the arguments (normally the first argument
+   is the one in which the result is placed), but functions which return
+   particularly simple values (e.g. booleans or machine integers) do
+   indeed return the values by the usual function return mechanism.
+
+: **ARG TYPES**:
+   ring element values are passed as //raw pointers//
+   (i.e. a wrapped ``void*`` pointing to the actual value).  A read-only
+   arg is of type ``RingElemConstRawPtr``, while a writable arg is of type
+   ``RingElemRawPtr``.  When there are writable args they normally appear
+   first.  For brevity there are typedefs ``ConstRawPtr`` and ``RawPtr`` in
+   the scope of ``RingBase`` or any derived class.
+
+: **ARG CHECKS**:
+   sanity checks on the arguments are NOT CONDUCTED (e.g. the
+   division function assumes the divisor is non-zero).  These member
+   functions are supposed to be fast rather than safe.
+
+
+In a few cases there are non-pure virtual member functions in
+``RingBase``.  They exist either because there is a simple universal
+definition or merely to avoid having to define inappropriate member
+functions (//e.g.// gcd functions when the ring cannot be a gcd domain).
+Here is a list of them:
+
+- ``myIsUnit(x)``               -- default checks that 1 is divisible by ``x``
+- ``myIsZeroDivisor(x)``        -- special implementation in [QuotientRing] for setting primality flag to defining ideal
+- ``myGcd(lhs, x, y)``          -- gives an error:
+                                   either ``NotGcdDom`` or ``NYI``
+- ``myLcm(lhs, x, y)``          -- gives an error:
+                                   either ``NotGcdDom`` or ``NYI``
+- ``myGcdQuot(lhs, xquot, yquot, x, y)`` -- gives an error:
+                                            either ``NotGcdDom`` or ``NYI``
+- ``myExgcd(lhs, xcofac, ycofac, x, y)`` -- gives an error:
+                                            either ``NotGcdDom`` or ``NYI``
+- ``myIsPrintAtom(x)``          -- defaults to false
+- ``myIsPrintedWithMinus(x)``   -- gives ``ShouldNeverGetHere`` error
+- ``myIsMinusOne(x)``           -- defaults to myIsOne(-x); calculates -x
+- ``myIsZeroAddMul(lhs, y, z)`` -- computes lhs += y*z in the obvious way,
+                                    and calls ``myIsZero``
+- ``myCmp(x, y)``               -- gives ``NotOrdDom`` error
+- ``myCmpAbs(x, y)``            -- tries to compute ``cmp(abs(x),abs(y))`` so may give ``NotOrdDom`` error
+- ``mySign(x)``                 -- simply calls ``myCmp(x, 0)``,
+                                   then returns -1,0,1 accordingly
+
+There are three non-virtual member functions for calculating powers: one
+uses the sequential method, the other two implement the repeated
+squaring method (one is an entry point, the other an implementation
+detail).  These are non-virtual since they do not need to be redefined;
+they are universal for all rings.
+
+For the moment I shall assume that the intended meaning of the pure
+virtual functions is obvious (given the comments in the source code).
+
+
+Recall that arithmetic operations on objects of type
+``ConstRefRingElem`` (which matches ``RingElem`` too) are converted
+into member function calls of the corresponding owning ring.  Here is
+the source code for addition of ring elements -- it typifies the
+implementation of operations on ring elements.
+```
+  RingElem operator+(ConstRefRingElem x, ConstRefRingElem y)
+  {
+    const ring& Rx = owner(x);
+    const ring& Ry = owner(y);
+    if (Rx != Ry)
+      error(CoCoAError(ERR::MixedRings, "RingElem + RingElem"));
+
+    RingElem ans(Rx);
+    Rx->myAdd(raw(ans), raw(x), raw(y));
+    return ans;
+  }
+```
+
+The arguments are of type ``ConstRefRingElem`` since they are
+read-only, and the return type is ``RingElem`` since it is new
+self-owning value (it does not refer to a value belonging to some
+other structure).  Inside the function we check that the rings of the
+arguments are compatible, and report an error if they are not.
+Otherwise a temporary local variable is created for the answer, and
+the actual computation is effected via a member function call to the
+ring in which the values lie.  Note the use of the ``raw`` function
+for accessing the raw pointer of a ring element.  In summary, an
+operation on ring elements intended for public use should fully check
+its arguments for compatibility and correctness (//e.g.// to avoid
+division by zero); if all checks pass, the result is computed by
+passing raw pointers to the appropriate member functions of the ring
+involved -- this member function assumes that the values handed to it
+are compatible and valid; if not, //undefined behaviour// will result
+(//i.e.// a crash if you are lucky).
+
+
+Most of the member functions of a ring are for manipulating raw values
+from that same ring, a few permit one to query properties of the ring.
+The type of a raw value is ``RingBase::RawValue``, which helpfully
+abbreviates to RawValue inside the namespace of ``RingBase``.  Wherever
+possible the concrete implementations should be **exception safe**, //i.e.// they
+should offer either the strong exception guarantee or the no-throw
+guarantee (according to the definitions in //Exceptional C++// by Sutter).
+
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+I have chosen not to use ``operator^`` for computing powers because of a
+significant risk of misunderstanding between programmer and compiler.
+The syntax/grammar of C++ cannot be changed, and ``operator^`` binds less
+tightly than (binary) ``operator*``, so any expression of the form ``a*b^c``
+will be parsed as ``(a*b)^c``; this is almost certainly not what the
+programmer intended.  To avoid such problems of misunderstanding I
+have preferred not to define ``operator^``; it seems too dangerous.
+
+Note about comparison operators (<,<=,>,>=, and !=).  The C++ STL
+does have templates which will define all the relational operators
+efficiently assuming the existence of ``operator<`` and ``operator==``.
+These are defined in the namespace ``std::rel_ops`` in the standard
+header file ``<utility>``.  I have chosen NOT to use these because they can
+define only //homogeneous// comparisons; so the comparisons between
+``ConstRefRingElem`` and ``int`` or [[BigInt]] would still have to be written out
+manually, and I prefer the symmetry of writing them all out.
+See p.69ff of Josuttis for details.
+
+The function ``myAssignZero`` was NECESSARY because ``myAssign(x, 0)`` was
+ambiguous (ambiguated by the assignment from an ``mpz_t``).  It is no longer
+necessary, but I prefer to keep it (for the time being).
+
+The requirement to use the type ``ConstRefRingElem`` for function arguments
+(which should normally be ``const RingElem&`` is not ideal, but it seems hard
+to find a better way.  It is not nice to expect users to use a funny type
+for their function arguments.  How else could I implement (noncopying) access to
+coefficients in a polynomial via an iterator, or access to matrix elements?
+
+Would we want ++ and -- operators for ``RingElem``s???
+
+Should (some of) the query functions return ``bool3`` values?
+What about properties which are hard to determine?
+
+How to generate random elements from a ring?
+
+Anna thinks that ``NearestInteger`` could handle specially elements of
+[[RingZZ]] rather than doing the full wasteful computation.  Not sure
+if the extra code and complication would really make a difference in
+practice.
+
+``gcd`` and ``lcm``: there is no guarantee on sign/monic because it may
+be costly to compute and generally useless.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+== Main changes ==
+%======================================================================
+
+**2013**
+- May (v0.9953):
+ - added IsZeroDivisor
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

@@ -1,0 +1,5 @@
+// This example computed GCD of RingElems in QQ (in DoubleX).
+use QQ[x];
+F := x^8 -x^7 -8*x^6 -6*x^5 -9*x^3 -16*x^2 -8*x -1;
+RRA := RealRootsApprox(F,10^(-10));
+assert(len(RRA) = 3);

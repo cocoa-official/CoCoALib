@@ -1,0 +1,55 @@
+      LRSDegeneracy
+      Copyright (c)  2022 John Abbott, Anna M. Bigatti  (orig. auth. Nico Mexis 2022)
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{LRSDegeneracy}{Nico Mexis}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-LRSDegeneracy.C ../../examples/index.html#ex-LRSDegeneracy.C]
+-
+
+== User documentation ==
+%======================================================================
+
+This file offers 4 functions: ``IsLRSDegenerateOrderMod``, ``IsLRSDegenerateOrder``, ``IsLRSDegenerateMod``, and ``IsLRSDegenerate``.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+Let ``f`` be two ``RingElem`` values representing univariate polynomials in a polynomial ring ``P`` over ``ZZ`` or ``QQ``.
+Let ``n`` be a positive integer.
+Let ``VerifLev`` be an instance of ``VerificationLevel``.
+
+- ``IsLRSDegenerateOrderMod(f,n,VerifLev)`` -- returns a ``bool`` indicating whether ``f`` is the characteristic polynomial of a ``n``-degenerate LRS - using a modular approach.
+- ``IsLRSDegenerateOrder(f,n)`` -- returns a ``bool`` indicating whether ``f`` is the characteristic polynomial of a ``n``-degenerate LRS.
+- ``IsLRSDegenerateMod(f,VerifLev)`` -- returns an ``unsigned long n`` indicating that ``f`` is the characteristic polynomial of a ``n``-degenerate LRS - using a modular approach.
+- ``IsLRSDegenerate(f)`` -- returns a ``bool``: ``true`` means that ``f`` is the characteristic polynomial of a ``n``-degenerate LRS for some ``n``.  Otherwise ``false``.
+- ``LRSDegeneracyOrder(f)`` -- returns an ``unsigned long n`` indicating that ``f`` is the characteristic polynomial of a ``n``-degenerate LRS.
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+- The approaches are taken from Cipu et al. (DOI:10.1007/s00200-011-0150-8).
+- Details about the modular approach have been provided by John Abbott.
+-
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+- Cipu et al. suggest using ``Q_n = Res_y(f(xy), Phi_n(y))`` and then ``deg(gcd(P,Q_n)) > 0`` in the modular/iterative approach.  But resultant can be slow!
+
+
+== Main changes ==
+%======================================================================
+
+**2022**
+- August (v0.99802): first release
+-
+
+

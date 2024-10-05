@@ -1,0 +1,118 @@
+      PPVector
+      Copyright (c)  2008-2019 Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{PPVector}{Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-PPVector1.C ../../examples/index.html#ex-PPVector1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+**WARNING THIS IS STILL A PRELIMINARY IMPLEMENTATION** as indicated by
+the names of the implementation files: ``TmpPPVector.H`` and ``TmpPPVector.C``.
+
+This class is for dealing with lists of power-products.
+
+This class has been designed to be used by monomial ideal operations,
+Hilbert, and Mayer-Vietoris trees.
+
+The key functions interpret the list as generators of a monomial
+ideal: interreduction, divisibility test (ideal membership), lcms
+(ideal intersection).
+
+The elements are [[PPWithMask]], to make fast divisibility tests.
+Constructor requires a [[PPMonoid]] and a ``DivMaskRule`` (see
+[[DivMask]]), so that the user can choose the best suited
+implementations (mostly depending on the number of indeterminates and
+on the size of the exponents).
+
+Member fields are
+```
+    PPMonoid myPPM;
+    DivMaskRule myDMR;
+    std::vector<PPWithMask> myVec;
+```
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+
+- ``PPVector(PPMonoid PPM, DivMaskRule DMR);``
+- ``PPVector(PPMonoid PPM, DivMaskRule DMR, const std::vector<RingElem>& v);``
+-
+
+=== Queries ===[queries]
+%----------------------------------------------------------------------
+
+- ``bool IsEmpty(const PPVector& PPs)``
+- ``bool IsDivisible(const PPWithMask& pp, const PPVector& ByL);``
+  true iff pp is divisible by an element of L
+- ``bool IsDivisible(ConstRefPPMonoidElem pp, const PPVector& ByL);``
+  true iff pp is divisible by an element of L
+-
+
+=== Operations on RingElems ===[operations]
+%----------------------------------------------------------------------
+
+==== Mathematical functions ====
+- ``void interreduce(PPVector& PPs);``
+  interreduce PPs (NOT exception clean)
+- ``void InterreduceSort(PPVector& PPs);``
+  interreduce and sort PPs (NOT exception clean)
+- ``void lcms(PPVector& PPs, const PPVector& PPs1, const PPVector& PPs2);``
+   all the lcm between elements of PPs1 and PPs2, effectively the
+   generators of the intersection ideal
+-
+
+==== Utility functions ====
+- ``PPMonoid PPM(const PPVector& PPs)``
+- ``DivMaskRule DMR(const PPVector& PPs)``
+- ``std::ostream& operator<<(std::ostream&, PPVector)``
+- ``long len(const PPVector& PPs)``
+- ``void convert(std::vector<RingElem>& v, ring P, const PPVector& PPs)``
+  converts PP's into RingElem's
+- ``void convert(PPVector PPs, const std::vector<RingElem>& v)``
+  converts vector<RingElem> (if monomial!) into PPVector
+- ``void PushBack(PPVector& PPs, ConstRefPPMonoidElem pp)``
+  if owner(pp) != PPM(PPs) it maps it
+- ``void PushBackPopBack(PPVector& ToPPs, PPVector& FromPPs)``
+  move last PP from ``FromPPs`` into ``ToPPs``
+- ``void swap(PPVector& PPs1, PPVector& PPs2)``
+   swap PPs1 and PPs1
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+=== Abstract Class ===
+%----------------------------------------------------------------------
+
+There was an attempt to make it an abstract class, ``PPVectorBase``, made
+of abstract ``PPVectorElem``, with the plan to have concrete classes a
+vector of [[PPWithMask]], of ``PPMonoidElem``, and of square-free pps
+(which cannot make a [[PPMonoid]] because x*x is not square-free).
+
+But this failed because most operations would need to know the type of
+the elements in the vector making it more suitable for templates.  But
+- (1) I much prefer inheritance (mathematically cleaner) and
+- (2) probably all this generality is useless.
+-
+
+So it was sadly abandoned.
+
+== Main changes ==
+%======================================================================
+
+**2019**
+- October (v0.99650):
+ - added constructor with vector of RingElem
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

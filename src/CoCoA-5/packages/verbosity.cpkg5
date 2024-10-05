@@ -1,0 +1,28 @@
+package $verbosity  // mimicking verbosity as in CoCoALib
+
+export IsVERBOSE_func;
+  
+------------------------------------------------------------
+VerbosityDepth := 0;  -- depth in CoCoA5
+------------------------------------------------------------
+
+-- define IsVERBOSE_FnName(level, FnName)
+--   if VerbosityLevel() < level then return false; endif;
+--   print "  [L", level, ",", FnName, "]   ";
+--   return true;
+-- enddefine; -- IsVERBOSE_FnName
+
+
+define IsVERBOSE_func(FnName)
+//  return func(l) return IsVERBOSE_FnName(l,FnName); endfunc;
+  return func(l)
+    ImportByValue FnName;
+    if VerbosityLevel() < l then return false; endif;
+// indent 2 spaces (min 3spaces for CoCoALib verbosity)
+    print "  [L", l, ",", FnName, "]   ";
+    return true;
+  endfunc;
+enddefine; -- IsVERBOSE_func
+
+  
+endpackage;

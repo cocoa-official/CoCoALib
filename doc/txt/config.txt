@@ -1,0 +1,47 @@
+      config
+      Copyright (c)  2005  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{config}{John Abbott}
+
+
+
+== User documentation for files config.H ==
+%======================================================================
+
+The file config.H defines certain //global// concepts which may be used by
+any of the files in CoCoALib; in particular, this will include any
+definitions needed to ensure platform independence.  Consequently, every
+header file in the CoCoA library should include the header file
+``CoCoA/config.H``.
+
+The file ``config.H`` contains the following:
+- typedefs for ``SmallFpElem_t`` and ``SmallFpLogElem_t`` which are used
+  in ``RingFpImpl`` and ``SmallFpImpl`` (and their ``Log`` counterparts)
+- typedef for ``SmallExponent_t`` which is used internally in some
+  [[PPMonoid]] implementations.
+
+
+
+== Maintainer documentation for files config.H and config.C ==
+%======================================================================
+
+The typedef for ``SmallFpElem_t`` fixes the choice of representing type for
+elements in a ``SmallFpImpl`` which are used to implement a ``RingFpImpl``; the
+type ``SmallFpLogElem_t`` does the same for ``SmallFpLogImpl`` and
+``RingFpLogImpl``.  These types should be some size of unsigned integer; the
+best choices are probably platform dependent.  If you want to try different
+choices, you will probably have to recompile the whole CoCoA library.
+
+The typedef for ``SmallExponent_t`` should be an unsigned integer type.
+It is used in the [[PPMonoid]]s which use an "order vector".
+
+
+== Bugs, Shortcomings, and other ideas ==
+%======================================================================
+
+Putting ``SmallFpElem_t`` and ``SmallFpLog_t`` here is ugly.  How can
+I do it better?
+
+Shouldn't these typedefs be moved to the corresponding *.H files?
+What is the point of putting them here???

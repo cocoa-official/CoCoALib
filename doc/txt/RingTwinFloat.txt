@@ -1,0 +1,264 @@
+      RingTwinFloat
+      Copyright (c)  2005,2009,2012,2016 John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingTwinFloat}{John Abbott, Anna M. Bigatti}
+
+
+
+=== Examples ===
+- [ex-RingTwinFloat1.C ../../examples/index.html#ex-RingTwinFloat1.C]
+- [ex-RingTwinFloat2.C ../../examples/index.html#ex-RingTwinFloat2.C]
+- [ex-RingTwinFloat3.C ../../examples/index.html#ex-RingTwinFloat3.C]
+- [ex-RingTwinFloat4.C ../../examples/index.html#ex-RingTwinFloat4.C]
+-
+
+== User documentation for the classes RingTwinFloat and RingTwinFloatImpl ==
+%======================================================================
+
+IMPORTANT NOTICE: please make sure you are using GMP 4.1.4 or later
+(wrong results may be obtained with earlier versions).
+
+Elements of a ``RingTwinFloat`` try to act as though they were unlimited
+precision floating point values (while using only a finite precision).
+``RingTwinFloat`` uses a heuristic to monitor loss of precision during
+computation, and will throw a ``RingTwinFloat::InsufficientPrecision`` object if
+it detects an unacceptable loss of precision.  Beware that this is only
+a probabilistic heuristic which can underestimate precision loss.  A
+``RingTwinFloat::InsufficientPrecision`` object may also be caught as an
+``ErrorInfo`` object having error code ``ERR::InsuffPrec`` (see [[error]]).
+
+EXAMPLE:
+  If epsilon is a non-zero ``RingTwinFloat`` value then equality test (1+epsilon == 1)
+  can give three possible outcomes (depending on the chosen precision and the
+  relative size of epsilon compared to 1): ``true`` if epsilon is very small
+  compared to 1, ``false`` if epsilon is "relatively large", or it may throw
+  ``RingTwinFloat::InsufficientPrecision`` if epsilon is neither very small
+  nor relatively large.
+
+``RingTwinFloat`` uses a heuristic for guessing when the difference of two
+almost equal values should be regarded as zero.  While the heuristic is
+usually very reliable, it is possible to construct examples where the
+heuristic fails: see [ex-RingTwinFloat1.C ../../examples/index.html#ex-RingTwinFloat1.C].
+
+The function ``IsInteger`` will return false for any value of magnitude
+greater than or equal to 2^PrecisionBits(RR).  Recognition of integers
+is heuristic; failures in either sense are possible but are also
+unlikely.
+
+See [[RingElem RingTwinFloat]] for operations on its elements.
+
+=== Pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+There are two constructors for ``RingTwinFloat``: one takes a single
+argument being a lower bound on the number of bits' of "heuristically
+guaranteed" precision desired (in the mantissa); the other expects 3
+args being the minimum "heuristically guaranteed" precision in the
+value, a "buffer precision" and the number of noise bits to be
+appended.  A minimum precision of 8 bits is imposed; smaller
+precisions are automatically increased to 8.
+
+All arguments are [[MachineInt]]
+
+- ``NewRingTwinFloat(AccuracyBits)``  implies as many buffer bits as accuracy bits
+- ``NewRingTwinFloat(AccuracyBits, BufferBits, NoiseBits)``
+- ``RingTwinFloat(R)`` -- sort of downcast the ring ``R`` to a twin-float ring;
+will throw an ``ErrorInfo`` object with code ``ERR::NotRingTwinFloat`` if needed.
+-
+
+=== Query and cast ===[query]
+%----------------------------------------------------------------------
+Let ``S`` be a [[ring]]
+- ``IsRingTwinFloat(S)`` -- ``true`` iff ``S`` is actually a ``RingTwinFloat``
+- ``RingTwinFloatPtr(S)`` -- pointer to the twin-float impl (for calling mem fns);
+will throw an ``ErrorInfo`` object with code ``ERR::NotRingTwinFloat`` if needed.
+-
+
+=== Operations ===[operations] 
+%----------------------------------------------------------------------
+In addition to the standard [[ring operations]], a ``FractionField``
+may be used in:
+- ``PrecisionBits(RR)`` -- gives the mantissa precision specified in the ctor
+-
+
+=== Homomorphisms ===[homomorphisms]
+%----------------------------------------------------------------------
+Let ``RR`` be a ``RingTwinFloat`` and ``S`` any [[ring]]
+- ``NewApproxHom(RR, S)`` -- creates the homomorphism ``RR`` --> ``S``
+                             (but see also [[CanonicalHom]])
+-                           
+
+
+== Maintainer documentation for the classes RingTwinFloat and RingTwinFloatImpl ==
+%======================================================================
+
+As usual the class ``RingTwinFloat`` is just a reference counting smart pointer
+to an object of type ``RingTwinFloatImpl`` (which is the one which really does
+the work).  The implementation of the smart pointer class ``RingTwinFloat`` is
+altogether straightfoward (just the same as any of the other smart
+pointer ring classes).
+
+=== Philosophy ===
+%----------------------------------------------------------------------
+
+The implementation is based on Traverso's idea of "paired floats":
+each value is represented as two almost equal floating point numbers.
+The difference between the two numbers is intended to give a good
+indication of how much "noise" there is in the values.  Here we shall
+allow larger tuples of floating point numbers.  Arithmetic is 
+performed independently on each component: e.g.
+```   (a[0],a[1]) + (b[0],b[1])  ==>  (a[0]+b[0] , a[1]+b[1])
+The consistency of the components is checked after every operation.
+
+The main "trick" in the implementation of ``RingTwinFloatImpl`` is that its
+elements are ``MultipleFloat``s (just a C array of ``mpf_t`` values).  The
+number of components in a ``MultipleFloat`` value is determined by
+``RingTwinFloatImpl::myNumCompts`` -- currently fixed equal to 2 at compile
+time.  Furthermore the values of these components must all be very close
+to each other.  Indeed the function ``RingTwinFloatImpl::myCheckConsistency``
+checks this condition: two outcomes are possible:
+-  (1)  all the components are very close to each other;
+-  (2)  at least one component is quite far from another.
+-
+In case (1) nothing more happens.  In case (2) it is evident that an
+accumulated loss of precision has become unacceptable, and this triggers
+an exception of type ``RingTwinFloat::InsufficientPrecision``.  The addition and
+subtraction functions check explicitly for near cancellation, and force
+the result to be zero in such cases.
+
+The bit precision parameter specified when creating a RingTwinFloat is used
+in the following way (with the underlying principle being that elements
+of ``RingTwinFloat(N)`` should have at least roughly ``N`` bits of reliable value).
+
+The digits in the mantissa (of each component in a ``MultipleFloat``) are
+conceptually divided into three regions:
+```
+   A A A A...A A A  B B B B....B B B B  C C C....C C C
+   <-  N bits   ->  <- sqrt(N) bits ->  <- N/2 bits ->
+```
+The region ``A`` comprises as many bits as the precision requested, and may
+be regarded as being correct with high probability.
+The region ``B`` comprises "guard digits": these digits are NOT regarded
+as being correct, but regions ``A`` and ``B`` of all components must be equal.
+Finally, region ``C`` is for "noise", and may be different in different
+components.
+
+When an integer is converted to a ``MultipleFloat``, the component with
+index 0 takes on the closest possible value to the integer while the
+other component(s) have about sqrt(N) bits of uniform random "noise"
+added to them (the random value may be positive or negative).
+
+Special action is taken if there is large drop in magnitude during an addition
+(or subtraction): if the magnitude drops by more than ``N+sqrt(N)`` bits
+then the answer is forced to be equal to zero.  There is a remote chance
+of erroneously computing zero when two almost equal values are
+subtracted.  It does not seem to be possible to avoid this using limited
+precision arithmetic.
+
+
+Special action is taken if a "noisy" component happens to be too close
+to the value at index 0: in this case more random noise is added.  This
+can happen, for instance, if a value is divided by itself.
+
+
+=== myIsEqualNZIgnoreSign ===
+
+Sorry about the long name; it tries to be descriptive.  The function is
+used to detect cancellation in sums/differences and also for comparisons
+between twin-float values.
+
+This function captures the "heuristic equality" of twin-float values.
+If the values are "clearly unequal" is returns ``false3``; if the values
+are equal according to the heuristic it returns ``true3``; otherwise it
+returns ``uncertain3``.
+
+There is a discussion in redmine issue 859 about possible definitions of
+"heuristically equal" and "clearly unequal".  In practice there are two
+reasonable candidate definitions: one requires the outer intervals to be
+disjoint, the other allows some overlap.  The code implements both, and uses
+the flag ``myEqTestMode`` to choose between them at run-time.  Currently
+this flag is set when the ring is created, and cannot be changed (because
+I'm too lazy to write the necessary simple code).
+
+
+=== myFloor, myCeil, myNearestInt ===
+
+It took me a while to find a satisfactory definition for the member
+function ``myFloor`` (even though the final code is fairly simple).
+``myCeil`` is quite analogous.  ``myNearestInt`` calls indirectly
+either ``myFloor`` or ``myCeil``; it is so simple it must be right,
+right?
+
+I eventually settled on the following definition for ``myFloor``.
+If the argument satisfies the ``IsInteger`` predicate then the floor
+function must surely give precisely that integer.  Otherwise the argument
+(call it //X//) is not an integer, and the floor of //X//, if it exists,
+will be that integer //N// which satisfies the two-part condition
+//N// <= //X// and //N//+1 > //X//.  If there is no such integer //N//
+then the floor cannot be computed, and an ``InsufficientPrecision``
+exception must be thrown.  In fact, there is an obvious candidate for //N//,
+namely the floor of the first component of the internal representation of //X//
+(it would be trickier to use the floor of the second component).  Clearly //N//
+can be no larger than this candidate, since otherwise the first part of the
+condition would fail; and if //N// were any smaller then the second part would fail.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+The code is ugly.
+
+The functions ``perturb``, ``ApproximatelyEqual`` and ``myCmp`` do "wasteful"
+alloc/free of temporary ``mpf_t`` values.  ``myCmp`` can be done better.
+
+What about a function which finds a continued fraction approximant to a
+``RingTwinFloat`` value?  It seems hard to implement such a function "outside"
+``RingTwinFloatImpl`` as ``InsufficientPrecision`` will be triggered long before
+ambiguity is encountered in the continued fraction.
+
+``myIsInteger`` needs to be rewritten more sensibly (using ``mpf_ceil`` or
+``mpf_floor`` perhaps?)
+
+How to print out floats when they appear as coeffs in a polynomial???
+What are the "best" criteria for printing out a float so that it looks
+like an integer?  Should the integer-like printout contain a decimal
+point to emphasise that the value may not be exact?
+
+Is it really necessary to call ``myCheckConsistency`` after multiplication
+and division?  The accumulated loss of precision must grow quite slowly.
+Yes, it is necessary: consider computing  1^1000000 (or any other high power).
+
+What about COMPLEX floats???
+
+When a ``MultipleFloat`` is duplicated should its components be perturbed?
+
+AsMPF is an UGLY function: signature reveals too much about the impl!
+
+``myNumCompts`` could be chosen by the user at run-time; in which case it
+must become a per-instance data member (instead of static).  I'd guess
+that 2, 3 or 4 would be the best compromise.
+
+
+``RingTwinFloatImpl::myOutput``:
+- the the number of digits printed could be determined by how closely
+   the different components match -- would this be useful or wise?
+- the number of digits printed is related to the definition of
+   ``myCheckConsistency`` (I'm a little uneasy about this invisible link)
+
+
+Should there be a means of mapping an element of a high precision ``RingTwinFloat``
+to a lower precision ``RingTwinFloat`` (without having to pass through an external
+representation, such as a rational number)?
+
+It seems wasteful to use two ``mpf_t`` values to represent a single ``RingTwinFloat``
+value.  Would it not be better to keep the main value and an "epsilon" (held as
+a ``double`` and an ``int`` exponent?  Would it matter that "epsilon" has only
+limited precision?
+
+
+== Main changes ==
+%======================================================================
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

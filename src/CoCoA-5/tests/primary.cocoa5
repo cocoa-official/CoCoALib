@@ -1,0 +1,64 @@
+println "-- TEST 01 :";
+
+    use QQ[x,y,z];
+    I := ideal(x^3-y*z, y^2-x*z, z^2-x^2*y);
+    TgCone(I);
+    InitialIdeal(I, [y,z]);
+    Q := ideal(y, z);
+    PS := PrimaryHilbertSeries(I, Q);
+    $hp.PSerToHilbert(PS); -- the Hilbert Function associated to PS
+
+println "-- TEST 02 :";
+
+    use ZZ/(32003)[x,y,z,w];
+    I := ideal(x^5 - y*z, y^4 - x*z^2, x*y^3 - z*w, x^2*z - y*w,
+    y^2*z^2 - w^3, y^3*z - x^2*w^2, x^3*w - z^2, x*y*w^2 - z^3,
+    x^3*y^2 - w^2, x*z^4 - y^2*w^3, y*z^5 - x*w^5, y^3*w^5 - z^7,
+    x^2*w^7 - z^8, z^9 - y*w^8);
+    TgCone(I);
+    Q  := ideal(x, y, z);
+    PS := PrimaryHilbertSeries(I, Q); PS;
+    $hp.PSerToHilbert(PS);
+
+println "-- TEST 03 :";
+
+    use P ::= ZZ/(32003)[x,y,z];
+    I  := ideal(P,[]);
+    Q  := ideal(x, y, z^2);
+    PS := PrimaryHilbertSeries(I, Q); PS;
+    $hp.PSerToHilbert(PS);
+    HV := $hp.PSerHVector(PS); -- the H-vector associated to PS
+
+println "-- TEST 04 :";
+
+    use ZZ/(32003)[x,y,z,w];
+    I  := ideal(-y*z + x*w, z^3 - y*w^2, -x*z^2 + y^2*w, -y^3 + x^2*z);
+    Q  := ideal(x, y, z^2, w^3);
+    PS := PrimaryHilbertSeries(I, Q); PS;
+    $hp.PSerToHilbert(PS);
+    HV := $hp.PSerHVector(PS);
+    $primary.E(0, HV);
+    [ $primary.E(J,HV) | J in 0..($hp.PSerDim(PS)-2) ];
+    [ $primary.E(J,HV) | J in 0..(len(HV)-1) ];
+
+println "-- TEST 05 :";
+
+    use ZZ/(32003)[x,y,z,w];
+    I  := ideal(x^3-y^7, x^2*y - x*w^3-z^6);
+    Q  := ideal(x, y, z, w);
+    PS := PrimaryHilbertSeries(I, Q);
+    $hp.PSerToHilbert(PS);
+    HV := $hp.PSerHVector(PS);
+    [ $primary.E(J,HV) | J in 0..($hp.PSerDim(PS)-2) ];
+    [ $primary.E(J,HV) | J in 0..(len(HV)-1) ];
+
+println "-- TEST 06 :";
+
+    use ZZ/(32003)[x,y,z];
+    I  := ideal(z^3);
+    Q  := ideal(x^2, y^2, x*z, y*z);
+    PS := PrimaryHilbertSeries(I, Q); PS;
+    $hp.PSerToHilbert(PS);
+    HV := $hp.PSerHVector(PS);
+    [ $primary.E(J,HV) | J in 0..($hp.PSerDim(PS)-2) ];
+    [ $primary.E(J,HV) | J in 0..(len(HV)-1) ];

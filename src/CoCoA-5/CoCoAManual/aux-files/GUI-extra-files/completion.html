@@ -1,0 +1,144 @@
+<html>
+<head>
+<title>Word completion</title>
+<meta name="keywords" content="menus">
+<link rel="next" href="./uih.html" title="next page">
+<link rel="previous" href="./uih.html" title="previous page">
+</head>
+
+<body bgcolor=#FFFFFF text=#000000>
+<table width=100%>
+<tr bgcolor=#CCCCCC><td colspan=3 align=center><b><font size=7>Word Completion</font></b></td></tr>
+</table>
+
+<ol>
+<li><b><a name="description">Description</a></b><br>
+	When you are editing CoCoA documents with CoCoA you can make use of its word completion
+	mode. You can enter word completion mode either manually or automatically.
+	<p>
+	If you want to enter it manually, just press <b>Ctrl + Down</b> or <b>Ctrl + Up</b>. All
+	text between the current cursor position and the last whitespace character (i.e. spaces,
+	tabs, ...) in the current line is then taken as the <b>word completion base</b>. Now, CoCoA
+	checks its wordlist for any words starting with the word completion base. It then displays
+	the first available completion (if you pressed Ctrl + Down), the last available completion
+	(if you pressed Ctrl + Up) or nothing (if there is no completion available).
+	<p>
+	If you want to enter it automatically whenever you type more than 3 non-whitespace characters
+	check the entry <b>Autocompleting</b> in the <b>Settings</b> menu or press <b>Ctrl + Insert</b>
+	to toggle <b>autocompletion mode</b>. The entry <b>AC</b> in the status bar indicates whether
+	<b>autocompletion mode</b> is active or not.
+	<p>
+	After you entered word completion mode you have the following options:
+	<ol>
+	<li>Browse through all available completions of the current word completion base using the
+	    keys <b>Down</b> or <b>Up</b>
+	</li>
+	<li>Leave the word completion mode accepting the completion using <b>Right</b>
+	</li>
+	<li>Leave the word completion mode accepting the completion and appending function parenthesis'
+	    using <b>Left</b>
+	</li>
+	<li>Leave the word completion mode rejecting the completion by pressing <b>Esc</b>, <b>Del</b>
+	    or simply by continuing to type normally.
+	</li>
+	</ol>
+	<p>
+	Word completion mode is configurable, i. e. apart from the system wordlist you can create
+	and load your own wordlists. For this, go to the <b>Settings</b> menu and select <b>Word
+	completion</b>. This will open the following dialog:<br>
+	<center><img src="images/completion_dialog.png"></center><br>
+	Whenever you add a new file it will automatically be loaded. If you want to disable the completions
+	contained in that file temporarily, simply unload it. It will remain in the list of wordfiles but
+	will be marked not to be loaded until you load it again in the dialog.<br>
+	When a file is marked for loading and cannot be loaded, the reason for this will show up in the column
+	labeled <b>Load state</b>.
+	<p>
+	In the current version of CoCoA, wordfiles have the format
+	<table bgcolor=#BBBBBB>
+	<tr><td>
+		some_word<br>
+		some_other_word<br>
+		...
+	</td></tr>
+	</table>
+	so it's quite easy to create them by hand.<br>
+	To create a wordfile for a package you wrote you can also use the following functions:
+  <pre>
+  Define WriteWordList(PackageName, PackageAlias, FileName)
+      D := OpenOFile(FileName);
+      Functions := Functions(PackageName);
+      For I := 1 To Len(Functions) Do
+          S := Sprint(Functions[I]) + '(';
+          EndPos := Min([I | I In 1..Len(S) And S[I] = '(']);
+          FunctionName := Sum(First(S, EndPos - 1));
+          If PackageAlias &lt;&gt; '' Then
+              Print PackageAlias, '.' On D;
+          EndIf;
+          Println FunctionName On D;
+      EndFor;
+  EndDefine;
+  </pre>
+	For example, you can use
+  <pre>
+  WriteWordList('$cocoa/io', 'IO', 'iopkg_wordlist.txt');
+  </pre>
+	to write the names of all functions contained in the IO package to the file iopkg_wordlist.txt which can then be
+	used directly by CoCoA Word Completion. Of course the package must be loaded into CoCoA beforehand.
+</li>
+<li><b><a name="shortcuts">Shortcuts</a></b><br>
+	<table>
+	<tr bgcolor=#FFFF80 align=center><th>Key</th><th colspan=3>Modifiers</th><th>Description</th></tr>
+	<tr bgcolor=#FFFFB0 align=center>
+		<th width=10%>&nbsp;</th>
+		<th width=5%>Alt</th><th width=5%>Ctrl</th><th width=5%>Shift</th>
+		<th width=75%>&nbsp;</th>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Down</td>
+		<td>-</td><td>X</td><td>-</td>
+		<td align=left>Enter word completion mode manually and show the <b>first</b> possible completion.</td>
+	</tr>
+	<tr align=center>
+		<td>Up</td>
+		<td>-</td><td>X</td><td>-</td>
+		<td align=left>Enter word completion mode manually and show the <b>last</b> possible completion.</td>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Down</td>
+		<td>-</td><td>-</td><td>-</td>
+		<td align=left>When in word completion mode, this will show the <b>next</b> possible completion.</td>
+	</tr>
+	<tr align=center>
+		<td>Up</td>
+		<td>-</td><td>-</td><td>-</td>
+		<td align=left>When in word completion mode, this will show the <b>previous</b> possible completion.</td>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Right</td>
+		<td>-</td><td>-</td><td>-</td>
+		<td align=left>When in word completion mode, this will exit word completion mode <b>accepting</b> the last
+			completion shown.</td>
+	</tr>
+	<tr align=center>
+		<td>Left</td>
+		<td>-</td><td>-</td><td>-</td>
+		<td align=left>When in word completion mode, this will exit word completion mode <b>accepting</b> the last
+			completion shown. Furthermore, this will append <b>()</b> to the completed word. This is very useful
+			for completions that represent function names.</td>
+	</tr>
+	<tr align=center bgcolor=#EEEEEE>
+		<td>Insert</td>
+		<td>-</td><td>X</td><td>-</td>
+		<td align=left>Activates/Deactivates <b>autocompletion mode</b>. The current status is shown in the status bar (<b>AC</b>).</td>
+	</tr>
+	<tr align=center>
+		<td>Esc<br>Delete</td>
+		<td>-</td><td>-</td><td>-</td>
+		<td align=left>When in word completion mode, this will exit word completion mode <b>rejecting</b> the
+			completion. You can also exit word completion mode by resuming normal typing.</td>
+	</tr>
+	</table>
+</li>
+</ol>
+</body>
+</html>

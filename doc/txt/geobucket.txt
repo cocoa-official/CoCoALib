@@ -1,0 +1,160 @@
+      geobucket
+      Copyright (c)  2006-2012  John Abbott and Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{geobucket}{Anna Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-geobucket1.C ../../examples/index.html#ex-geobucket1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+Based on **The Geobucket Data Structure for Polynomials** by Thomas Yan (1996).
+
+A geobucket is a polynomial represented in a C++ vector of buckets:
+a ``bucket`` contains a polynomial and some other info
+(see below [[geobucket bucket]])
+
+This construction is particularly useful for **adding many short polynomials to a long one**
+(in particular the reduction process) because it lowers the number of calls
+of ``cmp`` between ``PPMonoidElem``s.
+
+For summing many big integers or rationals see also ``SumBigRat`` in [[BigRatOps]],
+and ``SumBigInt`` in [[BigIntOps]].
+
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+
+- ``geobucket(const SparsePolyRing&)``;
+-
+
+=== Queries ===[queries]
+%----------------------------------------------------------------------
+%
+- ``IsZero(g)`` -- true iff ``g`` is the zero polynomial (potentially costly because it compares the buckets)
+-
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+Let ``gbk`` be a ``geobucket``, ``f`` a ``RingElem&`` (see [[RingElem]])
+
+- ``CoeffRing(gbk)`` -- the [[ring]] of coefficients of the ring of ``gbk``
+- ``PPM(gbk)`` -- the [[PPMonoid]] of the ring of ``gbk``
+- ``LC(gbk)``  -- the leading coeff of ``gbk``; it is an element of ``CoeffRing(gbk)`` (potentially costly because it compares the buckets)
+- ``content(gbk)`` -- the gcd of all coefficients in ``gbk``; it is an element of ``CoeffRing(gbk)`` (it is the gcd of all bucket contents)
+- ``RemoveBigContent(gbk)`` -- if ``gbk`` has a big content, ``gbk`` is divided by it
+- ``AddClear(f, gbk)`` -- assign the polynomial value of ``gbk`` to ``f``,
+                        and set 0 to ``gbk``
+- ``MoveLMToFront(f, gbk)``; -- moves the LM of ``gbk`` to ``f`` (using PushFront)
+- ``MoveLMToBack(f, gbk)``; -- moves the LM of ``gbk`` to ``f`` (using PushBack)
+- ``ReductionStep(gbk, f, RedLen)``; -- reduces ``gbk`` with ``f``
+- ``ReductionStepGCD(gbk, f, FScale, RedLen)``; -- same as above, but multiplies by a scalar if needed
+- ``operator<<(std::ostream&, gbk)`` -- prints the buckets (mainly for debugging)
+- ``PrintLengths(std::ostream&, gbk)`` -- just for debugging
+-
+
+==== Member functions ====
+
+- ``myAddClear(f, len)`` -- mainly used for assigning to a geobucket
+- ``myDeleteLM(void)``
+
+- ``myPushBackZeroBucket(MaxLen)``
+- ``myBucketIndex(len)`` -- the index for the ``bucket`` with length ``len``
+- ``myAddMul(monom, g, gLen, SkipLMFlag)`` -- ``*this += monom*g``
+- ``myDivByCoeff(coeff)`` -- content MUST be divisible by coeff
+- ``myMulByCoeff(coeff)``
+- ``myCascadeFrom(i)`` -- start cascade from ``i``th bucket
+- ``mySize(void)`` -- the number of buckets
+- ``mySetLM()`` -- Sets the LM of ``*this`` in the 0-th ``bucket``
+                   and set ``IhaveLM`` to true;
+                   ``*this`` will be normalized
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+After calling ``gbk.mySetLM()`` the leading monomial of ``gbk`` is in
+``gbk.myBuckets[0]``
+(and then  ``gbk`` is zero iff ``gbk.myBuckets[0]=0``)
+
+``gbk.myBuckets[i]`` contains at most ``gbk_minlen * gbk_factor^i`` summands
+
+
+- ``myPolyRing`` -- the SparsePolyRing gbk lives in
+- ``IhaveLM`` --    true if certified  that LM(gbk) = LM(gbk[0])
+- ``myBuckets`` --  the bucket vector
+-
+
+=== bucket ===[bucket]
+%----------------------------------------------------------------------
+This class is to be used only by ``geobucket``s.
+
+A ``bucket`` represents a polynomial as a product of a polynomial and
+a coefficient, two ``RingElem`` respectivey in a [[SparsePolyRing]]
+``P`` and ``CoeffRing(P)``.
+
+The coeffient factor is used for fast multiplication of a geobucket
+by a coefficient and it comes useful in the reduction process over
+a field of fraction of a GCD ring.
+
+We normalize the ``bucket`` (i.e. multiply the polynomial by the
+coefficient) only when it is necessary: e.g. to compute a reference to
+the LC of the bucket.
+
+All methods are private (to be used only by ``geobucket``s, friend)
+
+Methods on buckets (weak exception guarantee)
+- ``myNormalize(void)`` --  myPoly *=myCoeff; myCoeff  1
+- ``myAddClear(RingElem& f, int FLen)`` --  *this += f; f = 0; *this normalized
+- ``myAddClear(bucket& b)`` --          *this += b; b = 0; *this normalized
+- ``myMul(ConstRefRingElem coeff)`` --  *this *= coeff
+- ``myDiv(ConstRefRingElem coeff)`` --  *this /= coeff; assumes *this divisible by coeff
+-
+
+
+==== Functions on buckets ====
+
+- ``IsZero(const bucket&)`` --
+- ``content(const bucket& b)`` --
+- ``poly(bucket& b)`` -- normalize b and return a reference to the polynomial
+-
+
+Dirty method and function for efficiency (b1 and b2 will be normalized))
+- ``myIsZeroAddLCs(const SparsePolyRing&, bucket& b1, bucket& b2)`` --
+  ``b1 += LM(b2);  b2 -= LM(b2);``  return ``LC(b1)+LC(b2)==0``;
+   it assumes ``LPP(b1) == LPP(b2)``
+
+- ``MoveLM(const SparsePolyRing&, bucket& b1, bucket& b2)`` --
+  ``b1 += LM(b2); b2 -= LM(b2);``  it assumes ``LPP(b1)<LPP(b2)``
+-
+
+==== Member fields ====
+- ``myPoly`` -- the polynomial (a [[RingElem]] in ``P``)
+- ``myCoeff`` -- the coefficient factor (a [[RingElem]] in ``CoeffRing(P)``)
+- ``myMaxLen`` -- the maximal length allowed for the polynomial of this bucket
+- ``myApproxLen`` -- an upper bound for the current length of the polynomial of this bucket
+-
+
+== changes ==
+%======================================================================
+
+**2013**
+
+- Added example
+-
+
+**2004**
+
+- October: introduction of ``myDivMaskImplPtr`` for computing ``LPPwMask``:
+  LPP with DivMask if this pointer is 0 LPPwMask returns an error
+  (through ``CoCoA_ASSERT``?)
+-
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+

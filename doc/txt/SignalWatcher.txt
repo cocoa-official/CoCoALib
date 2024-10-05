@@ -1,0 +1,104 @@
+      SignalWatcher
+      Copyright (c)  2017  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SignalWatcher}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-interrupt1.C ../../examples/index.html#ex-interrupt1.C]
+- [ex-interrupt2.C ../../examples/index.html#ex-interrupt2.C]
+-
+
+== User documentation ==
+%======================================================================
+A ``SignalWatcher`` is part of the CoCoA mechanism for detecting and
+reacting to interprocess signals (sometimes known as "interrupts").
+
+Since CoCoALib is a software library, it does not change any existing
+signal handlers unless you tell to do so explicitly.  A ``SignalWatcher``
+is an RAII object: creating it installs CoCoA's "signal handler" for
+the given signal; destroying it, reinstates the previous "signal
+handler".
+
+A ``SignalWatcher`` by itself does not do much: it simply "takes note"
+when a signal of the given type arrives.  CoCoALib can react to a
+signal only after it has been noted by a ``SignalWatcher`` **and**
+the procedure ``CheckForInterrupt`` is called -- see [[interrupt]]
+for a summary, or look at the example programs.
+
+If several signals arrive before ``CheckForInterrupt`` is called, only
+the last signal is heeded; the others are "forgotten".
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+- ``SignalWatcher(sig)`` -- install the standard CoCoALib signal handler for the
+signal ``sig`` (usually this will be ``SIGINT``)
+- ``SignalWatcher(sig, OtherHandler)`` -- install ``OtherHandler`` for the signal
+``sig``; ``OtherHandler`` is of type ``void OtherHandler(int)``
+- ``DESTRUCTOR`` -- the destructor reinstates the previous handler for the signal
+specified in the constructor
+-
+
+The exception which thrown when ``CheckForInterrupt`` detects a signal is
+created by the following constructor:
+- ``InterruptedBySignal(sig, context)`` -- where ``sig`` is an ``int`` indicating the
+signal which has arrived, and ``context`` is a string literal (usually indicating
+the function which was interrupted)
+-
+
+
+=== Queries ===[queries]
+%----------------------------------------------------------------------
+Let ``SW`` be a ``SignalWatcher``.
+- ``IsActive(SW)`` -- ``true`` iff ``SW`` has not been deactivated (see below)
+- ``GetAndResetSignalReceived()`` -- returns an ``int``: zero if no signal has arrived,
+otherwise the integer value of the signal.  **Resets the register of last-signal-received.**
+-
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+Let ``SW`` be of type ``SignalWatcher``; and let ``INTR`` be of type ``InterruptedBySignal``
+- ``deactivate(SW)`` -- effectively "destroys" ``SW``, _i.e._ reinstates the previous signal handler
+- ``TriggeringSignal(INTR)`` -- returns an ``int`` indicating the signal specified when creating ``INTR``
+- ``SetSignalReceived(sig)`` -- sets the register of last-signal-received to ``sig``; note that zero
+means no signal received.  You probably should not use this function!
+-
+
+
+== Maintainer documentation ==
+%======================================================================
+
+The implementation is straightforward (except for ``SetSignalReceived``
+which still involves a "dodgy hack" from an earlier implementation).
+
+For portability the CoCoALib signal handler just sets
+a "hidden" global variable ``CoCoA::<anon>::SignalReceived``
+(of type ``std::sig_atomic_t``).
+
+
+The CoCoALib signal handler is registered by creating an object
+of type ``SignalWatcher``; its constructor takes as arg the signal
+to detect.  The original signal is restored when the ``SignalWatcher``
+is destroyed (or when the mem fn ``myDeactivate`` is called).
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+I do not know how threadsafe the implementation is: hopefully it is good,
+but I doubt it is perfect.
+
+
+== Main changes ==
+%======================================================================
+
+**2017**
+- July (v0.99555): first release (was previously inside "interrupt")
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

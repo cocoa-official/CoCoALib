@@ -1,0 +1,140 @@
+      ExternalLibs-GMP
+      Copyright (c)  2016,2022  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{ExternalLibs-GMP}{John Abbott}
+
+
+== User documentation ==
+%======================================================================
+
+**GMP is an essential external library** for CoCoALib: a sufficiently
+recent version of GMP (5.1.0 or later) must be present to permit
+compilation of CoCoALib.  The CoCoALib classes ``BigInt`` and ``BigRat``
+are simply wrappers for the underlying GMP types.
+
+At the moment CoCoALib does not require the C++ interface to GMP,
+however if you wish to combine CoCoALib with the external library
+**Normaliz** then the C++ interface to GMP must also be present.
+
+=== Examples ===
+- [ex-BigInt1.C ../../examples/index.html#ex-BigInt1.C]
+- [ex-BigInt2.C ../../examples/index.html#ex-BigInt2.C]
+- [ex-BigInt3.C ../../examples/index.html#ex-BigInt3.C]
+- [ex-BigRat1.C ../../examples/index.html#ex-BigRat1.C]
+- [ex-GMPAllocator1.C ../../examples/index.html#ex-GMPAllocator1.C]
+- [ex-GMPAllocator2.C ../../examples/index.html#ex-GMPAllocator2.C]
+-
+
+=== Installing the GMP library ===
+
+It is common for Linux computers to have the **GMP library already**
+**installed;** the CoCoALib ``configure`` script will check for this,
+and will give an error message if it cannot be found.
+
+In the unlikely event that GMP was not found by the CoCoALib
+``configure`` script, we recommend using your computer's
+package manager to install a package having a name something like
+``libgmp3-dev`` (or ``libgmpxx-devel`` or ``libgmp-devel``).  You should
+pick the version "for developers" as that is what CoCoALib needs.
+
+
+==== Download and compile GMP ====[compile]
+
+If you cannot install the GMP library using your package manager,
+you can try compiling it yourself!
+If you have little or no experience compiling software, ask
+someone who has experience to help you.  It is not hard, but
+experience helps a lot!
+
+To build the GMP library yourself, you must first download the sources from
+ | [**GMP** website http://www.gmplib.org/]
+
+Note that **CoCoALib** expects **GMP release 5.1.0 or later.**
+
+
+You must then decide whether to make a "personal" installation or
+a "system-wide" installation.  To make a system-wide installation
+your account must have "administrator privileges"; in case of
+doubt, make a personal installation.
+```
+## Commands for a ***system-wide*** installation
+tar xzf gmp-6.2.1.tar.gz
+cd gmp-6.2.1
+./configure  --enable-cxx
+make
+sudo make install
+## Maybe run the ldconfig command to register the shared library.
+## You can now delete gmp-6.2.1.tar.gz and the directory gmp-6.2.1
+```
+
+
+To make a personal installation you must decide where GMP should
+be installed.  We suggest something like ``$HOME/MySoftware``
+(if you choose somewhere else, change the lines below accordingly).
+```
+## Commands for a ***personal*** installation
+mkdir "$HOME/MySoftware"
+./configure  --enable-cxx  --disable-shared  --prefix="$HOME/MySoftware"
+make
+make install
+## You can now delete gmp-6.2.1.tar.gz and the directory gmp-6.2.1
+```
+
+==== Telling CoCoALib where GMP is ====
+
+If you compiled GMP and did a system-wide installation then
+the CoCoALib ``configure`` script should find it automatically.
+
+If you compiled GMP and made a personal installation then you
+must tell the CoCoALib ``configure`` script where to find GMP
+by using the option ``--with-libgmp``.  Here is an example:
+
+``` 
+cd CoCoALib-0.99  # go into the CoCoALib directory
+./configure  --with-libgmp="$HOME/MySoftware/lib/libgmp.a"
+```
+
+
+**FOOTNOTE**
+System-wide installation on a GNU/Linux computer is
+**possible only if** your user account has the relevant permissions.
+You can check whether your account has permission by running
+``sudo -v``.  This will ask for your password, and give an error
+if your account does not have permission.
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+A future version of CoCoALib may use the C++ interface to GMP, but
+that it not imminent.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Strictly the parts of CoCoALib which compute with small finite fields
+do not need the GMP library; nevertheless we chose not to permit
+compilation without GMP.
+
+I found the following website useful:
+```
+http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
+```
+
+== Main changes ==
+%======================================================================
+
+**2022**
+- February: guidelines system-wide/personal installation (now necessary for CoCoALib)
+-
+
+**2016**
+- 10 June: first version; added new note about ldconfig
+-
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% For "txt2tags safety" leave 2 empty lines after the last line of text.

@@ -1,0 +1,146 @@
+      RingFp
+      Copyright (c)  2005,2010-2011  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingFp}{John Abbott}
+
+
+
+== User documentation for the class RingFpImpl ==
+%======================================================================
+
+The usual way to perform arithmetic in a (small, prime) finite field
+is to create the appropriate ring via the pseudo-constructors
+``NewZZmod`` (or ``NewQuotientRing`` if you prefer) which are
+documented in [[QuotientRing]].  These functions will automatically
+choose a suitable underlying implementation, and you should normally
+use them!
+
+
+=== Special Constructors ===
+%===========================
+
+If ``n`` is a small prime then ``NewZZmod(n)`` produces the same result as
+``NewRingFp(n)`` (or perhaps ``NewRingFpDouble(n)``).  If ``n`` is not a
+small prime then ``NewRingFp(n)`` throws an exception whereas ``NewZZmod(n)``
+will produce a working quotient ring.  Unless you have a good reason not
+to, you should use ``NewZZmod(n)``; see [[QuotientRing]].
+
+
+In some special circumstances, you may wish to choose explicitly the
+underlying implementation.  CoCoALib offers three distinct
+implementations of small prime finite fields: ``RingFp`` (described
+here), and [[RingFpLog]] and [[RingFpDouble]].  Of these ``RingFp`` is
+probably simplest and fastest implementation -- this file describes
+how to create a ``RingFp`` implementation.
+
+To create a [[ring]] of this specific type use one of the pseudo-constructors:
+```
+  NewRingFp(p) -- p a machine integer or BigInt
+  NewRingFp(I) -- I an ideal of RingZZ
+  NewRingFp(p, res) -- p a machine integer, res is either ``GlobalSettings::SymmResidues`` or ``GlobalSettings::NonNegResidues``
+```
+These pseudo-constructors are for creating small prime finite fields; they
+will fail if the characteristic is not prime or is too large: the error
+signalled by throwing a ``CoCoA::ErrorInfo`` whose //code// is
+``CoCoA::ERR::BadSmallFpChar``.  You can test whether an argument is
+suitable by calling ``IsGoodForRingFp``.
+
+The default convention for printing residues is specified when you create
+the [[GlobalManager]]; you can also specify explicitly which convention to
+use by giving a second argument to the pseudo-ctor ``NewRingFp``.  Note
+that the **internal representation** is always least non-negative
+regardless of the output convention chosen.
+
+If you seek a means for fast arithmetic in small finite fields consult
+the documentation about [[SmallFpImpl]], [[SmallFpLogImpl]], and
+[[SmallFpDoubleImpl]].  All arithmetic on elements of a ``RingFp``
+is actually carried out by a ``SmallFpImpl`` object.
+
+
+=== Examples ===
+- [ex-RingFp1.C ../../examples/index.html#ex-RingFp1.C]
+- [ex-RingFp2.C ../../examples/index.html#ex-RingFp2.C]
+
+
+== Maintainer documentation for the class RingFpImpl ==
+%======================================================================
+
+The class ``RingFpImpl`` is a low-level implementation of (small
+prime) finite fields; it is not intended for direct use by casual CoCoA
+library users.
+
+The class ``RingFpImpl`` is intended to implement small, prime finite
+fields.  The constructor is more complicated than one might expect,
+this is because the ``RingFpImpl`` object must store a little extra
+information to fulfil its role as a ``QuotientRingBase``.  Currently,
+the characteristic must be prime (otherwise it wouldn't be a field)
+and must also be small enough that its square fits into a
+``SmallFpElem_t`` (probably ``unsigned long``, see the file config.H);
+if not, an error is signalled.
+
+Extreme efficiency is NOT one of the main features of this version;
+contrast this with ``SmallFpImpl``.
+
+The class ``RingFpImpl`` derives from ``QuotientRingBase``, which in
+turn is derived from ``RingBase``: see [[QuotientRing]] and [[ring]]
+for more details.  Note that there is no ``RingFp`` class; a
+``RingFpImpl`` object can only be accessed as a [[QuotientRing]].
+
+Note the use of "argument checking" static member functions in the ctor:
+this is because ``const`` data members must be initialized before the main
+body of the ctor is entered.
+
+A member typedef ``RingFpImpl::value_t`` specifies the type used for
+representing the value of an element of a ``RingFpImpl``: this is a
+typedef for ``SmallFpElem_t`` which is defined in config.H (to facilitate
+tuning for different platforms).
+
+The data members are those of a ``QuotientRingBase`` (which are used only
+for answering queries about a [[QuotientRing]]), plus the characteristic
+of the field (held as an ``value_t`` in ``myModulus``), and an auto-pointer
+to a copy of the zero and one elements of the ring.
+
+The zero and one elements of the ring is held in an auto_ptr<> for
+consistency with the implementation of other rings -- in this simple
+class it is not really necessary for exception safety.
+
+This implementation is very simplistic: almost every operation is
+delegated to the class ``SmallFpImpl``.  The implementation class has been
+separated so that its inline member functions can be used directly by
+some other special case code (//e.g.// polynomials with SmallFp coeffs).
+See [[SmallFpImpl]] for details.  I note that the residues are
+represented internally as the least non-negative value in the residue class
+regardless of the user's choice of type of residue.
+
+The largest permitted modulus for a ``RingFpImpl`` may depend on the
+platform.  On a 32-bit machine the modulus must surely be less than
+65536 -- refer to [[SmallFpImpl]] for details.  A 64-bit machine may
+allow larger characteristics.
+
+Although it may seem wasteful to use heap memory for the values of
+elements in a ``RingFpImpl``, trying to make them "inline" leads to
+lots of problems.  Originally we had implemented the values as "inline",
+and the resulting problems delayed CoCoALib by almost a year.
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Why does the class ``RingFp`` not exist?  Well, my current thoughts
+are that since a ``RingFp`` would not do anything special which a
+[[QuotientRing]] cannot do, it seems needless extra complication to
+create a "useless" class.  In particular, it cannot offer better
+run-time performance.  If you want to compute quickly modulo a small
+prime you must use [[SmallFpImpl]] directly.
+
+Probably ``RingFp``, [[RingFpLog]] and [[RingFpDouble]] could be replaced by
+instances of a template class -- the template parameter would be
+``SmallFpImpl``, ``SmallFpLogImpl`` or ``SmallFpDoubleImpl`` accordingly.
+
+Why do all the member functions blindly forward their calls to the
+``SmallFpImpl`` member functions?  This means that the error message
+for division by zero (say) will refer to ``SmallFpImpl`` rather than
+``RingFpImpl``.  Does this really matter that much?  Obviously the
+much same applies to ``RingFpLogImpl`` and ``RingFpDoubleImpl``.
+

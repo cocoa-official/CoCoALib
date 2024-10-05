@@ -1,0 +1,47 @@
+      RingWeyl
+      Copyright (c)  2005,2012 John Abbott and Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{RingWeyl}{John Abbott and Anna M. Bigatti}
+
+
+=== Examples ===[examples]
+%----------------------------------------------------------------------
+- [ex-RingWeyl1.C ../../examples/index.html#ex-RingWeyl1.C]
+- [ex-RingWeyl2.C ../../examples/index.html#ex-RingWeyl2.C]
+- [ex-RingWeyl3.C ../../examples/index.html#ex-RingWeyl3.C]
+- [ex-RingWeyl4.C ../../examples/index.html#ex-RingWeyl4.C]
+- [ex-RingWeyl5.C ../../examples/index.html#ex-RingWeyl5.C]
+-
+
+== User documentation ==
+%======================================================================
+
+The class RingWeylImpl implements a Weyl algebra.
+
+Note that Weyl algebras are noncommutative.
+
+=== Constructors ===[constructors]
+%----------------------------------------------------------------------
+- ``NewWeylAlgebra(CoeffRing, NumTrueIndets, ElimIndets)``
+- ``NewWeylAlgebra(CoeffRing, names, ElimIndets)``
+-
+
+== Maintainer documentation ==
+%======================================================================
+
+This first version implements the Weyl algebra by using a normal
+polynomial ring internally (``myReprRing``) for manipulating the
+elements, and simply doing the right thing for products (instead of
+passing them directly onto ``myReprRing``).
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+This documentation is extremely incomplete (time and energy are running out).
+
+This version was produced in a considerable hurry, and worked by miracle.
+
+There should be scope for some //optimization//, and perhaps some cleaning.
+

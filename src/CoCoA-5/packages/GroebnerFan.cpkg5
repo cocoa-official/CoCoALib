@@ -1,0 +1,313 @@
+Package $GroebnerFan; -- Package for Groebner fans
+
+// author: Anders Nedergaard Jensen
+
+export UniversalGBasis; // Returns a universal Groebner basis of the input ideal.
+export UniversalGBasisOld;
+export GroebnerFanIdeals; // Returns all reduced Groebner bases of an ideal as a LIST of ideals.
+export GroebnerFanReducedGBases; // Returns all reduced Groebner bases of an ideal as a LIST of lists.
+export CallOnGroebnerFanIdeals;
+  
+//export GetRelativeInteriorOfGroebnerCone;
+
+-- This package uses the CoCoA interface to gfanlib to compute Groebner fans [Mora, Robbiano] of ideals. All Groebner basis compuations are handled by CoCoA, while the polyhedral computations are handled by gfanlib (Jensen) and cddlib (Fukuda). Because CoCoA is missing operations on sets, the memoryless strategy of Reverse Search [Avis, Fukuda] is used in a way similar to [Huber, Thomas]. Essentially, for a homogeneous ideal I, the state polytope [Bayer, Morrison] of I is dual to the Groebner fan of I. Fixing a term ordering, the edges of the edge graph of the state polytope of I can be oriented without cycles using the term ordering. Removing edges according to some predefined rule (see OutEdge() below), the graph becomes an oriented tree, which the reverse search method will traverse, starting at the root. When the ideal is not homogeneous, the state polytope might not exist, but the cycle free orientation still exists [Fukuda, Jensen, Thomas], allowing the reversearch to be used anyway. The complicated reverse search rule requires a reduced Groebner basis to be computed for every edge of the state polytope. It would be possible to reduce the number of Groebner basis computations to the number of vertices of the state polytope, if we stored the set of codimension 1 facets seen so far [Jensen].
+
+-- Other possible improvements include:
+-- * GB guided redundancy removal of inequalities [Huber, Thomas]
+-- * Improved conversion procedure of Groebner bases [Collart, Kalkbrenner, Mall]
+
+
+----------------------------------------------------------------------------
+-- References
+----------------------------------------------------------------------------
+-- [Avis, Fukuda]: "A basis enumeration algorithm for convex hulls and vertex enumeration of arrangements and polyhedra", 1992
+-- [Bayer, Morrison]: "Standard bases and geometric invariant theory I. Initial ideals and state polytopes", 1988
+-- [Collart, Kalkbrenner, Mall]: "Converting bases with the Groebner walk", 1997
+-- [Fukuda, Jensen, Thomas]: "Computing Groebner fans", 2007
+-- [Huber, Thomas]: "Computing Groebner fans of toric ideals", 2000
+-- [Jensen]: "Traversing symmetric polyhedral fans", 2010
+-- [Mora, Robbiano]:"The Groebner fan of an ideal", 1988
+-- [Sturmfels]: "Groebner bases and convex polytopes", 1996
+  
+----------------------------------------------------------------------------
+-- Internal functions
+----------------------------------------------------------------------------
+
+  GlobalTime1 := 0;
+  GlobalTime2 := 0;
+  GlobalTime3 := 0;
+  GlobalTime4 := 0;
+  GlobalTime5 := 0;
+  GlobalTime6 := 0;
+  GlobalTime7 := 0;
+
+  GlobalTime9 := 0;
+  GlobalTimeMat := 0;
+  GlobalTimeOr := 0;
+  
+
+-- Input: A is a LIST of polynomials in a ring with an ordering.
+-- Output: The set of weight vectors, choosing the same initial terms of A as the ordering of the ring, is a polyhedral cone. The return value is a Matrix whose rows are a set of defining inequalities for this cone (inner pointing). 
+define MarkedPolynomialsToInequalities(A)
+//  return flatten([[exponents(g)-exponents(t)|t in support(g)]|g in A],1);
+  L := [];
+  foreach g in A do
+    s := support(g);
+    exp_g := exponents(s[1]);
+    append(ref L, [ exp_g - exponents(s[i]) | i in 2..len(s) ]);
+  endforeach;
+  return flatten(L,1);
+enddefine;
+
+-- Input: A is a LIST of polynomials in a ring with an ordering.
+-- Output: Same as MarkedPolynomialsToInequalities, but also with the inequalities for the positive orthant included.
+define MarkedPolynomialsToInequalitiesPositiveOrthant(A)
+  t0 := CpuTime();
+  T := MarkedPolynomialsToInequalities(A);
+  $.GlobalTime1 := $.GlobalTime1 + CpuTime()-t0;
+  t0 := CpuTime();
+  if T<>[] then T := matrix(RingZZ(), T);
+  else T := ZeroMat(RingZZ(), 0, NumIndets(RingOf(A[1])));
+  endif;
+  $.GlobalTimeMat := $.GlobalTimeMat + CpuTime()-t0;
+  t0 := CpuTime();
+  T := ConcatVer(T, IdentityMat(RingZZ(),NumCols(T)));
+  $.GlobalTime2 := $.GlobalTime2 + CpuTime()-t0;
+  return T;
+enddefine;
+
+-- Input: A LIST of intergers describing a vector.
+-- Output: Whether the vector is a non-zero scaling of a standard basis vector.
+define isOrthantInequality(v)
+  return len(v)-1 = count(v,0);
+enddefine;
+
+-- Input: An ideal I (with ring and ordering) and two LISTs of integers describing vectors a and b with the property that a is in the relative interior of a facet F of the Groebner cone of I and b is an inner normal of the facet. Moreover, a should be positive.
+-- Output: The ideal with the odering defining the other Groebner cone having F as a facet.
+define GroebnerBasisFlip(I, row1, row2)
+  M := MakeTermOrdMat(matrix(RingZZ(), [row1, -1*row2]));
+  P := NewPolyRing(CoeffRing(RingOf(I)), IndetSymbols(RingOf(I)), M, 0);
+  phi := PolyAlgebraHom(RingOf(I), P, indets(P));
+//  return ideal(phi(GBasis(I)));
+  return ideal(P, phi(gens(I)));
+enddefine;
+
+-- Input: An ideal I in a ring with a term ordering.
+-- Output: The set of facets of the Groebner cone of I whose relative interior intersects the positive orthant. 
+define GetFlippableInequalities(I)
+  if VerbosityLevel()>0 then fn := "GetFlippableInequalities: "; endif;
+  if VerbosityLevel()>=20 then print("."); endif;
+  t0 := CpuTime();
+  RGB := ReducedGBasis(I);
+  $.GlobalTime9 := $.GlobalTime9 + CpuTime()-t0;
+  L := MarkedPolynomialsToInequalitiesPositiveOrthant(RGB);
+  t0 := CpuTime();
+  FTemp := GFanGetFacets(L, ZeroMat(RingZZ(),0,NumIndets(RingOf(I))));
+  $.GlobalTime5 := $.GlobalTime5 + CpuTime()-t0;
+  t0 := CpuTime();
+  L :=  [ row in GetRows(FTemp) | not(isOrthantInequality(row))];
+  $.GlobalTime7 := $.GlobalTime7 + CpuTime()-t0;
+  return L;
+enddefine;
+
+-- Input: An ideal I in a ring with a term ordering.
+-- Output: A Matrix with a single column being a relative interior point of the GroebnerCone of I.
+ /* Not used! */
+-- define GetRelativeInteriorOfGroebnerCone(I)
+--   L:=MarkedPolynomialsToInequalitiesPositiveOrthant(ReducedGBasis(I));
+--   FTemp:=GFanRelativeInteriorPoint(L,ZeroMat(RingZZ(),0,NumIndets(RingOf(I))));
+--   return FTemp;
+-- enddefine;
+
+-- Input: An ideal I in a ring with a term ordering and a LIST of integers describing a hyperplane H in space.
+-- Output: A Matrix with a single column being a relative interior point of the GroebnerCone of I intersected with H.
+define GetRelativeInteriorPointOfGroebnerConeFacet(I,f)
+  L := MarkedPolynomialsToInequalitiesPositiveOrthant(ReducedGBasis(I));
+  t0 := CpuTime();
+  fMat := RowMat(RingZZ(), f);
+  $.GlobalTimeMat :=  $.GlobalTimeMat + CpuTime()-t0;
+  t0 := CpuTime();
+  FTemp := GFanRelativeInteriorPoint(L, fMat);
+  $.GlobalTime6 :=  $.GlobalTime6 + CpuTime()-t0;
+  return FTemp;
+enddefine;
+
+-- Input: A LIST of integers describing an exponent vector and a ring with an ordering.
+-- Output: Whether the monomial with this exponent vector is greater than 1 in the ordering (extended to Laurent polynomials).
+define Ordering(b,R)
+  t0 := CpuTime();
+  exp := [AsINT(a) | a in b];
+  pos := [max(a,0) | a in exp];
+  O := MakeTerm(R, pos)>MakeTerm(R, pos-exp);
+  $.GlobalTimeOr := $.GlobalTimeOr + CpuTime()-t0;
+  return O;
+enddefine
+
+-- Input: Two LISTS x and y.
+-- Output: Whether x is bigger than y compared lexicographically.
+define CompareLex(x,y)
+  for i := 1 to len(x) do
+    if x[i]>y[i] then return true; endif;
+    if x[i]<y[i] then return false; endif;
+  endfor;
+  return false;
+enddefine;
+
+-- Input: An ideal I in a ring with some ordering and another ring R with some ordering. The two orderings should not define the same initial ideal of I.
+-- Output: A LIST of integers defining an inner normal vector of the Groebner cone of I. The set of returned edges/normal as I varies over all reduced Groebner bases of I (except that w.r.t. the ordering of R) forms a directed search tree taking any full dimensional Groebner cone to the full dimensional Groebner cone given by the term ordering of R.
+define OutEdge(I,R)
+  A := GetFlippableInequalities(I);
+  A := [b in A | not($.Ordering(b,R))];
+  t0 := CpuTime();
+  best := MinBy(A, $.CompareLex);
+  $.GlobalTime3 := $.GlobalTime3 + CpuTime()-t0;
+  return best;
+enddefine
+
+-- Input: An ideal I with an ordering, a ring R with another ordering defining a search tree on the set of fulldimensional Groebner cones of I and a List L.
+-- Output: The function collects the reduced Groebner bases in a list by appending the ideal with various term orderings such that all Groebner cones in the subtree rooted at I are appended to L.
+define recursive(I, R, ref GFIdeals)
+  if VerbosityLevel()>=10 then print("*"); endif;
+  append(ref GFIdeals, IdealOfGBasis(I));
+  F := GetFlippableInequalities(I);
+  foreach row2 in F do
+    if ($.Ordering(row2,R)) then
+      row1 := GetCol(GetRelativeInteriorPointOfGroebnerConeFacet(I,row2),1);
+      t0 := CpuTime();
+      J := GroebnerBasisFlip(I, row1, row2);
+      $.GlobalTime4 := $.GlobalTime4 + CpuTime()-t0;
+      if row2 = -1*OutEdge(J,R) then
+	$.recursive(J, R, ref GFIdeals);
+      endif;
+    endif;
+  endforeach;
+enddefine;
+
+
+define CallOnRecursive(I, R, MyFunc)
+  if VerbosityLevel()>=10 then print("*"); endif;
+  MyFunc(I);
+  F := GetFlippableInequalities(I);
+  foreach row in F do
+    if ($.Ordering(row,R)) then
+      a := GetCol(GetRelativeInteriorPointOfGroebnerConeFacet(I,row),1);
+      t0 := CpuTime();
+      J := GroebnerBasisFlip(I, a, row);
+      $.GlobalTime4 := $.GlobalTime4 + CpuTime()-t0;
+      if row=-1*OutEdge(J,R) then
+	CallOnRecursive(J, R, MyFunc);
+      endif;
+    endif;
+  endforeach;
+enddefine;
+
+
+----------------------------------------------------------------------------
+-- Exported functions
+----------------------------------------------------------------------------
+
+-- Input: An ideal I in a ring with an ordering.
+-- Output: All LIST of ideals, whose reduced Groebner bases are all distinct (if markings are taking into account) and are all possible reduced Groebner bases of I.
+define GroebnerFanIdeals(I)
+  $.GlobalTime1 := 0;
+  $.GlobalTime2 := 0;
+  $.GlobalTime3 := 0;
+  $.GlobalTime4 := 0;
+  $.GlobalTime5 := 0;
+  $.GlobalTime6 := 0;
+  $.GlobalTime7 := 0;
+
+  $.GlobalTime9 := 0;
+  $.GlobalTimeMat := 0;
+  $.GlobalTimeOr := 0;
+  t0 := CpuTime();
+  GFIdeals := [];
+  recursive(I, RingOf(I), ref GFIdeals);
+  if VerbosityLevel()>=90 then
+    println;
+    println "GFanGetFacets: \t", DecimalStr($.GlobalTime5);
+
+    println "ReducedGBasis: \t", DecimalStr($.GlobalTime9);
+    println "MarkedPolynomialsToInequalities: \t", DecimalStr($.GlobalTime1);
+    println "GFanRelativeInteriorPoint: \t", DecimalStr($.GlobalTime6);
+    println "matrix: \t", DecimalStr($.GlobalTimeMat);
+    println "Ordering: \t", DecimalStr($.GlobalTimeOr);
+    println "ConcatVer: \t", DecimalStr($.GlobalTime2);
+    println "GroebnerBasisFlip: \t", DecimalStr($.GlobalTime4);
+    println "GetRows: \t", DecimalStr($.GlobalTime7);
+    println "MinBy CompareLex: \t", DecimalStr($.GlobalTime3);
+    println "sum: \t", DecimalStr($.GlobalTime5               +$.GlobalTime9+
+				  $.GlobalTime1 +$.GlobalTime6+$.GlobalTimeMat+
+				  $.GlobalTime2 +$.GlobalTime4+$.GlobalTime7+
+				  $.GlobalTime3 +$.GlobalTimeOr);
+    println "total time: \t", TimeFrom(t0);
+  endif;
+  return GFIdeals;
+enddefine; -- GroebnerFanIdeals
+
+
+define CallOnGroebnerFanIdeals(I, MyFunc)
+  $.GlobalTime1 := 0;
+  $.GlobalTime2 := 0;
+  $.GlobalTime3 := 0;
+  $.GlobalTime4 := 0;
+  $.GlobalTime5 := 0;
+  $.GlobalTime6 := 0;
+  $.GlobalTime7 := 0;
+  $.GlobalTime9 := 0;
+  $.GlobalTimeMat := 0;
+  $.GlobalTimeOr := 0;
+  t0 := CpuTime();
+  L:=[];
+  CallOnRecursive(I,RingOf(I),MyFunc);
+  if VerbosityLevel()>=90 then
+    println;
+    println "GFanGetFacets: \t", DecimalStr($.GlobalTime5);
+    println "ReducedGBasis: \t", DecimalStr($.GlobalTime9);
+    println "MarkedPolynomialsToInequalities: \t", DecimalStr($.GlobalTime1);
+    println "GFanRelativeInteriorPoint: \t", DecimalStr($.GlobalTime6);
+    println "matrix: \t", DecimalStr($.GlobalTimeMat);
+    println "Ordering: \t", DecimalStr($.GlobalTimeOr);
+    println "ConcatVer: \t", DecimalStr($.GlobalTime2);
+    println "GroebnerBasisFlip: \t", DecimalStr($.GlobalTime4);
+    println "GetRows: \t", DecimalStr($.GlobalTime7);
+    println "MinBy CompareLex: \t", DecimalStr($.GlobalTime3);
+    println "sum: \t", DecimalStr($.GlobalTime5               +$.GlobalTime9+
+				  $.GlobalTime1 +$.GlobalTime6+$.GlobalTimeMat+
+				  $.GlobalTime2 +$.GlobalTime4+$.GlobalTime7+
+				  $.GlobalTime3 +$.GlobalTimeOr);
+    println "total time: \t", TimeFrom(t0);
+  endif;
+enddefine; -- GroebnerFanIdeals
+
+
+define GroebnerFanReducedGBases(I)
+  return [ ReducedGBasis(J) | J in GroebnerFanIdeals(I) ];
+enddefine; -- GroebnerFanReducedGBases
+  
+
+  
+-- Input: An ideal I in a ring with an ordering.
+-- Output: A universal Groebner basis for I, stored in the same ring.
+define UniversalGBasisOld(I)
+  if type(I) <> IDEAL then error("UniversalGBasis: arg must be an ideal"); endif;
+  R := RingOf(I);
+  GF := GroebnerFanIdeals(I);
+  return  MakeSet(flatten([PolyAlgebraHom(RingOf(J),R,indets(R))(ReducedGBasis(J)) | J in GF]));
+enddefine; -- UniversalGBasisOld
+
+define UniversalGBasis(I)
+  P := RingOf(I);
+  UGB := [];
+  AppendToUGB :=
+  func(J)
+    ImportByRef UGB;
+    phi := PolyAlgebraHom(RingOf(J), P, indets(P));
+    L := [ monic(phi(f)) | f in ReducedGBasis(J) and not(monic(phi(f)) IsIn UGB) ];
+    UGB := concat(UGB, L);
+  endfunc;
+  CallOnGroebnerFanIdeals(I, AppendToUGB);
+  return  UGB;
+enddefine; -- UniversalGroebnerBasis
+
+EndPackage;

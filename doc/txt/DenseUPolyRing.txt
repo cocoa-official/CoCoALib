@@ -1,0 +1,58 @@
+      DenseUPolyRing
+      Copyright (c)  2007  Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{DenseUPolyRing}{Anna Bigatti}
+
+
+
+== User documentation for DenseUPolyRing ==
+%======================================================================
+
+``DenseUPolyRing`` is an abstract class (inheriting from [[PolyRing]])
+representing rings of univariate polynomials written with
+*dense representation*:
+a polynomial is viewed abstractly as a vector of coefficients
+(belonging to the coefficient ring).  Indices are ``long``.
+All meaningful coefficients are in the positions 0 to ``deg``.
+Between deg+1 and size-1 the coefficients are guaranteed to be valid
+and valued 0.
+
+Zero polynomial is represented with ``myDegPlus1 = 0``.
+
+See [[RingElem DenseUPolyRing]] for operations on its elements.
+
+=== Pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+- ``NewPolyRing_DUP(CoeffRing)`` -- default indet name is ``x``
+- ``NewPolyRing_DUP(CoeffRing, IndetName)``
+- ``NewPolyRing_DUP(CoeffRing, IndetName, MinCapacity)`` --
+         allows to specify the minimum capacity for the coefficient
+         vector (in order to minimize reallocations)
+- ``DenseUPolyRing(R)`` -- sort of downcast the ring ``R`` to a dense univariate poly ring;
+will throw an exception of type ``CoCoAError`` with code ``ERR::NotDenseUPolyRing`` if needed.
+-
+
+=== Query and cast ===[query]
+%----------------------------------------------------------------------
+Let ``R`` be an object of type [[ring]].
+- ``IsDenseUPolyRing(R)`` -- ``true`` if ``R`` is actually ``DenseUPolyRing``
+- ``DenseUPolyRingPtr(R)`` -- get pointer to a ``DenseUPolyRing`` (for calling mem fns);
+will throw an exception of type ``CoCoAError`` with code ``ERR::NotDenseUPolyRing`` if needed.
+-
+
+=== Operations on a DenseUPolyRing ===[operations]
+%----------------------------------------------------------------------
+See [[PolyRing operations]].
+
+
+== Maintainer documentation for DenseUPolyRing ==
+%======================================================================
+
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+No maintainer doc!

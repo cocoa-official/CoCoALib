@@ -1,0 +1,753 @@
+Package $coclib
+
+Export CheckArgTypes;
+Export dashes;
+Export equals;
+Export GCDList;
+Export MakeTerm;
+Export NonZero;
+export power;
+Export spaces;
+-- Export UnivariateIndetIndex; built-in 2021-10
+-- Export RMap;
+Export eval;
+Export starting;
+-- Export PackageOf;
+Export packages;
+Export IndetSymbols;
+Export swap;
+Export SymbolRange;
+Export IntersectionList;
+
+-----------------------------------------------------------------------------
+
+Define swap(ref A, ref B)
+  tmp := A;
+  A := B;
+  B := tmp;
+EndDefine; -- swap
+
+-----------------------------------------------------------------------------
+-- Run all the tests and time them
+//Define MakeCheck() Print Time Source CocoaPackagePath()+"/ts/all.ts"; EndDefine;
+
+-----------------------------------------------------------------------------
+Define IndetSymbols(R)
+  Return [ Record[head:=IndetName(x), indices:=IndetSubscripts(x)] | x In indets(R)];
+EndDefine; -- IndetsSymbols
+
+-----------------------------------------------------------------------------
+Define SymbolRange(str, lo, hi)
+  // TODO: check arg types properly!
+  if [type(hi), type(lo)] = [INT, INT] then
+    return [ Record[head:=str, indices:=[i]] | i in (lo..hi) ];
+  endif;
+  if [type(hi), type(lo)] = [LIST, LIST] and
+    len(lo) = len(hi) and
+    MakeSet([type(x) | x in lo]) = [INT] and
+    MakeSet([type(x) | x in hi]) = [INT] then
+    IND := CartesianProductList([lo[i]..hi[i] | i in 1..len(lo)]);
+    return [ record[head:=str, indices:=i] | i in IND ];
+  endif;
+  error("hi, lo must be INT, or LIST of INT with same length");
+EndDefine; -- SymbolRange
+
+-----------------------------------------------------------------------------
+// 2 aux fns for "starting"
+define LowerChar(ch) // ASSUME ch is ASCII code!!!
+  if ch < 65 or ch > 90 then return ch; endif;
+  return ch+32;
+enddefine; -- LowerChar
+
+define LowerString(S)
+  return ascii([LowerChar(ch) | ch in ascii(S)]);
+enddefine; -- LowerString
+
+Define starting(str)
+  CaseSensitive := false;
+  // NEATER THIS WAY:  (???)
+  // IdentityMap := func(S) return S endfunc;
+  // if CaseSensitive then map := IdentityMap; else map := LowerString; endif;
+  // str := map(str);
+  // ...
+  // TL := [F In TLF | len(F.name)>=L And map(substring(F.name,1,L)) = str];
+  // ...
+  // Pkg := [F In TLF | str IsIn map(F.name) And F.IsExported];
+  L := len(str);
+  if not(CaseSensitive) then str := LowerString(str); endif;
+  TLF := TopLevelFunctions();
+  if not(CaseSensitive) then 
+    TL := [F In TLF | len(F.name)>=L And LowerString(substring(F.name,1,L)) = str];
+  else
+    TL := [F In TLF | len(F.name)>=L And sum([(F.name)[I] | I In 1..L],"") = str];
+  endif;
+  str := "."+str;
+  if not(CaseSensitive) then 
+    Pkg := [F In TLF | str IsIn LowerString(F.name) And F.IsExported];
+  else
+    Pkg := [F In TLF | str IsIn F.name And F.IsExported];
+  endif;
+  Return concat(TL, Pkg);
+EndDefine; -- starting
+
+-- define PackageOf(str)
+--   L := len(str);
+--   TLF := TopLevelFunctions();
+--   if [F In TLF | F.name = str]<>[] then return "built-in function"; endif;
+--   Pkg := [F In TLF | "."+str IsIn F.name And F.IsExported];
+--   foreach f in Pkg do
+--     i := 1;
+--     while i <= len(f.name) do
+--       if f.name[i]="." then break; endif;
+--       incr(ref i);
+--     endwhile;
+--     if sum([(f.name)[j] | j In (i+1)..len(f.name)], "") = str then
+--       return sum([(f.name)[j] | j in 1..(i-1)]);
+--     endif;
+--   endforeach;
+--   return "No function called \""+str+"\"";
+-- enddefine; -- PackageOf
+  
+-----------------------------------------------------------------------------
+Define packages()
+  CharList := Func(S)
+    L := [];
+    for i:=1 to len(S) do
+      if S[i]="." then return L; endif; append(ref L, S[i]);
+    endfor;
+  EndFunc;
+  L := [ F.name | F In TopLevelFunctions() and "$" isin F.name ];
+  PkgList := [ sum(CharList(S)) | S In L ];
+  Return MakeSet(PkgList);
+EndDefine; -- starting
+
+-----------------------------------------------------------------------------
+Define CheckArgTypes(TypeList, args)
+  ErrMesg :=
+  func(i)
+    return "Arg " + sprint(i) + " is " + sprint(type(args[i]))
+    + " but must be " + sprint(TypeList[i]);
+  endfunc;
+  If len(TypeList) <> len(args) Then
+    error("CheckArgs: Different lengths for TypeList and args");
+  EndIf;
+  For i := 1 To len(TypeList) Do
+    if ( type(TypeList[i])=TYPE and not(type(args[i]) = TypeList[i]) )
+      or ( type(TypeList[i])=LIST and not(type(args[i]) isin TypeList[i]) )
+      then
+      error(ErrMesg(i));
+    endif;
+    if not(type(TypeList) isin [TYPE, LIST]) then
+      error("CheckArgs: TypeList elements must be TYPE or LIST of TYPE");
+    endif;
+  EndFor;
+EndDefine; -- CheckArgTypes
+
+-----------------------------------------------------------------------------
+-- Fix for IsZero: too tricky to try fixing at low level...
+
+-- Define IsZero(X)
+--   If type(X) = MODULE Or type(X) = IDEAL Then
+--     Return interreduced(gens(X)) = [];
+--   EndIf;
+--   Return $builtin.IsZero(X);
+-- EndDefine;
+
+
+-----------------------------------------------------------------------------
+-- Some simple sanity checks for QZP and ZPQ.
+
+Define QZP(Arg)
+  If characteristic() = 0 Then error("QZP: current ring must have non-zero characteristic"); EndIf;
+  If type(Arg) = RINGELEM Then
+    If characteristic(owner(Arg)) <> 0 Or NumIndets(owner(Arg)) > NumIndets() Then error("QZP: polynomial argument must have rational coefficients, and no more indeterminates than current ring"); EndIf;
+    Return $builtin.QZP(Arg);
+  EndIf;
+  If type(Arg) = IDEAL Then
+    If characteristic(owner(Arg)) <> 0 Or NumIndets(owner(Arg)) > NumIndets() Then error("QZP: ideal must be in a ring with rational coefficients, and no more indeterminates than current ring"); EndIf;
+    Return ideal([$builtin.QZP(F) | F In gens(Arg)]);
+  EndIf;
+  If type(Arg) = LIST Then
+    Return [QZP(F) | F In Arg];
+  EndIf;
+  error("QZP: argument must be polynomial, ideal, or a list of these");
+EndDefine;
+
+Define ZPQ(Arg)
+  If characteristic() <> 0 Then error("QZP: current ring must have zero characteristic"); EndIf;
+  If type(Arg) = RINGELEM Then
+    If characteristic(owner(Arg)) = 0 Or NumIndets(owner(Arg)) > NumIndets() Then error("ZPQ: polynomial argument must have finite field coefficients, and no more indeterminates than current ring"); EndIf;
+    Return $builtin.ZPQ(Arg);
+  EndIf;
+  If type(Arg) = IDEAL Then
+    If characteristic(owner(Arg)) = 0 Or NumIndets(owner(Arg)) > NumIndets() Then error("QZP: ideal must be in a ring with finite field coefficients, and no more indeterminates than current ring"); EndIf;
+    Return ideal([$builtin.ZPQ(F) | F In gens(Arg)]);
+  EndIf;
+  If type(Arg) = LIST Then
+    Return [ZPQ(F) | F In Arg];
+  EndIf;
+  error("ZPQ: argument must be polynomial, ideal, or a list of these");
+EndDefine;
+
+-----------------------------------------------------------------------------
+-- Fix up for LinSol to allow either single vector or a list of vectors
+-- as the RHS.  We do some argument type checking too.
+
+Define LinSol(Matrix, RHS)
+  If type(RHS) = LIST Then
+    PrintLn "LinSol: OBSOLESCENT USE, second arg should now be a matrix.";
+    If type(RHS[1]) = LIST Then
+      RHS := transposed(mat(RHS));
+    Else
+      RHS := ColMat(RHS);
+    EndIf;
+  EndIf;
+  If type(Matrix) <> MAT Or type(RHS) <> MAT Then
+    error("LinSol: expects arguments (Matrix, Matrix)");
+  EndIf;
+  If RHS = mat([[]]) Then Return RHS; EndIf;
+  If NumRows(Matrix) <> NumRows(RHS) Then
+    error("LinSol: incompatible matrix dimensions");
+  EndIf;
+  
+--   SingleVector := False;
+--   If type(RHS[1]) <> LIST Then RHS := [RHS]; SingleVector := True; EndIf;
+--   If MakeSet([type(V) | V In RHS]) <> [LIST] Then
+--     error("LinSol: inappropriate second argument");
+--   EndIf;
+--   If MakeSet([len(V) | V In RHS]) <> [len(Matrix)] Then
+--     error("LinSol: incompatible dimensions between matrix and vector");
+--   EndIf;
+  RHS := Cast(transposed(RHS), LIST);
+  Ans := $builtin.LinSol(Matrix, RHS);
+--  If SingleVector Then Return Ans[1]; EndIf;
+  Return transposed(mat(Ans));
+EndDefine; -- LinSol
+
+
+-- Compute kernel of a matrix modulo the current characteristic
+Define LinKerModP(M)
+  If type(M) <> MAT Then error("LinKerModP: argument must be a matrix"); EndIf;
+  If characteristic() = 0 Then error("LinKerModP: characteristic must be positive"); EndIf;
+  Return [[AsINT(MapDown(X)) | X In V] | V In gens(SyzOfGens(module(transposed(M))))];
+EndDefine; -- LinKerModP
+
+
+
+
+Define IsTermOrdering(M)
+  If len(M)<>len(M[1]) Then error("IsTermOrdering: matrix must be square"); EndIf;
+  If det(M)=0 Then Return False; EndIf;
+  If not($mat.IsFirstNonZeroInColPositive(M)) Then Return False; EndIf;
+  Return True;
+EndDefine; -- IsTermOrdering
+
+Define IsPositiveGrading(M)
+  Return $mat.IsFirstNonZeroInColPositive(M);
+EndDefine; -- IsTermOrdering
+
+-- Define PositiveGrading4(M)
+--   Return $mat.PositiveGrading4(M);
+-- EndDefine; -- PositiveGrading4
+
+
+-------------------------------
+-- $gb
+
+-- Define syz(...)
+--   SyzErr :="Syz expects LIST(POLY), LIST(MODULEELEM), [IDEAL,INT], or [MODULE,INT]";
+--   If len(ARGV) = 1 Then
+--     L := ARGV[1];
+--     If type(L) IsIn [IDEAL, MODULE] Then error(SyzErr) EndIf;
+--     If MakeSet(shape(L)) = [MODULEELEM] Then Return GB.SyzOfList(L); EndIf;
+--     Try PL := [Poly(F) | F In L]
+--       UponError Err Do
+--       Return GB.SyzOfList(PL);
+--     EndTry;
+--   Elif (shape(ARGV) IsIn [[IDEAL,INT], [MODULE,INT]]) Then
+--     Return GB.syz(ARGV[1], ARGV[2]);
+--   EndIf;
+--   error(SyzErr);
+-- EndDefine;
+
+
+Define Reg5(I)  Return $regularity.Regularity(I); EndDefine; -- Reg5
+
+
+-- Other
+
+
+-------------------------------
+-- defined here
+
+Define WithoutNth(L,N)   remove(ref L,N); Return L;  EndDefine;
+
+Define TypeOfCoeffs() Return type(LC(1)); EndDefine;
+
+Define MapDown(F)
+  If type(F) <> RINGELEM Then error("MapDown: argument must be a polynomial"); EndIf;
+  If F = 0 Then Return zero(CoeffRing(RingOf(F))); EndIf;
+  If deg(F) = 0 Then Return LC(F); EndIf;
+  error("MapDown: argument is a non-constant polynomial");
+EndDefine;
+
+
+-- Define RMap(...)
+--   If ARGV=[] Or type(ARGV[1]) <> LIST Then Return RMap(ARGV);
+--   Else
+--     Images := ARGV[1];
+--     If len(Images) = 0 Then error("RMap: list of images is empty"); EndIf;
+--     RE := diff(RingsOf(Images), [INT,RAT]);
+--     If len(RE) > 1 Then error("RMap: list of images in different rings"); EndIf;
+-- //    If len(RE) = 1 Then Images := [Var(RE[1])::Poly(F) | F In Images]; EndIf;
+--     Return tagged(Images, "RMap");
+--   EndIf;
+-- EndDefine;
+
+Define FieldValues(R) Return [R[F] | F In fields(R)]; EndDefine;
+
+Define DebugVersion() Return $builtin.DebugVersion(); EndDefine;
+
+Define dashes()    Return "-------------------------------"; EndDefine;
+Define equals()    Return "==============================="; EndDefine;
+Define spaces(N)
+  If N>0 Then Return sum(NewList(N," ")); Else Return ""; EndIf;
+EndDefine;
+
+-- built-in
+-- Define ScalarProduct(L1,L2)
+--   Return sum([L1[I]*L2[I] | I In 1..min(len(L1),len(L2))]);
+-- EndDefine;
+
+Define Map(...) Return error("Please use $misc.Map()"); EndDefine;
+
+Define eval(F, Point)
+  TopLevel ZZ, QQ;
+  If type(Point) <> LIST Then
+    error("Eval: evaluation point must be a list of coordinates");
+  EndIf;
+  TypeF := type(F);
+  If TypeF IsIn [INT, RAT] Then Return F; EndIf;
+  If TypeF = RINGELEM And IsZZ(RingOf(F)) Then Return F; EndIf;
+  If TypeF = RINGELEM And IsQQ(RingOf(F)) Then Return F; EndIf;
+  If not(TypeF IsIn [LIST, MAT, RINGELEM, MODULEELEM]) Then
+    error("Eval: first arg must be a coefficient or one of LIST, MAT, RINGELEM, MODULEELEM");
+  EndIf;
+  If TypeF = LIST Then Return [eval(G,Point) | G In F]; EndIf;
+  If TypeF = MAT Then Return mat([[eval(F[I,J], Point) | J In 1..NumCols(F)] | I In 1..NumRows(F)]); EndIf; // Use apply
+  If TypeF = MODULEELEM Then Return Vector([eval(G,Point) | G In F]); EndIf;
+  -- we know that TypeF = RINGELEM
+  R := RingOf(F);
+  If len(Point) > NumIndets(R) Then
+    error("Eval: evaluation point has too many coordinates");
+  EndIf;
+  If characteristic(R) = 0 And len(Point) = NumIndets(R) Then
+    RS := RingsOf(Point);
+    If IsSubset(RS, [ZZ, QQ, R]) Then
+      Return PolyAlgebraHom(R, R, Point)(F);
+    EndIf;
+  EndIf;
+  -- Use Subst if evaluation point is not rational...
+  Return subst(F, [ [indet(R, I), Point[I]] | I In
+		       1..min(NumIndets(R),len(Point))]);
+  error("wrong ring: still working On it");
+EndDefine;
+
+-- JAA Commented out 2015-09-03
+-- Define WLog(T)
+--   L := log(T);
+--   W := WeightsList();
+--   Return [L[I]*W[I]|I In 1..NumIndets()];
+-- EndDefine;
+
+Define MakeTerm(P,L)
+  if not(IsPolyRing(P)) then error("MakeTerm: arg 1 must be a poly ring"); endif;
+  if type(L) <> LIST then  error("MakeTerm: arg 2 must be a list of exponents"); endif;
+  if len(L) <> NumIndets(P) then error("MakeTerm: arg 2: exponent list has wrong length"); endif;
+  try L := [AsINT(e) | e in L]; uponerror E do error("MakeTerm: arg 2: exponents must be integers"); endtry;
+  if [e in L | e < 0] <> [] then error("MakeTerm: arg 2: exponents must be non-negative"); endif
+  return product([indet(P,I)^L[I] | I In 1..min(NumIndets(P),len(L))]);
+EndDefine;
+
+//Define RingEnvs()  Return Fields(MEMORY.ENV)  EndDefine;
+
+-- Define ExpandPkgAlias(PkgAlias)
+--   Entries := [X[2] | X In Aliases() And X[1] = PkgAlias];
+--   If Entries = [] Then Return NULL; EndIf;
+--   Return Entries[1];
+-- EndDefine;
+
+
+Define NonZero(L) Return [X In L | not(IsZero(X))]; EndDefine;
+
+Define WeightsList()   Return [deg(X)|X In Indets()];                 EndDefine;
+
+Define GCDList(L)
+  If L = [] Then Return 0; EndIf;
+  Ans := L[1];           -- Do not start with Ans := L[1], as this
+  Foreach X In L Do   -- can give negative GCD values for lists of integers
+    Ans := gcd(Ans, X);
+  EndForeach;
+  Return Ans;
+EndDefine;
+
+
+Define IntersectionList(L)
+  If L = [] Then Return L; EndIf;
+  -- probably a bad algorithm
+  X := L[1];
+  For I := 2 To len(L) Do X := intersection(X, L[I]); EndFor;
+  Return X;
+EndDefine; -- IntersectionList
+
+
+Define Factor(P)
+  If type(P) <> RINGELEM Then error("Factor: argument must be a polynomial"); EndIf;
+  If P = 0 Then error("Cannot factorize 0"); EndIf;
+  If characteristic() <> 0 And not(IsPrime(characteristic())) Then
+    error("Factor: factorization over ZZ/(n) not supported for n non-prime");
+  EndIf;
+  If deg(P)=0 Then
+    If P = 1 Then Return []; Else Return [[P,1]]; EndIf;
+  EndIf;
+//  Using Var(RingEnv(P)) Do
+    If TypeOfCoeffs() <> RAT Then Return FactorUnivariate(P); EndIf;
+    -- _if we get here, polynomial is over Q, so clear denominator...
+    Denom := product([X.Den | X In coefficients(P)]);
+    P := Denom * P;
+    Ans := FactorUnivariate(P);
+    If Denom = 1 Then Return Ans; EndIf;
+    If support(Ans[len(Ans)][1]) <> [1] Then
+      append(ref Ans, [1/Denom, 1]);
+      Return Ans;
+    EndIf;
+    Ans[len(Ans)][1] := Ans[len(Ans)][1] / Denom;
+    Return Ans;
+//  EndUsing;
+EndDefine;
+
+Define FactorUnivariate(P)
+    X := UnivariateIndetIndex(P);
+    If X = 0 And characteristic() <> 0 Then
+      error("Multivariate polynomial factorization in finite characteristic not implemented");
+    EndIf;
+    If X = 0 Then Return factor(P); EndIf; -- MULTIVARIATE
+    X := indet(X);
+    Xpower := X^deg(last(support(P)), X); -- highest power of X dividing P
+    P1 := P/Xpower;
+    Exps := [deg(PP, X) | PP In support(P1)];
+    N := GCD(Exps);
+    If N = 0 Or N = 1 Then Return factor(P); EndIf;
+    F := sum([X^I*CoeffOfTerm(X^(N*I), P1) | I In 0..(deg(P1, X)/N)]);
+    Facs := reversed(factor(F));
+    Content := 1;
+    If deg(Facs[1,1]) = 0 Then
+      Content := Facs[1,1];
+      Facs := tail(Facs);
+    EndIf;
+    Foreach Prime In reversed(PrimeDivisors(N)) Do
+      If Prime=characteristic() Then -- need to handle this case specially
+        Facs := [[FacPow[1],Prime*FacPow[2]] | FacPow In Facs];
+      Else
+        NewFacs := [];
+        Foreach FacPow In Facs Do
+          Tmp := reversed(factor(subst(FacPow[1],X,X^Prime)));
+          If deg(Tmp[1,1]) = 0 Then Tmp := tail(Tmp); EndIf;
+          NewFacs := concat(NewFacs, [[FP[1], FacPow[2]] | FP In Tmp]);
+        EndForeach;
+        Facs := NewFacs;
+      EndIf;
+    EndForeach;
+    -- The next two lines are an ugly hack to get the sign of the content right
+    LCFacs := product([LC(FacPow[1])^FacPow[2] | FacPow In Facs]);
+    If Content*LCFacs <> LC(F) Then Content := -Content; EndIf;
+    If Content <> 1 Then append(ref Facs, [Content, 1]); EndIf;
+    If Xpower = 1 Then Return Facs; EndIf;
+    Return concat(factor(Xpower), Facs);
+EndDefine;
+
+Define PrimeDivisors(N)
+  If N = 0 Then Return [0]; EndIf;
+  If N = 1 Then Return []; EndIf;
+  Return PrimeDivisors_Loop(N, 2);
+EndDefine;
+
+Define PrimeDivisors_Loop(N, P)
+  If P*P > N Then Return [N]; EndIf;
+  If mod(N, P) <> 0 Then Return PrimeDivisors_Loop(N, P+1); EndIf;
+  Return concat([P], PrimeDivisors_Loop(div(N, P), P));
+EndDefine;
+
+
+
+-------------------------------------------------------
+-- Pretty Printing of tagged objects
+
+Define Print_Time(R)
+  X := mod(R.Cpu,100);
+  If X < 10 Then Dot := ".0"; Else Dot := "."; EndIf;
+  PrintLn;
+  Print "Cpu time = ", div(R.Cpu, 100), Dot, X;
+  Print ", User time = ", R.User;
+EndDefine;
+
+-------------------------------
+
+Define Print_shifts(S)  Print "Shifts(",Untagged(S),")"; EndDefine;
+
+-------------------------------
+
+-- Define Describe_Memory(M)
+--   PrintLn "------------[Memory]-----------";
+--   For I := 1 To len(M) Do
+--     If I>1 Then PrintLn EndIf;
+--     Print M[I,1], " = ";
+--     Catch Print M[I,2] In E EndCatch; -->_Catch useful when TypeOf(V)=ERROR
+--     If type(E) = ERROR Then Print "(Error)"; EndIf;
+--   EndFor;
+-- EndDefine;
+
+Define Print_Memory(M)
+  Print [X[1]|X In M];
+EndDefine;
+
+-------------------------------
+
+Define Print_Quotient(M)
+  X := untagged(M);
+  If type(X) = IDEAL Then
+    Print RingEnv(X), "/", X;
+  Elif type(X) = MODULE Then
+    Print RingEnv(X), "^", NumComps(X), "/", X;
+  Else Print X;
+  EndIf;
+EndDefine;
+
+--[ help ]--
+
+Define Help_HELP() Print "Type Help <Op> to get help on operator <Op>"; EndDefine;
+Define Help_Help() Print "Type Help <Op> to get help on operator <Op>"; EndDefine;
+
+-- Define Help(...)
+--   If len(ARGV) = 0 Then $builtin.Help("Help")
+--   Else
+--     NullOrHelpMesg := $builtin.Help(ARGV[1]);
+--     If type(NullOrHelpMesg) <> NULL Then Print NullOrHelpMesg; EndIf;
+--   EndIf;
+-- EndDefine;
+
+Define Mod2Rat(R, M, Q)
+  Return $builtin.Mod2Rat(AsINT(R), AsINT(M), AsINT(Q));
+EndDefine;
+
+
+-- syntactic sugar (see redmine 1374)
+define power(X,N)
+  return X^N;
+enddefine; -- power
+
+-------------------------------
+-- $cocoa5
+
+-- Define GBasis5(Var X)
+--   Using Var(RingEnv(X)) Do
+--     X.GBasis := $cocoa5.GBasis5x(X, Record[]);
+--     Return X.GBasis;
+--   EndUsing;
+-- EndDefine; -- GBasis5
+
+
+-- The default algorithm is  CB_OPT
+-- Example
+-- Use R ::= QQ[x,y,z,t,k];
+-- D := [x*y,k,x*t,y*z,y*t];
+-- AlgType := "NOOPT";
+-- IsTreeC5(D,AlgType);
+-- IsTreeC5(D,34);
+
+Define IsTree5(...)
+  If not(len(ARGV) IsIn [1,2]) Then
+    error("IsTree5 expects a list of PPs and optionally, a string in the set [\"NOOPT\",\"OPT\",\"CS_NOOPT\",\"CS_OPT\"]");
+  EndIf;
+  If len(ARGV)=1 Then
+    AlgType:="CS_OPT";
+  Else
+    AlgType:=ARGV[2];
+  EndIf;
+  If type(ARGV[1])<>LIST Or MakeSet(shape(ARGV[1]))<>[RINGELEM] Then
+    error("IsTree5 first argument must be a list of PPs");
+  EndIf;
+  L:=ARGV[1];
+  Foreach T In L Do
+    If not($cocoa5.IsSQFRTerm(T)) Then
+      error("IsTree5 expects a list of SQFR power products as input");
+    EndIf;
+  EndForeach;
+  Pre:=L;
+  L:=interreduced(L);
+  If L<>Pre Then
+    PrintLn "Complex has been interreduced. Now is ",L;
+  EndIf;
+  If not(AlgType IsIn ["NOOPT","OPT","CS_NOOPT","CS_OPT"]) Then
+    error("IsTree5 allowed second arguments are NOOPT,OPT,CS_NOOPT,CS_OPT");
+  EndIf;
+  If AlgType="NOOPT" Then Computation:="IsTree_NoOpt"; EndIf;
+  If AlgType="OPT"   Then Computation:="IsTree_Opt"; EndIf;
+  If AlgType="CS_NOOPT" Then Computation:="IsTree_CBNoOpt"; EndIf;
+  If AlgType="CS_OPT"   Then Computation:="IsTree_CBOpt"; EndIf;
+  Return $cocoa5.IsTree5(L,Computation);
+EndDefine; -- IsTree5
+
+
+
+// 1 or 3 parameters.
+// X is an integer matrix, A,B are integers (long) parameters for the NTL implementation.
+Define LLL5(...)
+  If len(ARGV)=1 Then
+    Return $cocoa5.LLL5(ARGV[1],3,4);
+  Else
+    Return $cocoa5.LLL5(ARGV[1],ARGV[2],ARGV[3]);
+  EndIf;
+EndDefine; -- LLL5
+
+
+-- See the cocoa5 documentation for this function
+-- Uses NTL
+Define LLLFP5(...)
+  If len(ARGV)=1 Then
+    Return $cocoa5.LLLFP5(ARGV[1],0,0,99/100);
+  Else
+    Return $cocoa5.LLLFP5(ARGV[1],ARGV[2],ARGV[3],ARGV[4]);
+  EndIf;
+EndDefine; -- LLLFP5
+
+
+-- See the cocoa5 documentation for this function
+-- Uses NTL
+Define Babai5(Basis,V)
+  Return $cocoa5.Babai5(Basis,V);
+EndDefine; -- Babai5
+
+
+-- See the cocoa5 documentation for this function
+-- Uses NTL
+Define BKZ5(...)
+  If len(ARGV)=1 Then
+    Return $cocoa5.BKZ5(ARGV[1],0,0,99/100,10,0);
+  Else
+    Return $cocoa5.BKZ5(ARGV[1],ARGV[2],ARGV[3],ARGV[4],ARGV[5],ARGV[6]);
+  EndIf;
+EndDefine; -- BKZ5
+
+-- Define SyzOfGens5(Var X)
+--   Using Var(RingEnv(X)) Do
+--     Return $cocoa5.SyzOfGensT5x(X, Record[]);
+--   EndUsing;
+-- EndDefine; -- SyzOfGens5
+
+-- Define Intersection5(Var X,Var Y)
+--   Using Var(RingEnv(X)) Do
+--     Return $cocoa5.IntersectionT5x(X,Y, Record[]);
+--   EndUsing;
+-- EndDefine; -- IntersectionT5
+
+-- Define Elim5(X, Var Y)
+--   If type(X)<>LIST Then X := [X]; EndIf;
+--   Using Var(RingEnv(Y)) Do
+--     Return $cocoa5.ElimT5x(X,Y, Record[]);
+--   EndUsing;
+-- EndDefine; -- ElimT5
+
+-- Define Colon5(Var X,Var Y)
+--   Using Var(RingEnv(X)) Do
+--     Return $cocoa5.ColonT5x(X,Y, Record[]);
+--   EndUsing;
+-- EndDefine; -- ColonT5
+
+-- Define Saturation5(Var X,Var Y)
+--   Using Var(RingEnv(X)) Do
+--     Return $cocoa5.SaturationT5x(X,Y, Record[]);
+--   EndUsing;
+-- EndDefine; -- SaturationT5
+
+-- Define Homogenized5(Var X,Var Y)
+--   If type(Y) = LIST Then
+--     error("Homogenized5: second arg must be IDEAL or MODULE");
+--   EndIf;
+--   Using Var(RingEnv(Y)) Do
+--     Return $cocoa5.HomogenizedT5x(X,Y, Record[]);
+--   EndUsing;
+-- EndDefine; -- HomogenizedT5
+
+-- Define BBasis5(Var I)
+--   Using Var(RingEnv(I)) Do
+--     Return $cocoa5.BBasis5(I);
+--   EndUsing;
+-- EndDefine;
+
+-- -- Define FGLM5(GBOld, Var M)
+-- -- Define FGLM5(GBOld)
+-- Define FGLM5(...)
+--   If len(ARGV) = 2 Then
+--     M := ARGV[2];
+--   Else
+--     M := Ord();
+--   EndIf;
+--   Return $cocoa5.FGLM5(ARGV[1], M);
+-- EndDefine;
+
+-- Define Colon5x(I,J, Info5) Return $cocoa5.ColonT5x(I,J, Info5); EndDefine;
+-- Define Elim5x(X,J, Info5)  If type(X)<>LIST Then X := [X]; EndIf; Return $cocoa5.ElimT5x(X,J, Info5); EndDefine;
+-- Define GBasis5x(I, Info5) Return C5.GBasis5x(I, Info5); EndDefine;
+-- Define Homogenized5x(I,J, Info5) Return $cocoa5.HomogenizedT5x(I,J, Info5); EndDefine;
+-- Define Intersection5x(I,J, Info5) Return $cocoa5.IntersectionT5x(I,J, Info5); EndDefine;
+-- Define LT5x(I, Info5) Return C5.LT5x(I, Info5); EndDefine;
+-- Define ReducedGBasis5x(I, Info5) Return C5.ReducedGBasis5x(I, Info5); EndDefine;
+-- Define Saturation5x(I,J, Info5) Return $cocoa5.SaturationT5x(I,J, Info5); EndDefine;
+-- Define SyzOfGens5x(I, Info5) Return $cocoa5.SyzOfGensT5x(I, Info5); EndDefine;
+
+-- Define PreprocessPts5(...) Return $cocoa5.PreprocessPts5(...); EndDefine;
+-- Define StableBBasis5(...) Return $cocoa5.StableBBasis5(...); EndDefine;
+-- Define StableBBasisNBM5(Pts, Tolerance) Return $cocoa5.StableBBasisNBM5(Pts, Tolerance); EndDefine;
+------------------------------------------------------------
+Define MVT5(L) Return $cocoa5.MVT5(L);EndDefine;
+Define PrintMVT(X)
+  Tree:=MVT5(X);
+  For J:=1 To len(Tree) Do
+    PrintLn(Tree[J]);
+  EndFor;
+EndDefine; --PrintMVT;
+Define MayerVietorisTreeN1(L) Return $cocoa5.MayerVietorisTreeN1(L);EndDefine;
+Define MVTReg5(L) Return $cocoa5.MVTReg5(L);EndDefine;
+Define IsMonomialIrreducible5(L) Return $cocoa5.IsMonomialIrreducible5(L);EndDefine;
+Define IsMonomialPrime5(L) Return $cocoa5.IsMonomialPrime5(L);EndDefine;
+Define IsMonomialPrimary5(L) Return $cocoa5.IsMonomialPrimary5(L);EndDefine;
+Define MVTRegUpperBound5(L) Return $cocoa5.MVTRegUpperBound5(L);EndDefine;
+Define MVTRegLowerBound5(L) Return $cocoa5.MVTRegLowerBound5(L);EndDefine;
+Define MVTProjDim5(L) Return $cocoa5.MVTProjDim5(L);EndDefine;
+Define MVTProjDimUpperBound5(L) Return $cocoa5.MVTProjDimUpperBound5(L);EndDefine;
+Define MVTProjDimLowerBound5(L) Return $cocoa5.MVTProjDimLowerBound5(L);EndDefine;
+------------------------------------------------------------
+Define AlexanderDual_Frobby5(I, PP) Return $cocoa5.AlexanderDual_Frobby5(I,PP);EndDefine;
+Define IrreducibleDecom_Frobby5(I) Return $cocoa5.IrreducibleDecom_Frobby5(I);EndDefine;
+Define MaximalStandardMonomials_Frobby5(I) Return $cocoa5.MaximalStandardMonomials_Frobby5(I);EndDefine;
+Define PrimaryDecom_Frobby5(I) Return $cocoa5.PrimaryDecom_Frobby5(I);EndDefine;
+Define Dimension_Frobby5(I) Return $cocoa5.Dimension_Frobby5(I);EndDefine;
+Define AssociatedPrimes_Frobby5(I) Return $cocoa5.AssociatedPrimes_Frobby5(I);EndDefine;
+
+
+
+-------------------------------
+-- $idealop5
+
+-- Define ElimComponents5(CompsToElim, M)
+--   Return Op5.ElimComponents5x(CompsToElim, M, Record[]);
+-- EndDefine; -- ElimComponents5
+
+  -- Define ElimComponents5x(CompsToElim, M, Info5)
+--   Return Op5.ElimComponents5x(CompsToElim, M,Info5);
+-- EndDefine; -- ElimComponents5x
+------------------------------
+
+  
+EndPackage; -- coclib

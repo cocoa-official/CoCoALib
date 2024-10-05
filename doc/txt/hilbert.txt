@@ -1,0 +1,20 @@
+      hilbert
+      Copyright (c)  2006 Anna Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{hilbert}{Anna Bigatti}
+
+== hilbert ==
+
+hey!!!   write something more!
+
+
+I'm just using the C code I wrote for CoCoA-4.
+It will be entirely rewritten in C++
+
+The only usable function is
+```  RingElem HilbertNumeratorMod(PolyRing HSRing, ideal I);
+
+but it works ONLY if I is a monomial ideal.
+HSRing is the ring where the Hilbert Series Numerator should live.
+

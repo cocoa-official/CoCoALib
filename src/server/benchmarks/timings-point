@@ -1,0 +1,1095 @@
+=====  DATE: 22/11/05 TIME: 17:18  =====  char 32003, homog  =====
+
+-- INPUT: dense755
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 1210
+# GBasis = 327
+len = 327	        --time: 2.54
+
+-- INPUT: kin1_h
+Use P::=Z/(32003)[x[0..12]],DegRevLex;
+Homogeneous algorithm
+# reductions = 2791
+# GBasis = 306
+len = 306	        --time: 1.61
+
+-- INPUT: twomat3_h
+Use P::=Z/(32003)[x[0..18]],DegRevLex;
+Homogeneous algorithm
+# reductions = 700
+# GBasis = 109
+len = 109	        --time: 4.16
+
+-- INPUT: c7_h
+Use P::=Z/(32003)[x[0..7]],DegRevLex;
+Homogeneous algorithm
+# reductions = 449
+# GBasis = 121
+len = 121	        --time: 1.82
+
+-- INPUT: 6x7-4_h
+Use P::=Z/(32003)[x[0..41]],DegRevLex;
+Homogeneous algorithm
+# reductions = 5013
+# GBasis = 525
+len = 525	        --time: 4.15
+
+-- INPUT: gaukwa4_h
+Use P::=Z/(32003)[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 1413
+# GBasis = 267
+len = 267	        --time: 5.84
+
+-- INPUT: wang_hL
+Use P::=Z/(32003)[x[0..7]],DegLex;
+Homogeneous algorithm
+# reductions = 1401
+# GBasis = 317
+len = 317	        --time: 7.26
+
+-- INPUT: homog_gonnet_h
+Use P::=Z/(32003)[x[0..17]],DegRevLex;
+Homogeneous algorithm
+# reductions = 11114
+# GBasis = 854
+len = 854	        --time: 9.09
+
+-- INPUT: t51_h
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 29
+# GBasis = 14
+len = 14	        --time: 0.01
+
+-- INPUT: 7x8-2_h
+Use P::=Z/(32003)[x[0..55]],DegRevLex;
+Homogeneous algorithm
+# reductions = 12740
+# GBasis = 588
+len = 588	        --time: 9.13
+
+-- INPUT: mora1_h
+Use P::=Z/(32003)[x[0..3]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3302
+# GBasis = 1105
+len = 1105	        --time: 12.45
+
+-- INPUT: kin1_hL
+Use P::=Z/(32003)[x[0..12]],DegLex;
+Homogeneous algorithm
+# reductions = 6995
+# GBasis = 728
+len = 728	        --time: 26.39
+
+-- INPUT: hairer2_h
+Use P::=Z/(32003)[x[0..13]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3151
+# GBasis = 506
+len = 506	        --time: 42.96
+
+
+
+=====  DATE: 22/11/05 TIME: 17:23  =====  char 0, homog  =====
+
+-- INPUT: alex3_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 632
+# GBasis = 211
+len = 211	        --time: 0.79
+
+-- INPUT: 6x7-4_hQ
+Use P::=Q[x[0..41]],DegRevLex;
+Homogeneous algorithm
+# reductions = 5013
+# GBasis = 525
+len = 525	        --time: 7.83
+
+-- INPUT: c7_hQ
+Use P::=Q[x[0..7]],DegRevLex;
+Homogeneous algorithm
+# reductions = 449
+# GBasis = 121
+len = 121	        --time: 10.29
+
+-- INPUT: homog_gonnet_hQ
+Use P::=Q[x[0..17]],DegRevLex;
+Homogeneous algorithm
+# reductions = 11114
+# GBasis = 854
+len = 854	        --time: 14.91
+
+-- INPUT: hairer2_hQ
+Use P::=Q[x[0..13]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3151
+# GBasis = 506
+len = 506	        --time: 209.57
+
+-- INPUT: mora9_hQ
+Use P::=Q[x[0..15]],DegRevLex;
+Homogeneous algorithm
+# reductions = 44640
+# GBasis = 4131
+len = 4131	        --time: 266.02
+
+-- INPUT: twomat3_hQ
+Use P::=Q[x[0..18]],DegRevLex;
+Homogeneous algorithm
+# reductions = 700
+# GBasis = 109
+len = 109	        --time: 8.87
+ 
+-- INPUT: t51_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 29
+# GBasis = 14
+len = 14	        --time: 0.01
+
+-- INPUT: kin1_hQ
+Use P::=Q[x[0..12]],DegRevLex;
+Homogeneous algorithm
+# reductions = 2791
+# GBasis = 306
+len = 306	        --time: 108.55
+
+-- INPUT: virasoro_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 780
+# GBasis = 128
+len = 128	        --time: 20.47
+
+-- INPUT: katsura7_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 381
+# GBasis = 74
+len = 74	        --time: 5.57
+
+=====  DATE: 18/01/06 TIME: 17:08  =====  char 32003, homog  =====
+
+-- INPUT: dense755
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 1210
+# GBasis = 327
+len = 327	        --time: 2.53
+
+-- INPUT: kin1_h
+Use P::=Z/(32003)[x[0..12]],DegRevLex;
+Homogeneous algorithm
+# reductions = 2791
+# GBasis = 306
+len = 306	        --time: 1.61
+
+-- INPUT: twomat3_h
+Use P::=Z/(32003)[x[0..18]],DegRevLex;
+Homogeneous algorithm
+# reductions = 700
+# GBasis = 109
+len = 109	        --time: 4.21
+
+-- INPUT: c7_h
+Use P::=Z/(32003)[x[0..7]],DegRevLex;
+Homogeneous algorithm
+# reductions = 449
+# GBasis = 121
+len = 121	        --time: 1.82
+
+-- INPUT: 6x7-4_h
+Use P::=Z/(32003)[x[0..41]],DegRevLex;
+Homogeneous algorithm
+# reductions = 5013
+# GBasis = 525
+len = 525	        --time: 4.08
+
+-- INPUT: gaukwa4_h
+Use P::=Z/(32003)[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 1413
+# GBasis = 267
+len = 267	        --time: 5.92
+
+-- INPUT: wang_hL
+Use P::=Z/(32003)[x[0..7]],DegLex;
+Homogeneous algorithm
+# reductions = 1401
+# GBasis = 317
+len = 317	        --time: 7.23
+
+-- INPUT: homog_gonnet_h
+Use P::=Z/(32003)[x[0..17]],DegRevLex;
+Homogeneous algorithm
+# reductions = 11114
+# GBasis = 854
+len = 854	        --time: 9.1
+
+-- INPUT: t51_h
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 29
+# GBasis = 14
+len = 14	        --time: 0.01
+
+-- INPUT: 7x8-2_h
+Use P::=Z/(32003)[x[0..55]],DegRevLex;
+Homogeneous algorithm
+# reductions = 12740
+# GBasis = 588
+len = 588	        --time: 9.07
+
+-- INPUT: mora1_h
+Use P::=Z/(32003)[x[0..3]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3302
+# GBasis = 1105
+len = 1105	        --time: 12.43
+
+-- INPUT: kin1_hL
+Use P::=Z/(32003)[x[0..12]],DegLex;
+Homogeneous algorithm
+# reductions = 6995
+# GBasis = 728
+len = 728	        --time: 26.29
+
+-- INPUT: hairer2_h
+Use P::=Z/(32003)[x[0..13]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3151
+# GBasis = 506
+len = 506	        --time: 43.28
+make[2]: Leaving directory `/home/bigatti/CoCoALib-0.95/src/server/benchmarks'
+make[2]: Entering directory `/home/bigatti/CoCoALib-0.95/src/server/benchmarks'
+
+=====  DATE: 18/01/06 TIME: 17:11  =====  char 0, homog  =====
+
+-- INPUT: alex3_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 632
+# GBasis = 211
+len = 211	        --time: 0.78
+
+-- INPUT: 6x7-4_hQ
+Use P::=Q[x[0..41]],DegRevLex;
+Homogeneous algorithm
+# reductions = 5013
+# GBasis = 525
+len = 525	        --time: 8.03
+
+-- INPUT: c7_hQ
+Use P::=Q[x[0..7]],DegRevLex;
+Homogeneous algorithm
+# reductions = 449
+# GBasis = 121
+len = 121	        --time: 9.96
+
+-- INPUT: homog_gonnet_hQ
+Use P::=Q[x[0..17]],DegRevLex;
+Homogeneous algorithm
+# reductions = 11114
+# GBasis = 854
+len = 854	        --time: 14.76
+
+-- INPUT: hairer2_hQ
+Use P::=Q[x[0..13]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3151
+# GBasis = 506
+len = 506	        --time: 203.92
+
+-- INPUT: mora9_hQ
+Use P::=Q[x[0..15]],DegRevLex;
+Homogeneous algorithm
+# reductions = 44640
+# GBasis = 4131
+len = 4131	        --time: 265.98
+
+-- INPUT: twomat3_hQ
+Use P::=Q[x[0..18]],DegRevLex;
+Homogeneous algorithm
+# reductions = 700
+# GBasis = 109
+len = 109	        --time: 8.89
+
+-- INPUT: t51_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 29
+# GBasis = 14
+len = 14	        --time: 0.01
+
+-- INPUT: kin1_hQ
+Use P::=Q[x[0..12]],DegRevLex;
+Homogeneous algorithm
+# reductions = 2791
+# GBasis = 306
+len = 306	        --time: 108
+
+-- INPUT: virasoro_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 780
+# GBasis = 128
+len = 128	        --time: 19.77
+
+-- INPUT: katsura7_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 381
+# GBasis = 74
+len = 74	        --time: 5.33
+
+-- INPUT: schwartz7_hQL
+Use P::=Q[x[0..7]],DegLex;
+Homogeneous algorithm
+# reductions = 2040
+# GBasis = 323
+len = 323	        --time: 1.98
+
+
+=====  DATE: 07/03/06 TIME: 17:22  =====  char 32003, homog  =====
+
+-- INPUT: t51_h
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 14	        --time: 0.01
+
+-- INPUT: dense755
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 327	        --time: 2.64
+
+-- INPUT: kin1_h
+Use P::=Z/(32003)[x[0..12]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 306	        --time: 1.56
+
+-- INPUT: twomat3_h
+Use P::=Z/(32003)[x[0..18]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 109	        --time: 4
+
+-- INPUT: c7_h
+Use P::=Z/(32003)[x[0..7]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 121	        --time: 1.79
+
+-- INPUT: 6x7-4_h
+Use P::=Z/(32003)[x[0..41]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 525	        --time: 4.01
+
+-- INPUT: gaukwa4_h
+Use P::=Z/(32003)[x[0..8]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 267	        --time: 5.79
+
+-- INPUT: wang_hL
+Use P::=Z/(32003)[x[0..7]],DegLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 317	        --time: 7.15
+
+-- INPUT: homog_gonnet_h
+Use P::=Z/(32003)[x[0..17]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 854	        --time: 8.77
+
+-- INPUT: t51_hL
+Use P::=Z/(32003)[x[0..4]],DegLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 83	        --time: 1.14
+
+-- INPUT: 7x8-2_h
+Use P::=Z/(32003)[x[0..55]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 588	        --time: 8.97
+
+-- INPUT: mora1_h
+Use P::=Z/(32003)[x[0..3]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 1105	        --time: 12.36
+
+-- INPUT: kin1_hL
+Use P::=Z/(32003)[x[0..12]],DegLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 728	        --time: 25.69
+
+-- INPUT: hairer2_h
+Use P::=Z/(32003)[x[0..13]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 506	        --time: 42.38
+make[2]: Leaving directory `/home/bigatti/CoCoALib-0.95/src/server/benchmarks'
+make[2]: Entering directory `/home/bigatti/CoCoALib-0.95/src/server/benchmarks'
+
+=====  DATE: 07/03/06 TIME: 17:24  =====  char 0, homog  =====
+
+-- INPUT: alex3_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 211	        --time: 0.78
+
+-- INPUT: 6x7-4_hQ
+Use P::=Q[x[0..41]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 525	        --time: 7.87
+
+-- INPUT: c7_hQ
+Use P::=Q[x[0..7]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 121	        --time: 9.61
+
+-- INPUT: homog_gonnet_hQ
+Use P::=Q[x[0..17]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 854	        --time: 14.51
+
+-- INPUT: hairer2_hQ
+Use P::=Q[x[0..13]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 506	        --time: 201.09
+
+-- INPUT: mora9_hQ
+Use P::=Q[x[0..15]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 4131	        --time: 266.12
+
+-- INPUT: twomat3_hQ
+Use P::=Q[x[0..18]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 109	        --time: 8.58
+
+-- INPUT: t51_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 14	        --time: 0.01
+
+-- INPUT: kin1_hQ
+Use P::=Q[x[0..12]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 306	        --time: 107.95
+
+-- INPUT: virasoro_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 128	        --time: 19.28
+
+-- INPUT: katsura7_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 74	        --time: 5.19
+
+-- INPUT: schwartz7_hQL
+Use P::=Q[x[0..7]],DegLex;
+CreateOldP2NewPRingHom: start 
+Homogeneous algorithm
+len = 323	        --time: 1.93
+
+
+
+----------------------------------------------------------------------
+  inline  bool operator<(const GPair& P)const
+  {
+    int CMP; if ( (CMP=FastCmp(myWDeg, P.myWDeg))!=0 ) return CMP<0;
+    if (IsSpecial()!=P.IsSpecial()) return P.IsSpecial();
+    return (AsSparsePolyRing(owner(myOrdPoly)))->myCmpLPP(raw(myOrdPoly), raw(P.myOrdPoly))<0;
+  }
+
+
+=====  DATE: 16/03/06 TIME: 15:04  =====  char 32003, homog  =====
+
+-- INPUT: t51_h
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 29
+# GBasis = 14
+len = 14	        --time: 0
+
+-- INPUT: dense755
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 1210
+# GBasis = 327
+len = 327	        --time: 2.64
+
+-- INPUT: kin1_h
+Use P::=Z/(32003)[x[0..12]],DegRevLex;
+Homogeneous algorithm
+# reductions = 2791
+# GBasis = 306
+len = 306	        --time: 1.61
+
+-- INPUT: twomat3_h
+Use P::=Z/(32003)[x[0..18]],DegRevLex;
+Homogeneous algorithm
+# reductions = 700
+# GBasis = 109
+len = 109	        --time: 3.96
+
+-- INPUT: c7_h
+Use P::=Z/(32003)[x[0..7]],DegRevLex;
+Homogeneous algorithm
+# reductions = 449
+# GBasis = 121
+len = 121	        --time: 1.81
+
+-- INPUT: 6x7-4_h
+Use P::=Z/(32003)[x[0..41]],DegRevLex;
+Homogeneous algorithm
+# reductions = 5013
+# GBasis = 525
+len = 525	        --time: 4.39
+
+-- INPUT: gaukwa4_h
+Use P::=Z/(32003)[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 1413
+# GBasis = 267
+len = 267	        --time: 5.26
+
+-- INPUT: wang_hL
+Use P::=Z/(32003)[x[0..7]],DegLex;
+Homogeneous algorithm
+# reductions = 1401
+# GBasis = 317
+len = 317	        --time: 6.64
+
+-- INPUT: homog_gonnet_h
+Use P::=Z/(32003)[x[0..17]],DegRevLex;
+Homogeneous algorithm
+# reductions = 11117
+# GBasis = 854
+len = 854	        --time: 8.79
+
+-- INPUT: t51_hL
+Use P::=Z/(32003)[x[0..4]],DegLex;
+Homogeneous algorithm
+# reductions = 246
+# GBasis = 83
+len = 83	        --time: 1.19
+
+-- INPUT: 7x8-2_h
+Use P::=Z/(32003)[x[0..55]],DegRevLex;
+Homogeneous algorithm
+# reductions = 12740
+# GBasis = 588
+len = 588	        --time: 11.55
+
+-- INPUT: mora1_h
+Use P::=Z/(32003)[x[0..3]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3301
+# GBasis = 1105
+len = 1105	        --time: 12.11
+
+-- INPUT: kin1_hL
+Use P::=Z/(32003)[x[0..12]],DegLex;
+Homogeneous algorithm
+# reductions = 7001
+# GBasis = 728
+len = 728	        --time: 23.29
+
+-- INPUT: hairer2_h
+Use P::=Z/(32003)[x[0..13]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3149
+# GBasis = 506
+len = 506	        --time: 34.38
+
+=====  DATE: 16/03/06 TIME: 15:06  =====  char 0, homog  =====
+
+-- INPUT: t51_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 29
+# GBasis = 14
+len = 14	        --time: 0.01
+
+-- INPUT: alex3_hQ
+Use P::=Q[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 633
+# GBasis = 211
+len = 211	        --time: 0.74
+
+-- INPUT: 6x7-4_hQ
+Use P::=Q[x[0..41]],DegRevLex;
+Homogeneous algorithm
+# reductions = 5013
+# GBasis = 525
+len = 525	        --time: 8.17
+
+-- INPUT: c7_hQ
+Use P::=Q[x[0..7]],DegRevLex;
+Homogeneous algorithm
+# reductions = 449
+# GBasis = 121
+len = 121	        --time: 9.48
+
+-- INPUT: homog_gonnet_hQ
+Use P::=Q[x[0..17]],DegRevLex;
+Homogeneous algorithm
+# reductions = 11117
+# GBasis = 854
+len = 854	        --time: 13.92
+
+-- INPUT: hairer2_hQ
+Use P::=Q[x[0..13]],DegRevLex;
+Homogeneous algorithm
+# reductions = 3149
+# GBasis = 506
+len = 506	        --time: 159.64
+
+-- INPUT: mora9_hQ
+Use P::=Q[x[0..15]],DegRevLex;
+Homogeneous algorithm
+# reductions = 44605
+# GBasis = 4131
+len = 4131	        --time: 260.88
+
+-- INPUT: twomat3_hQ
+Use P::=Q[x[0..18]],DegRevLex;
+Homogeneous algorithm
+# reductions = 700
+# GBasis = 109
+len = 109	        --time: 8.23
+
+-- INPUT: kin1_hQ
+Use P::=Q[x[0..12]],DegRevLex;
+Homogeneous algorithm
+# reductions = 2791
+# GBasis = 306
+len = 306	        --time: 59.71
+
+-- INPUT: virasoro_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 780
+# GBasis = 128
+len = 128	        --time: 18.67
+
+-- INPUT: katsura7_hQ
+Use P::=Q[x[0..8]],DegRevLex;
+Homogeneous algorithm
+# reductions = 381
+# GBasis = 74
+len = 74	        --time: 4.92
+
+-- INPUT: schwartz7_hQL
+Use P::=Q[x[0..7]],DegLex;
+Homogeneous algorithm
+# reductions = 2039
+# GBasis = 323
+len = 323	        --time: 1.91
+
+
+=====  DATE: 17/03/06 TIME: 18:38  =====  char 32003, homog  =====
+                               old    RedCog reduce(F, GPoly) bcrit  RedCog         Max +  RTail
+-- INPUT: t51_h                                 ??   --vvv--  PPwM   AssLen         MemPool  <
+Use P::=Z/(32003)[x[0..4]],DegRevLex;
+Homogeneous algorithm
+# reductions = 29
+# GBasis = 14                                                    
+len = 14	        --time: 0      --time: 0.01   0.01   0     0     0.01  0      0     0     0    
+				       		     	     	   	       	      	   	      
+-- INPUT: dense755		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..4]],DegRevLex;  ]],	
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 1210		       		     	     	   	       	      	   	      
+# GBasis = 327			       		     	     	   	       	      	   	      
+len = 327	        --time: 2.58   --time: 5.53   3.12   2.81  2.81  2.8   2.86   2.71  2.74  2.74 
+				       		     	       	   	       	      	   	      
+-- INPUT: kin1_h		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..12]],			
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 2791		       		     	     	   	       	      	   	      
+# GBasis = 306			       		     	     	   	       	      	   	      
+len = 306	        --time: 1.6    --time: 2.11   1.8    1.64  1.54  1.53  1.59   1.56  1.59  1.57 
+				       		     	     	   	       	      	   	      
+-- INPUT: twomat3_h		       		     	 	   	       	      	   	      
+Use P::=Z/(32003)[x[0..18]],DegRevLex; 	
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 700		       		     	     	   	       	      	   	      
+# GBasis = 109			       		     	     	   	       	      	   	      
+len = 109	        --time: 3.97   --time: 4.57   4.24   4.07  4.1   4.09  4.17   4.06  4.05  4.09 
+				       		     	     	   	       	      	   	      
+-- INPUT: c7_h			       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..7]],DegRevLex;   
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 449		       		     	     	   	       	      	   	      
+# GBasis = 121			       		     	     	   	       	      	   	      
+len = 121	        --time: 1.82   --time: 2.36   1.92   1.88  1.91  1.91  1.96   1.86  1.87  1.88 
+				       		     	     	   	       	      	   	      
+-- INPUT: 6x7-4_h		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..41]],DegRevLex; 	
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 5013		       		     	     	   	       	      	   	      
+# GBasis = 525			       		     	     	   	       	      	   	      
+len = 525	        --time: 4.4    --time: 13.69  7.73   5.51  4.22  4.24  4.22   3.88  4.11  3.19 
+				       		     	     	   	       	      	   	      
+-- INPUT: gaukwa4_h		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..8]],DegRevLex;  	
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 1413		       		     	      	   	       	      	   	      
+# GBasis = 267			       		     	     	   	       	      	   	      
+len = 267	        --time: 5.28   --time: 5.88   5.66   5.48  5.42  5.49  5.61   5.55  5.54  5.53 
+				       		     	     	   	       	      	   	      
+-- INPUT: wang_hL		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..7]],DegLex;     	
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 1401		       		     	     	   	       	      	   	      
+# GBasis = 317			       		     	     	   	       	      	   	      
+len = 317	        --time: 6.67   --time: 7.95   6.95   6.85  6.85  6.88  6.9    6.89  6.83  6.89 
+				       		     	     	   	       	      	   	      
+-- INPUT: homog_gonnet_h	       	     	     	       	   	       	      	   	      
+Use P::=Z/(32003)[x[0..17]],DegRevLex; 	
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 11117		       		     	     	   	       	      	   	      
+# GBasis = 854			       		     	     	   	       	      	   	      
+len = 854	        --time: 8.8    --time: 11.2 9 10.54  9.16  7.93  7.9   8.1    8.11  8.39  8.22 
+				       		     	     	   	       	      	   	      
+-- INPUT: t51_hL		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..4]],DegLex;     				   x;    x;    x;     x;    x;    x;   
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 246		       		     	     	   	       	      	   	      
+# GBasis = 83			       		     	     	   	       	      	   	      
+len = 83	        --time: 1.18   --time: 1.23   1.22   1.21  1.23  1.22  1.23   1.24  1.19  1.22 
+				       		     	     	   	       	      	   	      
+-- INPUT: 7x8-2_h		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..55]],DegRevLex; 	
+Homogeneous algorithm		       				   	       	      	   	      
+# reductions = 12740		       		     	     	   	       	      	   	      
+# GBasis = 588			       		     	     	   	       	      	   	      
+len = 588	        --time: 11.65  --time: 14.613 14.43  12.16 6.74  6.8   6.83   6.7   7.22  6.56 
+				       		     	     	   	       	      	   	      
+-- INPUT: mora1_h		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..3]],DegRevLex;  	
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 3301		       				   	       	      	   	      
+# GBasis = 1105			       		     	     	   	       	      	   	      
+len = 1105	        --time: 12.18  --time: 28.451 14.46  13.31 13.26 13.3  13.52  13.02 13.13 13.16
+				       		     	     	   	       	      	   	      
+-- INPUT: kin1_hL		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..12]],DegLex;    				   ex;   ex;   ex;    ex;   ex;   ex;  
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 7001		       		     	     	   	       	      	   	      
+# GBasis = 728			       		     	     	   	       	      	   	      
+len = 728	        --time: 23.37  --time: 26.471 24.05  23.18 22.91 22.8  23.22  23.41 23.39 23.59
+				       		     	     	   	       	      	   	      
+-- INPUT: hairer2_h		       		     	     	   	       	      	   	      
+Use P::=Z/(32003)[x[0..13]],DegRevLex; 	
+Homogeneous algorithm		       		     	     		       	      	   	      
+# reductions = 3149		       		     	     	   	       	      	   	      
+# GBasis = 506			       		     	     	   	       	      	   	      
+len = 506	        --time: 34.64  --time: 39.171 36.44  35.3  35.37 35.6  35.73  35.88 35.53 35.47
+						    		   e/big e/bi  e/big  e/bigae/big e/big
+				       		    		   me/bi me/b  me/bi  me/bigme/bi me/bi
+						     	     	   	       	      	   	      
+=====  DATE: 17/03/06 TIME: 18:40  =======  char 0,  52  === 	   0  == 0  =  0  ==  7  ===1  == 3  ==
+				       		     	     	   	       	      	   	      
+-- INPUT: t51_hQ		       		     	     	   	       	      	   	      
+Use P::=Q[x[0..4]],DegRevLex;	       vLex;	     	     	   	       	      	   	      
+Homogeneous algorithm		       		    		   	       	      	   	      
+# reductions = 29		       		     	     	   	       	      	   	      
+# GBasis = 14			       		     	     	   	       	      	   	      
+len = 14	        --time: 0      --time: 0.01   0.02   0     0.01  0.01  0.01   0.01  0.01  0.01 
+				       		     	     	   	       	      	   	      
+-- INPUT: alex3_hQ		       		     	     	   	       	      	   	      
+Use P::=Q[x[0..4]],DegRevLex;	       vLex;	     	     	   	       	      	   	      
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 633		       		     	     	   	       	      	   	      
+# GBasis = 211			       		     	     	   	       	      	   	      
+len = 211	        --time: 0.67   --time: 3.19   1.74   1.63  1.66  1.66  1.68   1.67  1.6   1.6  
+				       		     	     	   	       	      	   	      
+-- INPUT: schwartz7_hQL				     	     	   	       	      	   	      
+Use P::=Q[x[0..7]],DegLex;			     	     	   	       	      	   	      
+Homogeneous algorithm				     	     	   	       	      	   	      
+# reductions = 2039				     	     	   	       	      	   	      
+# GBasis = 323					     	     	   	       	      	   	      
+len = 323	        --time: 1.89		      2.05   1.97  2     1.98  1.98   2.04  1.98  2.01 
+						     	     	   	       	      	   	      
+-- INPUT: katsura7_hQ				     	     	   	       	      	   	      
+Use P::=Q[x[0..8]],DegRevLex;			     	     	   	       	      	   	      
+Homogeneous algorithm				     	     	   	       	      	   	      
+# reductions = 381				     	     	   	       	      	   	      
+# GBasis = 74					     	     	   	       	      	   	      
+len = 74	        --time: 4.85		      5.16   5.09  5.13  5.11  5.16   5.21  5.06  5.1  
+						     	     	   	       	      	   	      
+-- INPUT: 6x7-4_hQ		       		     	     	   	       	      	   	      
+Use P::=Q[x[0..41]],DegRevLex;	       evLex;	     	     	   	       	      	   	      
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 5013		       		     	     	   	       	      	   	      
+# GBasis = 525			       		     	     	   	       	      	   	      
+len = 525	        --time: 6.15   --time: 24.67  9.81   6.77  5.5   5.52  5.52   5.57  5.68  3.99 
+				       		     	     	   	       	      	   	      
+-- INPUT: twomat3_hQ				     	     	   	       	      	   	      
+Use P::=Q[x[0..18]],DegRevLex;			     	     	   	       	      	   	      
+Homogeneous algorithm				     	     	   	       	      	   	      
+# reductions = 700				     	     	   	       	      	   	      
+# GBasis = 109					     	     	   	       	      	   	      
+len = 109	        --time: 8.14		      9.27   8.86  9.03  9.11  9.07   9.27  8.82  8.79 
+						     	     	   	       	      	   	      
+-- INPUT: c7_hQ			       		     	     	   	       	      	   	      
+Use P::=Q[x[0..7]],DegRevLex;	       vLex;	     	     	   	       	      	   	      
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 449		       		     	     	   	       	      	   	      
+# GBasis = 121			       		     	     	   	       	      	   	      
+len = 121	        --time: 9.24   --time: 15.92  10.35  10.33 10.41 10.4  10.5   10.59 10.23 10.27
+				       		     	     	   	       	      	   	      
+-- INPUT: homog_gonnet_hQ	       Q	     	     	   	       	      	   	      
+Use P::=Q[x[0..17]],DegRevLex;	       evLex;	     	     	   	       	      	   	      
+Homogeneous algorithm		       		     	     	   	       	      	   	      
+# reductions = 11117		       		     	     	   	       	      	   	      
+# GBasis = 854			       		     	     		       	      	   	      
+len = 854	        --time: 13.41  --time: 18.04  15.86  14.06 13.01 12.9  13.01  13.47 13.41 12.81
+						     	     	   	       	      	   	      
+-- INPUT: virasoro_hQ				     	     	   	       	      	   	      
+Use P::=Q[x[0..8]],DegRevLex;			     	     	   	       	      	   	      
+Homogeneous algorithm				     	     	   	       	      	   	      
+# reductions = 780				     	     	   	       	      	   	      
+# GBasis = 128					     	     	   	       	      	   	      
+len = 128	        --time: 18.59		      20.1   19.86 	 20.1  20.18  20.44 19.82 19.98
+						     	     	   	       	      	   	      
+-- INPUT: kin1_hQ				     	     	   	       	      	   	      
+Use P::=Q[x[0..12]],DegRevLex;			     	     	   	       	      	   	      
+Homogeneous algorithm				     	     	   	       	      	   	      
+# reductions = 2791				     	     	   	       	      	   	      
+# GBasis = 306					     	     	   	       	      	   	      
+len = 306	        --time: 59.54		      62.11  61.66 	 61.7  61.59  61.86 61.62 60.5 
+						     	     		       	      	   	      
+-- INPUT: hairer2_hQ				     	     	   	       	      	   	      
+Use P::=Q[x[0..13]],DegRevLex;			     	     	   	       	      	   	      
+Homogeneous algorithm				     	     	   	       	      	   	      
+# reductions = 3149				     	     	   	       	      	   	      
+# GBasis = 506					     	     	   	       	      	   	      
+len = 506	        --time: 158.97		      171.55 166.53	 169.  169.8  172.6 167.9 167.7
+						     	     	   	       	      	   	      
+-- INPUT: mora9_hQ				     	     		       	      	   	      
+Use P::=Q[x[0..15]],DegRevLex;			     	     	   	       	      	   	      
+Homogeneous algorithm				     	     	   	       	      	   	      
+# reductions = 44605				     	     	   	       	      	   	      
+# GBasis = 4131					     	     	   	       	      	   	      
+len = 4131	        --time: 239.52		      277.49 253.59	 243.6 244.27 248.7 254.1 237.7
+
+
+======================================================================
+After 0.96 and a bit of cleaning on pair constructor
+----------------------------------------------------------------------
+=====  DATE: 20/06/06 TIME: 18:22  =====  char 32003, homog  =====
+
+-- INPUT: t51_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..4]];
+[log]  reductions=29	TotalTime=-0
+[log]  len=14
+[log]              TotalTime=0
+
+-- INPUT: dense755
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..4]];
+[log]  reductions=1210	TotalTime=2.75
+[log]  len=327
+[log]              TotalTime=2.79
+
+-- INPUT: kin1_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..12]];
+[log]  reductions=2791	TotalTime=1.56
+[log]  len=306
+[log]              TotalTime=1.57
+
+-- INPUT: twomat3_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..18]];
+[log]  reductions=700	TotalTime=4.07
+[log]  len=109
+[log]              TotalTime=4.12
+
+-- INPUT: c7_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..7]];
+[log]  reductions=449	TotalTime=1.87
+[log]  len=121
+[log]              TotalTime=1.88
+
+-- INPUT: 6x7-4_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..41]];
+[log]  reductions=5013	TotalTime=3.03
+[log]  len=525
+[log]              TotalTime=4.2
+
+-- INPUT: gaukwa4_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..8]];
+[log]  reductions=1413	TotalTime=5.46
+[log]  len=267
+[log]              TotalTime=5.47
+
+-- INPUT: wang_hL
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..7]],DegLex;
+[log]  reductions=1401	TotalTime=6.8
+[log]  len=317
+[log]              TotalTime=6.82
+
+-- INPUT: homog_gonnet_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..17]];
+[log]  reductions=11117	TotalTime=7.89
+[log]  len=854
+[log]              TotalTime=7.91
+
+-- INPUT: t51_hL
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..4]],DegLex;
+[log]  reductions=246	TotalTime=1.19
+[log]  len=83
+[log]              TotalTime=1.2
+
+-- INPUT: 7x8-2_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..55]];
+[log]  reductions=12740	TotalTime=6.29
+[log]  len=588
+[log]              TotalTime=6.46
+
+-- INPUT: mora1_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..3]];
+[log]  reductions=3301	TotalTime=12.71
+[log]  len=1105
+[log]              TotalTime=12.82
+
+-- INPUT: kin1_hL
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..12]],DegLex;
+[log]  reductions=7001	TotalTime=23.31
+[log]  len=728
+[log]              TotalTime=23.34
+
+-- INPUT: hairer2_h
+-- computation: GBasis
+Use P::=Z/(32003)[x[0..13]];
+[log]  reductions=3149	TotalTime=34.91
+[log]  len=506
+[log]              TotalTime=34.96
+make[2]: Leaving directory `/home/bigatti/optimized/CoCoALib-0.97/src/server/benchmarks'
+make[2]: Entering directory `/home/bigatti/optimized/CoCoALib-0.97/src/server/benchmarks'
+
+=====  DATE: 20/06/06 TIME: 18:24  =====  char 0, homog  =====
+
+-- INPUT: t51_hQ
+-- computation: GBasis
+Use P::=Q[x[0..4]];
+[log]  reductions=29	TotalTime=0.01
+[log]  len=14
+[log]              TotalTime=0.04
+
+-- INPUT: alex3_hQ
+-- computation: GBasis
+Use P::=Q[x[0..4]];
+[log]  reductions=633	TotalTime=1.56
+[log]  len=211
+[log]              TotalTime=5.45
+
+-- INPUT: schwartz7_hQL
+-- computation: GBasis
+Use P::=Q[x[0..7]],DegLex;
+[log]  reductions=2039	TotalTime=1.94
+[log]  len=323
+[log]              TotalTime=2.13
+
+-- INPUT: katsura7_hQ
+-- computation: GBasis
+Use P::=Q[x[0..8]];
+[log]  reductions=381	TotalTime=5.03
+[log]  len=74
+[log]              TotalTime=5.56
+
+-- INPUT: 6x7-4_hQ
+-- computation: GBasis
+Use P::=Q[x[0..41]];
+[log]  reductions=5013	TotalTime=3.98
+[log]  len=525
+[log]              TotalTime=6.02
+
+-- INPUT: twomat3_hQ
+-- computation: GBasis
+Use P::=Q[x[0..18]];
+[log]  reductions=700	TotalTime=8.62
+[log]  len=109
+[log]              TotalTime=71.8
+
+-- INPUT: c7_hQ
+-- computation: GBasis
+Use P::=Q[x[0..7]];
+[log]  reductions=449	TotalTime=10.14
+[log]  len=121
+[log]              TotalTime=13.88
+
+-- INPUT: homog_gonnet_hQ
+-- computation: GBasis
+Use P::=Q[x[0..17]];
+[log]  reductions=11117	TotalTime=12.34
+[log]  len=854
+[log]              TotalTime=12.77
+
+-- INPUT: virasoro_hQ
+-- computation: GBasis
+Use P::=Q[x[0..8]];
+[log]  reductions=780	TotalTime=19.71
+[log]  len=128
+[log]              TotalTime=21.45
+
+-- INPUT: kin1_hQ
+-- computation: GBasis
+Use P::=Q[x[0..12]];
+[log]  reductions=2791	TotalTime=60.37
+[log]  len=306
+[log]              TotalTime=60.93
+
+-- INPUT: hairer2_hQ
+-- computation: GBasis
+Use P::=Q[x[0..13]];
+[log]  reductions=3149	TotalTime=165.26
+[log]  len=506
+[log]              TotalTime=178.07
+
+-- INPUT: mora9_hQ
+-- computation: GBasis
+Use P::=Q[x[0..15]];
+[log]  reductions=44605	TotalTime=225.62
+[log]  len=4131
+[log]              TotalTime=244.41

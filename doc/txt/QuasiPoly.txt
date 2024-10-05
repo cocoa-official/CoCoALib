@@ -1,0 +1,61 @@
+    QuasiPoly
+      Copyright (c)  2014  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{QuasiPoly}{John Abbott}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+- [ex-normaliz1.C ../../examples/index.html#ex-normaliz1.C]
+-
+
+== User documentation ==
+%======================================================================
+
+Quasi-polynomials are useful for representing various combinatorial
+objects such as Hilbert/Ehrhart polynomials.
+
+A quasi-polynomial is a list ``F_1,...,F_r`` of ``r`` univariate polynomials
+(all in the same variable).  Its value at the integer ``N`` is defined to be
+``F_k(r)`` where ``k = N mod r``.
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+- ``QuasiPoly(L)`` creates the quasi-polynomial whose consituents are the entries of ``L``
+(of type ``std::vector<RingElem>``)
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+There are only two operations on a quasi-polynomial (apart from assignment and printing):
+- ``QP(n)`` evaluate the quasi-polynomial ``QP`` at the integer ``n``
+- ``constituents(QP)`` returns a ``const std::vector<RingElem>&`` of the constituents of ``QP``
+
+
+
+== Maintainer documentation ==
+%======================================================================
+
+It could hardly be simpler!
+
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+Very simplistic first version.  Assumes the constituents are univariate
+(but presumably the theory extends to multivariate?).
+
+Printing is crude.
+
+== Main changes ==
+%======================================================================
+
+**2014**
+- July (v0.99534): first release
+
+
+
+

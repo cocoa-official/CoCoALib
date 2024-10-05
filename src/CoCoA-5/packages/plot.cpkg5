@@ -1,0 +1,102 @@
+-- $Id: plot.cpkg5,v 1.2 2016/10/10 18:46:10 abbott Exp $
+Package $plot -- plotting functions
+
+Export ImplicitPlot;
+Export ImplicitPlotOn;
+Export PlotPoints;
+Export PlotPointsOn;
+
+Define About()
+  PrintLn  "    Author: J Abbott";
+  PrintLn  "    Date: 7 November 2008";
+EndDefine; -- About
+
+
+Define ImplicitPlot(F, Xrange, Yrange)
+  ImplicitPlotOn(F, Xrange, Yrange, "CoCoAPlot");
+EndDefine; -- ImplicitPlot
+
+Define PlotPoints(Points)
+  PlotPointsOn(Points, "CoCoAPlot");
+EndDefine; -- PlotPoints
+
+Define PlotPointsOn(Points, PlotFileName)
+  Foreach P In Points Do
+    If len(P)<>2 Then error("PointPlotOn: points must have 2 coordinates"); EndIf;
+  EndForeach;
+  PlotFile := OpenOFile(PlotFileName); //// ANNA2010-12-16, "w");
+  Print "Plotting points...";
+  Foreach P In Points Do
+    PrintLn DecimalStr(P[1]), "  ", DecimalStr(P[2]) On PlotFile;
+  EndForeach;
+  close(PlotFile);
+  PrintLn "100%";
+  PrintLn len(Points), " plotted points have been placed in the file "+PlotFileName;
+EndDefine; -- PlotPointsOn
+
+
+Define ImplicitPlotOn(F, Xrange, Yrange, PlotFileName)
+  If type(F) <> RINGELEM Then error("ImplicitPlot: first arg must be a polynomial"); EndIf;
+  P := owner(F);
+  VarInds := [I In 1..NumIndets(P) | deg(F,indet(P, I))> 0];
+  If len(VarInds) <> 2 Then
+    error("ImplicitPlot: polynomial must be genuinely bivariate");
+  EndIf;
+  X := indet(P,VarInds[1]);
+  Y := indet(P,VarInds[2]);
+  X0 := Xrange[1];
+  Xdelta := Xrange[2]-Xrange[1];
+  Y0 := Yrange[1];
+  Ydelta := Yrange[2]-Yrange[1];
+  If Xdelta <= 0 Or Ydelta <= 0 Then
+    error("ImplicitPlot: the X and Y ranges must both be of positive width");
+  EndIf;
+  GridSize := 256;
+  // Make the quantum values rather smaller than the deltas, otherwise
+  // intersections of graphs can appear to be in quite the wrong place!
+  // Perhaps a factor of 1/256 is overkill, but it probably does not cost Time.
+  Xquantum := Xdelta/(256*GridSize);
+  Yquantum := Ydelta/(256*GridSize);
+  PlotFile := OpenOFile(PlotFileName); //// ANNA2010-12-16, "w");
+  Print "Plotting points...";
+  NextPrint := 0.1;
+  Count := 0;
+  // Scan across columns...
+  For I := 0 To GridSize Do
+    If I > 2*NextPrint*GridSize Then
+      Print 100*NextPrint,"%...";
+      NextPrint := NextPrint+0.1;
+    EndIf;
+    Xval := X0+Xdelta*I/GridSize;
+    G := subst(F, X, Xval);
+    If G <> 0 And deg(G) > 0 Then
+      RRA := RealRootsApprox(G, Yquantum, Yrange);
+      Foreach Yval1 In RRA Do
+        PrintLn DecimalStr(Xval), "  ", DecimalStr(Yval1) On PlotFile;
+        Count := Count + 1;
+      EndForeach;
+    EndIf;
+  EndFor;
+  // Scan across rows...
+  For J := 0 To GridSize Do
+    If J+GridSize > 2*NextPrint*GridSize Then
+      Print 100*NextPrint,"%...";
+      NextPrint := NextPrint+0.1;
+    EndIf;
+    Yval := Y0+Ydelta*J/GridSize;
+    G := subst(F, Y, Yval);
+    If G <> 0 And deg(G) > 0 Then
+      RRA := RealRootsApprox(G, Xquantum, Xrange);
+      Foreach Xval1 In RRA Do
+        PrintLn DecimalStr(Xval1), "  ", DecimalStr(Yval) On PlotFile;
+        Count := Count + 1;
+      EndForeach;
+    EndIf;
+  EndFor;
+  close(PlotFile);
+  PrintLn "100%";
+  PrintLn Count, " plotted points have been placed in the file "+PlotFileName;
+EndDefine; -- ImplicitPlotOn
+
+
+EndPackage;

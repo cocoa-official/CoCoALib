@@ -1,0 +1,183 @@
+Package $ZPrimDecGTZ
+
+-- ZPrimDecGTZ Procedures
+--  Author:	 Luis David Garcia
+--  Date:           7 Nov 2002
+--  CoCoA Version:  4.2
+--  updated:        June 2015  Anna Maria Bigatti
+--  CoCoA Version:  5.1.2
+
+--  This algorithm works for characteristic zero.  It might work For
+--  "big enough" positive characteristic. But not with this
+--  implementation.  The PrimaryCheck needs To be fixed so that big
+--  prime characteristic is supported.  It computes the primary
+--  decomposition of a zero dimensional ideal.
+
+
+export PrimaryDecompositionGTZ0;
+  
+----------------------------------------------------------------------
+  
+Define LinMap(R, Flag)
+  X := indets(R);
+  N := NumIndets(R)-1;
+  If   Flag = 0 Then   f := indet(R,random(1,N));
+  Elif Flag = 1 Then   f := sum([random(0,1)*X[i] | i In 1..N]);
+  Else                 f := sum([random(1,5)*X[i] | i In 1..N]);
+  EndIf;
+  Return last(X) + f;
+EndDefine; -- LinMap (LinearCoordChange)
+
+  
+Define LinInv(f)
+  Return 2*indet(RingOf(f), NumIndets(RingOf(f)))-f;
+EndDefine; -- LinInv
+
+
+Define LexOrder(F,G)
+  Return LT(F) < LT(G);
+EndDefine; -- LexOrder
+
+
+Define PrimaryTestL(I,P)
+  N := NumIndets(RingOf(I));
+  phi := CoeffEmbeddingHom(RingOf(I));
+  Prime := ideal(P);  //Prime.GBasis := Prime.Gens;
+  J := SortedBy(gens(I), $.LexOrder);
+  For M:=2 To len(J) Do
+    Initial := LM(J[M]);
+    If count(exponents(Initial),0) = NumIndets(RingOf(I))-1 Then
+      N := N-1;
+      X := indet(RingOf(I),N);
+      E := deg(Initial);
+      T := phi(LC(Initial))*E*X + DivAlg(J[M]-Initial,[X^(E-1)]).quotients[1];
+      J[M] := E^E * phi(LC(Initial)^(E-1)) * J[M]; 
+      If not(J[M]-T^E IsIn Prime) Then Return ideal(RingOf(I),[]); EndIf;
+      Prime := Prime + ideal(monic(T));
+      // Prime.GBasis := Prime.Gens;
+    EndIf;
+  EndFor;
+  Return Prime;
+EndDefine; -- PrimaryTestL
+
+
+Define PrimaryTestA(I,P)
+  N := NumIndets(RingOf(I));
+  Prime := ideal(P);  //Prime.GBasis := Prime.Gens;
+  J := SortedBy(gens(I), $.LexOrder);
+  For M:=2 To len(J) Do
+    f := monic(J[M]);
+    LTf := LT(f);
+    //    println "LTf = ", LTf;
+    //    println "N = ", N;
+    If count(exponents(LTf),0) = NumIndets(RingOf(I))-1 Then
+      N := N-1;
+      X := indet(RingOf(I),N);
+      E := deg(LTf);
+      T := E*X + DivAlg(f-LTf,[X^(E-1)]).quotients[1];
+      If not(E^E*f-T^E IsIn Prime) Then Return ideal(RingOf(I),[]); EndIf;
+      Prime := Prime + ideal(monic(T));
+      // Prime.GBasis := Prime.Gens;
+    EndIf;
+  EndFor;
+  Return Prime;
+EndDefine; -- PrimaryTestA
+
+
+define PrimaryTest(I,P) Return PrimaryTestA(I,P); enddefine;
+
+
+Define PrimaryDecompositionGTZ0(I)
+  if not(IsZeroDim(I)) then error("input is not 0-dimensional"); endif;
+  RingCounter := 0;
+  PrDec := ZeroPrimDecGTZ(I, ref RingCounter, 0, 0);
+--   return record[PrDec_I := [ C.primary | C in PrDec ],
+-- 		PrDec_RadI := [ C.prime | C in PrDec ]];
+  return [ C.primary | C in PrDec ];
+EndDefine; -- PrimDecGTZ
+
+--Define PrimDecGTZ(I,Flag)
+--  Return ZeroPrimDecGTZ(I,0,Flag);
+--End;
+
+define ApplyFlex(phi, R)
+  if type(R) = IDEAL then return ideal(phi(gens(R)));
+  elif type(R) = RECORD then
+    RR := record[];
+    foreach F in fields(R) do  RR[F] := ApplyFlex(phi, R[F]); endforeach;
+    return RR;
+  else return phi(R);
+  endif;
+enddefine; -- ApplyFlex
+
+  
+Define ZeroPrimDecGTZ(I, ref RingCounter, Flag, ChildProcess) 
+  //  println "ZeroPrimDecGTZ ", RingCounter, " ", Flag, " ",ChildProcess;
+  //  indent(I);
+  RingOfI := RingOf(I);
+  KR := CoeffRing(RingOfI);
+  N := NumIndets(RingOfI);
+  P_lex ::= KR[x[1..N]], Lex;
+  I_ := ideal(PolyAlgebraHom(RingOfI, P_lex, indets(P_lex))(gens(I)));
+  Result := []; Rest := [];
+  L := indets(P_lex);
+  L[N] := LinMap(P_lex, Flag); Phi := PolyAlgebraHom(RingOfI, P_lex, L);
+  L[N] := LinInv(L[N]);       PhiInv := PolyAlgebraHom(P_lex, P_lex, L);
+  PhiI := ideal(Phi(gens(I)));
+  L[N] := indet(P_lex, N);
+  //    If not(IsHomog(gens(PhiI))) Then
+  If not([g in gens(PhiI) | len(MakeSet([deg(M)|M In monomials(g)]))<>1 ]=[]) Then
+    HomPDR_ ::= KR[x[1..N],h], DegLex;
+    HI := ideal(PolyAlgebraHom(P_lex, HomPDR_, indets(HomPDR_, "x"))(gens(PhiI)));
+    HI := homog(HI, indet(HomPDR_, N+1));
+    //        HI.PSeries := Poincare(HomPDR_/HI);
+    GBasisPhiI := PolyAlgebraHom(HomPDR_, P_lex, concat(L,[1]))(GBasis(HI));
+  Else 
+    GBasisPhiI := ReducedGBasis(PhiI);
+  EndIf;
+  Foreach T In GBasisPhiI Do
+    //      println "T = ", T;
+    V := exponents(LT(T));
+    remove(ref V,N);
+    If V = 0*V Then F := T; Break; EndIf;
+  EndForeach;
+  Fac := factor(F);
+  Foreach i in 1..len(Fac.factors) Do
+    f := Fac.factors[i]^Fac.multiplicities[i];
+    Primary := ideal(ReducedGBasis(PhiI+ideal(f)));
+    //      println "Primary = ", Primary;
+    Prime := PrimaryTest(Primary, Fac.factors[i]);
+    If IsZero(Prime) Then
+      append(ref Rest, I_ + ideal(PhiInv(f)));
+    Else
+      append(ref Result,
+	     record[
+		    primary:=ideal(ReducedGBasis(I_ + ideal(PhiInv(f)))),
+	      prime:=ideal(ReducedGBasis(ideal(PhiInv(gens(Prime)))))]);
+    EndIf;
+  EndForeach;
+  Foreach K In Rest Do
+    RingCounter := RingCounter + 1;
+    If   RingCounter = N   Then Flag := 1;
+    Elif RingCounter = 2*N Then Flag := 2;
+    EndIf;
+    Result := concat(Result, ZeroPrimDecGTZ(K, ref RingCounter, Flag, 1));
+  EndForeach;
+  If ChildProcess = 0 Then
+    //    PrintLn "Ring counter ", RingCounter;
+  EndIf;
+//  Result := flatten(Result);
+  psi := PolyAlgebraHom(P_lex, RingOfI, indets(RingOfI));
+  PrimaryDecomposition := [ApplyFlex(psi, RES) | RES in Result];
+//  Clear Var(PDRingName);
+//  Destroy Var(PDRingName);
+  Return PrimaryDecomposition;
+EndDefine; -- ZeroPrimDecGTZ
+
+
+
+EndPackage; -- ZeroPrimDecGTZ
+
+
+
+//          PrimaryDecompositionGTZ(ideal(x,y*z,z^2,y^3));

@@ -1,0 +1,251 @@
+--------------------------------------------------------------------
+-- Test fattorizzazione Fq;
+--------------------------------------------------------------------
+TEST_PrintInfo := false;
+//TEST_PrintInfo := true; ---<<<<<<---------------------------------
+TEST_Verb := 0; ///99;
+--------------------------------------------------------------------
+if TEST_PrintInfo then SetVerbosityLevel(TEST_Verb); else SetVerbosityLevel(0); endif;
+TEST_NumAssert := 0;
+
+define TEST_ASSERT(A,B)
+  toplevel TEST_NumAssert;
+  toplevel TEST_PrintInfo;
+  incr(ref TEST_NumAssert);
+  if TEST_PrintInfo then
+    println "--TEST_NumAssert: ", TEST_NumAssert;
+  endif;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B)
+	  + "\n"+dashes()+"TEST_NumAssert: " +Sprint(TEST_NumAssert)+dashes());
+  endif;
+enddefine; -- TEST_ASSERT
+
+define TEST_Time()
+  toplevel TEST_PrintInfo;
+  toplevel t0;
+  if TEST_PrintInfo then println "--TEST_Time: \t", TimeFrom(t0), "s"; endif;
+enddefine; -- TEST_TimeFrom
+--------------------------------------------------------------------
+-- F4:
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a]; 
+I := ideal(a^2+a+1, x^2+x+1);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q,[ideal(x +a +1, a^2 +a +1), ideal(x +a, a^2 +a +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F4 := F2a/ideal(a^2+a+1);
+Use F4[x];
+f := x^2+x+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x +(a +1), x +(a)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+J := ideal(a^2+a+1, x^3+x^2);
+Q := PrimaryDecomposition(J);
+TEST_ASSERT(EqSet(Q,[ideal(x +1, a^2 +a +1), ideal(a^2 +a +1, x^2)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F4 := F2a/ideal(a^2+a+1);
+Use F4[x];
+f := x^3+x^2;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x +(1), x]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^2+a+1, x^3+x^2+1); // irr
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q,[ideal(a^2 +a +1, x^3 +x^2 +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F4 := F2a/ideal(a^2+a+1);
+Use F4[x];
+f := x^3+x^2+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x^3 +x^2 +(1)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^2+a+1, x^3+x+1); // irr
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q,[ideal(a^2 +a +1, x^3 +x +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F4 := F2a/ideal(a^2+a+1);
+Use F4[x];
+f := x^3+x+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x^3 +x +(1)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^2+a+1, x^3+1);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q,[ideal(x +1, a^2 +a +1), ideal(x +a, a^2 +a +1), ideal(x +a +1, a^2 +a +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F4 := F2a/ideal(a^2+a+1);
+Use F4[x];
+f := x^3+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x +(a +1), x +(a), x +(1)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- F8:
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^3+a+1, x^3+x+1);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q,[ideal(a^2 +x, x*a +a +1, x^2 +x +a),ideal(a^2 +x +a, x*a +x +1, x^2 +a),ideal(x +a, a^3 +a +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F8 := F2a/ideal(a^3+a+1);
+Use F8[x];
+f := x^3+x+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x +(a^2), x +(a), x +(a^2 +a)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^3+a+1, x^3+x^2+1);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q,[ideal(a^2 +x +1, x*a +1, x^2 +x +a), ideal(a^2 +x +a +1, x*a +x +a, x^2 +a +1), ideal(x +a +1, a^3 +a +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F8 := F2a/ideal(a^3+a+1);
+Use F8[x];
+f := x^3+x^2+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x +(a^2 +a +1), x +(a +1), x +(a^2 +1)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^3+a^2+1, x^3+x^2+1);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q,[ideal(a^2 +x, x*a +x +1, x^2 +x +a +1),ideal(x +a, a^3 +a^2 +1),ideal(a^2 +x +a +1, x*a +a +1, x^2 +a)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F8 := F2a/ideal(a^3+a^2+1);
+Use F8[x];
+f := x^3+x^2+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x +(a^2 +a +1), x +(a^2), x +(a)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^3+a^2+1, x^3+x+1);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q, [ideal(a^2 +x +1, x*a +x +a, x^2 +x +a +1), ideal(x +a +1, a^3 +a^2 +1), ideal(a^2 +x +a, x*a +1, x^2 +a +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F8 := F2a/ideal(a^3+a^2+1);
+Use F8[x];
+f := x^3+x+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x +(a +1), x +(a^2 +1), x +(a^2 +a)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+-- Esempio #P<d-r:
+Use P ::= ZZ/(2)[x,a];
+I := ideal(a^3+a^2+1, x^2+x+1);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q, [ideal(x^2 +x +1, a^3 +a^2 +1)]), true);
+
+F2 ::= ZZ/(2);
+Use F2a ::= F2[a];
+F8 := F2a/ideal(a^3+a^2+1);
+Use F8[x];
+f := x^2+x+1;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x^2 +x +(1)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+Use ZZ/(32003)[t,x];
+F := (x^2+t^2*x-1)*(x^2-t^2*x+3);
+I := ideal(t^3+t-5, F);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q, [ideal(t^2 +3018*t +3722*x +13359, t*x -6416*t -3018*x -4650, x^2 -4650*t -13358*x -9073), ideal(t^2 +12998*t +1297*x -5644, t*x +14131*t -12998*x +12641, x^2 +12641*t +5645*x +8207), ideal(t^3 +t -5, t^2*x +x^2 -1, t*x^2 -t*x -t +5*x, x^3 +t^2 -5*t*x -x^2 -x +1)]), true);
+
+Use Fpt ::= ZZ/(32003)[t];
+f := factor(t^3+t-5);
+K := Fpt/ideal(t^3+t-5);
+Use K[x];
+f := (x^2+t^2*x-1)*(x^2-t^2*x+3);
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x^2 +(t^2)*x +(-1), x +(13422*t^2 -8202*t -8311), x +(-13423*t^2 +8202*t +8311)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+Use QQ[t,x];
+F := (x^2+t^2*x-1)*(x^2-t^2*x+3);
+I := ideal(t^3+t-5, F);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q, [ideal(t^3 +t -5, t^2*x +x^2 -1, t*x^2 -t*x -t +5*x, x^3 +t^2 -5*t*x -x^2 -x +1), ideal(t^3 +t -5, t^2*x -x^2 -3, t*x^2 +t*x +3*t -5*x, x^3 +3*t^2 -5*t*x +x^2 +3*x +3)]), true);
+
+Use Qt ::= QQ[t];
+f := factor(t^3+t-5);
+K := Qt/ideal(t^3+t-5);
+Use K[x];
+f := (x^2+t^2*x-1)*(x^2-t^2*x+3);
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x^2 +(t^2)*x +(-1), x^2 +(-t^2)*x +(3)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+// primary decomposition:
+use K ::= QQ[a,b,x];
+m := ideal(a^3+b^3-3*a*b, a^2+b^2-1);
+f1 := x^3+(a-2)*x-1+b;
+f2 := x^2+x+a*b+5;
+f := f1*f2;
+I := m+ideal(f);
+Q := PrimaryDecomposition(I);
+TEST_ASSERT(EqSet(Q, [ideal(a^2 +b^2 -1, a*b^2 -b^3 +3*a*b -a, b^4 +5*a*b -b^2 +(-3/2)*a +(-3/2)*b +1/2, x^3 +a*x +b -2*x -1), ideal(a^2 +b^2 -1, b^2*x^2 +b^2*x +3*b*x^2 +6*b^2 +3*b*x +4*x^2 +(3/2)*a +(33/2)*b +4*x +39/2, x^4 +2*x^3 +16*x^2 +(3/2)*a +(3/2)*b +15*x +99/2, b^3 +b*x^2 +b*x +3*x^2 +a +5*b +3*x +15, a*x^2 +b*x^2 +a*x +b*x +3*x^2 +6*a +6*b +3*x +15, a*b +x^2 +x +5)]), true);
+
+// factorization:
+use K ::= QQ[a,b];
+m := ideal(a^3+b^3-3*a*b, a^2+b^2-1);
+TEST_ASSERT(IsMaximal(m), true);
+
+KK := K/m;
+use KK[x];
+f1 := x^3+(a-2)*x-1+b;
+f2 := x^2+x+a*b+5;
+f := f1*f2;
+F := factor(f);
+TEST_ASSERT(EqSet(F.factors, [x^3 +(a -2)*x +(b -1), x^2 +x +(a*b +5)]), true);
+
+TEST_ASSERT(len(Q), len(F.factors));
+--------------------------------------------------------------------
+--------------------------------------------------------------------

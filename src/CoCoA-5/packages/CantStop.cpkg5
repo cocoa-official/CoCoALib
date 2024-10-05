@@ -1,0 +1,442 @@
+Package $CantStop
+
+Export PlayCantStop;
+
+Export DiceRollValues;
+Export Probability;
+Export PercentStr;
+Export PrintAllPercent;
+Export SuccessfulRolls;
+Export TestSuccessfulRolls;
+
+Define Man()
+  PrintLn "DiceRollValues(DR)  --  all possible values for a dice roll";
+  PrintLn "Probability(S) -- probability of getting at least one value of S";
+  PrintLn "PercentStr(S) -- same as Probability, but written as a percentage in a string";
+  PrintLn "PrintAllPercent() -- computes percentage for all triples, sort and print them";
+  PrintLn "SuccessfulRolls(Prob, S) -- number of rolls giving probability Prob for S";
+  PrintLn "TestSuccessfulRolls(Prob, S) -- runs 10 turns of \"SuccessfulRolls\" rolls";
+  PrintLn "";
+  PrintLn "  CantStop.DiceRollValues([2,1,4,6]);";
+  PrintLn "[3, 6, 5, 8, 7, 10]";
+  PrintLn "-------------------------------";
+  PrintLn "  CantStop.Probability([6,7,8]);";
+  PrintLn "149/162";
+  PrintLn "-------------------------------";
+  PrintLn "  CantStop.PercentStr([6,7,8]);";
+  PrintLn "91.975";
+  PrintLn "-------------------------------";
+  PrintLn "  CantStop.SuccessfulRolls(1/2, [6,7,8]);";
+  PrintLn "8";
+  PrintLn "-------------------------------";
+  PrintLn "  CantStop.TestSuccessfulRolls(1/2, [6,7,8]);";
+  PrintLn "Running 10 turns with 8 rolls (0.5, [6, 7, 8]) ...";
+  PrintLn "5 successful turns";
+  PrintLn "-------------------------------";
+  PrintLn "";
+EndDefine; -- Man
+
+----------------------------------------------------------------------
+
+  DiceRollsValues := "UNSET";
+  RunLen := "UNSET";
+  Active := "UNSET";
+  Players := "UNSET";
+  Sherpas := "UNSET";
+  GameFinished := "UNSET";
+
+Define DiceRollValues(DR)
+  Return MakeSet([DR[1]+DR[2], DR[1]+DR[3], DR[2]+DR[3],
+		 DR[1]+DR[4], DR[2]+DR[4], DR[3]+DR[4]]);
+EndDefine; -- DiceRollValues
+
+Define SetDiceRollsValues()
+  DiceRolls := (1..6) >< (1..6) >< (1..6) >< (1..6);
+  $.DiceRollsValues := [$.DiceRollValues(DR) | DR In DiceRolls];
+EndDefine; -- SetDiceRollsValues
+
+Define Probability(S)
+  If type($.DiceRollsValues) <> LIST Then $.SetDiceRollsValues(); EndIf;
+  Return (Len([V In $.DiceRollsValues | intersection(V, S)<> []])/
+	  Len($.DiceRollsValues));
+EndDefine; -- Probability
+
+Define PercentStr(S)
+  Return DecimalStr(100 * $.Probability(S));
+EndDefine; -- PrintProb
+
+Define ByProb(X1,X2) Return X1[2]>X2[2]; EndDefine;
+
+Define PrintAllPercent()
+  L := Subsets(2..12,3);
+  LL := [ [X, $.Probability(X)] | X In L];
+  SortBy(ref LL, Function("$contrib/CantStop.ByProb"));
+  Foreach X In LL Do
+    PrintLn X[1], ": ", DecimalStr(100*X[2]);
+  EndForeach;
+EndDefine; -- PrintAllProbabilities
+
+Define SuccessfulRolls(Prob, X)
+  Rolls := FloorLog2(1/Prob^100)/FloorLog2(1/$.Probability(X)^100);
+  Return Div(Num(Rolls), Den(Rolls));
+EndDefine; -- SuccessfulRolls
+
+Define TestSuccessfulRolls(Prob, X)
+  Biffs := 0;
+  Count := 10;
+  Rolls := $.SuccessfulRolls(Prob, X);
+  PrintLn "Running ", Count, " turns with ", Rolls, " rolls",
+  " (", DecimalStr(Prob), ", ", X, ") ...";
+  For i := 1 To Count Do
+    Biffed := False;
+    For j := 1 To Rolls Do
+      If intersection($.DiceRollValues([Rand(1,6) | k In 1..4]), X) =[] Then
+	Biffed := true;
+      EndIf;
+    EndFor;
+    If Biffed Then Biffs := Biffs + 1; EndIf;
+  EndFor;
+  Print DecimalStr(Count-Biffs), " successful turns out of ", Count;
+EndDefine; -- TestSuggestedRolls
+
+----------------------------------------------------------------------
+-- Game functions
+
+Define ResetGame(PlayersNames)
+  $.RunLen := [ Min(I,14-I)*2-1 | I In 1..13 ];
+  $.Active := 2..12;
+  $.Players := [Record[Name:=PN, NickName:=PN[1], PosBaseCamp:=NewList(12,0)]
+		     | PN In PlayersNames];
+  If Len(MakeSet([Pl.NickName | Pl In $.Players])) <> Len(PlayersNames) Then
+    For I := 1 To Len(PlayersNames) Do
+      $.Players[I].NickName := Ascii(91-I);
+    EndFor;
+  EndIf;
+  $.ResetSherpas();
+  $.GameFinished := False;
+EndDefine; -- ResetGame
+
+
+Define ResetSherpas()
+  $.Sherpas := NewList(12,0);
+EndDefine; -- ResetSherpas
+
+
+Define NumFreeSherpas()
+  Return 3 - Len([Pos In $.Sherpas | Pos <> 0]);
+EndDefine; -- NumFreeSherpas
+
+
+Define MoveSherpas(S, PlayerNum)
+  Foreach V In S Do
+    If $.Sherpas[V] <> 0 Then
+      $.Sherpas[V] := $.Sherpas[V] + 1;
+    Else
+      $.Sherpas[V] := $.Players[PlayerNum].PosBaseCamp[V]+1;
+    EndIf;
+    If $.Sherpas[V] > $.RunLen[V] Then
+      $.Sherpas[V] := $.RunLen[V];
+    EndIf;
+  EndForeach;
+  If $.NumFreeSherpas() < 0 Then
+    Error("[shouldn't happen]Too many sherpas: ", 3 - $.NumFreeSherpas());
+  EndIf;
+EndDefine; -- MoveSherpas
+
+
+Define StillActive()
+  Return Diff($.Active,
+	      [V In 2..12 | $.Sherpas[V] = $.RunLen[V] ]);
+EndDefine; -- StillActive
+
+
+Define MoveBaseCamps(PlayerNum)
+  For V := 2 To 12 Do
+    Pos := $.Sherpas[V];
+    If Pos = $.RunLen[V] Then
+      $.Active := Diff($.Active, [V]);
+      For P := 1 To Len($.Players) Do
+	$.Players[P].PosBaseCamp[V] := 0;
+      EndFor;
+    EndIf;
+    If Pos <> 0 Then $.Players[PlayerNum].PosBaseCamp[V] := Pos; EndIf;
+  EndFor;
+  $.ResetSherpas();
+  Pl := $.Players[PlayerNum];
+  If Len([ V In 2..12 | Pl.PosBaseCamp[V]=$.RunLen[V]]) >= 3 Then
+    PrintLn $.WinningMessage(Pl);
+    $.GameFinished := true;
+  EndIf;
+EndDefine; -- MoveBaseCamps
+
+
+Define ByFirst(X1,X2) Return X1[1]<X2[1]; EndDefine;
+
+Define DiceRollChoices()
+  Dice := [Rand(1,6) | I In 1..4];
+  Print "Dice Roll: ", Dice;
+  Ch := MakeSet([
+		Sorted([Dice[1]+Dice[2], Dice[3]+Dice[4]]),
+		Sorted([Dice[1]+Dice[3], Dice[2]+Dice[4]]),
+		Sorted([Dice[1]+Dice[4], Dice[2]+Dice[3]])
+		]);
+  Ch := Diff(MakeSet([Intersection(X, $.StillActive()) | X In Ch]), [[]]);
+  SherpaVals := [V In 2..12 | $.Sherpas[V]<>0 ];
+  If $.NumFreeSherpas() = 0 Then
+    Ch := Diff(MakeSet([Intersection(X,SherpaVals) | X In Ch]), [[]]);
+  EndIf;
+  If $.NumFreeSherpas() = 1 Then
+    Single := [X In Ch | Len(X)=1];
+    GoodPairs := [X In Ch | Len(X) = 2 And
+		  (Intersection(X,SherpaVals)<>[] Or X[1]=X[2]) ];
+    SplitBadPairs := [X In Ch | Len(X)=2 And Not (X IsIn GoodPairs)];
+    SplitBadPairs1 := [[X[1]] | X In SplitBadPairs];
+    SplitBadPairs2 := [[X[2]] | X In SplitBadPairs];
+    Ch := concat(Single, GoodPairs, SplitBadPairs1, SplitBadPairs2);
+  EndIf;
+  If Ch = [] Then  PrintLn; PrintLn $.FallenMessage(); SleepFor(1.5); EndIf;
+  Return SortedBy(MakeSet(Ch), $.ByFirst);
+EndDefine; -- DiceRollChoices
+
+
+Define HumanRoll(PlayerNum)  -- returns "Biffed" or "OK"
+  DiceRollCh := $.DiceRollChoices();
+  PrintLn;
+  If DiceRollCh = [] Then Return "Biffed"; EndIf;
+  If Len(DiceRollCh) = 1 Then
+    $.MoveSherpas(DiceRollCh[1], PlayerNum);
+    $.PrintBoard();
+    PrintLn "--> Automatically moved only possible combination ", DiceRollCh[1];
+    SleepFor(1.5);
+  Else
+    For I := 1 To Len(DiceRollCh) Do
+      PrintLn "Press  ", Ascii(96+I), "  for combination ", DiceRollCh[I];
+    EndFor;
+    R := $.AskOneCharOf($.Players[PlayerNum].Name,
+			[Ascii(96+I) | I In 1..Len(DiceRollCh)]);
+    $.MoveSherpas(DiceRollCh[R-96], PlayerNum);
+    $.PrintBoard();
+    PrintLn "--> Moved combination ", DiceRollCh[R-96];
+  EndIf;
+  Return "OK";
+EndDefine; -- HumanRoll
+
+
+Define HumanTurn(PlayerNum)
+  CountRolls := 0;
+  While true Do
+    CountRolls := CountRolls + 1;
+    Turn := $.HumanRoll(PlayerNum);
+    If Turn = "Biffed" Then Return; EndIf; -- Biffed
+    Print "[", $.SingPlur(CountRolls, " roll"),
+    ", ", $.SingPlur($.NumFreeSherpas(), " free sherpa"), "] ";
+    Print " Do you want to roll again, ";
+    R := $.AskOneCharOf($.Players[PlayerNum].Name+"?", ["y","n"]);
+    If R = 110 Then Break; EndIf;
+  EndWhile;
+  $.MoveBaseCamps(PlayerNum);
+EndDefine; -- HumanTurn
+
+---------------[ Computer Players ]------------------------------------------
+
+Define ComputerTestTurn(PlayerNum)
+  While true Do
+    DiceRollCh := $.DiceRollChoices();
+    If DiceRollCh = [] Then Return; EndIf; -- Biffed
+    SillyChoice := 1;
+    $.MoveSherpas(DiceRollCh[SillyChoice], PlayerNum);
+    PrintLn "--> Moved combination ", DiceRollCh[SillyChoice];
+    If $.NumFreeSherpas() = 0 Then $.MoveBaseCamps(PlayerNum); Return; EndIf;
+  EndWhile;
+EndDefine; -- ComputerTestTurn
+
+Define ByAnna1(X1,X2)
+  Shrp := [V In 2..12 | $.Sherpas[V]<>0];
+  DistSeven1 := Min([Abs(7-V) | V In X1]);
+  DistSeven2 := Min([Abs(7-V) | V In X2]);
+  Len1 := Len(intersection(X1,Shrp));
+  Len2 := Len(intersection(X2,Shrp));
+  Return DistSeven1<DistSeven2 Or (DistSeven1=DistSeven2 And Len1>Len2);
+EndDefine; -- ByAnna1
+
+-- Define ByAnnaFreeSherpas(X1,X2)
+--   Shrp := [V In 2..12 | $.Sherpas[V]<>0];
+--   DistSeven1 := Min([Abs(7-V) | V In X1]);
+--   DistSeven2 := Min([Abs(7-V) | V In X2]);
+--   AlreadyIn1 := 0;  AlreadyIn2 := 0;
+--   If $list.IsSubset(X1,Shrp) Then AlreadyIn1 := Len(X1) EndIf;
+--   If $list.IsSubset(X2,Shrp) Then AlreadyIn2 := Len(X2) EndIf;
+--   Return AlreadyIn1>AlreadyIn2 Or (AlreadyIn1=AlreadyIn2 And DistSeven1<DistSeven2);
+-- EndDefine; -- ByAnnaFreeSherpas
+
+-- Define ByAnnaPlacedSherpas(X1,X2)
+--   Shrp := [V In 2..12 | $.Sherpas[V]<>0];
+--   DistTop1 := Min([$.RunLen[V]-$.Sherpas[V] | V In X1]);
+--   DistTop2 := Min([$.RunLen[V]-$.Sherpas[V] | V In X2]);
+--   Len1 := Len($list.Intersection(X1,Shrp));
+--   Len2 := Len($list.Intersection(X2,Shrp));
+--   Return Len1>Len2 Or (Len1=Len2 And DistTop1<DistTop2);
+-- EndDefine; -- ByAnnaPlacedSherpas
+
+Define SortValueAnna2(X)
+  Shrp := [V In 2..12 | $.Sherpas[V]<>0];
+  DistSeven := Min([Abs(7-V) | V In X]);
+  If Len(Shrp)<3 Then
+    AlreadyIn := 0;
+    If IsSubset(X,Shrp) Then AlreadyIn := Len(X); EndIf;
+    Return AlreadyIn*10-DistSeven;
+  EndIf;
+  DistTop := Min([$.RunLen[V]-$.Sherpas[V] | V In X]);
+  Return Len(X)*10-DistTop;
+EndDefine; -- SortValueAnna2
+
+Define ByAnna2(X1, X2)
+  Return $.SortValueAnna2(X1) > $.SortValueAnna2(X2);
+EndDefine;
+
+Define ComputerAnna1Turn(PlayerNum)
+  While true Do
+    DiceRollCh := $.DiceRollChoices();
+    If DiceRollCh = [] Then Return; EndIf; -- Biffed
+    SortBy(ref DiceRollCh, $.ByAnna1);
+    $.MoveSherpas(DiceRollCh[1], PlayerNum);
+    PrintLn "--> Moved combination ", DiceRollCh[1];
+    If [V In 2..12 | $.Sherpas[V]=$.RunLen[V]]<>[] Then Break; EndIf;
+    If $.NumFreeSherpas() = 0 Then Break; EndIf;
+  EndWhile;
+  Shrp := [V In 2..12 | $.Sherpas[V]<>0];
+  For R := 1 To $.SuccessfulRolls(1/2, Shrp) Do
+    If [V In 2..12 | $.Sherpas[V]=$.RunLen[V]]<>[] Then Break; EndIf;
+    DiceRollCh := $.DiceRollChoices();
+    If DiceRollCh = [] Then Return; EndIf; -- Biffed
+    SortBy(ref DiceRollCh, $.ByAnna1);
+    $.MoveSherpas(DiceRollCh[1], PlayerNum);
+    PrintLn "--> Moved combination ", DiceRollCh[1];
+  EndFor;
+  $.MoveBaseCamps(PlayerNum);
+EndDefine; -- ComputerAnna1Turn
+
+
+Define ComputerAnnaTurn(PlayerNum)
+  While true Do
+    DiceRollCh := $.DiceRollChoices();
+    If DiceRollCh = [] Then Return; EndIf; -- Biffed
+    SortBy(ref DiceRollCh, $.ByAnna2);
+    PrintLn " choices: ", DiceRollCh;
+    $.MoveSherpas(DiceRollCh[1], PlayerNum);
+    PrintLn "--> Moved combination ", DiceRollCh[1];
+    If [V In 2..12 | $.Sherpas[V]=$.RunLen[V]]<>[] Then Break; EndIf;
+    If $.NumFreeSherpas() = 0 Then Break; EndIf;
+  EndWhile;
+  Shrp := [V In 2..12 | $.Sherpas[V]<>0];
+  For R := 1 To $.SuccessfulRolls(1/2, Shrp) Do
+    If [V In 2..12 | $.Sherpas[V]=$.RunLen[V]]<>[] Then Break; EndIf;
+    DiceRollCh := $.DiceRollChoices();
+    If DiceRollCh = [] Then Return; EndIf; -- Biffed
+    SortBy(ref DiceRollCh, $.ByAnna2);
+    PrintLn " choices: ", DiceRollCh;
+    $.MoveSherpas(DiceRollCh[1], PlayerNum);
+    PrintLn "--> Moved combination ", DiceRollCh[1];
+  EndFor;
+  $.MoveBaseCamps(PlayerNum);
+EndDefine; -- ComputerAnnaTurn
+
+---------------[ end of Computer Players ]--------------------------------------
+
+Define PlayCantStop(...)
+  If ARGV = [] Then Error("Can't Stop: no one wants to play?"); EndIf;
+  If Len(ARGV) > 4 Then Error("Can't Stop: sorry, up to 4 players."); EndIf;
+  $.ResetGame(ARGV);
+  $.PrintBoard();
+  While true Do
+    For P := 1 To Len(ARGV) Do
+      PrintLn $.StarMessage($.Players[P].Name + " ["
+			    + $.Players[P].NickName + "]");
+      SleepFor(1.5);
+      If "Computer" IsIn $.Players[P].Name Then
+	if $.Players[P].Name = "ComputerTest" then $.ComputerTestTurn(P);
+	elif $.Players[P].Name = "ComputerAnna" then $.ComputerAnnaTurn(P);
+	elif $.Players[P].Name = "ComputerAnna1" then $.ComputerAnna1Turn(P);
+	else error("Unknown computer player: " + $.Players[P].Name);
+	endif;
+      Else
+	$.HumanTurn(P);
+      EndIf;
+      $.ResetSherpas();
+      $.PrintBoard();
+      If $.GameFinished Then Return; EndIf;
+    EndFor;
+  EndWhile;
+EndDefine; -- Play
+
+----------------------------------------------------------------------
+-- Game I/O
+Define StarMessage(Str)
+  Return
+  Sum(NewList(Div(53-Len(Str),2), "*")) +
+  " " + Str + " " +
+  Sum(NewList(Div(53-Len(Str)+1,2), "*"));
+EndDefine; -- StarMessage
+
+
+Define FallenMessage()
+  Return $.StarMessage("------  FALLEN OFF THE MOUNTAIN  ------");
+EndDefine; -- FallenMessage
+
+
+Define WinningMessage(Player)
+  Return NewLine()
+ + $.StarMessage("") + NewLine()
+ + $.StarMessage("      ") + NewLine()
+ + $.StarMessage(Player.Name + " wins!") + NewLine()
+ + $.StarMessage("      ") + NewLine()
+ + $.StarMessage("");
+EndDefine; -- WinningMessage
+
+
+Define SingPlur(N, Str)
+  If N <> 1 Then S := "s"; Else S := ""; EndIf;
+  Return Sprint(N) + Str + S;
+EndDefine; -- SingPlur
+
+
+Define AskOneCharOf(Prompt, CharList)
+repeat
+  Print Prompt, " (", Sum(CharList), ") > ";
+  line := GetLine(StandardInput());
+  if line = "\n" then error("Input stream ended; game terminated"); endif;
+  for i := 1 to len(line) do
+  If line[i] IsIn CharList Then return first(ascii(line[i])); EndIf;
+  endfor;
+endrepeat;
+EndDefine; -- AskOneCharOf
+
+
+Define PrintBoard()
+  M := [["" | j in 1..11] | i in 1..Max([L | L In $.RunLen])+1];
+  For V := 2 To 12 Do
+    VShift := 7-Min(V,14-V);
+    M[$.RunLen[V]+1+VShift, V-1] := Sprint(V);
+    Foreach P In $.Players Do
+      Pos := P.PosBaseCamp[V];
+      If Pos<>0 Then M[Pos+VShift, V-1] := M[Pos+VShift, V-1] + P.NickName[1];EndIf;
+    EndForeach;
+    Pos := $.Sherpas[V];
+    If Pos<>0 Then M[Pos+VShift,V-1] := M[Pos+VShift,V-1] + "*"; EndIf;
+    If V IsIn $.Active Then Fill := "-"; Else Fill := "|"; EndIf;
+    For Posn := 1 To $.RunLen[V] Do
+      If M[Posn+VShift, V-1] = "" Then M[Posn+VShift, V-1] := Fill; EndIf;
+    EndFor;
+  EndFor;
+  For I := Len(M) To 1 Step -1 Do
+    For V1 := 1 To Len(M[I]) Do
+      Str := M[I, V1];
+      Print Spaces(Div(5-Len(Str),2)) + Str + Spaces(Div(5-Len(Str)+1,2));
+    EndFor;
+    PrintLn;
+  EndFor;
+EndDefine; -- PrintBoard
+----------------------------------------------------------------------
+
+EndPackage;
+

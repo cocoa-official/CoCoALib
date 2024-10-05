@@ -1,0 +1,185 @@
+<!DOCTYPE QNFA>
+<QNFA language="CoCoA5" extensions="cocoa5;cpkg5" defaultLineMark="breakpoint">
+	<context id="data/stringTQ" format="stringLiteral" >
+		<start>&quot;&quot;&quot;</start>
+		<stop>&quot;&quot;&quot;</stop>
+		<sequence id="escape11" format="stringLiteral">\\[nrta\\"']</sequence>
+		<sequence id="escape12" format="stringLiteral">\\x[0-9a-fA-F][0-9a-fA-F]</sequence>
+		<sequence id="escape13" format="unknownChars">\\[^nrta\\"']</sequence>
+		<sequence id="escape14" format="unknownChars">\\x[^0-9a-fA-F][0-9a-fA-F]</sequence>
+		<sequence id="escape15" format="unknownChars">"</sequence>
+	</context>
+
+	<context id="data/stringDQ" format="stringLiteral" >
+		<start>&quot;</start>
+		<stop>&quot;</stop>
+		<stop exclusive="false">\n</stop>
+		<sequence id="escape21" format="stringLiteral">\\[nrta\\"']</sequence>
+		<sequence id="escape22" format="stringLiteral">\\x[0-9a-fA-F][0-9a-fA-F]</sequence>
+		<sequence id="escape23" format="unknownChars">\\[^nrta\\"']</sequence>
+		<sequence id="escape24" format="unknownChars">\\x[^0-9a-fA-F][0-9a-fA-F]</sequence>
+		<sequence id="escape25" format="unknownChars">"</sequence>
+	</context>
+
+	<context id="data/stringSQ" format="stringLiteral" >
+		<start>'</start>
+		<stop>'</stop>
+		<stop exclusive="false">\n</stop>
+		<sequence id="escape31" format="stringLiteral">\\[nrta\\"']</sequence>
+		<sequence id="escape32" format="stringLiteral">\\x[0-9a-fA-F][0-9a-fA-F]</sequence>
+		<sequence id="escape33" format="unknownChars">\\[^nrta\\"']</sequence>
+		<sequence id="escape34" format="unknownChars">\\x[^0-9a-fA-F][0-9a-fA-F]</sequence>
+		<sequence id="escape35" format="unknownChars">"</sequence>
+	</context>
+
+	<context id="comment/multi" format="comment">
+		<start parenthesis="cocoacomment:open" indent="0" fold="0">/\*</start>
+		<stop parenthesis="cocoacomment:close" indent="0" fold="0">\*/</stop>
+	</context>
+	
+	<context id="comment/singleslash" format="comment" >
+		<start>//</start>
+		<stop exclusive="false">\n</stop>
+	</context>
+
+	<context id="comment/singledash" format="comment" >
+		<start>--</start>
+		<stop exclusive="false">\n</stop>
+	</context>
+
+	<list id="constants" format="constant">
+		<word>[Tt][rR][uU][eE]</word>
+		<word>[Ff][aA][lL][sS][eE]</word>
+		<word>[Ll][eE][xX]</word>
+		<word>[Xx][eE][lL]</word>
+		<word>[Dd][eE][gG][Ll][eE][xX]</word>
+		<word>[Dd][eE][gG][Rr][eE][vV][Ll][eE][xX]</word>
+		<word>[Tt][oO][Pp][oO][sS]</word>
+		<word>[Pp][oO][sS][Tt][oO]</word>
+	</list>
+
+	<list id="keywords" format="keyword">
+		<word>[?]</word>
+		<word>[Aa][lL][iI][aA][sS]</word>
+		<word>[Aa][nN][dD]</word>
+		<word>[Bb][lL][oO][cC][kK]</word>
+		<word>[Bb][rR][eE][aA][kK]</word>
+		<word>[Cc][aA][tT][cC][hH]</word>
+		<word>[Cc][iI][aA][oO]</word>
+		<word>[Cc][lL][eE][aA][rR]</word>
+		<word>[Cc][oO][nN][tT][iI][nN][uU][eE]</word>
+		<word>[Dd][eE][fF][iI][nN][eE]</word>
+		<word>[Dd][eE][lL][eE][tT][eE]</word>
+		<word>[Dd][eE][sS][cC][rR][iI][bB][eE]</word>
+		<word>[Dd][eE][sS][tT][rR][oO][yY]</word>
+		<word>[Dd][oO]</word>
+		<word>[Ee][lL][iI][fF]</word>
+		<word>[Ee][lL][iI][mM]</word>
+		<word>[Ee][lL][sS][eE]</word>
+		<word>[Ee][nN][dD]</word>
+		<word>[Ee][nN][dD][Aa][lL][iI][aA][sS]</word>
+		<word>[Ee][nN][dD][Bb][lL][oO][cC][kK]</word>
+		<word>[Ee][nN][dD][Cc][aA][tT][cC][hH]</word>
+		<word>[Ee][nN][dD][Dd][eE][fF][iI][nN][eE]</word>
+		<word>[Ee][nN][dD][Ff][oO][rR][eE][aA][cC][hH]</word>
+		<word>[Ee][nN][dD][Ff][oO][rR]</word>
+		<word>[Ee][nN][dD][Ll][aA][mM][bB][dD][aA]</word>
+		<word>[Ee][nN][dD][Ii][fF]</word>
+		<word>[Ee][nN][dD][Pp][aA][cC][kK][aA][gG][eE]</word>
+		<word>[Ee][nN][dD][Rr][eE][pP][eE][aA][tT]</word>
+		<word>[Ee][nN][dD][Tt][rR][yY]</word>
+		<word>[Ee][nN][dD][Uu][sS][iI][nN][gG]</word>
+		<word>[Ee][nN][dD][Ww][hH][iI][lL][eE]</word>
+		<word>[Ee][xX][pP][oO][rR][tT]</word>
+		<word>[Ff][oO][rR][eE][aA][cC][hH]</word>
+		<word>[Ff][oO][rR]</word>
+		<word>[Ii][fF]</word>
+		<word>[Ii][mM][pP][oO][rR][tT][Bb][yY][Rr][eE][fF]</word>
+		<word>[Ii][mM][pP][oO][rR][tT][Bb][yY][Vv][aA][lL][uU][eE]</word>
+		<word>[Ii][nN]</word>
+		<word>[Ii][sS][Dd][eE][fF][iI][nN][eE][dD]</word>
+		<word>[Ii][sS][Ii][nN]</word>
+		<word>[Ll][aA][mM][bB][dD][aA]</word>
+		<word>[Nn][oO][tT]</word>
+		<word>[Oo][nN]</word>
+		<word>[Oo][pP][tT]</word>
+		<word>[Oo][rR][dD]</word>
+		<word>[Oo][rR]</word>
+		<word>[Pp][aA][cC][kK][aA][gG][eE]</word>
+		<word>[Pp][rR][iI][nN][tT][Ll][nN]</word>
+		<word>[Pp][rR][iI][nN][tT]</word>
+		<word>[Pp][rR][oO][tT][eE][cC][tT]</word>
+		<word>[Qq][uU][iI][tT]</word>
+		<word>r[eE][cC][oO][rR][dD]</word>
+		<word>[Rr]e[cC][oO][rR][dD]</word>
+		<word>[Rr][eE]c[oO][rR][dD]</word>
+		<word>[Rr][eE][cC]o[rR][dD]</word>
+		<word>[Rr][eE][cC][oO]r[dD]</word>
+		<word>[Rr][eE][cC][oO][rR]d</word>
+		<word>[Rr][eE][fF]</word>
+		<word>[Rr][eE][pP][eE][aA][tT]</word>
+		<word>[Rr][eE][tT][uU][rR][nN]</word>
+		<word>[Ss][eE][tT]</word>
+		<word>[Ss][kK][iI][pP]</word>
+		<word>[Ss][oO][uU][rR][cC][eE]</word>
+		<word>[Ss][tT][eE][pP]</word>
+		<word>[Tt][hH][eE][nN]</word>
+		<word>[Tt][iI][mM][eE]</word>
+		<word>[Tt][oO]</word>
+		<word>[Tt][oO][pP][Ll][eE][vV][eE][lL]</word>
+		<word>[Tt][rR][yY]</word>
+		<word>[Uu][nN][sS][eE][tT]</word>
+		<word>[Uu][pP][oO][nN][Ee][rR][rR][oO][rR]</word>
+		<word>[Uu][nN][tT][iI][lL]</word>
+		<word>[Uu][nN][pP][rR][oO][tT][eE][cC][tT]</word>
+		<word>[Uu][sS][eE]</word>
+		<word>[Uu][sS][iI][nN][gG]</word>
+		<word>[Vv][aA][rR]</word>
+		<word>[Ww][eE][iI][gG][hH][tT][sS]</word>
+		<word>[Ww][hH][iI][lL][eE]</word>
+	</list>
+
+	<list id="types" format="type">
+		<word>BOOL</word>
+		<word>FUNCTION</word>
+		<word>LIST</word>
+		<word>INT</word>
+		<word>RAT</word>
+		<word>RECORD</word>
+		<word>TYPE</word>
+		<word>STRING</word>
+		<word>VOID</word>
+		<word>ERROR</word>
+		<word>OSTREAM</word>
+		<word>RINGELEM</word>
+		<word>RINGHOM</word>
+		<word>INTMAP</word>
+		<word>RATFUN</word>
+		<word>VECTOR</word>
+		<word>IDEAL</word>
+		<word>MODULE</word>
+		<word>MAT</word>
+		<word>RING</word>
+		<word>PACKAGE</word>
+	</list>
+
+	<sequence parenthesis="round:open" format="operators" fold="0">(</sequence>
+	<sequence parenthesis="round:close" format="operators" fold="0">)</sequence>
+
+	<sequence parenthesis="square:open" format="operators" fold="0">\[</sequence>
+	<sequence parenthesis="square:close" format="operators" fold="0">\]</sequence>
+
+	<!--
+	<sequence parenthesis="compatibility:open" format="operators" fold="0">[$]{</sequence>
+	<sequence parenthesis="compatibility:close" format="operators" fold="0">}[$]</sequence>
+	-->
+
+	<list id="numericLiterals" format="numericLiteral">
+		<word>[0-9]+.[0-9]+</word>
+		<word>[0-9]+</word>
+	</list>
+
+	<word id="unknownChars" format="unknownChar">[^$|+/*:=%^;, \t\n\rA-Za-z\-/&lt;&gt;\._]</word>
+
+</QNFA>
+

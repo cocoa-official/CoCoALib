@@ -1,0 +1,89 @@
+--------------------------------------------------------------------
+-- Test for radical of 0-dim ideals
+--------------------------------------------------------------------
+TEST_PrintInfo := false;
+//TEST_PrintInfo := true; ---<<<<<<---------------------------------
+TEST_Verb := 0; ///99;
+--------------------------------------------------------------------
+if TEST_PrintInfo then SetVerbosityLevel(TEST_Verb); else SetVerbosityLevel(0); endif;
+TEST_NumAssert := 0;
+
+define TEST_ASSERT(A,B)
+  toplevel TEST_NumAssert;
+  toplevel TEST_PrintInfo;
+  incr(ref TEST_NumAssert);
+  if TEST_PrintInfo then
+    println "--TEST_NumAssert: ", TEST_NumAssert;
+  endif;
+  If A<>B Then
+    error("TEST: " + Sprint(A) + " <> " + Sprint(B)
+	  + "\n"+dashes()+"TEST_NumAssert: " +Sprint(TEST_NumAssert)+dashes());
+  endif;
+enddefine; -- TEST_ASSERT
+
+define TEST_Time()
+  toplevel TEST_PrintInfo;
+  toplevel t0;
+  if TEST_PrintInfo then println "--TEST_Time: \t", TimeFrom(t0), "s"; endif;
+enddefine; -- TEST_TimeFrom
+--------------------------------------------------------------------
+
+----------------------------------------------------------------------
+-- 0-dim (test for MinPolyModular -- ugly prime)
+K := QQ;
+P ::= K[X0,X1,X2,X3];
+use P;
+J := ideal(X2^3 +X0*X1*X3 +X3^3,
+	   -3*X0*X2*X3 +X2^2*X3,
+	   7*X0 +3*X1 +X2 -9*X3,
+	   -X0 +6*X1 +3*X2 +3*X3);
+TEST_ASSERT(IsZeroDim(J), true);
+TEST_ASSERT(IsRadical(J), false);
+
+----------------------------------------------------------------------
+-- 0-dim
+K := NewZZmod(32009);
+P ::= K[x,y,z,t];
+Use P;
+G1:= x^4 +83*z^3 +73*y^2 -t^2 -437*t;
+G2:= y^3-z-t;
+G3:= z^3 +x -t;
+G4:= t^4-12*z^2 +77*y^2 +15*x;
+J := ideal(G1, G2, G3, G4);
+TEST_ASSERT(IsZeroDim(J), true);
+TEST_ASSERT(radical(J),
+ideal(x^4 +83*z^3 +73*y^2 -t^2 -437*t, y^3 -z -t, z^3 +x -t, t^4
++77*y^2 -12*z^2 +15*x, -10285*x^3*y^2*z^2*t^3 -10588*y^2*z^2*t^3
+-4616*x^3*y^2*z +8280*x^3*y*z^2 +5770*y^2*z^2*t +8280*x^3*y
+-5996*y^2*z^2 +4616*y^2*z*t +14598*y*t^3 +625*y^2*z +11865*y*z^2
++15131*y*z -8280*y*t -6436*y) );
+
+----------------------------------------------------------------------
+-- 0-dim
+K := QQ;
+P ::= K[x,y,z,t];
+Use P;
+G1:= x^4 +z^3 +7*y^2 -t^2 -t;
+G2:= y^2-z-t;
+G3:= z^3 +x -t;
+G4:= t^4-z^2 +7*y^2 +5*x;
+I := ideal(G1, G2, G3, G4);
+TEST_ASSERT(IsZeroDim(J), true);
+TEST_ASSERT(radical(I),
+ideal(x^4 +z^3 +7*y^2 -t^2 -t, y^2 -z -t, z^3 +x -t, t^4 +7*y^2 -z^2 +5*x, y^95 +84*y^89 -40*y^87 +1120*y^85 +3134*y^83 -1568*y^81 +66476*y^79 +35536*y^77 +467364*y^75 +1606898*y^73 +561990*y^71 +18467540*y^69 +14503005*y^67 +111091402*y^65 +206948770*y^63 +293377268*y^61 +1918745292*y^59 -28041834*y^57 +11041181584*y^55 +1507962466*y^53 +4688746692*y^51 +30057044280*y^49 -167580269004*y^47 +119075121976*y^45 +131544124970*y^43 -963604231126*y^41 +2057683769972*y^39 -4632287775692*y^37 +1877451951135*y^35 +7550339189674*y^33 -11474546292436*y^31 -5873117124070*y^29 +18161071388158*y^27 +3979099710438*y^25 -11929682790300*y^23 +6871333984302*y^21 +3802302583436*y^19 -591349244724*y^17 +14292885694163*y^15 +22114120389226*y^13 +17623364838539*y^11 +10722892664040*y^9 +4737030580459*y^7 +1261541428362*y^5 +168695764585*y^3 +8874105198*y)
+	    );
+
+----------------------------------------------------------------------
+-- 0-dim
+use R ::= QQ[X0,X1,X2,X3,X4,X5,X6]; // redmine/issues/1062
+I := ideal(X3^3 +X0*X3*X4 +X4^3,
+  X0*X1*X3 +X3*X5^2,
+  -X0^6*X1*X3 +X3*X6^7,
+  X0 -X1 -X2 -X3 -X5 -X6,
+  -X2 +X5 +X6,
+  -X0 -X5 -X6,
+  X1 -X2 +X3 -X6,
+  X1 -X2 +X3 -X5);
+TEST_ASSERT(IsZeroDim(J), true);
+TEST_ASSERT(radical(I), ideal(X3^3 +X0*X3*X4 +X4^3,  X0*X1*X3 +X3*X5^2,  -X0^6*X1*X3 +X3*X6^7,  X0 -X1 -X2 -X3 -X5 -X6,  -X2 +X5 +X6,  -X0 -X5 -X6,  X1 -X2 +X3 -X6,  X1 -X2 +X3 -X5));
+

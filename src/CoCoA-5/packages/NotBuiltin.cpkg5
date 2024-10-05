@@ -1,0 +1,695 @@
+Package $NotBuiltin -- some more CoCoA-4 function
+
+//Export NewList; // BI  8 mar 2011
+Export incr;
+Export decr;
+Export compts;
+Export DF;
+Export depth;
+Export diff;
+Export tail;
+//Export Last; // BI  8 mar 2011
+//Export cyclotomic; // BI 2022-12-29
+//Export CoeffListWRT; // BI 2012-12-20
+Export GBasisSelfSat;
+Export indent;
+Export IndentStr;
+Export IsContainedTrunc;
+Export PrintHCIndex;
+Export PrintHGIndices;
+Export ExternalLibs;
+Export intersection;
+Export IntersectList;
+Export interreduce;
+//Export interreduced;  // BI 2020-09-16
+Export MinSubsetOfGens;
+Export Bool01;
+Export AsINT;
+Export AsRAT;
+Export ReducedGBasis;
+Export ReducedGBasisByHomog;
+Export CpuTimeFrom;
+Export res;
+Export BettiDiagram;
+Export BettiMatrix;
+Export BettiNumbers;
+Export PrintBettiDiagram;
+Export PrintBettiMatrix;
+Export PrintBettiNumbers;
+Export PrintRes;
+Export RandomSubset;
+//Export RandomSubsetIndices;
+Export RandomTuple;
+//Export RandomTupleIndices;
+Export RingWithID;
+Export SymmetricPolys;
+Export TimeFrom;
+
+----------------------------------------------------------------------
+
+define IsWhiteSpace(ch)
+  return (ch = " " or ch = "\t");
+enddefine; -- IsWhiteSpace
+
+
+define CheckVarIsDefined(ref variable)
+  if not(IsDefined(variable)) then error("non-existent variable"); endif;
+enddefine; -- CheckVarIsDefined
+  
+define incr(ref N)
+  CheckVarIsDefined(ref N);
+  if type(N) <> INT then error("value must be integer"); endif;
+  N := N+1;
+enddefine; -- incr
+  
+define decr(ref N)
+  CheckVarIsDefined(ref N);
+  if type(N) <> INT then error("value must be integer"); endif;
+  N := N-1;
+enddefine; -- decr
+  
+Define compts(v)
+  If type(v) <> MODULEELEM Then error("Expected a MODULEELEM"); EndIf;
+  Return [v[i] | i In 1..NumCompts(v)];
+EndDefine; -- compts
+
+
+Define Bool01(b)
+  If type(b) <> BOOL Then error("Arg must be a boolean"); EndIf;
+  If b Then Return 1; Else Return 0; EndIf;
+EndDefine; -- Bool01
+
+
+Define DF(G)
+  If IsZero(G) Then Return G; EndIf;
+  If GradingDim(RingOf(G))=0 Then Return G; EndIf;
+  Return LF(G);
+EndDefine; -- DF  (LeadingDegreeForm ?)
+
+
+Define AsINT(r)
+  If type(r) = INT Then Return r; EndIf;
+  If type(r) = STRING Then Return AsINT(RingElem(RingQQ(), r)); EndIf;
+  If type(r) = RAT Then
+    If den(r)=1 Then Return num(r);
+    Else error("Cannot convert to INT");
+    EndIf
+  EndIf;
+  If type(r) <> RINGELEM Then error("Arg must be INT, RAT or RINGELEM"); EndIf;
+
+  If not(IsInteger(ref N, r)) Then error("Cannot convert to INT"); EndIf;
+  Return N;
+EndDefine; -- AsINT
+
+
+Define AsRAT(r)
+  TopLevel ZZ;
+  If type(r) = INT Then discard := IsRational(ref q, r*one(ZZ)); Return q; EndIf;
+  If type(r) = RAT Then Return r; EndIf;
+  If type(r) = STRING Then Return AsRAT(RingElem(RingQQ(), r)); EndIf;
+  If type(r) <> RINGELEM Then error("Arg must be INT, RAT or RINGELEM"); EndIf;
+
+  If not(IsRational(ref q, r)) Then error("Cannot convert to RAT"); EndIf;
+  Return q;
+EndDefine; -- AsRAT
+
+
+Define GBasisSelfSat(I)
+  P := RingOf(I);
+  if GradingDim(P)<>0 and IsHomog(gens(I)) then
+    error("This algorithm is pointless on homogeneous input");
+  endif;
+  M := OrdMat(P);
+  W := GradingMat(P);
+  GradingDimP := GradingDim(P);
+  if GradingDimP > 0 then   // now works only for single grading
+    NewM := BlockMat2x2(W, matrix(RingZZ(), [[1]]), M, ZeroMat(RingZZ(), NumRows(M),1));
+  else
+    NewM := BlockMat2x2(NewMatFilled(1,NumIndets(P),one(RingZZ())), matrix(RingZZ(), [[1]]), M, ZeroMat(RingZZ(), NumRows(M),1));
+  endif;
+  NewP := NewPolyRing(CoeffRing(P), concat(IndetSymbols(P),["HOMOG"]),
+		      NewM, GradingDimP);
+  h := indet(NewP, NumIndets(NewP));
+  P_NewP := PolyAlgebraHom(P, NewP, first(indets(NewP),NumIndets(P)));
+  NewP_P := PolyAlgebraHom(NewP, P, concat(indets(P),[one(P)]));  
+  NewGensI := P_NewP(gens(I));
+  if GradingDimP > 0 then
+    NewGensI := homog(NewGensI, h);
+  else 
+    NewGensI := [ sum([ m*h^(deg(f)-deg(m)) | m in monomials(f)]) | f in NewGensI ];
+  endif;
+  NewGB := GBasisSelfSatCore(ideal(NewGensI));
+  resGB := NewP_P(NewGB);
+  if GradingDimP = 0 then // interreduction
+    G := SortedBy(resGB, Func(A,B) return LT(A)<LT(B); EndFunc);
+    resGB := [];
+    LTI := ideal(P,[]);
+    foreach g in G do
+      if not(LT(g) isin LTI) then
+	g1 := NR(g, resGB);
+	append(ref resGB, monic(g1));
+	LTI := ideal([LPP(g2) | g2 in resGB]);
+      endif;
+    endforeach;
+  else
+    resGB := [monic(f) | f in resGB];
+  endif;
+  return resGB;
+EndDefine; -- GBasisSelfSat
+
+
+Define indent(L, Opt level)
+  If not(IsDefined(level)) Then level := 1; EndIf;
+  print  IndentStr(L, level);
+EndDefine; -- indent
+
+
+Define IndentStr(L, Opt level)
+  If type(L)=STRING Then return L+"\n"; EndIf;
+  If not(IsDefined(level)) Then level := 1; EndIf;
+  OUT := OpenOString();
+  IndentRec(L, OUT, level, "", "", "\n");
+  S := close(OUT);
+  return S;
+EndDefine; -- IndentStr
+
+
+Define IndentRec(L, OUT, level, spaces, before, after)
+  If level>0 Then 
+    If type(L) = IDEAL Then
+      L := gens(L);
+      If L=[] Then Print spaces, before, "ideal()", after on OUT;
+      Else
+	PrintLn spaces, before, "ideal(" on OUT;
+	For I := 1 To len(L)-1 Do
+	  IndentRec(L[I], OUT, level-1, spaces+"  ", "", ",\n");
+	EndFor;
+	IndentRec(last(L), OUT, level-1, spaces+"  ", "", "\n");
+	Print spaces, ")", after on OUT;
+      EndIf;
+      Return;
+    Elif type(L) = MODULE Then
+      L := gens(L);
+      If L=[] Then Print spaces, before, "module()", after on OUT;
+      Else
+	PrintLn spaces, before, "SubmoduleRows(F, matrix([" on OUT; // !!! SEE redmine 716 !!!
+	For I := 1 To len(L)-1 Do
+	  IndentRec(L[I], OUT, level-1, spaces+"  ", "", ",\n");
+	EndFor;
+	IndentRec(last(L), OUT, level-1, spaces+"  ", "", "\n");
+	Print spaces, "]))", after on OUT;
+      EndIf;
+      Return;
+    Elif type(L) = LIST Then
+      If L=[] Then Print spaces, before, "[]", after on OUT;
+      Else
+	PrintLn spaces, before, "[" on OUT;
+	For I := 1 To len(L)-1 Do
+	  IndentRec(L[I], OUT, level-1, spaces+"  ", "", ",\n");
+	EndFor;
+	IndentRec(last(L), OUT, level-1, spaces+"  ", "", "\n");
+	Print spaces, "]", after on OUT;
+      EndIf;
+      Return;
+    Elif type(L) = RECORD Then
+      F := fields(L);
+      If F=[] Then Print spaces, before, "record[]", after on OUT;
+      Else
+	PrintLn spaces, before, "record[" on OUT;
+	For I := 1 To len(F)-1 Do
+	  IndentRec(L[F[I]], OUT, level-1, spaces+"  ", F[I]+" := ", ",\n");
+	EndFor;
+	IndentRec(L[last(F)], OUT, level-1, spaces+"  ", F[len(F)]+" := ", "\n");
+	Print spaces, "]", after on OUT;
+      EndIf;
+      Return;
+    EndIf;
+  EndIf;
+  Print spaces, before on OUT;
+  If type(L)=STRING Then Print "\"",L,"\"" on OUT; Else Print L on OUT; EndIf;
+  Print after on OUT;
+EndDefine; -- IndentRec
+
+
+
+Define diff(L1, L2)
+  If type(L1) <> LIST Or type(L2) <> LIST Then
+    error("diff: arguments must be lists");
+  EndIf;
+  Return [ X In L1 | not(X IsIn L2) ];
+EndDefine; -- diff
+  
+Define tail(L)
+  if type(L) <> LIST or L = [] then error("tail: arg must be non-empty list"); endif;
+  Return last(L, len(L)-1);
+EndDefine;
+
+Define intersection(A, B)
+  if type(A) = LIST then return [ X in A | X IsIn B ]; endif;
+  if type(B) = LIST then return [ X in B | X IsIn A ]; endif;
+  return intersect(A,B); -- IDEAL
+EndDefine; -- IntersectList
+
+Define IntersectList(...)
+  If len(ARGV) = 0 Then error("at least 1 arg"); EndIf;
+  If len(ARGV) > 1 Then L := ARGV; Else L := ARGV[1]; EndIf;
+  ans := L[1];
+  For i := 2 To len(L) Do
+    ans := intersection(ans, L[i]);
+  EndFor;
+  Return ans;
+EndDefine; -- IntersectList
+
+-- define interreduced(L)
+--   if VerbosityLevel()>0 then fn := "interreduced: "; endif;
+--   TmpL := diff(L, [0]);
+--   if TmpL=[] then return TmpL; endif;
+--   count := 1;
+--   repeat
+--     if VerbosityLevel()>=90 then PrintLn fn,"loop n.", count; endif;
+--     incr(ref count);
+--     NewLPPFound := false;
+--     SortBy(ref TmpL, Func(f,g) Return LT(f)<LT(g); EndFunc);
+--     NewL := [];
+--     foreach f in TmpL do
+--       rem := NR(f, NewL);
+--       if rem <> 0 then
+-- 	append(ref NewL, rem);
+-- 	if LPP(rem)<>LPP(f) then NewLPPFound := true; endif;
+--       endif;
+--     endforeach;
+--     if not(NewLPPFound) then return NewL; endif;
+-- //    If EqSet(TmpL, NewL) Then Return NewL; EndIf;
+--     TmpL := NewL;
+--   endrepeat;
+-- enddefine; -- interreduced
+
+Define interreduce(ref L)  L := interreduced(L); EndDefine;
+
+
+define IsContainedTrunc(I, J)
+  if HasGBasis(J) then return IsContained(I,J); endif;
+  IsVERBOSE := IsVERBOSE_func("IsContainedTrunc");
+  D := max([ wdeg(X)[1] | X in gens(I) ]);
+  GB_J := GBasisTrunc(J, D);
+  L := [NR(f, GB_J) | f in gens(I) ];
+  L_NonZero := [ f in L | f<>0];
+  if IsVERBOSE(100) and L_NonZero<>[] then
+    println "max deg is ", D, "  not contained", [ wdeg(f) | f in L_NonZero], "\n", L;
+  endif;
+  return L_NonZero = [];
+enddefine; -- IsContainedTrunc
+
+
+Define MinSubsetOfGens(X)
+  IsVERBOSE := IsVERBOSE_func("MinSubsetOfGens");
+  if not(type(X)=IDEAL or type(X)=MODULE) then
+    error("MinSubsetOfGens: expected IDEAL or MODULE");
+  endif;
+  if IsZero(X) then return []; endif;
+  if NumGens(X) = 1 then return gens(X); endif;
+  L := gens(X);
+  if type(X)=IDEAL then 
+//    SortBy(ref L, func(f,g) return NumTerms(f)>NumTerms(g); endfunc);
+    SortBy(ref L, func(f,g) return LT(f)>LT(g); endfunc);
+    IsH := IsHomog(gens(X));
+    for i := 1 to len(L) do
+      J := ideal(WithoutNth(L,i));
+      if IsVERBOSE(100) then PrintLn "-- checking generator ", i; endif;
+      if IsH then
+	if IsContainedTrunc(ideal(L[i]), J) then L[i] := 0*L[i]; endif;
+      else
+	if L[i] isin J then L[i] := 0*L[i]; endif;
+      endif;
+    endfor;
+  endif;
+  if type(X)=MODULE Then 
+    For i := 1 To len(L) Do
+      J := submodule(ModuleOf(X), WithoutNth(L,i));
+      if L[i] isin J Then L[i] := 0*L[i]; endif;
+    EndFor;
+  endif;
+  Return [V in L | not(IsZero(V))];
+EndDefine;
+
+
+-- Define cyclotomic(K, x)
+--   If shape([K, x]) <> [INT, RINGELEM] Then
+--     error("Args must be an INT and an indeterminate");
+--   EndIf;
+--   If not(IsIndet(x)) Then
+--     error("Second arg must be an indeterminate");
+--   EndIf;
+--   If K = 1 Then Return x-1; EndIf;                        -- K is 1
+--   facs := FactorINT_TrialDiv(K,K);
+--   primes := facs.factors;
+--   if len(primes) = 1 then    -- K is prime or prime power
+--     p := primes[1];
+--     return (x^K-1)/(x^(K/p)-1);
+--   endif;
+-- //  L := divisors(K);
+-- //  If L = [1] Then Return sum([x^I| I In 0..(K-1)]); EndIf;-- K is prime
+-- //  M := MaxDiv(L);
+-- //  If len(M) = 1 Then Return (x^K-1)/(x^M[1]-1); EndIf;    -- K is prime power
+--   Return GCDList([ (x^K-1)/(x^(K/d)-1) | d in primes ]);         -- general case
+-- EndDefine; -- cyclotomic
+
+
+Define divisors(K)
+  if type(K) <> INT then error("divisors: arg must be INT"); endif;
+  if K = 0 then error("divisors: arg must be non-zero INT"); endif;
+  if abs(K) = 1 then return [1]; endif;
+  UPB := FloorSqrt(abs(K));
+  FirstHalf := [d in 1..UPB | mod(K,d) = 0];
+  SecondHalf := [abs(K)/d | d in FirstHalf];
+  if last(FirstHalf) = first(SecondHalf) then remove(ref FirstHalf, len(FirstHalf)); endif;
+  return concat(FirstHalf, reversed(SecondHalf));
+//  Return [ I In 1..(K-1) | mod(K, I) = 0 ];
+EndDefine; -- divisors
+
+
+Define MaxDiv(L)
+  LenL := len(L);
+  Return [ L[I] | I In 1..LenL   And
+	  [ X In last(L, LenL-I) | mod(X, L[I])=0]=[] ];
+EndDefine; -- MaxDiv
+
+
+Define PrintHGIndices(L)
+  SortBy(Ref L, Func(A,B) Return A.C>B.C; EndFunc);
+  indent(first([X In L | X.T <> ""], 3));
+  PrintLn "..... -> total citations: ", sum([X.C | X In L]);
+  PrintLn "H-index: ", max([ I In 1..len(L) | L[I].C >= I]);
+  PrintLn "G-index: ",
+  max([ I In 1..len(L) | sum([X.C | X In [L[A]|A In 1..I]]) >= I^2 ]);
+EndDefine; -- PrintIndices
+
+
+Define PrintHCIndex(L,YYYY)
+  LL := L;
+  For i:=1 To len(LL) Do
+    LL[i].S := (4/(YYYY-LL[i].Y+1))*LL[i].C;
+  EndFor;
+  SortBy(Ref LL, Func(A,B) Return A.S>B.S; EndFunc);
+  indent(first([X In LL | X.T <> ""], 3));
+  AcademicAge := YYYY-min([X.Y|X In LL])+1;
+  PrintLn "Academic Age = ", AcademicAge;
+  PrintLn "..... -> total citations/age: ",
+--  DecimalStr(sum([X.C | X In LL]/(YYYY-1900-min([X.Y|X In LL]))));
+  DecimalStr(sum([X.C | X In LL])/AcademicAge);
+  PrintLn "HC-index: ", max([ I In 1..len(LL) | LL[I].S >= I]);
+EndDefine; -- PrintHCIndex
+
+
+Define ReducedGBasis(I)
+  if IsCommutative(RingOf(I)) then return GBasis(I); endif;
+  return [monic(F) | F In interreduced(GBasis(I))];
+EndDefine; -- ReducedGBasis
+
+
+Define ReducedGBasisByHomog(I)
+  return [monic(F) | F In interreduced(GBasisByHomog(I))];
+EndDefine; -- ReducedGBasis
+
+
+-- Define LinKer(M)
+--   K := RingOf(M);
+--   If not(IsField(K)) Then error("NYI: Not yet implemented"); EndIf;
+--   IndetNames := [ Record[head := "x", indices := [N]] | N In 1..NumCols(M) ];
+--   Kx := NewPolyRing(K, IndetNames);
+--   Sys := CanonicalHom(K,Kx)(M) * ColMat(indets(Kx));
+--   I := ideal(GetCol(Sys,1));
+--   Params := diff(indets(Kx), LT(I));
+--   Basis := [];
+--   Foreach X In Params Do
+--     J := I + ideal(Kx,diff(Params,[X])) + ideal(X-1);
+--     append(ref Basis, [NF(indet(Kx,N), J) | N In 1..NumIndets(Kx)]);
+--   EndForeach;
+--   LC0 := Func(F) If F=0 Then Return zero(K); Else Return LC(F); EndIf; EndFunc;
+--   Return [[ LC0(F) | F In Vec] | Vec In Basis];
+-- EndDefine; -- LinKer
+
+
+Define CpuTimeFrom(T) return CpuTime()-T;                EndDefine;
+Define TimeFrom(T)    return DecimalStr(CpuTimeFrom(T)); EndDefine;
+
+define RingWithID(...)
+  RingWithID_suggest :=
+  "This is not a function: use \"RingOf(X)\", or give names to rings";
+  error(RingWithID_suggest);
+enddefine; -- RingWithID
+
+
+Define res(X)
+  If type(X)=RING Then
+    -- AMB 2015-04-14: using $.res instead of res because of recursion
+    If IsQuotientRing(X) Then Return concat([X],$.res(DefiningIdeal(X))); EndIf;
+    Return [X];
+  EndIf;
+  if IsZero(X) then return []; endif;
+  if type(X)=IDEAL then
+    M := IdealOfMinGens(X);
+  else
+    M := SubmoduleOfMinGens(X);
+  endif;
+  res := [];
+  repeat
+    append(ref res, M);
+    M := SubmoduleOfMinGens(SyzOfGens(M));
+  until IsZero(M);
+  Return res;
+EndDefine; -- Res
+
+
+define depth(...);
+  if len(ARGV)=1 then return DepthOfQuotient(ARGV[1]); endif;
+  error("Not Yet Implemented (available only for R/I, I homogeneous)");
+enddefine; -- depth
+
+
+define DepthOfQuotient(RModI)
+  if IsPolyRing(RModI) then return NumIndets(RModI); endif;
+  if not(IsHomog(DefiningIdeal(RModI))) then
+    error("Not yet implemented (only for R/I, I homogeneous)");
+  endif;
+  return NumIndets(BaseRing(RModI)) - len(res(RModI)) + 1;
+enddefine; -- DepthOfQuotient
+  
+
+Define BettiTmp(X) -- wdeg of resolutions
+  If type(X) IsIn [RING, IDEAL, MODULE] then RES := res(X); Else RES:=X; EndIf;
+  GENS:=Func(M) If type(M)=RING Then Return[];Else Return gens(M);EndIf;EndFunc;
+  Return [ [ wdeg(v) | v In GENS(M) ] | M In RES ];
+EndDefine; -- BettiTmp
+
+
+define MakeMultiset(L)
+  return [ [X, count(L,X)] | X in MakeSet(L) ];
+enddefine; -- MakeMultiset
+
+  
+Define BettiNumbers(X)
+  T := BettiTmp(X);
+  BettiMS := [];
+  For i := 1 To len(T) Do
+    append(ref BettiMS, MakeMultiset(T[i]));
+  EndFor;
+  Return BettiMS;
+EndDefine; -- BettiMultiset
+
+Define BettiMatrix(X)
+  T := BettiTmp(X);
+  If len(T[1,1])<>1 Then error("GradingDim must be 1: call BettiMultiset instead"); EndIf;
+  MaxShift := max(flatten(T));
+  BettiMat := ZeroMat(RingZZ(), MaxShift, len(T));
+  For i := 1 To len(T) Do
+    For j := 1 To len(T[i]) Do
+      BettiMat[ T[i,j,1], i] := 1+BettiMat[ T[i,j,1], i];
+    EndFor;
+  EndFor;
+  Return BettiMat;
+EndDefine; -- BettiMatrix
+
+Define BettiDiagram(X)
+  T := BettiTmp(X);
+  If T[1] = [] Then T[1] := [[0]]; EndIf;
+  PrimoShift := T[1,1,1];
+  UltimoShift := max([T[i,len(T[i]),1]-PrimoShift-i+2 | i in 1..len(T)]);
+  BettiMat := ZeroMat(RingZZ(), UltimoShift, len(T));
+  For i := 1 To len(T) Do
+    For j := 1 To len(T[i]) Do
+      BettiMat[ T[i,j,1]-PrimoShift-i+2, i] := 1+BettiMat[ T[i,j,1]-PrimoShift-i+2, i];
+    EndFor;
+  EndFor;
+  Return record[ FirstShift:=PrimoShift, Diagram:=BettiMat ];
+EndDefine; -- BettiDiagram
+
+define BettiDiagramToBettiMatrix(BD)
+  FirstShift := BD.FirstShift;
+  Diagram := BD.Diagram;
+  MaxShift := FirstShift-1 + NumCols(Diagram)-1 + NumRows(Diagram);
+  BettiMat := ZeroMat(RingZZ(), MaxShift, NumCols(Diagram));
+  for i := 1 to NumRows(Diagram) do
+    for j := 1 to NumCols(Diagram) do
+      BettiMat[i+FirstShift-1+j-1, j] := Diagram[i,j];
+    endfor;
+  endfor;
+  return BettiMat;
+enddefine; -- BettiDiagramToBettiMatrix
+  
+Define PrintBettiDiagram(BD)
+  if type(BD) <> RECORD then BD := BettiDiagram(BD); endif;
+  PrimoShift := BD.FirstShift;
+  D := BD.Diagram;
+  RigaTot := [ sum([D[i,j] | i In 1..NumRows(D)]) | j In 1..NumCols(D)];
+  LenRiga := NumCols(D);
+  Print "    ";
+  For I := 1 To LenRiga Do  Print format(I-1, 5); EndFor;
+  PrintLn;
+  dashes := sum([ "-----" | I In 0..len(RigaTot)]);
+  PrintLn dashes; --------------------------------------
+  For J := 1 To NumRows(D) Do
+    Print format(J+PrimoShift-1, 3), ":";
+    For I := 1 To LenRiga Do
+      If D[J,I] = 0 Then Print format("-", 5);
+      Else Print format(D[J,I], 5);
+      EndIf;
+    EndFor;
+    PrintLn;
+  EndFor;
+  PrintLn dashes; --------------------------------------
+  Print "Tot:";
+  For I := 1 To LenRiga Do  Print format(RigaTot[I], 5);  EndFor;
+  PrintLn;
+EndDefine; -- Print_BettiDiagram
+
+Define PrintBettiMatrix(M)
+  if type(M) <> MAT then M := BettiMatrix(M); endif;
+  NC := NumCols(M);
+  dashes := "--  "+sum([ " --> " | I In 2..NC], "  --");
+  PrintLn dashes; --------------------------------------
+  For i := 1 To NumRows(M) Do
+    For j := NC To 1 Step -1 Do
+      Print format(M[i,j], 5);
+    EndFor;
+    PrintLn;
+  EndFor;
+  PrintLn dashes; --------------------------------------
+EndDefine; -- PrintBettiMatrix
+
+Define PrintBettiNumbers(M)
+  if type(M) <> MAT then M := BettiNumbers(M); endif;
+  for i := 1 to len(M) do
+    println "-- Betti ", i-1, " -----------";
+    foreach X in M[i] do
+      println "  ", X[1], ": ", X[2]; 
+    endforeach;
+  endfor;
+  println "----------------------";
+EndDefine; -- PrintBettiNumbers
+
+-- Define PrintRes(M)
+--   if type(M) = RECORD then PrintRes(BettiDiagramToBettiMatrix(M));return; endif;
+--   if type(M) <> MAT then M := BettiMatrix(M); endif;
+--   Print 0;
+--   For j := NumCols(M) To 1 Step -1 Do
+--     Print " --> ";
+--     If IsZeroCol(M,j) Then Print "R"; Break; EndIf;
+--     AfterFirst := false;
+--     For i := 1 To NumRows(M) Do
+--       If M[i,j]<>0 Then
+-- 	If AfterFirst Then Print "(+)"; EndIf;
+-- 	Print "R(", -i, ")";
+-- 	If M[i,j]<>1 Then Print "^", M[i,j]; EndIf;
+-- 	AfterFirst := True;
+--       EndIf;
+--     EndFor;
+--   EndFor;
+--   PrintLn;
+-- EndDefine; -- PrintRes
+
+
+Define PrintRes(M)
+  if   type(M) = RECORD then PrintRes(BettiDiagramToBettiMatrix(M));return;
+  elif type(M) = MAT then
+    Print 0;
+    For j := NumCols(M) To 1 Step -1 Do
+      Print " --> ";
+      If IsZeroCol(M,j) Then Print "R"; Break; EndIf;
+      AfterFirst := false;
+      For i := 1 To NumRows(M) Do
+	If M[i,j]<>0 Then
+	  If AfterFirst Then Print "(+)"; EndIf;
+	  Print "R(", -i, ")";
+	  If M[i,j]<>1 Then Print "^", M[i,j]; EndIf;
+	  AfterFirst := True;
+	EndIf;
+      EndFor;
+    EndFor;
+    PrintLn;
+  endif;
+  M := BettiNumbers(M);
+  Print 0;
+  For j := len(M) To 1 Step -1 Do
+    Print " --> ";
+    If M[j]=[] Then Print "R"; Break; EndIf;
+    AfterFirst := false;
+    Foreach b in M[j] do
+      If AfterFirst Then Print "(+)"; EndIf;
+      Print "R", -1*b[1], "";
+      If b[2]<>1 Then Print "^", b[2]; EndIf;
+      AfterFirst := True;
+    EndForeach;
+  EndFor;
+  PrintLn;  
+EndDefine; -- PrintRes
+
+
+  
+
+define RandomSubset(L, opt size)
+  if IsDefined(size) then
+    return [L[i] | i in RandomSubsetIndices(len(L),size)];
+  endif;
+  return [L[i] | i in RandomSubsetIndices(len(L))];
+enddefine; -- RandomSubset
+
+
+define RandomTuple(L, r)
+  return [L[i] | i in RandomTupleIndices(len(L),r)];
+enddefine; -- RandomTuple
+
+
+define SplitStrings(S)
+  start := 1;
+  L := [];
+  for i := 1 to len(S) do
+    if S[i] = " " then
+      append(ref L, sum([S[j] | j in start..(i-1)]));
+      start := i+1;
+      while start<=len(S) and S[start]=" " do incr(ref start); endwhile;
+    endif;
+  endfor;
+  return diff(L, [0]);
+enddefine; -- SplitStrings
+
+
+define ExternalLibs()
+  return [ L.name | L in VersionInfo().ExternalLibs];
+enddefine; -- ExternalLibs
+
+
+  -----------------------------------------------------------------------
+
+define SymmetricPolys(P)
+  SP := NewList(NumIndets(P));
+  L := sum(indets(P));
+  SP[1] := L;
+  for d:=2 to NumIndets(P) do
+    SP[d] := sum([ t in support(L*SP[d-1]) | IsSqFree(t) ]);
+  endfor;
+  return SP;
+enddefine; -- SymmetricPolys
+
+
+EndPackage;

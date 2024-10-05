@@ -1,0 +1,114 @@
+      SmallFpLogImpl
+      Copyright (c)  2005,2011,2013  John Abbott,  Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{SmallFpLogImpl}{John Abbott}
+
+
+
+== User documentation for SmallFpLogImpl ==
+%======================================================================
+
+The class ``SmallFpLogImpl`` is a very low level implementation class for fast
+arithmetic in a small, prime finite field.  It is **not intended** for use
+by casual CoCoALib users, who should instead see the documentation in
+[[QuotientRing]] (in particular the function ``NewZZmod``), or possibly the
+documentation in [[RingFp]], [[RingFpLog]], and [[RingFpDouble]].
+
+Compared to [[SmallFpImpl]] the only difference is an implementation
+detail: multiplication and division are achieved using discrete log
+tables -- this may be fractionally faster on some processors.
+
+Note that the cost of construction of a ``SmallFpLogImpl(p)`` object for
+larger primes may be quite considerable (linear in ``p``), and the resulting
+object may occupy quite a lot of space (//e.g.// probably about 6*p bytes).
+
+**All operations** on values must be effected by calling member functions
+of the ``SmallFpLogImpl`` class.  Here is a brief summary.
+```
+  SmallFpLogImpl::IsGoodCtorArg(p);   // true iff ctor SmallFpLogImpl(p) will succeed
+  SmallFpLogImpl::ourMaxModulus();    // largest permitted modulus
+  SmallFpLogImpl ModP(p, convention); // create SmallFpLogImpl object
+  long n;
+  BigInt N;
+  BigRat q;
+  SmallFpImpl::value_t a, b, c;
+
+  ModP.myModulus();         // value of p (as a long)
+
+  ModP.myReduce(n);         // reduce mod p
+  ModP.myReduce(N);         // reduce mod p
+  ModP.myReduce(q);         // reduce mod p
+
+  ModP.myExport(a);         // returns a preimage (of type long) according to symm/non-neg convention.
+
+  ModP.myNegate(a);         // -a mod p
+  ModP.myAdd(a, b);         // (a+b)%p;
+  ModP.mySub(a, b);         // (a-b)%p;
+  ModP.myMul(a, b);         // (a*b)%p;
+  ModP.myDiv(a, b);         // (a*inv(b))%p;  where inv(b) is inverse of b
+  ModP.myPower(a, n);       // (a^n)%p;  where ^ means "to the power of"
+  ModP.myIsZeroAddMul(a,b,c) // a = (a+b*c)%p; result is (a==0)
+
+```
+For ``myExport`` the choice between least non-negative and symmetric
+residues is determined by the convention specified when constructing
+the ``SmallFpLogImpl`` object.  This convention may be either
+``GlobalSettings::SymmResidues`` or
+``GlobalSettings::NonNegResidues``.
+
+
+== Maintainer documentation for SmallFpLogImpl ==
+%======================================================================
+
+The only clever bit is the //economical// construction of the log/exp
+tables in the constructor where we exploit the fact that ``myRoot`` to
+the power (p-1)/2 must be equal to -1.
+
+This implementation uses discrete log/exp tables to effect multiplication
+and division quickly.  Note that the residues themselves (//i.e.// the values
+of the ring elements) are held as machine integers whose value is the
+least non-negative representative of the residue class (//i.e.// in the range
+0 to p-1).  In particular, although log tables are used, we do NOT use a
+//logarithmic representation// for the field elements.
+
+The log/exp tables are stored in C++ vectors: aside from their
+construction during the ``RingFpLogImpl`` constructor, these vectors are
+never modified, and are used only for table look-up.  The C++ vectors
+are resized in the body of the constructor to avoid large memory
+requests when overly large characteristics are supplied as argument.
+
+Besides these tables ``SmallFpLogImpl`` also remembers the characteristic in
+``myModulus``; ``myRoot`` is the primitive root used to generate the log/exp
+tables.
+
+The members ``myResidueUPBValue`` and ``myIterLimit`` and ``myHalfNormalize``
+may be used for delayed normalization in loops: see the inner product example
+in [[SmallFpImpl]].
+
+As the code currently stands, the modulus must also be small enough that it
+can fit into an ``FpTableElem`` (an ``unsigned short``), and that its
+square can fit into a ``value_t``.  Using ``short``s in the tables gave
+slightly better run-time performance in our tests.  Furthermore, to permit
+use of unnormalized products in some algorithms, twice the square of the
+characteristic must fit into a ``value_t`` (//i.e.// ``myIterLimit`` must
+be greater than zero).  The constructor for a ``RingFpLogImpl`` checks the
+size restrictions on the characteristic.
+
+Note that the log table has a slot with index 0 which is never written
+to nor read from.  The exp table is double size so that multiplication
+can be achieved more easily: the highest slot which could ever be used
+is that with index 2p-3 (in division), but the constructor fills two
+extra slots (as this makes the code simpler/neater).
+
+The only slick part of the implementation is the filling of the tables in
+the constructor, where some effort is made to avoid doing more reductions
+modulo p than necessary.  Note that the primitive root is always calculated
+(potentially costly!); there is no memorized global table of primitive roots
+anywhere.
+
+
+== Bugs, Shortcomings and other ideas ==
+%======================================================================
+
+It is not as fast as I hoped -- perhaps cache effects?

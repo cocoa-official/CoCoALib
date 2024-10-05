@@ -1,0 +1,4 @@
+-- init.cocoa5 --
+
+use P; // set in Interpreter.C in ctor for RuntimeEnvironment (near line 1229)
+       // See also printed form in Banner.C (in fn CoCoA5Banner)

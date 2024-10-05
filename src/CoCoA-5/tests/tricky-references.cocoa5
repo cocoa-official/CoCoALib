@@ -1,0 +1,36 @@
+// << "tests/tricky_references";
+
+Define F(ref L)
+	PrintEnv();
+	L := 1;
+	PrintLn;
+	PrintLn;
+	PrintEnv();
+	Return 1;
+EndDefine
+L := [[[1]]];
+//L[1][1][1] := F(ref L);
+
+Define F(ref R)
+	R.f := 1;
+	Return 1;
+EndDefine
+L := [ Record[] ];
+//L[ F(ref L[1]) ].f.g := 7;
+
+Define F(ref L)
+	L := [1];
+	Return 1;
+EndDefine
+L := [1];
+L[ F(ref L[1]) ][1] := 7;
+assert(L = [[7]]);
+
+Define F(ref L)
+	L := 4;
+	Return 1;
+EndDefine
+L := [1];
+// L[ F(ref L) ] := 3;
+// PrintLn L;
+
