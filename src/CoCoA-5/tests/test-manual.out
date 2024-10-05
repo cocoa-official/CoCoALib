@@ -1,0 +1,52 @@
+OnlineHelp: unsorted entries: operators, shortcuts -- abs
+--<<<<<<<<<<<<<<( type )>>>>>>>>>>>>>>>--
+--> type(E: OBJECT): TYPE
+This function returns the data type of E.
+----<<<<  example  >>>>----
+/**/ L := [1,"a",2,"b",3,"c"];
+/**/ [ X in L | type(X)=INT ];
+[1, 2, 3]
+
+/**/  type(type(INT));  -- Type returns a value of type TYPE
+TYPE
+
+/**/  CurrentTypes();
+[BOOL, ERROR, FUNCTION, ...]
+----==< end example >==----
+--============( end type )=============--
+--> See also:
+ ? shape
+ ? CurrentTypes
+--> To see all 12 matches for "type":
+ ?? type
+--<<<<<<<<<<<<<<( Commands and Functions returning TYPE )>>>>>>>>>>>>>>>--
+? shape -- extended list of types involved in an expression
+? type -- the data type of an expression
+--==================<>===================--
+--============( end Commands and Functions returning TYPE )=============--
+--<<<<<<<<<<<<<<( CheckArgTypes )>>>>>>>>>>>>>>>--
+--> CheckArgTypes(Ltype: LIST of TYPE, Larg: LIST)
+This function provides a basic type checking for user defined functions:
+it checks whether the TYPEs of the elements in the third
+argument, a list, correspond to the types in the second list.
+If so, it returns nothing, otherwise returns an error.
+----<<<<  example  >>>>----
+/**/  -- the following returns an error for the 2nd argument (INT)
+/**/  -- CheckArgTypes([RAT, RINGELEM, MAT], [2/3, 20, LexMat(3)]);
+--> !!! ERROR !!! as expected:  Arg 2 is INT but must be RINGELEM
+
+/**/  -- the following returns nothing
+/**/  CheckArgTypes([RAT, [INT,RAT,RINGELEM], MAT], [2/3, 20, LexMat(3)]);
+
+/**/  -- an example of use for type checking
+/**/  Define Pow(F, N)
+/**/    CheckArgTypes([[INT,RAT,RINGELEM,IDEAL,MAT], INT], [F, N]);
+/**/    Return F^N;
+/**/  EndDefine; -- Pow
+/**/  use QQ[x];
+/**/  Pow(x, 3);
+x^3
+/**/  -- Pow(2, x); --> !!! ERROR !!! as expected: Arg 2 is RINGELEM but must be INT
+----==< end example >==----
+-- SEARCH KEYS: argument, checking, currenttypes
+--============( end CheckArgTypes )=============--

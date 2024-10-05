@@ -1,0 +1,2 @@
+TidyGens(M) = [[z, y],  [x, z],  [0, x*y -z^2]]
+TidyGens(M) = [[z, y],  [x, z]]

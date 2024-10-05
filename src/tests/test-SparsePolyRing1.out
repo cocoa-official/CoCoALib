@@ -1,0 +1,173 @@
+TESTING:
+RingWithID(4, "RingWithID(0)[x,y] -- RingDistrMPolyInlPP")
+  with CoeffRing RingWithID(0, "ZZ")
+
+Given f1 = x^2 +3*y -2
+  and f2 = y^2 -5*x
+
+f1*f2   gives  x^2*y^2 -5*x^3 +3*y^3 -15*x*y -2*y^2 +10*x
+wdeg(f1)   gives  (2)
+wdeg(f2)   gives  (2)
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  2
+IsHomog(f1)   gives  false
+IsHomog(f2)   gives  false
+IsHomog(f3)   gives  true
+CmpWDeg(f1,f2)        gives  0
+LF(f3)   gives  x -y
+CmpWDegPartial(f1,f2) gives  0
+IsHomogPartial(f3,1)  gives  true
+  -- homogenizing with h = y
+homog(f1, h)   gives  x^2 +y^2
+homog(f2, h)   gives  -5*x*y +y^2
+homog(f3, h)   gives  x -y
+------------------------------------------------
+
+TESTING:
+RingWithID(5, "RingWithID(3)[x[0],x[1],x[2]] -- RingDistrMPolyClean")
+  with CoeffRing RingWithID(3, "ZZ/ideal(10)")
+  with BaseRing  RingWithID(0, "ZZ")
+
+Given f1 = x[0]^2 +3*x[1] -2
+  and f2 = x[1]^2 +5*x[0]
+
+f1*f2   gives  x[0]^2*x[1]^2 +5*x[0]^3 +3*x[1]^3 +5*x[0]*x[1] -2*x[1]^2
+wdeg(f1)   gives  (2)
+wdeg(f2)   gives  (2)
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  2
+IsHomog(f1)   gives  false
+IsHomog(f2)   gives  false
+IsHomog(f3)   gives  true
+CmpWDeg(f1,f2)        gives  0
+LF(f3)   gives  x[0] -x[1]
+CmpWDegPartial(f1,f2) gives  0
+IsHomogPartial(f3,1)  gives  true
+  -- homogenizing with h = x[2]
+homog(f1, h)   gives  x[0]^2 +3*x[1]*x[2] -2*x[2]^2
+homog(f2, h)   gives  x[1]^2 +5*x[0]*x[2]
+homog(f3, h)   gives  x[0] -x[1]
+------------------------------------------------
+
+TESTING:
+RingWithID(6, "RingWithID(3)[x[0],x[1],x[2]] -- RingDistrMPolyInlPP")
+  with CoeffRing RingWithID(3, "ZZ/ideal(10)")
+  with BaseRing  RingWithID(0, "ZZ")
+
+Given f1 = x[0]^2 +3*x[1] -2
+  and f2 = x[1]^2 +5*x[0]
+
+f1*f2   gives  x[0]^2*x[1]^2 +5*x[0]^3 +3*x[1]^3 +5*x[0]*x[1] -2*x[1]^2
+wdeg(f1)   gives  (2)
+wdeg(f2)   gives  (2)
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  2
+IsHomog(f1)   gives  false
+IsHomog(f2)   gives  false
+IsHomog(f3)   gives  true
+CmpWDeg(f1,f2)        gives  0
+LF(f3)   gives  x[0] -x[1]
+CmpWDegPartial(f1,f2) gives  0
+IsHomogPartial(f3,1)  gives  true
+  -- homogenizing with h = x[2]
+homog(f1, h)   gives  x[0]^2 +3*x[1]*x[2] -2*x[2]^2
+homog(f2, h)   gives  x[1]^2 +5*x[0]*x[2]
+homog(f3, h)   gives  x[0] -x[1]
+------------------------------------------------
+
+TESTING:
+RingWithID(7, "RingWithID(2)[y[0],y[1],y[2]] -- RingDistrMPolyInlPP")
+  with CoeffRing RingWithID(2, "ZZ/(101)")
+
+Given f1 = y[0]^2 +3*y[1] -2
+  and f2 = y[1]^2 -5*y[0]
+
+f1*f2   gives  y[0]^2*y[1]^2 -5*y[0]^3 +3*y[1]^3 -15*y[0]*y[1] -2*y[1]^2 +10*y[0]
+wdeg(f1)   gives  (2)
+wdeg(f2)   gives  (2)
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  2
+IsHomog(f1)   gives  false
+IsHomog(f2)   gives  false
+IsHomog(f3)   gives  true
+CmpWDeg(f1,f2)        gives  0
+LF(f3)   gives  y[0] -y[1]
+CmpWDegPartial(f1,f2) gives  0
+IsHomogPartial(f3,1)  gives  true
+  -- homogenizing with h = y[2]
+homog(f1, h)   gives  y[0]^2 +3*y[1]*y[2] -2*y[2]^2
+homog(f2, h)   gives  y[1]^2 -5*y[0]*y[2]
+homog(f3, h)   gives  y[0] -y[1]
+------------------------------------------------
+
+TESTING:
+RingWithID(8, "RingWithID(2)[y[0],y[1],y[2],y[3]] -- RingDistrMPolyInlFpPP")
+  with CoeffRing RingWithID(2, "ZZ/(101)")
+
+Given f1 = y[0]^2 +3*y[1] -2
+  and f2 = y[1]^2 -5*y[0]
+
+f1*f2   gives  y[0]^2*y[1]^2 -5*y[0]^3 +3*y[1]^3 -15*y[0]*y[1] -2*y[1]^2 +10*y[0]
+wdeg(f1)   gives  (2)
+wdeg(f2)   gives  (2)
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  2
+IsHomog(f1)   gives  false
+IsHomog(f2)   gives  false
+IsHomog(f3)   gives  true
+CmpWDeg(f1,f2)        gives  0
+LF(f3)   gives  y[0] -y[1]
+CmpWDegPartial(f1,f2) gives  0
+IsHomogPartial(f3,1)  gives  true
+  -- homogenizing with h = y[3]
+homog(f1, h)   gives  y[0]^2 +3*y[1]*y[3] -2*y[3]^2
+homog(f2, h)   gives  y[1]^2 -5*y[0]*y[3]
+homog(f3, h)   gives  y[0] -y[1]
+------------------------------------------------
+
+TESTING:
+RingWithID(9, "RingWithID(1)[x[1],x[2],x[3],x[4]] -- RingDistrMPolyInlPP")
+  with CoeffRing RingWithID(1, "QQ")
+
+Given f1 = x[1]^2 +3*x[2] -2
+  and f2 = x[2]^2 -5*x[1]
+
+f1*f2   gives  x[1]^2*x[2]^2 -5*x[1]^3 +3*x[2]^3 -15*x[1]*x[2] -2*x[2]^2 +10*x[1]
+wdeg(f1)   gives  (2)
+wdeg(f2)   gives  (2)
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  2
+IsHomog(f1)   gives  false
+IsHomog(f2)   gives  false
+IsHomog(f3)   gives  true
+CmpWDeg(f1,f2)        gives  0
+LF(f3)   gives  x[1] -x[2]
+CmpWDegPartial(f1,f2) gives  0
+IsHomogPartial(f3,1)  gives  true
+  -- homogenizing with h = x[4]
+homog(f1, h)   gives  x[1]^2 +3*x[2]*x[4] -2*x[4]^2
+homog(f2, h)   gives  x[2]^2 -5*x[1]*x[4]
+homog(f3, h)   gives  x[1] -x[2]
+------------------------------------------------
+
+TESTING:
+RingWithID(11, "RingWithID(1)[x,y,z] -- RingDistrMPolyInlPP")
+  with CoeffRing RingWithID(1, "QQ")
+
+Given f1 = x^2 +3*y -2
+  and f2 = y^2 -5*x
+
+f1*f2   gives  x^2*y^2 -5*x^3 +3*y^3 -15*x*y -2*y^2 +10*x
+wdeg(f1)   gives  (2, 2)
+wdeg(f2)   gives  (2, 0)
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  2
+IsHomog(f1)   gives  false
+IsHomog(f2)   gives  false
+IsHomog(f3)   gives  false
+CmpWDeg(f1,f2)        gives  1
+LF(f3)   gives  x
+CmpWDegPartial(f1,f2) gives  0
+IsHomogPartial(f3,1)  gives  true
+------------------------------------------------
+

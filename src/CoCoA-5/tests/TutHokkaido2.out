@@ -1,0 +1,102 @@
+[[],  [1],  [1,  2],  [1,  2],  [1,  2,  3,  4]]
+[
+  [],
+  [1],
+  [1,  2],
+  [1,  2],
+  [1,  2,  3,  4]
+]
+true
+[[],  [1],  [1,  2],  [1,  2],  [],  [5],  [1,  2,  4,  5]]
+true
+[[1,  1],  [2,  2],  [3,  3],  [4,  4],  [5,  5],  [1,  2],  [1,  3],  [2,  3],  [1,  4],  [2,  4],  [1,  5],  [2,  5],  [3,  5],  [4,  5]]
+[[1,  1],  [2,  2],  [3,  3],  [4,  4],  [5,  5],  [6,  6],  [7,  7],  [1,  2],  [1,  3],  [2,  3],  [1,  4],  [2,  4],  [5,  6],  [1,  7],  [2,  7],  [4,  7],  [5,  7]]
+OnlineHelp: unsorted entries: operators, shortcuts -- abs
+--<<<<<<<<<<<<<<( IsIn )>>>>>>>>>>>>>>>--
+--> X  IsIn  Y        (return BOOL)
+The semantics of "IsIn" is explained in the following table:
+
+   --------------------------------------------------------------------
+  | OBJECT     IsIn  LIST    checks if the list contains the object.   |
+  | RINGELEM   IsIn  IDEAL   checks for ideal membership.              |
+  | MODULEELEM IsIn  MODULE  checks for module membership.             |
+  | STRING     IsIn  STRING  checks if the first string is a substring |
+  |                          of the second one.                        |
+   --------------------------------------------------------------------
+NOTE: if RINGELEM (or MODULEELEM) is in an IDEAL (or MODULE), a
+  representation in terms of the generators is given by "GenRepr".
+
+--============( end IsIn )=============--
+--> See also:
+ ? GenRepr
+--> To see all 10 matches for "isin":
+ ?? isin
+false
+true
+--<<<<<<<<<<<<<<( IsSubset )>>>>>>>>>>>>>>>--
+--> IsSubset(L: LIST, M: LIST): BOOL
+This function returns "true" if "MakeSet(L)" is contained in "MakeSet(M)";
+otherwise it returns "false".
+----<<<<  example  >>>>----
+/**/  IsSubset([1,1,2],[1,2,3,"a"]);
+true
+/**/  IsSubset([1,2],["a","b"]);
+false
+/**/  IsSubset([],[1,2]);
+true
+----==< end example >==----
+-- SEARCH KEYS: subset
+--============( end IsSubset )=============--
+--> See also:
+ ? IsContained
+ ? IsIn
+ ? EqSet
+ ? MakeSet
+ ? subsets
+false
+true
+[[1,  2,  3,  5],  [1,  2,  4,  5]]
+[[1,  2,  3],  [1,  2,  4,  7],  [5,  7],  [5,  6]]
+3
+3
+true
+false
+0
+1
+3
+[[2,  1],  [3,  2],  [4,  2],  [5,  3],  [5,  4]]
+[[2,  3,  4,  5],  [3,  4,  5],  [5],  [5],  []]
+[[2,  1],  [3,  2],  [4,  2],  [7,  4],  [7,  5],  [6,  5]]
+[[2,  3,  4,  7],  [3,  4,  7],  [],  [7],  [6,  7],  [],  []]
+[2]
+[5]
+[]
+[]
+true
+false
+--<<<<<<<<<<<<<<( sum )>>>>>>>>>>>>>>>--
+--> sum(L: LIST): OBJECT
+--> sum(L: LIST, InitVal: OBJECT): OBJECT
+This function returns the sum of the objects in the list "L" (together
+with "InitVal", if specified).  If the list "L" may be empty,
+you must specify "InitVal".
+----<<<<  example  >>>>----
+/**/  use R ::= QQ[x,y];
+/**/  sum([3, x, y^2]);
+y^2 +x +3
+
+/**/  sum(1..40) = binomial(41,2);
+true
+
+/**/  sum(["c","oc","oa"]);
+cocoa
+
+/**/ sum([], "");      -- gives empty STRING
+
+/**/ sum([], zero(R)); -- gives type RINGELEM
+0
+----==< end example >==----
+--============( end sum )=============--
+--> See also:
+ ? Algebraic Operators
+ ? product

@@ -1,0 +1,9 @@
+Simple-func:Ok
+ComposeAndRun:Ok
+Squares: [1,  4,  9,  16,  25,  36,  49,  64,  81,  100]
+Bubble-sorting...
+Original names: ["John Abbott",  "Anna Bigatti",  "Giovanni Lagorio"]
+Ordered by first name, ascending: ["Anna Bigatti",  "Giovanni Lagorio",  "John Abbott"]
+Ordered by first name, descending: ["John Abbott",  "Giovanni Lagorio",  "Anna Bigatti"]
+Ordered by last name, ascending: ["John Abbott",  "Anna Bigatti",  "Giovanni Lagorio"]
+Ordered by last name, descending: ["Giovanni Lagorio",  "Anna Bigatti",  "John Abbott"]

@@ -1,0 +1,14 @@
+<built-in function>
+[y^3,  x*y^2,  x^2*y,  x^3]
+[y,  x]
+[y^3,  x*y^2,  x^2*y,  x^3]
+[y,  x,  y^3*z,  x*y^2*z,  x^2*y*z,  x^3*z]
+[y^3*z,  x*y^2*z,  x^2*y*z,  x^3*z]
+record[DenFactors := record[RemainingFactor := 1, factors := [-t +1,  t], multiplicities := [1,  1]], num := t +1]
+[2]
+2
+2
+record[DenFactors := record[RemainingFactor := 1, factors := [-t +1,  -t^3 +1], multiplicities := [1,  2]], num := t^5 +2*t^4 +5*t^3 +5*t^2 +2*t +1]
+[(8/9)*t^2 +2*t +1,  (8/9)*t^2 +(14/9)*t +5/9,  (8/9)*t^2 +(16/9)*t +8/9]
+1
+20503

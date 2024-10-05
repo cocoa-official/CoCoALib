@@ -1,0 +1,66 @@
+---- F = FreeModule(RingWithID(2, "QQ[x,y,z]"), 4) ----
+-- ModuleOrderingOrdPosn(PPOrderingLex(3), [(),  (),  (),  ()])
+u[0] = y^5  and  u[1] = x
+u = [y^5, x, 0, 0]
+LPosn(u) = 1
+LPP(u) = x
+wdeg(u) = ()
+IsHomog(u) undefined because GradingDim is 0
+v = [0, z^2, y*z, 0]
+LPosn(v) = 2
+
+---- F = FreeModule(RingWithID(3, "QQ[x,y,z]"), 4) ----
+-- ModuleOrderingOrdPosn(PPOrderingStdDegLex(3), [(0),  (0),  (0),  (0)])
+u[0] = y^5  and  u[1] = x
+u = [y^5, x, 0, 0]
+LPosn(u) = 0
+LPP(u) = y^5
+wdeg(u) = (5)
+IsHomog(u) = false
+v = [0, z^2, y*z, 0]
+LPosn(v) = 2
+
+---- F = FreeModule(RingWithID(3, "QQ[x,y,z]"), 4) ----
+-- ModuleOrderingOrdPosn(PPOrderingStdDegLex(3), [(0),  (0),  (0),  (0)])
+u[0] = y^5  and  u[1] = x
+u = [y^5, x, 0, 0]
+LPosn(u) = 0
+LPP(u) = y^5
+wdeg(u) = (5)
+IsHomog(u) = false
+v = [0, z^2, y*z, 0]
+LPosn(v) = 2
+
+---- F = FreeModule(RingWithID(2, "QQ[x,y,z]"), 4) ----
+-- ModuleOrderingOrdPosn(PPOrderingLex(3), [(),  (),  (),  ()])
+u[0] = y^5  and  u[1] = x
+u = [y^5, x, 0, 0]
+LPosn(u) = 0
+LPP(u) = y^5
+wdeg(u) = ()
+IsHomog(u) undefined because GradingDim is 0
+v = [0, z^2, y*z, 0]
+LPosn(v) = 1
+
+---- F = FreeModule(RingWithID(3, "QQ[x,y,z]"), 4) ----
+-- ModuleOrderingOrdPosn(PPOrderingStdDegLex(3), [(0),  (0),  (0),  (0)])
+u[0] = y^5  and  u[1] = x
+u = [y^5, x, 0, 0]
+LPosn(u) = 0
+LPP(u) = y^5
+wdeg(u) = (5)
+IsHomog(u) = false
+v = [0, z^2, y*z, 0]
+LPosn(v) = 1
+
+---- F = FreeModule(RingWithID(3, "QQ[x,y,z]"), 4) ----
+-- ModuleOrderingOrdPosn(PPOrderingStdDegLex(3), [(0),  (4),  (0),  (0)])
+u[0] = y^5  and  u[1] = x
+u = [y^5, x, 0, 0]
+LPosn(u) = 0
+LPP(u) = y^5
+wdeg(u) = (5)
+IsHomog(u) = true
+v = [0, z^2, y*z, 0]
+LPosn(v) = 1
+

@@ -1,0 +1,222 @@
+[x,  y,  z,  t]
+x*y*z*t
+[y*z*t,  x*z*t,  x*y*t,  x*y*z]
+matrix( /*RingWithID(3, "QQ[x,y,z,t]")*/
+ [[0, 0, 0, x],
+  [0, 0, y, 0],
+  [0, z, 0, 0],
+  [t, 0, 0, 0]])
+true
+matrix( /*RingWithID(3, "QQ[x,y,z,t]")*/
+ [[x*y*z*t, x*y*z*t, x*y*z*t, x*y*z*t]])
+[1,  1,  1,  1]
+true
+true
+[x,  y,  z,  x +3*y,  y -z -t,  z -4*t]
+x^2*y^2*z^2 +3*x*y^3*z^2 -x^2*y*z^3 -3*x*y^2*z^3 -4*x^2*y^2*z*t -12*x*y^3*z*t +3*x^2*y*z^2*t +9*x*y^2*z^2*t +4*x^2*y*z*t^2 +12*x*y^2*z*t^2
+matrix( /*RingWithID(3, "QQ[x,y,z,t]")*/
+ [[x, 0, 0, 0, 0],
+  [y, 0, 0, 0, x*y +3*y^2],
+  [z, z^2 -4*z*t, 0, y*z -5*z*t, x*z +15*z*t],
+  [t, -z^2 +4*z*t, y*z -z^2 -4*y*t +3*z*t +4*t^2, -z^2 +y*t +3*z*t -t^2, 3*z^2 +x*t -9*z*t +3*t^2]])
+false
+[x,  y,  z,  t]
+x*y*z*t
+[y*z*t,  x*z*t,  x*y*t,  x*y*z]
+true
+[x,  y,  z,  x +3*y,  y -z -t,  z -4*t]
+x^2*y^2*z^2 +3*x*y^3*z^2 -x^2*y*z^3 -3*x*y^2*z^3 -4*x^2*y^2*z*t -12*x*y^3*z*t +3*x^2*y*z^2*t +9*x*y^2*z^2*t +4*x^2*y*z*t^2 +12*x*y^2*z*t^2
+[2*x*y^2*z^2 +3*y^3*z^2 -2*x*y*z^3 -3*y^2*z^3 -8*x*y^2*z*t -12*y^3*z*t +6*x*y*z^2*t +9*y^2*z^2*t +8*x*y*z*t^2 +12*y^2*z*t^2,  2*x^2*y*z^2 +9*x*y^2*z^2 -x^2*z^3 -6*x*y*z^3 -8*x^2*y*z*t -36*x*y^2*z*t +3*x^2*z^2*t +18*x*y*z^2*t +4*x^2*z*t^2 +24*x*y*z*t^2,  2*x^2*y^2*z +6*x*y^3*z -3*x^2*y*z^2 -9*x*y^2*z^2 -4*x^2*y^2*t -12*x*y^3*t +6*x^2*y*z*t +18*x*y^2*z*t +4*x^2*y*t^2 +12*x*y^2*t^2,  -4*x^2*y^2*z -12*x*y^3*z +3*x^2*y*z^2 +9*x*y^2*z^2 +8*x^2*y*z*t +24*x*y^2*z*t]
+true
+[x,  y,  z,  t]
+[1,  1,  1,  1]
+record[RemainingFactor := 1, factors := [t -1], multiplicities := [4]]
+[x -y,  x -z,  x -t,  y -t,  z -t]
+[0,  1,  2,  2]
+record[RemainingFactor := 1, factors := [t,  t -1,  t -2], multiplicities := [1,  1,  2]]
+[x,  x +y,  x -y,  x +2*y,  x -2*y,  y -z,  z]
+false
+record[RemainingFactor := 1, factors := [t -1,  t -3], multiplicities := [1,  2]]
+[x -y,  x -z,  x -t,  y -z,  y -t,  z -t]
+true
+matrix( /*RingWithID(217, "QQ[x,y,z,t]")*/
+ [[1, 0, 0, 0],
+  [1, x -y, 0, 0],
+  [1, x -z, x*y -x*z -y*z +z^2, 0],
+  [1, x -t, x*y -x*t -y*t +t^2, x*y*z -x*y*t -x*z*t -y*z*t +x*t^2 +y*t^2 +z*t^2 -t^3]])
+[0,  1,  2,  3]
+[x -y,  x +y,  x -z,  x +z,  x -t,  x +t,  y -z,  y +z,  y -t,  y +t,  z -t,  z +t]
+true
+matrix( /*RingWithID(217, "QQ[x,y,z,t]")*/
+ [[x, y*z*t, 0, 0],
+  [y, x*z*t, x^2*y -y^3, 0],
+  [z, x*y*t, x^2*z -z^3, x^2*y^2*z -x^2*z^3 -y^2*z^3 +z^5],
+  [t, x*y*z, x^2*t -t^3, x^2*y^2*t -x^2*t^3 -y^2*t^3 +t^5]])
+[1,  3,  3,  5]
+[x,  y,  z,  x -y,  x +y,  x -z,  x +z,  y -z,  y +z]
+true
+matrix( /*RingWithID(217, "QQ[x,y,z,t]")*/
+ [[0, x, 0, 0],
+  [0, y, x^2*y -y^3, 0],
+  [0, z, x^2*z -z^3, x^2*y^2*z -x^2*z^3 -y^2*z^3 +z^5],
+  [1, 0, 0, 0]])
+[0,  1,  3,  5]
+[x -y,  x -z,  y -z,  x -y -t,  x -z -t,  y -z -t,  t]
+true
+matrix( /*RingWithID(217, "QQ[x,y,z,t]")*/
+ [[1, 0, 0, 0],
+  [1, x -y, 0, 0],
+  [1, x -z, x*y^2 -2*x*y*z -y^2*z +x*z^2 +2*y*z^2 -z^3 -x*y*t +x*z*t +y*z*t -z^2*t, x^2*y -x^2*z -2*x*y*z +2*x*z^2 +y*z^2 -z^3 -2*x*y*t +2*x*z*t +2*y*z*t -2*z^2*t],
+  [0, -t, x*y*t -y^2*t -x*z*t +y*z*t -x*t^2 +z*t^2 +t^3, -x^2*t +x*y*t +x*z*t -y*z*t +x*t^2 -z*t^2]])
+[0,  1,  3,  3]
+[x -y,  x +y,  x -z,  x +z,  y -z,  y +z,  x -y -t,  x +y -t,  x -z -t,  x +z -t,  y -z -t,  y +z -t,  t]
+true
+matrix( /*RingWithID(217, "QQ[x,y,z,t]")*/
+ [[x, -y^2*z*t +y*z*t^2, -3*y*z^2*t, 3*y^2*z^2],
+  [y, (4/3)*x^2*y*z +(-4/3)*y^3*z -x^2*z*t -x*y*z*t +y^2*z*t +x*z*t^2, x^2*y^2 -y^4 +3*x^2*z^2 -3*y^2*z^2 -x^2*y*t +y^3*t -3*x*z^2*t, x^3*y -x*y^3 +3*x*y*z^2 -2*x^2*y*t +2*y^3*t],
+  [z, x^2*y^2 +(1/3)*x^2*z^2 -y^2*z^2 +(-1/3)*z^4 -x^2*y*t -x*y^2*t +y*z^2*t +x*y*t^2, 4*x^2*y*z -4*y*z^3 -x^2*z*t -3*x*y*z*t +z^3*t, x^3*z +3*x*y^2*z -x*z^3 -2*x^2*z*t +2*z^3*t],
+  [t, (-2/3)*x^2*z*t -2*y^2*z*t +x*z*t^2 +2*y*z*t^2 +(-1/3)*z*t^3, -2*x^2*y*t -6*y*z^2*t +2*x^2*t^2 +3*x*y*t^2 -3*x*t^3 -y*t^3 +t^4, x^3*t -3*x*y^2*t -3*x*z^2*t -2*x^2*t^2 +3*y^2*t^2 +3*z^2*t^2 +2*x*t^3 -t^4]])
+[1,  4,  4,  4]
+[x -y,  x -z,  y -z,  x -y -t,  x -z -t,  y -z -t,  x -y +t,  x -z +t,  y -z +t,  t]
+true
+matrix( /*RingWithID(217, "QQ[x,y,z,t]")*/
+ [[1, 0, 0, 0],
+  [1, x -y, 0, 0],
+  [1, x -z, x^3*y -x^2*y^2 +x*y^3 -x^3*z -x^2*y*z -x*y^2*z -y^3*z +2*x^2*z^2 +2*x*y*z^2 +2*y^2*z^2 -2*x*z^3 -2*y*z^3 +z^4 -3*x*y*t^2 +3*x*z*t^2 +3*y*z*t^2 -3*z^2*t^2, x^2*y^3 +(-1/2)*x*y^4 -3*x^2*y^2*z +(1/2)*y^4*z +3*x^2*y*z^2 +3*x*y^2*z^2 -y^3*z^2 -x^2*z^3 -4*x*y*z^3 +(3/2)*x*z^4 +y*z^4 +(-1/2)*z^5 -x^2*y*t^2 +(1/2)*x*y^2*t^2 +x^2*z*t^2 +x*y*z*t^2 +(-1/2)*y^2*z*t^2 +(-3/2)*x*z^2*t^2 +(1/2)*z^3*t^2],
+  [0, -t, -x^3*t +x^2*y*t +x*y^2*t -y^3*t +2*x^2*z*t -4*x*y*z*t +2*y^2*z*t +x*t^3 +y*t^3 -2*z*t^3, (1/2)*x^2*y^2*t -x*y^3*t +(1/2)*y^4*t -x^2*y*z*t +2*x*y^2*z*t -y^3*z*t +(1/2)*x^2*z^2*t -x*y*z^2*t +(1/2)*y^2*z^2*t +(-1/2)*x^2*t^3 +x*y*t^3 -y^2*t^3 +y*z*t^3 +(-1/2)*z^2*t^3 +(1/2)*t^5]])
+[0,  1,  4,  5]
+[x -y,  x +y,  x -z,  x +z,  y -z,  y +z,  x -y -t,  x +y -t,  x -z -t,  x +z -t,  y -z -t,  y +z -t,  x -y +t,  x +y +t,  x -z +t,  x +z +t,  y -z +t,  y +z +t,  t]
+true
+matrix( /*RingWithID(217, "QQ[x,y,z,t]")*/
+ [[x, 0, y^3*z^3 -y^3*z*t^2 -y*z^3*t^2 +y*z*t^4, 0],
+  [y, x^4*y -y^5 +10*x^2*y*z^2 -10*y^3*z^2 -5*x^2*y*t^2 +5*y^3*t^2, 2*x^3*y^2*z -2*x*y^4*z +x^3*z^3 -x^3*z*t^2 -x*z^3*t^2 +x*z*t^4, x^2*y^5 -y^7 +10*x^2*y^3*z^2 -10*y^5*z^2 +37*x^2*y*z^4 -37*y^3*z^4 -5*x^2*y^3*t^2 +5*y^5*t^2 -23*x^2*y*z^2*t^2 +23*y^3*z^2*t^2 +4*x^2*y*t^4 -4*y^3*t^4],
+  [z, x^4*z +10*x^2*y^2*z -10*y^2*z^3 -z^5 -5*x^2*z*t^2 +5*z^3*t^2, x^3*y^3 +2*x^3*y*z^2 -2*x*y*z^4 -x^3*y*t^2 -x*y^3*t^2 +x*y*t^4, -3*x^4*y^2*z +7*x^2*y^4*z +3*x^4*z^3 +40*x^2*y^2*z^3 -7*y^4*z^3 +x^2*z^5 -37*y^2*z^5 -4*z^7 -8*x^2*y^2*z*t^2 -20*x^2*z^3*t^2 +8*y^2*z^3*t^2 +20*z^5*t^2 +4*x^2*z*t^4 -4*z^3*t^4],
+  [t, x^4*t -5*x^2*y^2*t -5*x^2*z^2*t -15*y^2*z^2*t +5*y^2*t^3 +5*z^2*t^3 -t^5, -x^3*y*z*t -3*x*y^3*z*t -3*x*y*z^3*t +4*x*y*z*t^3, (3/2)*x^4*y^2*t +(-7/2)*x^2*y^4*t +(9/2)*x^4*z^2*t -14*x^2*y^2*z^2*t +(-21/2)*y^4*z^2*t +(-37/2)*x^2*z^4*t +(-111/2)*y^2*z^4*t +(-3/2)*x^4*t^3 +(5/2)*x^2*y^2*t^3 +(7/2)*y^4*t^3 +(5/2)*x^2*z^2*t^3 +(61/2)*y^2*z^2*t^3 +(37/2)*z^4*t^3 +x^2*t^5 -4*y^2*t^5 -7*z^2*t^5 +(1/2)*t^7]])
+[1,  5,  6,  7]
+[x,  y,  z,  t]
+matrix( /*RingWithID(344, "QQ[x,y,z,t]")*/
+ [[0, 0, 0, x],
+  [0, 0, y, 0],
+  [0, z, 0, 0],
+  [t, 0, 0, 0]])
+[1,  1,  1,  1]
+[x,  y,  z,  t]
+matrix( /*RingWithID(358, "ZZ/(2)[x,y,z,t]")*/
+ [[0, 0, 0, x],
+  [0, 0, y, 0],
+  [0, z, 0, 0],
+  [t, 0, 0, 0]])
+[1,  1,  1,  1]
+[x,  y,  z,  t]
+matrix( /*RingWithID(372, "ZZ/(7)[x,y,z,t]")*/
+ [[0, 0, 0, x],
+  [0, 0, y, 0],
+  [0, z, 0, 0],
+  [t, 0, 0, 0]])
+[1,  1,  1,  1]
+matrix( /*RingWithID(385, "QQ[x,y,z]")*/
+ [[x, 0, 0],
+  [y, x*y*z -y^2*z, x^2*y -y^3],
+  [z, -2*x*y*z -x*z^2 -2*y*z^2 -z^3, x^2*z +3*x*y*z +3*x*z^2 +3*y*z^2 +2*z^3]])
+[1,  3,  3]
+matrix( /*RingWithID(400, "ZZ/(2)[x,y,z]")*/
+ [[x, 0, 0],
+  [y, x*y +y^2, 0],
+  [z, x*z +z^2, x^2*y*z +x*y^2*z +x^2*z^2 +x*y*z^2 +y^2*z^2 +z^4]])
+[1,  2,  4]
+[x,  y,  z,  x +y,  x -y,  x +z,  x -z,  y +z,  y -z,  x +y +z,  x -y +z,  x +y -z,  x -y -z]
+matrix( /*RingWithID(414, "ZZ/(3)[x,y,z]")*/
+ [[x, 0, 0],
+  [y, x^2*y -y^3, 0],
+  [z, x^2*z -z^3, x^6*y^2*z +x^4*y^4*z +x^2*y^6*z -x^6*z^3 -x^4*y^2*z^3 -x^2*y^4*z^3 -y^6*z^3 +z^9]])
+[1,  3,  9]
+matrix( /*RingWithID(427, "QQ[x,y,z]")*/
+ [[x, 0, 0, 0],
+  [y, x^4*y^2 +5*x^3*y^3 +10*x^2*y^4 +10*x*y^5 +4*y^6 +2*x^4*y*z +15*x^3*y^2*z +40*x^2*y^3*z +45*x*y^4*z +18*y^5*z +10*x^3*y*z^2 +45*x^2*y^2*z^2 +65*x*y^3*z^2 +30*y^4*z^2 +10*x^2*y*z^3 +30*x*y^2*z^3 +20*y^3*z^3, x^2*y^5 +3*x*y^6 +2*y^7 +(3/2)*x^3*y^3*z +9*x^2*y^4*z +(33/2)*x*y^5*z +9*y^6*z +(9/2)*x^3*y^2*z^2 +22*x^2*y^3*z^2 +(69/2)*x*y^4*z^2 +17*y^5*z^2 +3*x^3*y*z^3 +18*x^2*y^2*z^3 +33*x*y^3*z^3 +18*y^4*z^3 +4*x^2*y*z^4 +12*x*y^2*z^4 +8*y^3*z^4, x^6*y +35*x^3*y^4 -182*x*y^6 -148*y^7 -7*x^5*y*z +49*x^3*y^3*z -231*x^2*y^4*z -819*x*y^5*z -546*y^6*z +7*x^4*y*z^2 -98*x^3*y^2*z^2 -728*x^2*y^3*z^2 -1393*x*y^4*z^2 -770*y^5*z^2 -77*x^3*y*z^3 -567*x^2*y^2*z^3 -1162*x*y^3*z^3 -672*y^4*z^3 -126*x^2*y*z^4 -378*x*y^2*z^4 -252*y^3*z^4],
+  [z, x^4*y*z +5*x^3*y^2*z +5*x^2*y^3*z +2*x^4*z^2 +15*x^3*y*z^2 +30*x^2*y^2*z^2 +15*x*y^3*z^2 +10*x^3*z^3 +50*x^2*y*z^3 +55*x*y^2*z^3 +10*y^3*z^3 +20*x^2*z^4 +60*x*y*z^4 +30*y^2*z^4 +20*x*z^5 +24*y*z^5 +8*z^6, (3/2)*x^4*y^2*z +6*x^3*y^3*z +(11/2)*x^2*y^4*z +(9/2)*x^4*y*z^2 +(51/2)*x^3*y^2*z^2 +(81/2)*x^2*y^3*z^2 +(33/2)*x*y^4*z^2 +3*x^4*z^3 +(69/2)*x^3*y*z^3 +97*x^2*y^2*z^3 +(159/2)*x*y^3*z^3 +11*y^4*z^3 +15*x^3*z^4 +90*x^2*y*z^4 +135*x*y^2*z^4 +45*y^3*z^4 +28*x^2*z^5 +96*x*y*z^5 +62*y^2*z^5 +24*x*z^6 +36*y*z^6 +8*z^7, x^6*z -161*x^4*y^2*z -574*x^3*y^3*z -497*x^2*y^4*z -7*x^5*z^2 -483*x^4*y*z^2 -2457*x^3*y^2*z^2 -3717*x^2*y^3*z^2 -1491*x*y^4*z^2 -315*x^4*z^3 -3353*x^3*y*z^3 -8918*x^2*y^2*z^3 -7133*x*y^3*z^3 -994*y^4*z^3 -1435*x^3*z^4 -8190*x^2*y*z^4 -11970*x*y^2*z^4 -3990*y^3*z^4 -2548*x^2*z^5 -8344*x*y*z^5 -5348*y^2*z^5 -2044*x*z^6 -3024*y*z^6 -624*z^7]])
+false
+[x,  y,  z,  x +y,  x +2*y,  x +z,  x +2*z,  y +z,  y +2*z,  x +y +z,  x +2*y +z,  x +y +2*z,  x +2*y +2*z]
+false
+[x,  y,  z,  t,  x -y,  x +y,  x -z,  x +z,  x -t,  x +t,  y -z,  y +z,  y -t,  y +t,  z -t,  z +t,  x -h,  x -2*h,  y -h,  y -2*h,  z -h,  z -2*h,  t -h,  t -2*h,  x -y -h,  x -y -2*h,  x +y -h,  x +y -2*h,  x -z -h,  x -z -2*h,  x +z -h,  x +z -2*h,  x -t -h,  x -t -2*h,  x +t -h,  x +t -2*h,  y -z -h,  y -z -2*h,  y +z -h,  y +z -2*h,  y -t -h,  y -t -2*h,  y +t -h,  y +t -2*h,  z -t -h,  z -t -2*h,  z +t -h,  z +t -2*h,  x +h,  x +2*h,  y +h,  y +2*h,  z +h,  z +2*h,  t +h,  t +2*h,  x -y +h,  x -y +2*h,  x +y +h,  x +y +2*h,  x -z +h,  x -z +2*h,  x +z +h,  x +z +2*h,  x -t +h,  x -t +2*h,  x +t +h,  x +t +2*h,  y -z +h,  y -z +2*h,  y +z +h,  y +z +2*h,  y -t +h,  y -t +2*h,  y +t +h,  y +t +2*h,  z -t +h,  z -t +2*h,  z +t +h,  z +t +2*h,  h]
+[x,  y,  z,  t,  x -y,  x +y,  x -z,  x +z,  x -t,  x +t,  y -z,  y +z,  y -t,  y +t,  z -t,  z +t,  x -h,  x -2*h,  y -h,  y -2*h,  z -h,  z -2*h,  t -h,  t -2*h,  x -y -h,  x -y -2*h,  x +y -h,  x +y -2*h,  x -z -h,  x -z -2*h,  x +z -h,  x +z -2*h,  x -t -h,  x -t -2*h,  x +t -h,  x +t -2*h,  y -z -h,  y -z -2*h,  y +z -h,  y +z -2*h,  y -t -h,  y -t -2*h,  y +t -h,  y +t -2*h,  z -t -h,  z -t -2*h,  z +t -h,  z +t -2*h,  x +h,  x +2*h,  y +h,  y +2*h,  z +h,  z +2*h,  t +h,  t +2*h,  x -y +h,  x -y +2*h,  x +y +h,  x +y +2*h,  x -z +h,  x -z +2*h,  x +z +h,  x +z +2*h,  x -t +h,  x -t +2*h,  x +t +h,  x +t +2*h,  y -z +h,  y -z +2*h,  y +z +h,  y +z +2*h,  y -t +h,  y -t +2*h,  y +t +h,  y +t +2*h,  z -t +h,  z -t +2*h,  z +t +h,  z +t +2*h,  h]
+[x,  y,  z,  x +y,  x +3*y]
+matrix( /*RingWithID(452, "QQ[x,y,z]")*/
+ [[0, x, 0],
+  [0, y, x^2*y +4*x*y^2 +3*y^3],
+  [z, 0, 0]])
+[1,  1,  3]
+[x,  y,  z,  x +y,  x]
+x^3*y*z +x^2*y^2*z
+matrix( /*RingWithID(466, "ZZ/(3)[x,y,z]")*/
+ [[0, x, 0],
+  [0, y, x*y +y^2],
+  [z, 0, 0]])
+[1,  1,  2]
+false
+true
+x^2*y*z +x*y^2*z
+matrix( /*RingWithID(466, "ZZ/(3)[x,y,z]")*/
+ [[0, x, 0],
+  [0, y, x*y +y^2],
+  [z, 0, 0]])
+[1,  1,  2]
+true
+true
+[x +y +z]
+ideal(1)
+true
+[x,  y,  z,  x -y,  x +y,  x -z,  x +z,  y -z,  y +z]
+ideal(5*x^4*y^3*z -3*x^2*y^5*z -5*x^4*y*z^3 +y^5*z^3 +3*x^2*y*z^5 -y^3*z^5,  3*x^5*y^2*z -5*x^3*y^4*z -x^5*z^3 +5*x*y^4*z^3 +x^3*z^5 -3*x*y^2*z^5,  x^5*y^3 -x^3*y^5 -3*x^5*y*z^2 +3*x*y^5*z^2 +5*x^3*y*z^4 -5*x*y^3*z^4)
+0 --> R[-11](+)R[-13] --> R[-8]^3 --> R
+true
+[x -y,  x -z,  y -z]
+ideal(2*x*y -y^2 -2*x*z +z^2,  x^2 -2*x*y +2*y*z -z^2,  -x^2 +y^2 +2*x*z -2*y*z)
+0 --> R[-4] --> R[-2]^2 --> R
+true
+[x,  y,  z,  x +3*y,  y -z,  x -4*z]
+ideal(3*x^2*y^2*z +6*x*y^3*z -3*x^2*y*z^2 -14*x*y^2*z^2 -12*y^3*z^2 +8*x*y*z^3 +12*y^2*z^3,  2*x^3*y*z +9*x^2*y^2*z -x^3*z^2 -14*x^2*y*z^2 -36*x*y^2*z^2 +4*x^2*z^3 +24*x*y*z^3,  x^3*y^2 +3*x^2*y^3 -2*x^3*y*z -14*x^2*y^2*z -24*x*y^3*z +12*x^2*y*z^2 +36*x*y^2*z^2)
+0 --> R[-9] --> R[-8]^3 --> R[-5]^3 --> R
+false
+[x -y,  x -z,  x -t,  y -z,  y -t,  z -t]
+[x -z,  x -t,  y -z,  y -t,  z -t]
+[y[1] -y[2],  y[1] -y[3],  y[2] -y[3]]
+[0,  1,  2,  3]
+[0,  1,  2,  2]
+[0,  1,  2]
+[x -y,  x -z,  x -t,  y -t,  z -t]
+[x -y,  x -z,  y -t,  z -t]
+[y[1] -y[3],  y[2] -y[3]]
+[0,  1,  2,  2]
+[0,  1,  1]
+[x -y,  x -z,  y -z,  x -y -t,  x -z -t,  y -z -t,  x -y +t,  x -z +t,  y -z +t,  t]
+[y[1] -y[2] -y[3],  y[3],  y[1] -y[2],  y[1] -y[2] -2*y[3],  y[1] -y[2] +y[3]]
+true
+true
+[y[1] -y[2],  y[3],  y[1] -y[2] -y[3],  y[1] -y[2] +y[3]]
+true
+false
+[x,  y,  z,  x +3*y,  y -z,  x -4*z]
+[y[1],  y[2],  y[1] -y[2]]
+true
+false
+false
+[x -y,  x -z,  x +t,  z +t,  y +t,  x,  z]
+ideal(x^6,  x^5*y,  x^4*y^2,  x^3*y^3,  x^2*y^5,  x*y^6,  y^7)
+true
+[x -y,  x -z,  z +t,  y +t,  x,  z]
+ideal(x^5,  x^4*y,  x^3*y^2,  x^2*y^3,  x*y^5,  y^6,  x*y^4*z)
+false
+[x -y,  x +y,  x -z,  x +z,  x -t,  x +t,  y -z,  y +z,  y -t,  y +t,  z -t,  z +t]
+[x,  y,  z,  x +y -z,  x +z,  x +2*z,  x +y +z]
+matrix(ZZ,
+ [[1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
+  [1, 2, 3, 4, 5, 6, 4, 2, 0, 0, 0],
+  [1, 3, 6, 10, 15, 21, 25, 27, 27, 26, 26],
+  [1, 4, 10, 20, 35, 56, 81, 108, 135, 161, 187]])
+  0  1   2   3   4   5   6    7    8    9   10
+  -  -   -   -   -   -   -    -    -    -    -
+  1  1   1   1   1   1   0    0    0    0    0
+  1  2   3   4   5   6   4    2    0    0    0
+  1  3   6  10  15  21  25   27   27   26   26
+  1  4  10  20  35  56  81  108  135  161  187
+false

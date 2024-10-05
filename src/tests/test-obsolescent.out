@@ -1,0 +1,2 @@
+WARNING: called obsolescent fn `IsRadical(ConstRefPPMonoidElem)' -- renamed to IsSqFree
+WARNING: called obsolescent fn `AreGensSquareFreeMonomial(ideal)' -- renamed to AreGensSqFreeMonomial

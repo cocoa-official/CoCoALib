@@ -1,0 +1,22 @@
+Simple test on polynomial ring hom
+RingWithID(3, "ZZ[x,y]")  -->  RingWithID(6, "ZZ/(101)[x[0],x[1]]")
+sending x  to  x[0]^2  and
+sending y  to  x[1]^2
+x +2*y in RingWithID(3, "ZZ[x,y]")
+  maps to x[0]^2 +2*x[1]^2 in RingWithID(6, "ZZ/(101)[x[0],x[1]]")
+
+x[0]^2 +2*x[1]^2 in RingWithID(6, "ZZ/(101)[x[0],x[1]]")
+  maps to x[0]^4 +2*x[1]^4 in RingWithID(6, "ZZ/(101)[x[0],x[1]]")
+
+x[0]^2 +2*x[1]^2 in RingWithID(6, "ZZ/(101)[x[0],x[1]]")
+  maps to y[0]^4 +2*y[1]^4 in RingWithID(4, "ZZ/(101)[y[0],y[1]]")
+
+x +2*y in RingWithID(3, "ZZ[x,y]")
+  maps to z[0]^2 +2*z[1]^2 in RingWithID(5, "ZZ/(101)[z[0],z[1]]")
+
+z[0]^2 +2*z[1]^2 in RingWithID(5, "ZZ/(101)[z[0],z[1]]")
+  maps to z[0]^4 +2*z[1]^4 in RingWithID(5, "ZZ/(101)[z[0],z[1]]")
+
+z[0]^2 +2*z[1]^2 in RingWithID(5, "ZZ/(101)[z[0],z[1]]")
+  maps to y[0]^4 +2*y[1]^4 in RingWithID(4, "ZZ/(101)[y[0],y[1]]")
+

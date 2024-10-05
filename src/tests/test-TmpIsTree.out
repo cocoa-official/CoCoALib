@@ -1,0 +1,4 @@
+myIsTreeNoOpt: Cycle in Complex = [000011,  000110,  100001]
+myIsTreeNoOpt: Cycle in Complex = [000011,  000110,  100001]
+myIsTreeCBNoOpt: Cycle in Complex = [000011,  000110,  100001]
+myIsTreeCBOpt: Cycle in Complex = [000011,  000110,  100001]

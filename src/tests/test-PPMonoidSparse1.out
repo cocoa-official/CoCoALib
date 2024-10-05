@@ -1,0 +1,18 @@
+TESTING: PPMonoidEv(400, PPOrderingLex(400))
+
+Given t1 = x[0]*x[314]
+  and t2 = x[200]
+
+t1*t2*t2*t1   gives  x[0]^2*x[200]^2*x[314]^2
+t1*t2*t2*t1*x[385]   gives  x[0]^2*x[200]^2*x[314]^2*x[385]
+------------------------------------------------
+
+TESTING: PPMonoidSparse(400, PPOrderingLex(400))
+
+Given t1 = x[0]*x[314]
+  and t2 = x[200]
+
+t1*t2*t2*t1   gives  x[0]^2*x[200]^2*x[314]^2
+t1*t2*t2*t1*x[385]   gives  x[0]^2*x[200]^2*x[314]^2*x[385]
+------------------------------------------------
+

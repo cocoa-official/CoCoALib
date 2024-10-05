@@ -1,0 +1,88 @@
+TESTING: PPMonoidEvOv(6, PPOrderingLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidEvOv(6, PPOrderingStdDegLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidEvOv(6, PPOrderingStdDegRevLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidEvOv(6, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4, 0, 2],
+  [0, 3, 5, 0, 2, 1],
+  [1, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, -2],
+  [-1, -1, -1, -1, 0, -1],
+  [-1, 0, -2, -4, 1, 0]])))
+
+------------------------------------------------
+
+TESTING: PPMonoidEv(6, PPOrderingLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidEv(6, PPOrderingStdDegLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidEv(6, PPOrderingStdDegRevLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidEv(6, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4, 0, 2],
+  [0, 3, 5, 0, 2, 1],
+  [1, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, -2],
+  [-1, -1, -1, -1, 0, -1],
+  [-1, 0, -2, -4, 1, 0]])))
+
+------------------------------------------------
+
+TESTING: PPMonoidOv(6, PPOrderingLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidOv(6, PPOrderingStdDegLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidOv(6, PPOrderingStdDegRevLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidOv(6, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4, 0, 2],
+  [0, 3, 5, 0, 2, 1],
+  [1, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, -2],
+  [-1, -1, -1, -1, 0, -1],
+  [-1, 0, -2, -4, 1, 0]])))
+
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(6, PPOrderingLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(6, PPOrderingStdDegLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(6, PPOrderingStdDegRevLex(6))
+
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(6, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4, 0, 2],
+  [0, 3, 5, 0, 2, 1],
+  [1, 0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0, -2],
+  [-1, -1, -1, -1, 0, -1],
+  [-1, 0, -2, -4, 1, 0]])))
+
+------------------------------------------------
+

@@ -1,0 +1,13 @@
+ex segm fault for error with multiline list input 10-05-2011
+A list containing RINGELEM, INT or RAT values is required
+ex segm fault for error on args in NewMat 30-01-2012
+Expecting type INT, but found type STRING
+Expecting type RING, but found type INT
+Expecting type INT, but found type STRING
+ex segm fault on first and last on short lists 04-07-2012
+list is empty
+list is empty
+value greater than list length
+value greater than list length
+
+Still alive!

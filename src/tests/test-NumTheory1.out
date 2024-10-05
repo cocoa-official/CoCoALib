@@ -1,0 +1,62 @@
+Testing gcd and lcm on small integers.
+
+Testing ExtGcd on small integers
+
+Testing ExtGcd on BigInt integers (but with small values)
+
+Testing InvMod
+
+Testing InvMod when inverse does not exist
+
+Testing PowerMod
+
+Testing IsPrime for small positive integers.
+
+Testing IsPrime for numbers just greater than max long.
+
+Testing IsProbPrime: lengths of repunit (probable) primes (up to 500): 2 19 23 317
+
+Testing NextPrime & PrevPrime
+
+Testing RandomNBitPrime
+
+Testing PrimitiveRoot
+Histogram of least positive primitive roots: [0,  1,  2443,  1520,  0,  932,  370,  466,  0,  0,  140,  237,  23,  154,  42,  23,  0,  70,  1,  46]
+
+Testing factorize on smaller & larger integers:
+Factorization of 9: factorization(myFactors=[3], myMultiplicities=[2], myRemainingFactor=1)
+Factorization of 99: factorization(myFactors=[3,  11], myMultiplicities=[2,  1], myRemainingFactor=1)
+Factorization of 999: factorization(myFactors=[3,  37], myMultiplicities=[3,  1], myRemainingFactor=1)
+Factorization of 9999: factorization(myFactors=[3,  11,  101], myMultiplicities=[2,  1,  1], myRemainingFactor=1)
+Factorization of 99999: factorization(myFactors=[3,  41,  271], myMultiplicities=[2,  1,  1], myRemainingFactor=1)
+Factorization of 999999: factorization(myFactors=[3,  7,  11,  13,  37], myMultiplicities=[3,  1,  1,  1,  1], myRemainingFactor=1)
+Factorization of 9999999: factorization(myFactors=[3,  239,  4649], myMultiplicities=[2,  1,  1], myRemainingFactor=1)
+Factorization of 99999999: factorization(myFactors=[3,  11,  73,  101,  137], myMultiplicities=[2,  1,  1,  1,  1], myRemainingFactor=1)
+Factorization of 999999999: factorization(myFactors=[3,  37,  333667], myMultiplicities=[4,  1,  1], myRemainingFactor=1)
+Factorization of 9999999999: factorization(myFactors=[3,  11,  41,  271,  9091], myMultiplicities=[2,  1,  1,  1,  1], myRemainingFactor=1)
+Factorization of 99999999999: factorization(myFactors=[3,  21649,  513239], myMultiplicities=[2,  1,  1], myRemainingFactor=1)
+Factorization of 999999999999: factorization(myFactors=[3,  7,  11,  13,  37,  101,  9901], myMultiplicities=[3,  1,  1,  1,  1,  1,  1], myRemainingFactor=1)
+Factorization of 9999999999999: factorization(myFactors=[3,  53,  79,  265371653], myMultiplicities=[2,  1,  1,  1], myRemainingFactor=1)
+Factorization of 99999999999999: factorization(myFactors=[3,  11,  239,  4649,  909091], myMultiplicities=[2,  1,  1,  1,  1], myRemainingFactor=1)
+Factorization of 999999999999999: factorization(myFactors=[3,  31,  37,  41,  271,  2906161], myMultiplicities=[3,  1,  1,  1,  1,  1], myRemainingFactor=1)
+Factorization of 9999999999999999: factorization(myFactors=[3,  11,  17,  73,  101,  137,  5882353], myMultiplicities=[2,  1,  1,  1,  1,  1,  1], myRemainingFactor=1)
+
+Testing EulerTotient on small numbers.
+Here are the most frequent values of EulerTotient on numbers up to 100000:
+Value  Freq
+17280  247
+20160  244
+23040  220
+25920  238
+30240  217
+
+Testing EulerTotient on larger numbers.
+Looking for smallest number with EulerTotient(N) < N/10.
+Result is  N=16516447045902521732188973253623425320896207954043566485360902980990824644545340710198976591011245999110
+Its EulerTotient=1651030565452496906032436282048608195577074117480554374969005278877765244397398104473600000000000000000
+In fact N is just the product of all primes up to 257
+
+Testing factor_TrialDiv
+Small factorization: factorization(myFactors=[21467,  99991], myMultiplicities=[1,  1], myRemainingFactor=1)
+101-smooth factors of factorial of 101: factorization(myFactors=[2,  3,  5,  7,  11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47,  53,  59,  61,  67,  71,  73,  79,  83,  89,  97,  101], myMultiplicities=[97,  48,  24,  16,  9,  7,  5,  5,  4,  3,  3,  2,  2,  2,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1], myRemainingFactor=1)
+50-smooth factors of factorial of 101: factorization(myFactors=[2,  3,  5,  7,  11,  13,  17,  19,  23,  29,  31,  37,  41,  43,  47], myMultiplicities=[97,  48,  24,  16,  9,  7,  5,  5,  4,  3,  3,  2,  2,  2,  2], myRemainingFactor=378705860712501179527)

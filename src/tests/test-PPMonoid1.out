@@ -1,0 +1,315 @@
+TESTING: PPMonoidEvOv(4, PPOrderingLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  ()
+wdeg(t2)   gives  ()
+CmpWDeg(t1,t2)   gives  0
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidEvOv(4, PPOrderingStdDegLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidEvOv(4, PPOrderingStdDegRevLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidEvOv(4, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4],
+  [0, 3, 5, 0],
+  [1, 0, 0, 0],
+  [-1, 0, -2, -4]])))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (4, 6)
+wdeg(t2)   gives  (4, 15)
+CmpWDeg(t1,t2)   gives  -1
+CmpWDegPartial(t1,t2,1)   gives  0
+t1 > t2   gives  false
+------------------------------------------------
+
+TESTING: PPMonoidEv(4, PPOrderingLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  ()
+wdeg(t2)   gives  ()
+CmpWDeg(t1,t2)   gives  0
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidEv(4, PPOrderingStdDegLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidEv(4, PPOrderingStdDegRevLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidEv(4, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4],
+  [0, 3, 5, 0],
+  [1, 0, 0, 0],
+  [-1, 0, -2, -4]])))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (4, 6)
+wdeg(t2)   gives  (4, 15)
+CmpWDeg(t1,t2)   gives  -1
+CmpWDegPartial(t1,t2,1)   gives  0
+t1 > t2   gives  false
+------------------------------------------------
+
+TESTING: PPMonoidOv(4, PPOrderingLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  ()
+wdeg(t2)   gives  ()
+CmpWDeg(t1,t2)   gives  0
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidOv(4, PPOrderingStdDegLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidOv(4, PPOrderingStdDegRevLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidOv(4, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4],
+  [0, 3, 5, 0],
+  [1, 0, 0, 0],
+  [-1, 0, -2, -4]])))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (4, 6)
+wdeg(t2)   gives  (4, 15)
+CmpWDeg(t1,t2)   gives  -1
+CmpWDegPartial(t1,t2,1)   gives  0
+t1 > t2   gives  false
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(4, PPOrderingLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  ()
+wdeg(t2)   gives  ()
+CmpWDeg(t1,t2)   gives  0
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(4, PPOrderingStdDegLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(4, PPOrderingStdDegRevLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidBigEv(4, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4],
+  [0, 3, 5, 0],
+  [1, 0, 0, 0],
+  [-1, 0, -2, -4]])))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (4, 6)
+wdeg(t2)   gives  (4, 15)
+CmpWDeg(t1,t2)   gives  -1
+CmpWDegPartial(t1,t2,1)   gives  0
+t1 > t2   gives  false
+------------------------------------------------
+
+TESTING: PPMonoidSparse(4, PPOrderingLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  ()
+wdeg(t2)   gives  ()
+CmpWDeg(t1,t2)   gives  0
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidSparse(4, PPOrderingStdDegLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidSparse(4, PPOrderingStdDegRevLex(4))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (6)
+wdeg(t2)   gives  (4)
+CmpWDeg(t1,t2)   gives  1
+CmpWDegPartial(t1,t2,1)   gives  1
+t1 > t2   gives  true
+------------------------------------------------
+
+TESTING: PPMonoidSparse(4, PPOrderingMatrix(GrDim=2, matrix(ZZ,
+ [[1, 0, 0, 4],
+  [0, 3, 5, 0],
+  [1, 0, 0, 0],
+  [-1, 0, -2, -4]])))
+
+Given t1 = x[0]^4*x[1]^2
+  and t2 = x[2]^3*x[3]
+
+t1*t2   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+gcd(t1,t2)   gives  1
+lcm(t1,t2)   gives  x[0]^4*x[1]^2*x[2]^3*x[3]
+wdeg(t1)   gives  (4, 6)
+wdeg(t2)   gives  (4, 15)
+CmpWDeg(t1,t2)   gives  -1
+CmpWDegPartial(t1,t2,1)   gives  0
+t1 > t2   gives  false
+------------------------------------------------
+

@@ -1,0 +1,36 @@
+In the following we have f = 2*x^2*y +6*x^2 -4*y^2 +36
+Using a SparsePolyIter we decompose f as follows:
+coeff = 2  in ring ZZ
+PP    = x^2*y  in PPMonoidOv(2, PPOrderingStdDegRevLex(2))
+
+coeff = 6  in ring ZZ
+PP    = x^2  in PPMonoidOv(2, PPOrderingStdDegRevLex(2))
+
+coeff = -4  in ring ZZ
+PP    = y^2  in PPMonoidOv(2, PPOrderingStdDegRevLex(2))
+
+coeff = 36  in ring ZZ
+PP    = 1  in PPMonoidOv(2, PPOrderingStdDegRevLex(2))
+
+
+-------------------------------------------------------
+
+Coefficients with respect to certain indeterminates:
+
+Case (1) considering f as a *univariate* polynomial in...
+...the indeterminate x the coeffs are [-4*y^2 +36,  0,  2*y +6]
+...the indeterminate y the coeffs are [6*x^2 +36,  2*x^2,  -4]
+
+Case (2) considering f as a sparse multivariate polynomial in...
+...the indet x its structure is [[coeff:=2*y +6, PP:=x^2],  [coeff:=-4*y^2 +36, PP:=1]]
+...the indet y its structure is [[coeff:=-4, PP:=y^2],  [coeff:=2*x^2, PP:=y],  [coeff:=6*x^2 +36, PP:=1]]
+...the indets x & y its structure is [[coeff:=2, PP:=x^2*y],  [coeff:=6, PP:=x^2],  [coeff:=-4, PP:=y^2],  [coeff:=36, PP:=1]]
+
+-------------------------------------------------------
+The content of a polynomial
+
+The "numerical" content of f is 2  -- an element of ring ZZ
+
+Content WRT x is 2*y +6  -- element of RingWithID(2,"ZZ[x,y]")
+Content WRT y is 2  -- element of RingWithID(2,"ZZ[x,y]")
+Content WRT x & y is 2  -- element of RingWithID(2,"ZZ[x,y]")

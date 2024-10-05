@@ -1,0 +1,19 @@
+toric: check exponents June2018 -- Bug #1190
+exponents too big in binomial
+--> [CoCoALib fn] MatKerToBListAndIndices
+
+subst now check indets 1Mar2017
+x is not an element of domain
+
+gcd in field now throws Error 24May2012
+Ring is not a true GCD domain (e.g. it is a field)
+--> [CoCoALib fn] gcd(x,y)
+
+gcd in field now throws Error 24May2012
+Ring is not a true GCD domain (e.g. it is a field)
+--> [CoCoALib fn] gcd(x,y)
+
+Hilbert fn: check for positive grading Oct2019 -- Bug #1211
+Grading must be positive
+--> [CoCoALib fn] HilbertSeriesQuot
+

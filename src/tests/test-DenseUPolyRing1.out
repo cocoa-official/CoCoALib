@@ -1,0 +1,99 @@
+TESTING:
+RingWithID(5, "RingWithID(0)[x] -- RingDenseUPolyClean")
+  with CoeffRing RingWithID(0, "ZZ")
+
+Given f1 = x^2 +3*x +23
+  and f2 = x^4 +x
+
+f1+f2   gives  x^4 +x^2 +4*x +23
+f2+f1   gives  x^4 +x^2 +4*x +23
+f2-f1   gives  x^4 -x^2 -2*x -23
+-f1   gives  -x^2 -3*x -23
+deg((2*x+1)*(3*x+1)) gives  2
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  4
+  P->myMulByXExp(raw(f1), 5) gives x^7 +3*x^6 +23*x^5
+  P->myMulBy1MinusXExp(raw(f1), 2) gives -x^9 -3*x^8 -22*x^7 +3*x^6 +23*x^5
+  P->myAddMulLM(raw(f1), raw(LC(x)), 2, raw(f2)) gives -x^9 -3*x^8 -22*x^7 +4*x^6 +23*x^5 +x^3
+one(P) = 1
+------------------------------------------------
+TESTING:
+RingWithID(11, "RingWithID(2)[x] -- RingDenseUPolyClean")
+  with CoeffRing RingWithID(2, "ZZ/(101)")
+
+Given f1 = x^2 +3*x +23
+  and f2 = x^4 +x
+
+f1+f2   gives  x^4 +x^2 +4*x +23
+f2+f1   gives  x^4 +x^2 +4*x +23
+f2-f1   gives  x^4 +100*x^2 +99*x +78
+-f1   gives  100*x^2 +98*x +78
+deg((2*x+1)*(3*x+1)) gives  2
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  4
+  P->myMulByXExp(raw(f1), 5) gives x^7 +3*x^6 +23*x^5
+  P->myMulBy1MinusXExp(raw(f1), 2) gives 100*x^9 +98*x^8 +79*x^7 +3*x^6 +23*x^5
+  P->myAddMulLM(raw(f1), raw(LC(x)), 2, raw(f2)) gives 100*x^9 +98*x^8 +79*x^7 +4*x^6 +23*x^5 +x^3
+one(P) = 1
+TidyGens(I) = [100*x^9 +98*x^8 +79*x^7 +4*x^6 +23*x^5 +x^3]
+------------------------------------------------
+TESTING:
+RingWithID(15, "RingWithID(3)[y] -- RingDenseUPolyClean")
+  with CoeffRing RingWithID(3, "ZZ/ideal(6)")
+  with BaseRing  RingWithID(0, "ZZ")
+
+Given f1 = y^2 +3*y +5
+  and f2 = y^4 +y
+
+f1+f2   gives  y^4 +y^2 +4*y +5
+f2+f1   gives  y^4 +y^2 +4*y +5
+f2-f1   gives  y^4 +5*y^2 +4*y +1
+-f1   gives  5*y^2 +3*y +1
+deg((2*x+1)*(3*x+1)) gives  1
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  4
+  P->myMulByXExp(raw(f1), 5) gives y^7 +3*y^6 +5*y^5
+  P->myMulBy1MinusXExp(raw(f1), 2) gives 5*y^9 +3*y^8 +2*y^7 +3*y^6 +5*y^5
+  P->myAddMulLM(raw(f1), raw(LC(x)), 2, raw(f2)) gives 5*y^9 +3*y^8 +2*y^7 +4*y^6 +5*y^5 +y^3
+one(P) = 1
+------------------------------------------------
+TESTING:
+RingWithID(16, "RingWithID(1)[x] -- RingDenseUPolyClean")
+  with CoeffRing RingWithID(1, "QQ")
+
+Given f1 = x^2 +3*x +23
+  and f2 = x^4 +x
+
+f1+f2   gives  x^4 +x^2 +4*x +23
+f2+f1   gives  x^4 +x^2 +4*x +23
+f2-f1   gives  x^4 -x^2 -2*x -23
+-f1   gives  -x^2 -3*x -23
+deg((2*x+1)*(3*x+1)) gives  2
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  4
+  P->myMulByXExp(raw(f1), 5) gives x^7 +3*x^6 +23*x^5
+  P->myMulBy1MinusXExp(raw(f1), 2) gives -x^9 -3*x^8 -22*x^7 +3*x^6 +23*x^5
+  P->myAddMulLM(raw(f1), raw(LC(x)), 2, raw(f2)) gives -x^9 -3*x^8 -22*x^7 +4*x^6 +23*x^5 +x^3
+one(P) = 1
+TidyGens(I) = [-x^9 -3*x^8 -22*x^7 +4*x^6 +23*x^5 +x^3]
+------------------------------------------------
+TESTING:
+RingWithID(20, "RingWithID(4)[x] -- RingDenseUPolyClean")
+  with CoeffRing RingWithID(4,"RingTwinFloat(150)")
+
+Given f1 = x^2 +3*x +23
+  and f2 = x^4 +x
+
+f1+f2   gives  x^4 +x^2 +4*x +23
+f2+f1   gives  x^4 +x^2 +4*x +23
+f2-f1   gives  x^4 -x^2 -2*x -23
+-f1   gives  -x^2 -3*x -23
+deg((2*x+1)*(3*x+1)) gives  2
+StdDeg(f1)   gives  2
+StdDeg(f2)   gives  4
+  P->myMulByXExp(raw(f1), 5) gives x^7 +3*x^6 +23*x^5
+  P->myMulBy1MinusXExp(raw(f1), 2) gives -x^9 -3*x^8 -22*x^7 +3*x^6 +23*x^5
+  P->myAddMulLM(raw(f1), raw(LC(x)), 2, raw(f2)) gives -x^9 -3*x^8 -22*x^7 +4*x^6 +23*x^5 +x^3
+one(P) = 1
+TidyGens(I) = [-x^9 -3*x^8 -22*x^7 +4*x^6 +23*x^5 +x^3]
+------------------------------------------------

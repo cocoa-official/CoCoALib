@@ -1,0 +1,20 @@
+QQxyzt2Fpx: [x,  y,  z,  t] map to [0,  x,  1,  0]
+Fpx2Fp:     [x] map to [6]
+Composite homomorphism is RingHom(ZZ -> RingWithID(2, "ZZ/(7)"))
+
+Using composite hom: 1 maps to 1 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 2 maps to 2 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 3 maps to 3 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 4 maps to 4 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 5 maps to 5 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 6 maps to 6 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 7 maps to 0 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 8 maps to 1 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 9 maps to 2 in RingWithID(2, "ZZ/(7)")
+Using composite hom: 10 maps to 3 in RingWithID(2, "ZZ/(7)")
+Image of  3  under ZZ2QQ      is 3
+Image of 3/5 under QQ2QQxyzt  is 3/5
+Image of 3/5 under QQxyzt2Fpx is 2
+Image of 3/5 under QQ2Fpx     is 2
+Image of 1/7 under QQ2Fpx is ***
+Program correctly detected improper use of a partial ring hom.

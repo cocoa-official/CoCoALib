@@ -1,0 +1,27 @@
+(1) / (1-t)^5
+1
+(1 + t + t^2 + t^3 + t^4 + t^5 + t^6) / (1-t)^4
+-t^7 +1
+(1 + 2*t + 3*t^2 + 3*t^3 + 2*t^4 + t^5) / (1-t)^3
+t^7 -t^4 -t^3 +1
+record[
+  DenFactors := record[
+    RemainingFactor := 1,
+    factors := [-t +1],
+    multiplicities := [5]
+  ],
+  num := t^7 -t^4 -t^3 +1
+]
+t^7 -t^4 -t^3 +1
+ideal(z,  x)
+ideal(x)
+ideal(y)
+ideal(x,  y*z^2,  y^2*z)
+ideal(z,  x)
+ideal(x,  y*z,  y^2)
+ideal(x*y,  y^2*z)
+ideal(z,  y,  x)
+ideal(y)
+ideal(x,  y*z)
+ideal(y^2,  x*y)
+ideal(x,  z^2,  y*z)

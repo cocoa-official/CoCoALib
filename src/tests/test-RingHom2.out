@@ -1,0 +1,4 @@
+Simple test on polynomial ring hom from RingWithID(2, "QQ[x,y]")  to  RingWithID(2, "QQ[x,y]")
+sending x  to  x^2  and
+sending y  to  y^2
+x +2*y in RingWithID(2, "QQ[x,y]")  maps to x^2 +2*y^2

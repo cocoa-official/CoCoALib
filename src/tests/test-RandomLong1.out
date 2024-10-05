@@ -1,0 +1,2 @@
+RndLong=RandomSeqLong(lwb=-10, upb=10, seed=0, counter=0)
+RndLong=RandomSeqLong(lwb=-10, upb=10, seed=0, counter=5376)

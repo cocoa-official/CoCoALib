@@ -1,0 +1,16 @@
+123
+123456789
+true
+ideal(x*y)
+[x,  y^2 -y*z]
+--> WARNING: I'm implicitly untagging the right operand; use untagged() to avoid this warning
+--> WHERE: at line 242 (column 4) of exbugs.cocoa5
+-->   1+tagged([1],"tag");
+-->    ^
+--> WARNING: I'm implicitly untagging the left operand; use untagged() to avoid this warning
+--> WHERE: at line 248 (column 20) of exbugs.cocoa5
+-->   tagged([1],"tag")+1;
+-->                    ^
+[]
+[]
+Got 0 error(s) and 2 warning(s).

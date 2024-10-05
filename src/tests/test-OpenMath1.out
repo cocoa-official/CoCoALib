@@ -1,0 +1,151 @@
+OpenMath for RingZZ is: 
+<OMS cd="setname1" name="Z" />
+
+
+OpenMath for RingElem(ZZ, 0) is 
+<OMA>
+  <OMS cd="cocoa" name="RingElem" />
+  <OMS cd="setname1" name="Z" />
+  <OMI> 0 </OMI>
+</OMA>
+
+
+OpenMath for RingElem(ZZ, -12345) is 
+<OMA>
+  <OMS cd="cocoa" name="RingElem" />
+  <OMS cd="setname1" name="Z" />
+  <OMI> -12345 </OMI>
+</OMA>
+
+
+OpenMath for RingElem(ZZ, 14096439339183491166601553169309047526517979573772621675186880097101514883771279088675870214353060689415236739897781744867543850081841308508369545628865009483321119978601279878481873655865603345618917514602978765331940575318348748763822033479067105224096895463900041801357287309352642205539877489444394374651484492440510702227144201018980637306651590616693974026882156015683111860425924533046782016754150390625) is 
+<OMA>
+  <OMS cd="cocoa" name="RingElem" />
+  <OMS cd="setname1" name="Z" />
+  <OMI> 14096439339183491166601553169309047526517979573772621675186880097101514883771279088675870214353060689415236739897781744867543850081841308508369545628865009483321119978601279878481873655865603345618917514602978765331940575318348748763822033479067105224096895463900041801357287309352642205539877489444394374651484492440510702227144201018980637306651590616693974026882156015683111860425924533046782016754150390625 </OMI>
+</OMA>
+
+
+OpenMath for ZZ13 is: 
+<OMA>
+  <OMS cd="setname2" name="GFp" />
+  <OMI> 13 </OMI>
+</OMA>
+
+
+OpenMath for RingElem(ZZ13, 0) is 
+<OMA>
+  <OMS cd="cocoa" name="RingElem" />
+  <OMA>
+    <OMS cd="setname2" name="GFp" />
+    <OMI> 13 </OMI>
+  </OMA>
+  <OMI> 0 </OMI>
+</OMA>
+
+
+OpenMath for RingElem(ZZ13, 8) is 
+<OMA>
+  <OMS cd="cocoa" name="RingElem" />
+  <OMA>
+    <OMS cd="setname2" name="GFp" />
+    <OMI> 13 </OMI>
+  </OMA>
+  <OMI> 8 </OMI>
+</OMA>
+
+
+OpenMath for RingWithID(3, "QQ[x,y,z]") is
+<OMA>
+  <OMS cd="polyd" name="poly_ring_d" />
+  <OMS cd="setname1" name="QQ" />
+  <OMI> 3 </OMI>
+</OMA>
+OpenMath for 2*x^4 +4*x^3 +5*x^2 +4*x +2 is 
+<OMA>
+  <OMS cd="cocoa" name="RingElem" />
+  <OMA>
+    <OMS cd="polyd" name="poly_ring_d" />
+    <OMS cd="setname1" name="QQ" />
+    <OMI> 3 </OMI>
+  </OMA>
+  <OMA>
+    <OMS cd="cocoa" name="DMPSummands" />
+    <OMI> 5 </OMI>
+    <OMA>
+      <OMS cd="cocoa" name="RingElem" />
+      <OMS cd="setname1" name="QQ" />
+      <OMA>
+        <OMS cd="cocoa" name="NormalizedRational" />
+        <OMI> 2 </OMI>
+        <OMI> 1 </OMI>
+      </OMA>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="PPExponents" />
+      <OMI> 4 </OMI>
+      <OMI> 0 </OMI>
+      <OMI> 0 </OMI>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="RingElem" />
+      <OMS cd="setname1" name="QQ" />
+      <OMA>
+        <OMS cd="cocoa" name="NormalizedRational" />
+        <OMI> 4 </OMI>
+        <OMI> 1 </OMI>
+      </OMA>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="PPExponents" />
+      <OMI> 3 </OMI>
+      <OMI> 0 </OMI>
+      <OMI> 0 </OMI>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="RingElem" />
+      <OMS cd="setname1" name="QQ" />
+      <OMA>
+        <OMS cd="cocoa" name="NormalizedRational" />
+        <OMI> 5 </OMI>
+        <OMI> 1 </OMI>
+      </OMA>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="PPExponents" />
+      <OMI> 2 </OMI>
+      <OMI> 0 </OMI>
+      <OMI> 0 </OMI>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="RingElem" />
+      <OMS cd="setname1" name="QQ" />
+      <OMA>
+        <OMS cd="cocoa" name="NormalizedRational" />
+        <OMI> 4 </OMI>
+        <OMI> 1 </OMI>
+      </OMA>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="PPExponents" />
+      <OMI> 1 </OMI>
+      <OMI> 0 </OMI>
+      <OMI> 0 </OMI>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="RingElem" />
+      <OMS cd="setname1" name="QQ" />
+      <OMA>
+        <OMS cd="cocoa" name="NormalizedRational" />
+        <OMI> 2 </OMI>
+        <OMI> 1 </OMI>
+      </OMA>
+    </OMA>
+    <OMA>
+      <OMS cd="cocoa" name="PPExponents" />
+      <OMI> 0 </OMI>
+      <OMI> 0 </OMI>
+      <OMI> 0 </OMI>
+    </OMA>
+  </OMA>
+</OMA>
