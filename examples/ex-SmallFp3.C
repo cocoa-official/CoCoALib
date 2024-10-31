@@ -46,7 +46,7 @@ namespace CoCoA
   FpElem InnerProd_SLOW(const SmallFpImpl& Fp, const vector<FpElem>& u, const vector<FpElem>& v)
   {
     const long n = len(u);
-    FpElem ans; // initally zero
+    FpElem ans; // initially zero
     for (long i=0; i < n; ++i)
       ans = Fp.myAdd(ans, Fp.myMul(u[i],v[i]));
     return ans;

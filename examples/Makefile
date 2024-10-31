@@ -297,7 +297,7 @@ $(COCOA_ROOT)/configuration/autoconf.mk:
 # Summary: Added new examples for C++: ex-c++-basic, ex-c++-arith, ex-c++-for-loop
 #
 # Revision 1.89  2017/02/08 17:00:22  abbott
-# Summary: Added new exmaples ex-ideal1 ex-ideal2 ex-IdealOfPoints
+# Summary: Added new examples ex-ideal1 ex-ideal2 ex-IdealOfPoints
 #
 # Revision 1.88  2017/01/19 16:53:13  abbott
 # Summary: Moved target CopyInfo so that target "default" is first; renamed loop variable from F to SrcFile

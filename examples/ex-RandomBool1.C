@@ -52,7 +52,7 @@ namespace CoCoA
     cout << "The coin came up heads " << count << " times -- this count should be about " << LowProb*NumIters << endl
          << endl
          << "The ""prob"" function uses on average about two random bits per call." << endl
-         << "The actual number of random bits used for ths trial is " << RndBool.myIndex() - StartIndex << endl
+         << "The actual number of random bits used for this trial is " << RndBool.myIndex() - StartIndex << endl
          << "We see that this value is indeed not far from " << 2*NumIters << endl
          << endl;
 

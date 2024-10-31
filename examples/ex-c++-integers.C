@@ -108,7 +108,7 @@ namespace CoCoA
     //     So 1/2 == 0.  Be careful!!
     
     // better_formula:  using brackets we instruct the compiler
-    //      to muliply first, then divide; the problem is that
+    //      to multiply first, then divide; the problem is that
     //      the multiplication may overflow even if the answer
     //      is small enough to fit into a long.
     //      C++ associativity rules mean that n*(n+1)/2 is interpreted
@@ -244,7 +244,7 @@ int main()
 // Summary: Improved example about pre-empting overflow
 //
 // Revision 1.3  2022/03/21 10:07:38  bigatti
-// Summary: suggested  n = 5000000000L; exlicitely
+// Summary: suggested  n = 5000000000L; explicitly
 //
 // Revision 1.2  2022/03/17 18:29:18  abbott
 // Summary: Better comments

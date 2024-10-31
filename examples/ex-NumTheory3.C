@@ -12,7 +12,7 @@ const string ShortDescription =
   "whether a number is prime.  We compute many Goldbach representations. \n";
 
 const string LongDescription =
-  "This program tests how hard it is to find a \"Goldbach\" represetation \n"
+  "This program tests how hard it is to find a \"Goldbach\" representation \n"
   "of an integer; i.e. a sum of two primes.  It has to do many primality  \n"
   "tests, so it is faster to use a table than call IsPrime repeatedly.    \n";
 //----------------------------------------------------------------------

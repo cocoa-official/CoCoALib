@@ -49,10 +49,10 @@ void program()
   Involutive::JBMill mill(Involutive::JBMill::Builder().setInput(cyclic4));
   cout << endl;
   cout << "Janet Basis is delta-regular (there exists a finite Pommaret Basis): " << mill.IamPommaretBasis() << endl;
-  cout << "Janet Basis is homogenous (Ideal is homogenous)" << mill.IamHomogenous() << endl;
+  cout << "Janet Basis is homogeneous (Ideal is homogeneous)" << mill.IamHomogenous() << endl;
   cout << "Janet Basis is monomial (Ideal is monomial)" << mill.IamMonomialIdeal() << endl;
   cout << endl;
-  cout << "-----nonmultiplicative variables of the Janet-Base of cylic 4 (easy way)" << endl;
+  cout << "-----nonmultiplicative variables of the Janet-Base of cyclic 4 (easy way)" << endl;
   mill.myPrintNonMultVar();
 
   cout << endl << endl ;
