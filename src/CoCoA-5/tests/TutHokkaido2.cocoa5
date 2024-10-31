@@ -102,7 +102,7 @@ P2 = covers(relP2);
 -- it is more compact
 -- it does not contain the empty list
 -- it makes perfect sense also with symbols and not only numbers in fact
--- we can denote the nodes "a","b"... but be carefull!
+-- we can denote the nodes "a","b"... but be careful!
 ------------------------------------------------------------------------
 
 
@@ -148,9 +148,9 @@ MaxChains(relP2);
 
 
 -- DEFINITIONS:
--- The LENGHT of a chain C is #C-1.
+-- The LENGTH of a chain C is #C-1.
 
--- The RANK of a poset is the maximum lenght of its chains.
+-- The RANK of a poset is the maximum length of its chains.
 
 -- We define a function that computes the rank of a poset
 
@@ -168,7 +168,7 @@ myPosetRank(relP2);
 ------------------------------------------------------------------------
 
 -- DEFINITION:
--- A poset is GRADED if all maximal chains have the same lenght.
+-- A poset is GRADED if all maximal chains have the same length.
 
 IsPosetGraded(relP1);
 IsPosetGraded(relP2);

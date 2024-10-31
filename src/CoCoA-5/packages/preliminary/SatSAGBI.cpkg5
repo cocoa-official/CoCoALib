@@ -205,7 +205,7 @@ define SatSAGBI(G, g, opt TruncDeg)
     error("SatSAGBI: grading must be a positive grading");
   endif;
   if not(IsHomog(G)) then
-    error("SatSAGBI input must be homogenous");
+    error("SatSAGBI input must be homogeneous");
   endif;
   if IsDefined(TruncDeg) then
     if GradingDim(P) <2 then

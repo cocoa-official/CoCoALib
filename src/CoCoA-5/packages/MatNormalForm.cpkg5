@@ -586,7 +586,7 @@ EndDefine; -- Decom1
 
 -- In particolare la Funzione principale chiama per prima
 -- SmithOFxI_M(M) che pr ende in input la matrice M e restituisce la
--- Forma Normale di Smith della matric e (XI-M), richiamando su (XI-M)
+-- Forma Normale di Smith della matrice (XI-M), richiamando su (XI-M)
 -- la funzione Smith descritta nella sezione "Ridu zione a Forma
 -- Normale di Smith". La seconda funzione richiamata e' Rho che pren
 -- de in input NZ = non zero,ossia il numero di elementi della

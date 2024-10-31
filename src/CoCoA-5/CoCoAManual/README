@@ -44,7 +44,7 @@ and if you make a change in CoCoAHelp.xml in the title (new entry) or in
 syntax, or search keys, you will need to call ``ReloadMan();`` for it to
 work.
 
-- order is not important (well, not much) but consistency help maintanance
+- order is not important (well, not much) but consistency help maintenance
 - put no extra spaces in syntax and example because they are verbatim
 -
 
@@ -55,7 +55,7 @@ These two lists are optional.
 ``keys'' are the search keys used by the manual within a running CoCoA
 (it is a simple substring check in the list of the keys).
 For each entry, the title is automatically a search key; it is added to the
-keys list, even when the keys list has not been explicitely defined. 
+keys list, even when the keys list has not been explicitly defined. 
 
 ``seealso'' are the entries which are closely related (case sensitive).
 

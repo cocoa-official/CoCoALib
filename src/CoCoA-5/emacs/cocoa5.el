@@ -29,7 +29,7 @@
 ;; May 2011
 ;; Fixed abbrev in comments and strings!
 ;; fixed call to abbrev when typing semicolon
-;; removed semicolon fro abbrev expansions
+;; removed semicolon for abbrev expansions
 
 ;; June 2012
 ;; added customization for --fullCoCoALibError
@@ -560,7 +560,7 @@ will do all lineups.")
 ;;       (cocoa5-indent-command))))
 
 (defun cocoa5-electric-equal ()
-  "Insert `=', and do indention if within type declaration."
+  "Insert `=', and do indentation if within type declaration."
   (interactive)
   (insert last-command-event)
   (if (eq (car (cocoa5-calculate-indent)) 'declaration)

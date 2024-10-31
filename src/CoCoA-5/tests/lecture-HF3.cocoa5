@@ -7,7 +7,7 @@
 
 -- An integer function is a function ZZ --> ZZ
 -- An integer valued polynomial is a polynomial in QQ[t]
---   whose evaluation is integer for any integer agrument.
+--   whose evaluation is integer for any integer argument.
 
 -- An integer function is an infinite object, so we first
 -- look at integer valued polynomials.
