@@ -81,7 +81,7 @@ The Pommaret basis is always a Janet basis, too. Therefore the datastructures fo
 This file defines all necessary things for dealing with Pommaret bases.
 ====PBMill====
 
-This class has as base class ``JBMill``. It does not introduce new data members, because the representation of a Pommaret basis is the same than for a Janet basis. The main differnce between these to classes is that ``PBMill`` only accept generating sets in delta-regular coordinates. In addition to that it implements some methods which are only appliccable when we have a Pommaret basis.
+This class has as base class ``JBMill``. It does not introduce new data members, because the representation of a Pommaret basis is the same than for a Janet basis. The main difference between these two classes is that ``PBMill`` only accept generating sets in delta-regular coordinates. In addition to that it implements some methods which are only appliccable when we have a Pommaret basis.
 
 ====PBMill::Builder====
 
@@ -94,19 +94,19 @@ This class is purley virtual. The real implementation is in the subclasses.
 To construct a ``PBMill`` out of the builder object the user can call a constructor of ``PBMill`` with a configured builder object.
 
 ====PBMill::Converter====
-This class is a subclass of ``PBMill::Builder``. It trys convert a ``JBMill`` direclty to a ``PBMill``, without changing coordinates.
+This class is a subclass of ``PBMill::Builder``. It tries to convert a ``JBMill`` directly to a ``PBMill``, without changing coordinates.
 
 ====PBMill::Transformator====
 This class is a subclass of ``PBMill::Builder``. It is again a purley virtual class. It acts as base class for all Builder-classes which applying coordinate transformations to get a specific stability position.
 
 ====PBMill::DeltaRegularTransformator====
-This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with delta-regular coordinates. The user can choose between four different strategies which are definied in the enum ``PBMill::DeltaRegularTransformator::StrategyFlag``.
+This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with delta-regular coordinates. The user can choose between four different strategies which are defined in the enum ``PBMill::DeltaRegularTransformator::StrategyFlag``.
 
 ====PBMill::StableLTITransformator====
-This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with stable leading ideal. The user can choose between two different strategies which are definied in the enum ``PBMill::StableLTITransformator::StrategyFlag``.
+This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with stable leading ideal. The user can choose between two different strategies which are defined in the enum ``PBMill::StableLTITransformator::StrategyFlag``.
 
 ====PBMill::StronglyStableLTITransformator====
-This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with strongly stable leading ideal. The user can choose between two different strategies which are definied in the enum ``PBMill::StronglyStableLTITransformator::StrategyFlag``.
+This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with strongly stable leading ideal. The user can choose between two different strategies which are defined in the enum ``PBMill::StronglyStableLTITransformator::StrategyFlag``.
 
 ===StabilityAlgorithm===
 
@@ -140,7 +140,7 @@ The implementation is almost the same than ``StableLTI``. The only difference is
 This class is a subclass of ``StronglyStableLTI``. The implementation is almost the same than ``StronglyStableLTI``. The only difference is the method ``DoComputeImage``. This class also computes transformation like x_i -> x_i + x_j_1 + ... + x_j_s.
 
 ====Problems&Ideas related to StabilityAlgorithm====
-If we could make ``StableLTI`` to a subclass of ``DeltaRegular`` it would be quite nice, because this would represent the mathematical hierachy as well.
+If we could make ``StableLTI`` to a subclass of ``DeltaRegular`` it would be quite nice, because this would represent the mathematical hierarchy as well.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

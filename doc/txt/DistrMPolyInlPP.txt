@@ -15,7 +15,7 @@ be considering using this class -- use a polynomial ring instead.  That
 way you will gain ease of use and safety with only a small performance
 penalty.
 
-This class should be seen and used only by CoCoA library implementors;
+This class should be seen and used only by CoCoA library implementers;
 normal users should use the polynomial rings (which internally may well
 use DMPIs to represent their elements).
 

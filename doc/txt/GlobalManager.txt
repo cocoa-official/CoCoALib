@@ -49,7 +49,7 @@ argument is used to specify the global settings, namely
 + the printing convention for elements of rings of the form ZZ/m, //viz.// least non-negative residues or least magnitude (symmetric) residues.
 +
 
-The current defaults are to use the system memory mananger and symmetric residues.
+The current defaults are to use the system memory manager and symmetric residues.
 
 
 ==== Specifying the memory manager for BigInt values ====

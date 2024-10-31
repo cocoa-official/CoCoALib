@@ -95,7 +95,7 @@ Let ``RR`` be a ``RingTwinFloat`` and ``S`` any [[ring]]
 As usual the class ``RingTwinFloat`` is just a reference counting smart pointer
 to an object of type ``RingTwinFloatImpl`` (which is the one which really does
 the work).  The implementation of the smart pointer class ``RingTwinFloat`` is
-altogether straightfoward (just the same as any of the other smart
+altogether straightforward (just the same as any of the other smart
 pointer ring classes).
 
 === Philosophy ===

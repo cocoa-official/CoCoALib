@@ -99,7 +99,7 @@ A ``bucket`` represents a polynomial as a product of a polynomial and
 a coefficient, two ``RingElem`` respectivey in a [[SparsePolyRing]]
 ``P`` and ``CoeffRing(P)``.
 
-The coeffient factor is used for fast multiplication of a geobucket
+The coefficient factor is used for fast multiplication of a geobucket
 by a coefficient and it comes useful in the reduction process over
 a field of fraction of a GCD ring.
 

@@ -71,7 +71,7 @@ In the following let ``elem`` be a ``RingElem``.
 The basic datastructures to deal with Janet basis are implemented in ``JBDatastructure.C``. Everything of the following lives in the namespace ``CoCoA::Involutive``.
 ===JanetDatastructure===
 ====JanetTriple====
-The ``JanetTriple`` is nothing else than a polynomial with some extra informations.
+The ``JanetTriple`` is nothing else than a polynomial with some extra information.
 In addition to the polynomial ``myPolynom`` it has a data member ``myAncestor`` which is usually the LPP of ``myPolynom`` and the already prolonged variables (``myAlreadyProlongedVars``). If the ``JanetTriple`` arises from a prolongation ``x_i * myP^\prime`` the ancestor is the LPP of ``myP^\prime``.
 
 ====JanetNodeBase, JanetLeafNodeImpl, JanetInternalNodeImpl, JanetHandle, JanetTree====
@@ -102,7 +102,7 @@ But for computing a Janet basis we do not use this class for efficiency reasons.
 ====JanetIterator====
 The task of ``JanetIterator`` is to offer a way to navigate through the ``JanetTree``.
 Basically the ``JanetIterator`` consists of a pointer to the specific ``JanetTree``, pointer to the current in the tree and an iterator to a specific position in this list.
-The ``JanetIterator`` provides access (if possible) to the underlying ``JanetTriple``, provides the possibility to move forward in the tree, provides some informations of the current position in the tree and provides the functionality to add a new node in the ``JanetTree`` behind the current position.
+The ``JanetIterator`` provides access (if possible) to the underlying ``JanetTriple``, provides the possibility to move forward in the tree, provides some information of the current position in the tree and provides the functionality to add a new node in the ``JanetTree`` behind the current position.
 For knowing the way from the beginning of the tree to the current position it consists of a vector of longs which stores the specific degrees and the current variable.
 
 

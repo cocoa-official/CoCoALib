@@ -45,7 +45,7 @@ See [[SparsePolyRing]] and [[PolyRing]] for operations.
 == Maintainer documentation ==
 %======================================================================
 
-Most of the real work is delegated to [[DistrMPolyInlPP]]; pratically all
+Most of the real work is delegated to [[DistrMPolyInlPP]]; practically all
 member fns forward to ``DistrMPolyInlPP``.
 
 Note that the ``PPM`` must be of type ``PPMonoidOv``!
