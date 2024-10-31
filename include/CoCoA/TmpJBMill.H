@@ -488,14 +488,14 @@ namespace CoCoA
        *
        * @param multVars key value map containing the result (call by ref!)
        * @param iter current position in the Janet Tree
-       * @param currentNonMultVars indicies of current multiplicative vars wrt iter
+       * @param currentNonMultVars indices of current multiplicative vars wrt iter
        * @param curVar the current variable
        */
       void myRekComputeMultVar(std::map<PPMonoidElem,std::vector<bool> >& multVars, JanetIterator iter, std::vector<int> currentNonMultVars, int curVar) const;
 
 
       /**
-       * like the binomial coeffient but with rings
+       * like the binomial coefficient but with rings
        * warning: maybe infinite loop!!!!
        * ((s n)) = (s * (s - 1) * ... * (s - n + 1)) / n!
        *
@@ -558,7 +558,7 @@ namespace CoCoA
 
     /**
      * This class is designed to construct a Janet basis. The goal of this
-     * class is to seperate the construction of the JBMill from its representation.
+     * class is to separate the construction of the JBMill from its representation.
      * The 'Gang of Four' (Gamma, Helm, Johnson, Vlissides - Design Patterns) served
      * as template for the construction. The corresponding Pattern is called Building Pattern
      */
@@ -659,7 +659,7 @@ namespace CoCoA
       }
 
       /**
-       * The task of this method is to return the choosen strategy as unique_ptr.
+       * The task of this method is to return the chosen strategy as unique_ptr.
        * @return an unique_ptr to JBAlgorithm
        */
       std::unique_ptr<JBAlgorithm> myChooseStrategy() const;

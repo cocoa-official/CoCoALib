@@ -694,7 +694,7 @@ namespace CoCoA
 // -- function IsDivisible had wrong semantics --> swapped arguments everywhere
 //
 // Revision 1.9  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //
 // Revision 1.8  2004/06/30 16:46:06  cocoa
@@ -760,7 +760,7 @@ namespace CoCoA
 // Revision 1.17  2002/11/15 16:24:50  abbott
 // MAJOR CHANGE reflecting a new "philosophy".
 // The new philosophy is that PPMonoid::elems will be "slow and safe" since
-// they are now higly decoupled from the internal representation of
+// they are now highly decoupled from the internal representation of
 // polynomials (which use "order vectors").
 // Eliminated HalfPP, alias and temp subclasses.
 // Every RawPP now contains its own "divisibility mask" because Anna needs

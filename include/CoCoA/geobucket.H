@@ -360,7 +360,7 @@ namespace CoCoA
 //
 // Revision 1.11  2002/11/18 18:03:26  bigatti
 // - code for reduction on GCD rings
-// - removed default length in some funcion calls
+// - removed default length in some function calls
 // - removed flag  IamNormalized
 //
 // Revision 1.10  2002/09/19 17:14:25  bigatti

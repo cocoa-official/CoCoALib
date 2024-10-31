@@ -114,7 +114,7 @@ namespace CoCoA
       GlobalManager2,    // May not create more than one GlobalManager object
       IdealNotInRing,    // Incompatible ring and ideal
       IncompatArgs,      // Args given are incompatible
-      IncompatDims,      // Incompatible dimenions
+      IncompatDims,      // Incompatible dimensions
       InputFail,         // An input operation failed
       InsuffPrec,        // Insufficient precision when using RingTwinFloat values
     ////???            IntDivByNeg,       // Integer division/remainder by negative divisor
@@ -267,7 +267,7 @@ namespace CoCoA
 //
 // Revision 1.82  2024/09/04 14:41:16  bigatti
 // Summary: Error codes: removed MixedSizes (into IncompatDims),
-// removed BLASFailed, addes ExternalLibs,
+// removed BLASFailed, adds ExternalLibs,
 // changed ExpectedCoeffsInField into ReqCoeffsInField
 //
 // Revision 1.81  2024/08/28 15:21:55  bigatti
@@ -293,7 +293,7 @@ namespace CoCoA
 // Removed BadRowIndex, BadColIndex;  Renamed  ERR::Empty --> ERR::ReqNonEmpty
 //
 // Revision 1.74  2024/07/14 10:27:51  abbott
-// Summary: Added new ctor with extra strig arg (MoreDetails); also new macro
+// Summary: Added new ctor with extra string arg (MoreDetails); also new macro
 //
 // Revision 1.73  2024/07/11 15:42:41  bigatti
 // *** empty log message ***
@@ -557,7 +557,7 @@ namespace CoCoA
 // for CanonicalHom.
 //
 // Revision 1.11  2007/03/05 16:17:11  bigatti
-// -- clenup for numerical code (and 3 new error codes)
+// -- cleanup for numerical code (and 3 new error codes)
 //
 // Revision 1.10  2007/03/03 14:07:23  bigatti
 // -- "foundations" renamed into "GlobalManager"

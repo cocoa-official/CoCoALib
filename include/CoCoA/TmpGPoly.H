@@ -377,7 +377,7 @@ typedef std::list<GPoly> GPolyList;
 // -- class GRingInfo estracted from TmpGPoly
 //
 // Revision 1.11  2009/10/27 17:15:14  bigatti
-// -- fixed: using sugar(g)->myWSugar() insted of wsugar(g)
+// -- fixed: using sugar(g)->myWSugar() instead of wsugar(g)
 //
 // Revision 1.10  2009/04/27 13:12:44  bigatti
 // -- added some temporary functions (DegLess...)

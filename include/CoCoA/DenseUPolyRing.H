@@ -286,7 +286,7 @@ namespace CoCoA
 // Summary: Renamed OpenMath output fns (added suffix _OM) (redmine 1528)
 //
 // Revision 1.51  2021/10/30 19:03:07  abbott
-// Summary: Added some more "override" (clang said they were mising; redmine 1625)
+// Summary: Added some more "override" (clang said they were missing; redmine 1625)
 //
 // Revision 1.50  2021/10/30 17:06:37  abbott
 // Summary: Used keyword override (redmine 1625)
@@ -347,7 +347,7 @@ namespace CoCoA
 // Several consequential changes.
 //
 // Revision 1.33  2013/05/31 09:15:21  abbott
-// Changed arg type of fn "coeff" from MachineInt to long becaue it is an index.
+// Changed arg type of fn "coeff" from MachineInt to long because it is an index.
 //
 // Revision 1.32  2013/02/21 14:15:31  abbott
 // First attempt at implementing PartialRingHom -- some problems remain!

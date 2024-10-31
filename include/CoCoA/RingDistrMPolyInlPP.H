@@ -220,7 +220,7 @@ namespace CoCoA
 //     Plenty of calls had to be altered.
 //
 // Revision 1.13  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //
 // Revision 1.12  2004/07/27 16:03:39  cocoa

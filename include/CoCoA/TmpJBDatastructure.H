@@ -200,7 +200,7 @@ namespace CoCoA {
     public:
 
       /**
-       * Virtual destructor (further informations: C++ Primer)
+       * Virtual destructor (further information: C++ Primer)
        */
       virtual ~JanetNodeBase() {
       }
@@ -245,7 +245,7 @@ namespace CoCoA {
        * JanetInternalNode
        */
       virtual inline std::list<JanetHandle>* myNextVarArm() {
-        CoCoA_THROW_ERROR("You don't have the permisson to deal with JanetNodes, maybe there is a mistake in the datastructure",
+        CoCoA_THROW_ERROR("You don't have the permission to deal with JanetNodes, maybe there is a mistake in the datastructure",
                     "myNextVarArm");  //??remove in the final version??
         return nullptr;
       }
@@ -264,7 +264,7 @@ namespace CoCoA {
        * Warnings because I don't use nextArm
        */
       virtual inline void mySetNextVarArm(const std::list<JanetHandle>& /*NextArm*/) {
-        CoCoA_THROW_ERROR("You don't have the permisson to deal with JanetNodes, maybe there is a mistake in the datastructure",
+        CoCoA_THROW_ERROR("You don't have the permission to deal with JanetNodes, maybe there is a mistake in the datastructure",
                     "mySetNextVarArm");
       }
 
@@ -354,7 +354,7 @@ namespace CoCoA {
        */
       inline std::list<JanetHandle>* myNextVarArm() {
         CoCoA_THROW_ERROR(
-            "You don't have the permisson to deal with arms in JanetLeafNodes, maybe there is a mistake in the datastructure",
+            "You don't have the permission to deal with arms in JanetLeafNodes, maybe there is a mistake in the datastructure",
             "myNextVarArm");  //??maybe remove this in the final version??
         return nullptr;
       }
@@ -366,7 +366,7 @@ namespace CoCoA {
        */
       inline void mySetNextVarArm(const std::list<JanetHandle>& /*NextArm*/) {
         CoCoA_THROW_ERROR(
-            "You don't have the permisson to deal with arms JanetLeafNodes, maybe there is a mistake in the datastructure",
+            "You don't have the permission to deal with arms JanetLeafNodes, maybe there is a mistake in the datastructure",
             "mySetNextVarArm");
       }
 
@@ -606,7 +606,7 @@ namespace CoCoA {
      * \brief With an object of JanetIterator we can navigate through
      * the JanetTreẹ
      *
-     * I try to programm this class similar to the STL (because of the
+     * I try to program this class similar to the STL (because of the
      * tree-structure I had to add some extra functionalities)
      *
      * After thinking about it: I guess, the only similarity is the name ;-)
@@ -702,7 +702,7 @@ namespace CoCoA {
       /**
        * This function connects two JanetTrees
        *
-       * tree is appended on the current postion of the
+       * tree is appended on the current position of the
        * iterator in deg-direction. The tree will be copied after this position in degree
        * direction.
        *
@@ -723,7 +723,7 @@ namespace CoCoA {
       /**
        * This function sets a nonMultiplicative variable
        *
-       * This functions sets the varibale only if we are in a leaf
+       * This function sets the variable only if we are in a leaf
        * node. Then it returns true. If we are in a internal node
        * we do nothing and return false
        *

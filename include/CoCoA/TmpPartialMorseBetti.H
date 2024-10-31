@@ -74,7 +74,7 @@ namespace CoCoA
       /**
        * Computes the general basis of the form: WedgeProduct |x| (1) (BasisElement)
        * It takes BasisElement b. Then it computes all ordered subsets of the corresponding
-       * nonmultiplicative variables such that these orderd subsets have length lengthWedge or
+       * nonmultiplicative variables such that these ordered subsets have length lengthWedge or
        * (lengthWedge + 1). We combine these subsets with the BasisElement to
        * (WedgeProduct (the subset) |x| (1) (b)) such that the length of the WedgeProduct
        * plus the degree of b is not less than MinDeg. It returns a vector of all generated
@@ -91,7 +91,7 @@ namespace CoCoA
       /**
        * computes the general basis of the form: WedgeProduct |x| (1) (BasisElement)
        * It takes BasisElement b. Then it computes all ordered subsets of the corresponding
-       * nonmultiplicative variables such that these orderd subsets have length lengthWedge or
+       * nonmultiplicative variables such that these ordered subsets have length lengthWedge or
        * (lengthWedge + 1). We combine these subsets with the BasisElement to
        * (WedgeProduct (the subset) |x| (1) (b)) such that the length of the WedgeProduct
        * plus the degree of b is equal to degree. It returns a vector of all generated

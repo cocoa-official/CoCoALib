@@ -36,7 +36,7 @@
 // Summary: Changed name of CPP symbol which signifies that longs are 32 bits (redmine 1661/1804)
 //
 // Revision 1.2  2024/03/23 13:05:44  abbott
-// Summary: Corrected (previsouly it always gave error.. oops)
+// Summary: Corrected (previously it always gave error.. oops)
 //
 // Revision 1.1  2024/03/23 11:45:57  abbott
 // Summary: First attempt at a macro for detecting 32-bitters (redmine 1661)

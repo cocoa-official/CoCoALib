@@ -30,7 +30,7 @@ namespace CoCoA
   class PPOrderingCtor; // forward declaration -- defined in PPOrdering.H
 
   // The following enum is for choosing between fast reprs for small exps,
-  // or slower reprs for arbitary exps.  Used in various PPMonoid pseudo-ctors.
+  // or slower reprs for arbitrary exps.  Used in various PPMonoid pseudo-ctors.
   enum class PPExpSize { small, big };
 
 

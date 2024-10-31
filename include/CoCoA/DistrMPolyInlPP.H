@@ -406,7 +406,7 @@ namespace CoCoA
 // Summary: Added missing noexcept
 //
 // Revision 1.29  2021/10/30 19:03:07  abbott
-// Summary: Added some more "override" (clang said they were mising; redmine 1625)
+// Summary: Added some more "override" (clang said they were missing; redmine 1625)
 //
 // Revision 1.28  2021/10/30 17:38:37  abbott
 // Summary: Used keywords override & delete (redmine 1625 & 1627)

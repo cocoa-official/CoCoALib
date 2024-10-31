@@ -39,8 +39,8 @@ namespace CoCoA
         GraeffeSeq() = delete;                    // We don't need a default constructor
         GraeffeSeq(ConstRefRingElem, const long); // Construct a default GraeffeSeq object
         RingElem operator*() const;               // Retrieve the current Graeffe iteration
-        GraeffeSeq &operator++();                 // Calculate Newton coeffcients for next iteration
-        GraeffeSeq operator++(int);               // Calculate Newton coeffcients for next iteration
+        GraeffeSeq &operator++();                 // Calculate Newton coefficients for next iteration
+        GraeffeSeq operator++(int);               // Calculate Newton coefficients for next iteration
 
     private: // methods
         /**

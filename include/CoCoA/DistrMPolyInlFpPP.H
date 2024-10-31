@@ -389,7 +389,7 @@ namespace CoCoA
 // Summary: Commented out myFp field in NewSummandPtr (clang says it is unused)
 //
 // Revision 1.31  2021/10/30 19:03:07  abbott
-// Summary: Added some more "override" (clang said they were mising; redmine 1625)
+// Summary: Added some more "override" (clang said they were missing; redmine 1625)
 //
 // Revision 1.30  2021/10/30 17:38:37  abbott
 // Summary: Used keywords override & delete (redmine 1625 & 1627)
@@ -443,7 +443,7 @@ namespace CoCoA
 // (and avoid getting an error from g++ :-)
 //
 // Revision 1.15  2011/09/13 15:47:58  abbott
-// Moved defn of "grab" to corret place (outside class NewSummandPtr).
+// Moved defn of "grab" to correct place (outside class NewSummandPtr).
 //
 // Revision 1.14  2011/08/24 10:20:28  bigatti
 // -- renamed QQ --> BigRat

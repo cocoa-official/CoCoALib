@@ -347,7 +347,7 @@ namespace CoCoA
 // Summary: Corrected private implicit ctor for value; added useful comments
 //
 // Revision 1.27  2018/01/11 17:16:19  abbott
-// Summary: Removed embarassing bug in private ctor for NonRedValue (arg type was uint)
+// Summary: Removed embarrassing bug in private ctor for NonRedValue (arg type was uint)
 //
 // Revision 1.26  2016/03/25 20:22:48  abbott
 // Summary: Minor reordering of source code

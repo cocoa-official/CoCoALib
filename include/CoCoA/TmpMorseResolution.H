@@ -60,7 +60,7 @@ namespace CoCoA
       matrix myZerothMatrix() const;
     private:
       /**
-       * Transforms the morse pathes which represent F_pos to a matrix
+       * Transforms the morse paths which represent F_pos to a matrix
        *
        * @param pos
        * @return a matrix which represents F_pos

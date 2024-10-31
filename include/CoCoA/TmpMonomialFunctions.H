@@ -53,7 +53,7 @@ namespace CoCoA
 // Changed 1st arg of support into vector<long> (was vector<size_t>)
 //
 // Revision 1.2  2010/02/04 10:54:49  bigatti
-// -- fix: moved forward calss declaration inside namespace CoCoA
+// -- fix: moved forward class declaration inside namespace CoCoA
 //
 // Revision 1.1  2010/02/03 18:41:29  bigatti
 // -- first import

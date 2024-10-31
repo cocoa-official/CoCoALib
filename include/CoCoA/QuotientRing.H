@@ -142,7 +142,7 @@ namespace CoCoA
 // Summary: Updated copyright notice (now restrictive; see redmine 1555)
 //
 // Revision 1.21  2021/10/30 19:03:08  abbott
-// Summary: Added some more "override" (clang said they were mising; redmine 1625)
+// Summary: Added some more "override" (clang said they were missing; redmine 1625)
 //
 // Revision 1.20  2021/10/30 17:15:19  abbott
 // Summary: Used keyword override (redmine 1625)

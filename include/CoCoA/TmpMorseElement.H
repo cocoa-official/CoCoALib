@@ -38,11 +38,11 @@ namespace CoCoA
     class MorseGraph;
 
 
-    /* During the computation of the resolution/betti diagramm we have to compute many
+    /* During the computation of the resolution/betti diagram we have to compute many
      * involutive standard representations. It turns out, that we often compute invStrReps
      * for the same Elements. To avoid redundant computations we store an already computed
      * invStrRep in an Container. There we can first check it we already know this StrRep and
-     * ommit an redundant computation.
+     * omit an redundant computation.
      */
     class StandardRepresentationContainer
     {
@@ -101,7 +101,7 @@ namespace CoCoA
      * Performance:
      * Instances of a MorseElements are used very often during a computation of a Resolution/BettiDiagramm.
      * Especially the comparison of MorseElements is used very often. To avoid redundant computations we
-     * precomputed many datas to make the comparison of MorseElements more effective.
+     * precomputed many data to make the comparison of MorseElements more effective.
      * For more information read the comments above the data members of MorseElement.
      */
     class MorseElement

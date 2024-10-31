@@ -460,7 +460,7 @@ namespace CoCoA
 // Summary: Renamed OpenMath output fns (added suffix _OM) (redmine 1528)
 //
 // Revision 1.132  2021/10/30 19:03:08  abbott
-// Summary: Added some more "override" (clang said they were mising; redmine 1625)
+// Summary: Added some more "override" (clang said they were missing; redmine 1625)
 //
 // Revision 1.131  2021/10/30 17:26:35  abbott
 // Summary: Used keyword override (redmine 1625)

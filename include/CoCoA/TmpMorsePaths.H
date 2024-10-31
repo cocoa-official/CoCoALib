@@ -51,7 +51,7 @@ namespace CoCoA
     // This is one 'path' it maps the Element ConstResIter with RingElem to the
     // current MorseElement
     // We do not know in MorsePaths which is the current element this Element is the key
-    // Element of a key-value pair, where the vlaue is MorsePaths
+    // Element of a key-value pair, where the value is MorsePaths
     typedef std::map<ConstResIter, RingElem, MorseIterCompare> PathMap;
 
     /**

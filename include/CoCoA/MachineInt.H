@@ -285,7 +285,7 @@ namespace CoCoA
 // Summary: Switched to new CoCoA_THROW_ERROR macros (with suffix 1 or 2)
 //
 // Revision 1.14  2024/05/03 12:06:31  abbott
-// Summary: Comented out all parts to do with "long long" (redmine 1804)
+// Summary: Commented out all parts to do with "long long" (redmine 1804)
 //
 // Revision 1.13  2022/02/18 14:11:46  abbott
 // Summary: Updated copyright notice (now restrictive; see redmine 1555)

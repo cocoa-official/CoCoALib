@@ -456,7 +456,7 @@ namespace CoCoA
       StrategyFlag myStrategy;
 
       /**
-       * The task of this method is to return the choosen strategy as unique_ptr.
+       * The task of this method is to return the chosen strategy as unique_ptr.
        * @return an unique_ptr to StabilityAlgorithm
        */
       std::unique_ptr<StabilityAlgorithm> myChooseStrategy() const;
@@ -505,7 +505,7 @@ namespace CoCoA
       StrategyFlag myStrategy;
 
       /**
-       * The task of this method is to return the choosen strategy as unique_ptr.
+       * The task of this method is to return the chosen strategy as unique_ptr.
        * @return an unique_ptr to StabilityAlgorithm
        */
       std::unique_ptr<StabilityAlgorithm> myChooseStrategy() const;
@@ -554,7 +554,7 @@ namespace CoCoA
       StrategyFlag myStrategy;
 
       /**
-       * The task of this method is to return the choosen strategy as unique_ptr.
+       * The task of this method is to return the chosen strategy as unique_ptr.
        * @return an unique_ptr to StabilityAlgorithm
        */
       std::unique_ptr<StabilityAlgorithm> myChooseStrategy() const;
