@@ -1071,7 +1071,7 @@
             <Name>Chemequ</Name>
             <Description>\textbf{Title}: This polynomial system describes the equilibrium of the products of hydrocarbon combustion.</Description>
             <References>\begin{itemize}\item Keith Meintjes and Alexander P. Morgan:  'Chemical equilibrium systems as numerical test problems', ACM Toms, Vol 16, No 2, 143-151, 1990.\end{itemize}</References>
-            <Notes>Although the total degree equals 108, there are only 4 real and 12 complex solutions and an infinite number of solutions at infinity. A typographical error has occured in equation (2d), instead of $+ 4Ry5$, it should be a $- 4Ry5$. Applying m-homogenization straight to it renders $B = 56$. Simple linear reduction makes the total degree equal to 48. With m-homogenization, no better upper bound can then be computed. The constants are: $R = 10,  p = 40,  \sqrt{p} = 6.3246$</Notes>
+            <Notes>Although the total degree equals 108, there are only 4 real and 12 complex solutions and an infinite number of solutions at infinity. A typographical error has occurred in equation (2d), instead of $+ 4Ry5$, it should be a $- 4Ry5$. Applying m-homogenization straight to it renders $B = 56$. Simple linear reduction makes the total degree equal to 48. With m-homogenization, no better upper bound can then be computed. The constants are: $R = 10,  p = 40,  \sqrt{p} = 6.3246$</Notes>
             <Variables>x,y,z,w,u</Variables>
             <TagsList>DevRevLex, DegLex, Lex, chemequ, with_5_vars, easy_problem</TagsList>
             <TestEnvironment>rings_with_5_vars</TestEnvironment>
@@ -1259,7 +1259,7 @@
             <ID>cohn2</ID>
             <Name>Cohn2</Name>
             <Description>\textbf{Title}: Modular equations for special algebraic number fields</Description>
-            <References>\begin{itemize}\item From PoSSo test suite.\item Andre' Galligo and Carlo Traverso: 'Practical Determination of the dimension of an algebraic variety', in E. Kaltofen and S.M. Watt, Eds 'Computers and Mathematics', pages 46-52, 1989.\item H. Cohn: 'An explicit modular equation in two variables and Hilbert's Twelfth problem', Math. of Comp. 38, pp. 227-236, 1982.\item H. Cohn, J. Deutch: 'An explit modular equation in two variables for Q[$\sqrt{3}$]', Math. of Comp. 50, pp. 557-568, 1988. \end{itemize}</References>
+            <References>\begin{itemize}\item From PoSSo test suite.\item Andre' Galligo and Carlo Traverso: 'Practical Determination of the dimension of an algebraic variety', in E. Kaltofen and S.M. Watt, Eds 'Computers and Mathematics', pages 46-52, 1989.\item H. Cohn: 'An explicit modular equation in two variables and Hilbert's Twelfth problem', Math. of Comp. 38, pp. 227-236, 1982.\item H. Cohn, J. Deutch: 'An explicit modular equation in two variables for Q[$\sqrt{3}$]', Math. of Comp. 50, pp. 557-568, 1988. \end{itemize}</References>
             <Variables>x,y,z,w</Variables>
             <TagsList>DevRevLex, DegLex, Lex, cohn2, with_4_vars, easy_problem</TagsList>
             <TestEnvironment>rings_with_4_vars</TestEnvironment>
@@ -1334,8 +1334,8 @@
             <ID>cohn3</ID>
             <Name>Cohn3</Name>
             <Description>\textbf{Title}: Modular equations for special algebraic number fields</Description>
-            <References>\begin{itemize}\item From PoSSo test suite.\item Andre' Galligo and Carlo Traverso: 'Practical Determination of the dimension of an algebraic variety', in E. Kaltofen and S.M. Watt, Eds 'Computers and Mathematics', pages 46-52, 1989.\item H. Cohn: 'An explicit modular equation in two variables and Hilbert's Twelfth problem', Math. of Comp. 38, pp. 227-236, 1982.\item H. Cohn, J. Deutch: 'An explit modular equation in two variables for Q[$\sqrt{3}$]', Math. of Comp. 50, pp. 557-568, 1988. \end{itemize}</References>
-            <Notes>From the 213 solution paths, 110 converged to finite solutions.\\ There are eight highly singular solutons with zero components\\ that are probably not isolat</Notes>
+            <References>\begin{itemize}\item From PoSSo test suite.\item Andre' Galligo and Carlo Traverso: 'Practical Determination of the dimension of an algebraic variety', in E. Kaltofen and S.M. Watt, Eds 'Computers and Mathematics', pages 46-52, 1989.\item H. Cohn: 'An explicit modular equation in two variables and Hilbert's Twelfth problem', Math. of Comp. 38, pp. 227-236, 1982.\item H. Cohn, J. Deutch: 'An explicit modular equation in two variables for Q[$\sqrt{3}$]', Math. of Comp. 50, pp. 557-568, 1988. \end{itemize}</References>
+            <Notes>From the 213 solution paths, 110 converged to finite solutions.\\ There are eight highly singular solutions with zero components\\ that are probably not isolat</Notes>
             <Variables>x,y,z,w</Variables>
             <TagsList>DevRevLex, DegLex, Lex, cohn3, with_4_vars, easy_problem</TagsList>
             <TestEnvironment>rings_with_4_vars</TestEnvironment>
@@ -1431,7 +1431,7 @@
         <Example>
             <ID>comb3000</ID>
             <Name>Comb3000</Name>
-            <Description>\textbf{Title}: Model A combustion chemistry example for a temparature of 3000 degrees</Description>
+            <Description>\textbf{Title}: Model A combustion chemistry example for a temperature of 3000 degrees</Description>
             <References>\begin{itemize}\item A.P. Morgan: `Solving Polynomial Systems Using Continuation for Engineering and Scientific Problems', Prentice-Hall, Englewood Cliffs, N.J., 1987.\end{itemize}</References>
             <Notes>The system should be scaled properly.</Notes>
             <Variables>x,y,z,w,u,v,r,s,t,p</Variables>
@@ -1497,7 +1497,7 @@
         <Example>
             <ID>comb3000s</ID>
             <Name>Comb3000s</Name>
-            <Description>\textbf{Title}: Model A combustion chemistry example for a temparature of 3000 degrees</Description>
+            <Description>\textbf{Title}: Model A combustion chemistry example for a temperature of 3000 degrees</Description>
             <References>\begin{itemize}\item A.P. Morgan: `Solving Polynomial Systems Using Continuation for Engineering and Scientific Problems', Prentice-Hall, Englewood Cliffs, N.J., 1987.\end{itemize}</References>
             <Variables>x,y,z,w,u,v,r,s,t,p</Variables>
             <TagsList>DevRevLex, DegLex, Lex, comb3000s, with_10_vars, easy_problem</TagsList>

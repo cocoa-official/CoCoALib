@@ -8,12 +8,12 @@ using namespace std;
 
 //----------------------------------------------------------------------
 const string ShortDescription =
-  "This is a (harder) example showing the implemention of a simple C++ class.\n"
+  "This is a (harder) example showing the implementation of a simple C++ class.\n"
   "It shows class definition, and use of an object of that class.            \n"
   "The class contains a general factorization of an integer.                 \n";
 
 const string LongDescription =
-  "This is a (harder) example showing the implemention of a simple C++ class.\n"
+  "This is a (harder) example showing the implementation of a simple C++ class.\n"
   "It shows class definition, and use of an object of that class.            \n"
   "The class contains a general factorization of an integer.  The class data \n"
   "members are `private' so their values can be seen or changed only by      \n"

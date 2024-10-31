@@ -11,7 +11,7 @@ const string ShortDescription =
   "When computing over a finite field normally it is best to use the\n"
   "function NewZZmod to create the field.  However, for the curious \n"
   "it is possible to create small prime finite fields stating the   \n"
-  "particular implemention method (there are 3 possibilities).      \n";
+  "particular implementation method (there are 3 possibilities).      \n";
 
 const string LongDescription =
   "This program compares the speeds of computing sums and products in   \n"
