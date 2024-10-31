@@ -4,7 +4,7 @@
 # a program compiled with the GMP compilation flags.
 # We check just libboost_filesystem.a, and if that works OK
 # then we assume all the BOOST libs are fine too.
-# ASSUMES enviroment variables CXX and CXXFLAGS are set correctly.
+# ASSUMES environment variables CXX and CXXFLAGS are set correctly.
 
 SCRIPT_NAME=[[`basename "$0"`]]
 SCRIPT_DIR=`dirname "$0"`

@@ -8,7 +8,7 @@
 # If several are found, it prints out the first one then exits with code 1
 # (used by "configure" in CoCoA root dir).
 
-# EXIT CODES: 0 = "found 1 boost insallation";  prints full path
+# EXIT CODES: 0 = "found 1 boost installation";  prints full path
 #             1 = "found several installations"; prints full path of one
 #             2 = "found no boost installation"
 
