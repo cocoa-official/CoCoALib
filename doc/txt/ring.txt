@@ -182,7 +182,7 @@ urged to familiarize yourself with the maintainer documentation if you want
 to understand how and why rings are implemented as they are in the CoCoA
 library.
 
-The first decision to make when implementating a new ring class for
+The first decision to make when implementing a new ring class for
 CoCoALib is where to place it in the ring inheritance structure.  This
 inheritance structure is a (currently) tree with all concrete classes at
 the leaves, and all abstract classes being internal nodes.  Usually the new
@@ -276,7 +276,7 @@ implementation object, is defined as a data member of ``RingBase``.
 
 For the other classes see [[RingElem]].
 
-**NOTE** an earlier implemetation of rings memorized some ``RingHom``
+**NOTE** an earlier implementation of rings memorized some ``RingHom``
 values in data members of the ring object; this caused problems with
 circular reference counts, so was eliminated.
 

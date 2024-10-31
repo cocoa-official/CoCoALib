@@ -23,7 +23,7 @@ A quasi-polynomial is a list ``F_1,...,F_r`` of ``r`` univariate polynomials
 === Constructors and pseudo-constructors ===[constructors]
 %----------------------------------------------------------------------
 
-- ``QuasiPoly(L)`` creates the quasi-polynomial whose consituents are the entries of ``L``
+- ``QuasiPoly(L)`` creates the quasi-polynomial whose constituents are the entries of ``L``
 (of type ``std::vector<RingElem>``)
 
 

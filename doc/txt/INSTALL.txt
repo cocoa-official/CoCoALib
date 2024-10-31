@@ -87,7 +87,7 @@ In most cases the following two commands will suffice:
 This compiles CoCoALib as before (incl. tests & examples).
 It also compiles ``CoCoAInterpreter`` (in ``src/CoCoA-5``), and
 runs all the CoCoA-5 tests.  To run CoCoA-5 it is best to use
-the lauch script ``cocoa5`` (which is in ``src/CoCoA-5``).
+the launch script ``cocoa5`` (which is in ``src/CoCoA-5``).
 
 
 === Compilation of CoCoA-5 with GUI ===

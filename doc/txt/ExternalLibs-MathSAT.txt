@@ -10,7 +10,7 @@
 
 **MathSAT** is a Satisfiability modulo theories (SMT) solver.
 **MathSAT** is free software.
-The joint reasearch between CoCoA and MathSAT has been supported by
+The joint research between CoCoA and MathSAT has been supported by
 European Union's Horizon 2020 research and innovation programme 
 under grant agreement No H2020-FETOPEN-2015-CSA 712689:
 [**SC-square** website http://www.sc-square.org/]

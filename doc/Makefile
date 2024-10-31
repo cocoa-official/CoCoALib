@@ -235,7 +235,7 @@ veryclean-subdirs:
 # Summary: now redirect stderr into log file when running latex
 #
 # Revision 1.34  2017/11/16 14:18:46  abbott
-# Summary: Added new feature: builting alldoc also creates examples/index.html
+# Summary: Added new feature: building alldoc also creates examples/index.html
 #
 # Revision 1.33  2017/02/14 17:06:28  abbott
 # Summary: Updated clean/veryclean targets in all Makefiles
@@ -276,7 +276,7 @@ veryclean-subdirs:
 #
 # Revision 1.22  2011/09/23 13:28:21  abbott
 # Corrected unified command script for making CoCoALib.pdf
-# (removed some "cd" comands which are no longer needed).
+# (removed some "cd" commands which are no longer needed).
 #
 # Revision 1.21  2011/09/22 16:22:29  abbott
 # Minor correction: the CoCoALib.pdf rule is now a single shell script.

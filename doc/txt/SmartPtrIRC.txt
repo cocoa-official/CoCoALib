@@ -50,7 +50,7 @@ SECTION.
 
 **IMPORTANT NOTE**:
 it is highly advisable to have ``myRefCountZero()`` as the very last
-operation in every contructor of a class derived from
+operation in every constructor of a class derived from
 ``IntrusiveReferenceCount``, i.e. intended to be used with
 ``SmartPtrIRC``.
 

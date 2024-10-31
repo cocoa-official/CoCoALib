@@ -37,7 +37,7 @@ Now we assume that ``mill`` contains a homogeneous ideal and ``col`` and ``row``
 == Maintainer documentation for TmpMorseGraph.C, TmpMorseBetti.C, TmpMorseResolution.C, TmpPartialMorseBetti.C TmpMorseElement.C, TmpMorsePaths.C, TmpResolutionMinimization.C ==
 %======================================================================
 
-For computing free resolutions and graded Betti diagramms with a Janet basis we using algebraic discrete Morse theory.
+For computing free resolutions and graded Betti diagrams with a Janet basis we using algebraic discrete Morse theory.
 (More information about the mathematical background the user can find in "On the free resolution induced by a Pommaret basis").
 
 === MorseElement and JBElem ===
@@ -86,11 +86,11 @@ The implementation of ``MorseBetti`` and ``MorseResolution`` is quite similar.
 They compute and minimize the MorseGraph, but the ``MorseBetti`` class only computes the part of the graph where all edges have only a constant value.
 For further information look at the cited paper or at the inline documentation.
 Another difference between ``MorseBetti`` and ``MorseResolution`` is the expected output.
-``MorseBetti`` computes the graded betti diagram of an ideal. The betti diagramm is represented by ``matrix``.
+``MorseBetti`` computes the graded betti diagram of an ideal. The betti diagram is represented by ``matrix``.
 ``MorseResolution`` computes a graded free resolution of an ideal. The resolution is represented by ``vector<matrix>``.
 
 === PartialMorseBetti ===
-We use this class to compute a single Betti column or Betti number. It is a child class of ``MorseBetti``. The algorithms to compute these partial datas are nearly the same as in the class ``MorseBetti``. The only difference are the restriction to one column or only one number. For more informations take a look at the inline documentation.
+We use this class to compute a single Betti column or Betti number. It is a child class of ``MorseBetti``. The algorithms to compute this partial data are nearly the same as in the class ``MorseBetti``. The only difference are the restriction to one column or only one number. For more information, take a look at the inline documentation.
 
 === ResolutionMinimization ===
 

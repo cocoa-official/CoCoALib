@@ -9,7 +9,7 @@
 %======================================================================
 
 Abstract class for implementing several kinds of //sugar//:
-- homogenous case (= the degree)
+- homogeneous case (= the degree)
 - non graded case (using StdDeg)
 - graded case (using wdeg)
 - non graded case and saturating algorithm

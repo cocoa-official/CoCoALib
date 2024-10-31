@@ -439,7 +439,7 @@ owner).
 The constructors for ``PPMonoidElemRawPtr`` and ``PPMonoidElemConstRawPtr``
 are ``explicit`` to avoid potentially risky automatic conversion of any
 old pointer into one of these types.  The naked pointer may be accessed
-via the member functions ``myRawPtr``.  Only implementors of new PP
+via the member functions ``myRawPtr``.  Only implementers of new PP
 monoid classes are likely to find these two opaque pointer classes useful.
 
 
