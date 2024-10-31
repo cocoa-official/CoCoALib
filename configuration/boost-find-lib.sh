@@ -2,7 +2,7 @@
 
 # This script looks for the necessary BOOST sub-libraries.
 # If found, it prints out two SHELL assignments (to be processed
-# using the eval commmand) to BOOST_LIB_DIR & BOOST_LDLIBS.
+# using the eval command) to BOOST_LIB_DIR & BOOST_LDLIBS.
 # It also creates symbolic links in $EXTLIB_5_DIR_FULL [var must be set]
 # If not, it prints out a warning and returns with exit code 1.
 
