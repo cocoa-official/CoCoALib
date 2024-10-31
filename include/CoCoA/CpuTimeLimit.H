@@ -111,7 +111,7 @@ namespace CoCoA
 // Summary: Added noexcept (redmine 1572)
 //
 // Revision 1.14  2021/01/12 13:27:25  abbott
-// Summary: Added "varibility" to ctor; added myScaleFactor to handle when CPU is slower than steady clock
+// Summary: Added "variability" to ctor; added myScaleFactor to handle when CPU is slower than steady clock
 //
 // Revision 1.13  2021/01/08 17:41:11  abbott
 // Summary: Impl now more flexible (see redmine 1558)

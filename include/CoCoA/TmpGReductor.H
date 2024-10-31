@@ -126,7 +126,7 @@ public:
     void myFinalizeGBasis();//Last operations (stats at the moment) immediately before shutting down a GB computation
     void myDoGBasis(const int ReductionNumber); // Performs ReductionNumber reductions, -1 means unlimited
     void myReduceUntilNonZeroRedSPoly(); // Reduces until an SPoly does not reduces to zero. Stop immediately when that happens (no updates)
-     // DYNAMIC ALG: reduces until a non zero SPoly has a LPP with is different from the best possibile LPP w.r.t. HPoly.
+     // DYNAMIC ALG: reduces until a non zero SPoly has a LPP with is different from the best possible LPP w.r.t. HPoly.
      // In that case, settles the WrongLPP filed in the reductor.
     void myReduceUntilWrongLPPFound(RefPPMonoidElem,
                                     std::vector<RingElem>& );

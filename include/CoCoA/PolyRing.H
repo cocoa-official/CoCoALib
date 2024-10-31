@@ -313,7 +313,7 @@ namespace CoCoA
 // Summary: Removed discriminant to SparsePolyOps-resultant
 //
 // Revision 1.54  2021/10/30 19:03:08  abbott
-// Summary: Added some more "override" (clang said they were mising; redmine 1625)
+// Summary: Added some more "override" (clang said they were missing; redmine 1625)
 //
 // Revision 1.53  2021/10/30 17:39:00  abbott
 // Summary: Minor correction

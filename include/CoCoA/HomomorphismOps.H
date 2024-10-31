@@ -54,7 +54,7 @@ namespace CoCoA
 // -- renamed Ops from Fns
 //
 // Revision 1.4  2017/12/07 15:41:15  bigatti
-// -- added ker_H (ker via homogenous computation: to be completed)
+// -- added ker_H (ker via homogeneous computation: to be completed)
 //
 // Revision 1.3  2017/08/08 13:49:28  abbott
 // Summary: Removed cruft

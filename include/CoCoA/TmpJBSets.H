@@ -114,7 +114,7 @@ namespace CoCoA {
        * myTailReduceSetT performs a involutive tailreduction on every element in mySetT which are bigger then TripleIter
        *
        * @param JTree      is the Janeet Tree
-       * @param TripleIter an interator to a JanetTriple
+       * @param TripleIter an iterator to a JanetTriple
        */
       void myTailReduceSetT(JanetTree& JTree, const std::list<JanetTriple>::iterator& TripleIter);
 
@@ -229,22 +229,22 @@ namespace CoCoA {
       ReductionCog myReductionCog;
 
       /**
-       * IAmCriteria checks if p satifies one of the selected criteria (in myCritieria) with respect to g
+       * IAmCriteria checks if p satisfies one of the selected criteria (in myCritieria) with respect to g
        *
        * @param  p is the first JanetTriple
        * @param  g is the second JanetTriple
        *
-       * @return returns true if p satifies one of the selected criteria otherwiese false
+       * @return returns true if p satisfies one of the selected criteria otherwiese false
        */
       bool IamCriteria(const JanetTriple& p, const JanetTriple& g) const;
 
       /**
-       * IamCriteria3 checks if p (from IAmCriteria) satifies the third involutive Criteria with respect to g (from IAmCriteria)
+       * IamCriteria3 checks if p (from IAmCriteria) satisfies the third involutive Criteria with respect to g (from IAmCriteria)
        *
        * @param  AncP is the ancestor of p
        * @param  AncG is the ancestor of g
        *
-       * @return returns true if AncP satifies the third criteria
+       * @return returns true if AncP satisfies the third criteria
        */
       bool IamCriteria3(const PPMonoidElem& AncP, const PPMonoidElem& AncG) const;
 
@@ -363,7 +363,7 @@ namespace CoCoA {
       void myJUpdateHighPart(std::list<Iterator>& stack);
 
       /**
-       * Performs the process described for the function IamJUpdate() choosing always the smalles element in mySetP
+       * Performs the process described for the function IamJUpdate() choosing always the smallest element in mySetP
        * after each reduction process we have to recompute the order in mySetP.
        *
        * @param stack is the set described in IamJUpdate
@@ -374,7 +374,7 @@ namespace CoCoA {
        * This function refines the search for the smallest/highest element.
        * They also observed the number of terms and (if ring is an ordered domain) the leading coefficient
        *
-       * @param ChooseIter (Call-by-ref) the iterator pointing to the choosen element
+       * @param ChooseIter (Call-by-ref) the iterator pointing to the chosen element
        */
       void myChoosingJUpdate(TQSets::MultisetIterator& ChooseIter);
 

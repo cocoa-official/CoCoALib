@@ -673,7 +673,7 @@ namespace CoCoA
 // Summary: Added move ctor
 //
 // Revision 1.62  2020/01/26 14:23:53  abbott
-// Summary: Replaced include of MachineInt bu fwd decl
+// Summary: Replaced include of MachineInt by fwd decl
 //
 // Revision 1.61  2019/09/25 16:09:23  abbott
 // Summary: Added helpful comment
@@ -1249,7 +1249,7 @@ namespace CoCoA
 // Revision 1.3  2001/11/05 18:03:13  abbott
 // Added a "copy constructor" which allows a raw_elem to be initialized
 // from an elem (after checking that the rings are the same).
-// Question: should this constuctor automatically apply homomorphisms?
+// Question: should this constructor automatically apply homomorphisms?
 //
 // Revision 1.2  2001/10/31 20:40:45  abbott
 // Some minor changes: biggest was declaration of +=, -=, *=, /=

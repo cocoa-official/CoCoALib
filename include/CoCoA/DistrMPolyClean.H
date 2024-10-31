@@ -54,7 +54,7 @@ namespace CoCoA
 
    Very similar to the DistrMPolyInlPP summand, but the coefficient
    and the power-product are stored "cleanly" as a RingElem and a
-   PPMonoidElem.  Being the size of these fileds fixed, we may use a
+   PPMonoidElem.  Being the size of these fields fixed, we may use a
    static member "ourMemMgr" for summands of any RingDistrMPoly.
 
  \*-----------------------------------------------------------------*/
@@ -364,7 +364,7 @@ namespace CoCoA
 // Summary: Updated copyright notice (now restrictive; see redmine 1555)
 //
 // Revision 1.20  2021/10/30 19:03:07  abbott
-// Summary: Added some more "override" (clang said they were mising; redmine 1625)
+// Summary: Added some more "override" (clang said they were missing; redmine 1625)
 //
 // Revision 1.19  2021/10/30 17:38:37  abbott
 // Summary: Used keywords override & delete (redmine 1625 & 1627)
@@ -630,7 +630,7 @@ namespace CoCoA
 // -- small changes for doxygen support
 //
 // Revision 1.6  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //
 // Revision 1.5  2004/07/20 15:04:06  cocoa

@@ -70,7 +70,7 @@ namespace CoCoA
 // -- renamed TmpMonomialIdeal.H
 //
 // Revision 1.4  2018/03/20 11:39:26  bigatti
-// -- -- chenged ***MonId --> ***_MonId
+// -- -- changed ***MonId --> ***_MonId
 //
 // Revision 1.3  2014/02/25 16:28:30  abbott
 // Summary: Commented out useless includes; added a fwd decl
@@ -81,7 +81,7 @@ namespace CoCoA
 // -- added ad-hoc functions for colon, elim on monomial ideals
 //
 // Revision 1.1  2011/06/27 13:26:51  bigatti
-// -- first import (soem functions were in SparsePolyRing)
+// -- first import (some functions were in SparsePolyRing)
 //
 
 #endif

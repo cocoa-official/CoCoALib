@@ -171,7 +171,7 @@ namespace CoCoA
 // GlobalErrput() -- previously they were sent to cerr.
 //
 // Revision 1.4  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //
 // Revision 1.3  2004/07/13 16:32:26  cocoa

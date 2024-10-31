@@ -209,7 +209,7 @@ namespace CoCoA
 // Summary: Added IndetsIn also for vector<RingElem>
 //
 // Revision 1.2  2018/08/06 13:38:54  bigatti
-// -- added functins from SparsePolyOps.H
+// -- added functions from SparsePolyOps.H
 //
 // Revision 1.1  2018/05/18 16:34:52  bigatti
 // -- split SparsePolyOps-RingElem from SparsePolyRing
