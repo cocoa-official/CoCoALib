@@ -3152,7 +3152,7 @@ polynomial in <tt>X</tt>, an indeterminate or a list of indeterminates
 All entries in the returned list are RingElems belonging to <tt>RingOf(F)</tt>.
 <par/>
 NOTE: the returned list is <em>reversed</em> from the CoCoA-4 analogue
-<tt>Coefficients(F,X)</tt> thus to reuse old code you should call
+<tt>Coefficients(F,X)</tt> thus to re-use old code you should call
 <tt>reversed(CoeffListWRT(F,X))</tt>.
 <example>
 /**/  use R ::= QQ[x,y,z];
@@ -20290,7 +20290,7 @@ RingElem(R: <type>RING</type>, E:[STRING, INT, .., INT]): <rtn>RINGELEM</rtn>
 </syntax>
 <description>
 This function converts the expression <tt>E</tt> into a RINGELEM in <tt>R</tt>,
-if possible.  These functions areuseful for operating with different rings.
+if possible.  These functions are useful for operating with different rings.
 <par/>
 If <tt>E</tt> is a <tt>STRING</tt> it evaluates <tt>E</tt> in <tt>R</tt>,
 (with no need for <tt>use R</tt>).  The expression <tt>E</tt> may contain
