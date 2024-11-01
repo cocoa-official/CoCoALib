@@ -30,7 +30,7 @@ which define term orderings.  They expect and return matrices over [[RingZZ]].
 
 - ``LexMat(MachineInt n)``  returns a ``ConstMatrix`` for "lex" ordering
 - ``StdDegLexMat(MachineInt n)``  returns a ``ConstMatrix`` for "DegLex" ordering
-- ``StdDegRevLexMat(MachineInt n)``  returns a ``ConstMatrix`` for "DegRevLex" orderig
+- ``StdDegRevLexMat(MachineInt n)``  returns a ``ConstMatrix`` for "DegRevLex" ordering
 - ``XelMat(MachineInt n)``  returns a ``ConstMatrix`` for "Xel" ordering
 - ``RevLexMat(MachineInt n)``  returns a ``ConstMatrix`` for "RevLex" ordering (not a term order!)
 
