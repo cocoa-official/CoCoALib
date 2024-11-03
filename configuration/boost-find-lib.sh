@@ -11,7 +11,8 @@ SCRIPT_NAME=[[$(basename "$0")]]
 # 2022-09-14: previously needed "system thread filesystem"
 ### 2022-11-12: my SmallBlue computer seems to need "system" to build the GUI
 # BOOST 1.67 and earlier need both filesystem and system
-SUBLIBS="filesystem  system"   # ORDER IS IMPORTANT!  system needed for older BOOST (before 1.74)
+# 2024-10-02: Nico Mexis reports that CygWin uses boost 1.66
+SUBLIBS="filesystem"   # ORDER IS IMPORTANT!  system needed for older BOOST (before 1.74) -- see below (we include system if it is found next to libboost_filesystem)
 
 # taken from StackExchange 256434
 is_absolute()
@@ -143,6 +144,15 @@ then
     echo "ERROR: BOOST headers found, but not the required BOOST libs ($SUBLIBS)   $SCRIPT_NAME"   > /dev/stderr
     echo > /dev/stderr
   exit 1
+fi
+
+# CHEAP HACK: hopefully it can soon be eliminated (when older systems
+#             update to newer versions of BOOST)
+# Older versions of BOOST must also link to libboost_system
+/bin/ls "$BOOST_LIB_DIR"/libboost_system.*  >/dev/null  2>&1
+if [ $? = 0 ]
+then
+    SUBLIBS="$SUBLIBS  system"
 fi
 
 
