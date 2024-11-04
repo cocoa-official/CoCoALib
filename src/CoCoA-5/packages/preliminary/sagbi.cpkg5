@@ -297,7 +297,7 @@ enddefine; -- SAGBIInterreduction
 define SAGBI(G, opt TruncDeg)
   IsVERBOSE := IsVERBOSE_func("SAGBI");
   if IsDefined(TruncDeg) and not(IsHomog(G)) then
-    error("Truncated sagbi must be homogenous");
+    error("Truncated sagbi must be homogeneous");
   endif;
   if not(IsDefined(TruncDeg)) then TruncDeg := -1; endif;
   FnName := "SAGBI: ";
@@ -323,7 +323,7 @@ define sagbi(...) return SAGBI(...); enddefine;
 
 
 define MinimalSubalgebraGens_old(L)
-  if not(IsHomog(L)) then error("input must be homogenous"); endif;
+  if not(IsHomog(L)) then error("input must be homogeneous"); endif;
   L := SortedBy(L, func(A,B) return LT(A)<LT(B); endfunc);
   MinimalL :=[L[1]];
   LastSagbi := MinimalL;
@@ -350,7 +350,7 @@ enddefine; -- MinimalSubalgebraGens_old
 define SubalgebraMinGens(G)
   IsVERBOSE := IsVERBOSE_func("SubalgebraMinGens");
   if not(IsHomog(G)) then
-    error("input must be homogenous");
+    error("input must be homogeneous");
   endif;
   FnName := "MinGensSubalgebra: ";
   R := RingsOf(G);
@@ -410,7 +410,7 @@ enddefine; -- AppendGensOfDeg
 define SAGBIHomog(G, opt TruncDeg)
   IsVERBOSE := IsVERBOSE_func("SAGBIHomog");
   if not(IsHomog(G)) then
-    error("input must be homogenous");
+    error("input must be homogeneous");
   endif;
   FnName := "SAGBIHomog: ";
   R := RingsOf(G);

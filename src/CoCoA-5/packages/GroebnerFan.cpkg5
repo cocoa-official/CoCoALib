@@ -76,14 +76,14 @@ define MarkedPolynomialsToInequalitiesPositiveOrthant(A)
   return T;
 enddefine;
 
--- Input: A LIST of intergers describing a vector.
+-- Input: A LIST of integers describing a vector.
 -- Output: Whether the vector is a non-zero scaling of a standard basis vector.
 define isOrthantInequality(v)
   return len(v)-1 = count(v,0);
 enddefine;
 
 -- Input: An ideal I (with ring and ordering) and two LISTs of integers describing vectors a and b with the property that a is in the relative interior of a facet F of the Groebner cone of I and b is an inner normal of the facet. Moreover, a should be positive.
--- Output: The ideal with the odering defining the other Groebner cone having F as a facet.
+-- Output: The ideal with the ordering defining the other Groebner cone having F as a facet.
 define GroebnerBasisFlip(I, row1, row2)
   M := MakeTermOrdMat(matrix(RingZZ(), [row1, -1*row2]));
   P := NewPolyRing(CoeffRing(RingOf(I)), IndetSymbols(RingOf(I)), M, 0);
