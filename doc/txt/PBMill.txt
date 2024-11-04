@@ -81,7 +81,7 @@ The Pommaret basis is always a Janet basis, too. Therefore the datastructures fo
 This file defines all necessary things for dealing with Pommaret bases.
 ====PBMill====
 
-This class has as base class ``JBMill``. It does not introduce new data members, because the representation of a Pommaret basis is the same than for a Janet basis. The main difference between these two classes is that ``PBMill`` only accept generating sets in delta-regular coordinates. In addition to that it implements some methods which are only appliccable when we have a Pommaret basis.
+This class has as base class ``JBMill``. It does not introduce new data members, because the representation of a Pommaret basis is the same than for a Janet basis. The main difference between these two classes is that ``PBMill`` only accept generating sets in delta-regular coordinates. In addition to that it implements some methods which are only applicable when we have a Pommaret basis.
 
 ====PBMill::Builder====
 

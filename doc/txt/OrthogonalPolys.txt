@@ -29,7 +29,7 @@ indeterminate then the polynomial itself is returned.
 - ``ChebyshevPoly2(n,x)``  Chebyshev polynomial of 2nd kind
 - ``HermitePoly(n,x)``  Hermite polynomial (physics)
 - ``HermitePoly2(n,x)``  Hermite polynomial (probability)
-- ``LaguerrePoly(n,x)``  Laguerre polynomomial **multiplied** by ``factorial(n)``
+- ``LaguerrePoly(n,x)``  Laguerre polynomial **multiplied** by ``factorial(n)``
 - ``DicksonPoly(x,n,alpha)``  Dickson polynomial of 1st type [not orthog fam]
 - ``DicksonPoly2(x,n,alpha)``  Dickson polynomial of 2nd type [not orthog fam]
 

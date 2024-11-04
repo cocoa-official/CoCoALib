@@ -13,7 +13,7 @@
 A normal user should never need to know about the class DenseMatImpl; see
 below for notes aimed at library maintainers.
 
-An dense martrix object is a matrix represented in the most natural
+An dense matrix object is a matrix represented in the most natural
 way: as a //2-dimensional array// of its entries.  For instance a
 DenseMat of 4 rows and 3 columns will contain 12=4x3 entries.
 Contrast this with the a ``SparseMatrix`` where the values (and

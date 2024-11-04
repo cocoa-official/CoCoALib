@@ -91,11 +91,11 @@ raw values "belonging" to the ``BaseRing``.  Note that, while the value belongs 
 ``BaseRing``, the resources are owned by the ``FractionField``!!
 
 ``EmbeddingHom`` returns the embedding homomorphism from the ``BaseRing`` into
-the ``FractionField``; it actually returns a reference to a fixed homomorpism
+the ``FractionField``; it actually returns a reference to a fixed homomorphism
 held internally.
 
-``InducedHom`` creates a new homomorpism from the ``FractionField`` to another
-[[ring]] S given a homomorpism from the ``BaseRing`` to S.
+``InducedHom`` creates a new homomorphism from the ``FractionField`` to another
+[[ring]] S given a homomorphism from the ``BaseRing`` to S.
 
 
 ``FractionFieldImpl`` implements a general fraction field.  Its
