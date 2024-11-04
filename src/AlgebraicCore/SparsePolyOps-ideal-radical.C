@@ -856,7 +856,7 @@ namespace CoCoA
   /*
     vector<PPMonoidElem> AlgIndVars(vector<PPMonoidElem> L, long codim){
     //cout << "L: " << L << endl;
-    //first converst vec<PPMonidElem> to PPVector
+    //first convert vec<PPMonidElem> to PPVector
     VerboseLog VERBOSE("AlgIndVars: ");
     VERBOSE(40) << "L: " << L << endl;
     const PPMonoid PPM1 = owner(First(L));
@@ -1180,7 +1180,7 @@ namespace CoCoA
     VERBOSE(60) << "N: " << N << endl;
     while (len(Inds) >= N){
       for (long i=0; i < N; ++i){
-        // first N elments
+        // first N elements
         firstN.push_back(Inds[i]); //append(ref L, first(Inds, N))
       }
       //sort(firstN.begin(), firstN.end());
@@ -1553,7 +1553,7 @@ namespace CoCoA
         //RADICAL_BRANCHING++;
         //VERBOSE(30) << "[ " << len(L) << " ]" << RADICAL_BRANCHING << endl;
         //RingElem K1 = radical(G);
-        //RingElem K2 = radical(P/G);   //P never definied????? 
+        //RingElem K2 = radical(P/G);   //P never defined????? 
         //K =concat([I+ideal(K1)],[I+ideal(K2)|PP In L]); WHAT IS THIS??
       }
       else{

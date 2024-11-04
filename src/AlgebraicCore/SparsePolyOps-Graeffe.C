@@ -112,7 +112,7 @@ namespace CoCoA
     }
 
     /**
-     * Calculate Newton coeffcients for next iteration
+     * Calculate Newton coefficients for next iteration
      */
     GraeffeSeq &GraeffeSeq::operator++()
     {
@@ -132,7 +132,7 @@ namespace CoCoA
     }
 
     /**
-     * Calculate Newton coeffcients for next iteration
+     * Calculate Newton coefficients for next iteration
      */
     GraeffeSeq GraeffeSeq::operator++(int)
     {

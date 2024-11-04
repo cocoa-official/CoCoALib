@@ -96,7 +96,7 @@ int main()
 // $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-PolyIterator1.C,v 1.10 2022/03/17 14:37:17 abbott Exp $
 // $Log: ex-PolyIterator1.C,v $
 // Revision 1.10  2022/03/17 14:37:17  abbott
-// Summary: Added long descr; costmetic improvements
+// Summary: Added long descr; cosmetic improvements
 //
 // Revision 1.9  2022/02/13 09:56:58  abbott
 // Summary: Updated copyright (John & Anna in almost all cases, redmine 855)

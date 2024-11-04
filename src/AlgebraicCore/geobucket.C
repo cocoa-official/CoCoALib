@@ -525,7 +525,7 @@ namespace CoCoA
 // $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/geobucket.C,v 1.23 2023/12/10 20:27:29 abbott Exp $
 // $Log: geobucket.C,v $
 // Revision 1.23  2023/12/10 20:27:29  abbott
-// Summary: Added comented out template code for geobuckets
+// Summary: Added commented out template code for geobuckets
 //
 // Revision 1.22  2022/02/18 14:12:02  abbott
 // Summary: Updated copyright notice (now restrictive; see redmine 1555)
@@ -745,7 +745,7 @@ namespace CoCoA
 //
 // Revision 1.13  2002/11/18 18:06:05  bigatti
 // - code for reduction on GCD rings
-// - removed default length in some funcion calls
+// - removed default length in some function calls
 // - removed flag  IamNormalized
 //
 // Revision 1.12  2002/09/19 17:12:21  bigatti

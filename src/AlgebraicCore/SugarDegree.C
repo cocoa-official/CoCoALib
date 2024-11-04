@@ -460,7 +460,7 @@ namespace CoCoA
 // -- SugarDegree for GBasis input is initialized by myPrepareGBasis
 //
 // Revision 1.12  2009/10/27 17:15:55  bigatti
-// -- fixed: using sugar(g)->myWSugar() insted of wsugar(g)
+// -- fixed: using sugar(g)->myWSugar() instead of wsugar(g)
 //
 // Revision 1.11  2009/09/25 12:36:47  bigatti
 // -- added CheckSugar (temporary)

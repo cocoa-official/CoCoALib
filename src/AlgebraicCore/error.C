@@ -401,7 +401,7 @@ namespace CoCoA
 // Removed BadRowIndex, BadColIndex;  Renamed  ERR::Empty --> ERR::ReqNonEmpty
 //
 // Revision 1.85  2024/07/14 10:27:51  abbott
-// Summary: Added new ctor with extra strig arg (MoreDetails); also new macro
+// Summary: Added new ctor with extra string arg (MoreDetails); also new macro
 //
 // Revision 1.84  2024/07/11 15:44:09  bigatti
 // Summary: error codes: NotField to ReqField
@@ -639,7 +639,7 @@ namespace CoCoA
 // Improved error message for bad symbol index -- there are two possible causes.
 //
 // Revision 1.13  2008/11/20 10:50:13  abbott
-// Minor change to printed message in ANOUNCE.
+// Minor change to printed message in ANNOUNCE.
 //
 // Revision 1.12  2008/10/08 13:54:05  abbott
 // New minor version to reflect the backward-incompatible changes to CoCoA errors.
@@ -699,7 +699,7 @@ namespace CoCoA
 // Forgot to check these in a few minutes ago.
 //
 // Revision 1.9  2007/03/05 16:17:11  bigatti
-// -- clenup for numerical code (and 3 new error codes)
+// -- cleanup for numerical code (and 3 new error codes)
 //
 // Revision 1.8  2007/03/03 14:07:23  bigatti
 // -- "foundations" renamed into "GlobalManager"
@@ -926,7 +926,7 @@ namespace CoCoA
 // Minor cleaning prior to public release.
 //
 // Revision 1.3  2002/11/13 15:41:57  abbott
-// The definition of CoCoA::error has been improved.  It now preceeds
+// The definition of CoCoA::error has been improved.  It now precedes
 // each output line with "CoCoA ERROR", it outputs on std::cerr
 // (instead of std::cout), and it will print out the location information
 // whenever present.  The function finally throws the exception whereas

@@ -949,7 +949,7 @@ namespace CoCoA
     const long candidate = static_cast<long>(floor(ApproxLog+delta)); // probably right but could be too big by 1
     if (std::abs(ApproxLog - candidate) > delta)
     {
-      // ApproxLog was not too close to an integer, so we are sure that candidiate is correct.
+      // ApproxLog was not too close to an integer, so we are sure that candidate is correct.
 #ifdef CoCoA_DEBUG
       {
         // LINE BELOW IS BigInt pwr = power(base, candidate);  BUT AVOIDS OVERFLOW CHECK

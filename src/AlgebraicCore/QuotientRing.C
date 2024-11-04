@@ -704,7 +704,7 @@ namespace CoCoA
   }
 
 
-  // NB the fowarded call to myPreimageIdeal does all the consistency checking
+  // NB the forwarded call to myPreimageIdeal does all the consistency checking
   bool GeneralQuotientRingImpl::IdealImpl::myAssignPrimeFlag(bool b) const
   {
     myPreimageIdeal->myAssignPrimeFlag(b);
@@ -713,7 +713,7 @@ namespace CoCoA
   }
 
 
-  // NB the fowarded call to myPreimageIdeal does all the consistency checking
+  // NB the forwarded call to myPreimageIdeal does all the consistency checking
   bool GeneralQuotientRingImpl::IdealImpl::myAssignMaximalFlag(bool b) const
   {
     myPreimageIdeal->myAssignMaximalFlag(b);

@@ -957,7 +957,7 @@ namespace CoCoA
     const RingElem g = PalindromicFactor(f);
     if (IsConstant(g))  return vector<long>();
     const RingElem& x = indet(owner(g), x_index);
-    vector<long> IndexList; // wil contain result
+    vector<long> IndexList; // will contain result
     VERBOSE(80) << "Computing SqFreeFactor" << std::endl;
     const vector<RingElem> SqFrFacs = SqFreeFactor(g).myFactors(); /// BUG??? either in ZZ[x] or must apply prim!
     vector<long> h_indexes;  // used repeatedly inside loop

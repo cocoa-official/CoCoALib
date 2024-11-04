@@ -2043,7 +2043,7 @@ Is is here only for completeness/debug purposes.
           the_hv=the_hv+
                    e[i]*(theGRI.myOldP2NewP())(monomial(theGRI.myNewSPR(),coeff(it),PP(it)))
                    *theGRI.myY(maxdegree-wdeg(PP(it)));
-    } // Homogeneize
+    } // Homogenize
 */
 
 //     std::vector<long> PolyList2IndexList(const PolyList& thePL)

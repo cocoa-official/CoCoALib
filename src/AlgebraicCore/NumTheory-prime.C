@@ -83,7 +83,7 @@ namespace CoCoA
     }
 
     // SAME AS StrongPseudoPrime but uses BigInt for PowerMod;
-    // necssary when n > MaxSquarableInteger!
+    // necessary when n > MaxSquarableInteger!
     bool StrongPseudoPrime_SLOW(unsigned long b, unsigned long n)
     {
 //      CoCoA_ASSERT(n > MaxSquarableInteger<unsigned long>());

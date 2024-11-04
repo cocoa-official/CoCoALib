@@ -800,7 +800,7 @@ namespace CoCoA
   }
 
 
-  // EXEPTION SAFE
+  // EXCEPTION SAFE
   void DistrMPolyClean::myAddMonomial(const DistrMPolyClean& g)
   {
     CoCoA_ASSERT(IsCompatible(*this, g));
@@ -1492,7 +1492,7 @@ namespace CoCoA
 // -- changed one last PPOrdering::ExpvElem into SmallExponent_t
 //
 // Revision 1.6  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //
 // Revision 1.5  2004/07/20 15:04:06  cocoa

@@ -534,7 +534,7 @@ namespace CoCoA
 // Summary: Improved error mesg (when bad char was read)
 //
 // Revision 1.19  2020/10/23 07:56:03  abbott
-// Summary: RingElems handles emoty input (redmine 1509); minor cleaning
+// Summary: RingElems handles empty input (redmine 1509); minor cleaning
 //
 // Revision 1.18  2020/10/23 07:41:18  bigatti
 // Summary: fixed RingElems with empty input

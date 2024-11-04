@@ -723,7 +723,7 @@ namespace CoCoA
 // -- fixed content for myContentFrF: ans is in FrF, not in BaseRing(FrF)
 //
 // Revision 1.27  2012/01/30 23:26:25  abbott
-// Added check for monic imput poly in myMonic.
+// Added check for monic input poly in myMonic.
 //
 // Revision 1.26  2011/11/07 10:30:30  bigatti
 // -- added AreMonomials

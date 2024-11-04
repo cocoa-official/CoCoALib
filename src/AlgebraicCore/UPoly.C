@@ -393,7 +393,7 @@ namespace CoCoA
     if (len(c) < 2*TargetChunkSize) return HornerMPZ(c, a);
     if (len(c) < 4*TargetChunkSize) return HornerChunk2((len(c)+1)/2,c, a);
     const long NumChunks = 1 + (len(c)-1)/TargetChunkSize;
-//DEBUGGGING    if(FirstTime){cout<<"NumChunks="<<NumChunks<<endl;FirstTime=false;}
+//DEBUGGING    if(FirstTime){cout<<"NumChunks="<<NumChunks<<endl;FirstTime=false;}
     const long ChunkSize = 1 + (len(c)-1)/NumChunks;
     vector<BigInt> tmp(NumChunks);
 //  clog<<"ChunkSize="<<ChunkSize<<endl;

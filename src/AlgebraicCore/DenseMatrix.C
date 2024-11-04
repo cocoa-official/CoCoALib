@@ -892,7 +892,7 @@ namespace CoCoA
 // Check in prior to departure to RWCA
 //
 // Revision 1.2  2004/03/09 16:15:41  cocoa
-// First version of matrices.  A simple exmaple compiles and runs,
+// First version of matrices.  A simple example compiles and runs,
 // so I'm checking in.
 //
 // Revision 1.1  2004/01/28 16:29:17  cocoa

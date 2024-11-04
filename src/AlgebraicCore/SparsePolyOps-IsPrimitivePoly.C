@@ -36,7 +36,7 @@ namespace CoCoA
   namespace // anonymous
   {
 
-    // Ths fn should really be made public
+    // This fn should really be made public
     RingElem PowerMod(const RingElem& f, const BigInt& N, const RingElem& modulus)
     {
       // assume in polynomial ring

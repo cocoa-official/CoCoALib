@@ -13,7 +13,7 @@ const string ShortDescription =
 
 const string LongDescription =
   "This example shows how to compute a factor base using an object of\n"
-  "type GCDFreeBasis_RingElem.  The gennerators of the factor base   \n"
+  "type GCDFreeBasis_RingElem.  The generators of the factor base    \n"
   "may be supplied individually, or all together in a vector.        \n";
 //----------------------------------------------------------------------
 

@@ -25,7 +25,7 @@ namespace CoCoA {
 
     void JanetTree::myAddAtBegin(JanetTree& tree) {
       if (myBeginVar == tree.myBeginVar) {
-        //if the current tree has the same beginning var as the new tree, then we cann
+        //if the current tree has the same beginning var as the new tree, then we can
         //connect these trees easily
         JanetIterator iter(*this);
         iter.myConnectJanetTreeDeg(tree);
@@ -158,7 +158,7 @@ namespace CoCoA {
       if ((tree.myGetBeginDeg() == myMonomial[myCurVar]) && (tree.myGetBeginVar() == myCurVar)) {
         // if yes everything is nice and we can combine the trees (we combine the last node
         // of the current tree and the first node of tree)
-        // maybe here is a mistake because we don't check wether the current node is useless
+        // maybe here is a mistake because we don't check whether the current node is useless
         if ((*myCurIter)->IamLeafNode()) {
           (*myCurIter) = JanetHandle(new JanetInternalNodeImpl());
         }
@@ -505,7 +505,7 @@ namespace CoCoA {
             iter.myChangeToLeafNode(triple);
             break;
           }
-    //      there is definitly a next var node because of assertion above
+    //      there is definitely a next var node because of assertion above
     // TODO     maybe it is exactly a leaf node???? (both triple or i)
           i += iter.myNextVar();
         } else { //expv[i] < iter.myCurrentDeg()

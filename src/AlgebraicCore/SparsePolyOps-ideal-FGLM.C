@@ -140,7 +140,7 @@ namespace CoCoA
 
     QBGenerator QBG(PPM(P_new));         // to generate the new QB
     vector<PPMonoidElem> QB_old = QuotientBasisSorted(I);
-    LinDepMill LDM(K, len(QB_old)); // to serach for lin dep
+    LinDepMill LDM(K, len(QB_old)); // to search for lin dep
     vector<RingElem> coeffs(len(QB_old), zero(K));
 
     // add pp 1

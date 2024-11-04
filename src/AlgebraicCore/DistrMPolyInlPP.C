@@ -891,7 +891,7 @@ namespace CoCoA
   }
 
 
-  // EXEPTION SAFE
+  // EXCEPTION SAFE
   void DistrMPolyInlPP::myAddMonomial(const DistrMPolyInlPP& g)
   {
     CoCoA_ASSERT(IsCompatible(*this, g));
@@ -1561,7 +1561,7 @@ namespace CoCoA
 // Revision 1.8  2003/06/23 17:03:51  abbott
 // Minor cleaning prior to public release.
 // Name change, and consequences.
-// Corrected division which blindy assumed inputs were divisible.
+// Corrected division which blindly assumed inputs were divisible.
 //
 // Revision 1.7  2003/05/28 08:50:36  bigatti
 // - fixed: output(...) for PolyRing coefficients

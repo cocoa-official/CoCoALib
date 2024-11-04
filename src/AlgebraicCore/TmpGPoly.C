@@ -860,7 +860,7 @@ clog << "operator+=: result " <<myPoly<< endl;
 // Removed useless include of FGModule.H
 //
 // Revision 1.13  2009/10/27 17:15:14  bigatti
-// -- fixed: using sugar(g)->myWSugar() insted of wsugar(g)
+// -- fixed: using sugar(g)->myWSugar() instead of wsugar(g)
 //
 // Revision 1.12  2009/05/14 12:27:39  abbott
 // Fixed typo (changed "ESS:" into "ERR::")

@@ -884,7 +884,7 @@ namespace CoCoA
 // Author: JAA
 //
 // Revision 1.27  2014/03/19 15:58:16  bigatti
-// -- now printing the ring explicitely (when possible)
+// -- now printing the ring explicitly (when possible)
 //
 // Revision 1.26  2013/07/12 15:07:18  abbott
 // Corrected a string (FnName passed to index checking fn).
@@ -1079,7 +1079,7 @@ namespace CoCoA
 // Check in prior to departure to RWCA
 //
 // Revision 1.2  2004/03/09 16:15:41  cocoa
-// First version of matrices.  A simple exmaple compiles and runs,
+// First version of matrices.  A simple example compiles and runs,
 // so I'm checking in.
 //
 // Revision 1.1  2004/01/28 16:29:17  cocoa

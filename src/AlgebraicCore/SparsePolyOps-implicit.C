@@ -95,7 +95,7 @@ namespace CoCoA
     }
 
     // this allows the computation in QQ[...]
-    // in fact it is propably better to compute in Fp[...] and lift
+    // in fact it is probably better to compute in Fp[...] and lift
     SparsePolyRing NewPolyRingForImplicit(const ring& K, const string& name, long n)
     {
       if (IsQQ(K))
@@ -561,7 +561,7 @@ namespace CoCoA
     vector<RingElem> ParamDescr = phi(ParamDescrOrig);
     //    ring Kx = NewPolyRingForImplicit(CoeffRing(Porig), "x",n);
     vector<PPMonoidElem> VecLPP; VecLPP.reserve(len(ParamDescr)); for(int i=0;i<len(ParamDescr);++i)VecLPP.push_back(LPP(ParamDescr[i]));
-    //  odering compatible with LPP in Kt
+    //  ordering compatible with LPP in Kt
     vector< vector<long> > VV(n, vector<long>(n));
     for (long i=0; i<n; ++i)  exponents(VV[i], LPP(ParamDescr[i]));    
     matrix M = MakeTermOrdMat(StdDegRevLexMat(n-1) * transpose(NewDenseMat(RingZZ(),VV)));
@@ -1715,7 +1715,7 @@ namespace // anonymous for file local defns
 // Removed BadRowIndex, BadColIndex;  Renamed  ERR::Empty --> ERR::ReqNonEmpty
 //
 // Revision 1.12  2024/03/15 15:56:15  bigatti
-// Summary: using funciont elim
+// Summary: using function elim
 //
 // Revision 1.11  2023/03/13 21:06:40  abbott
 // Summary: New iterator "for" syntax; some cruft removed where the "for" has already been changed.  Redmine 1346

@@ -520,7 +520,7 @@ namespace CoCoA
 //    coeff vectors (to avoid too many reallocations)
 //
 // Revision 1.5  2007/10/19 09:03:46  bigatti
-// -- the two contructors reserve 150 slots for coefficients.
+// -- the two constructors reserve 150 slots for coefficients.
 //
 // Revision 1.4  2007/10/15 13:43:24  bigatti
 // -- improved myAddMul for c==1 (called from RecPoincare)
