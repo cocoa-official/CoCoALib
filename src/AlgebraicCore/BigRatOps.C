@@ -712,7 +712,7 @@ namespace CoCoA
 // Summary: Moved basic query fns to BigRat.H; updated BigRat.C (redmine 1529)
 //
 // Revision 1.7  2020/10/30 19:17:44  abbott
-// Summary: Removed unneded includes
+// Summary: Removed unneeded includes
 //
 // Revision 1.6  2020/10/23 07:53:40  abbott
 // Summary: IsZero, IsOne, IsMinusOne are now inline

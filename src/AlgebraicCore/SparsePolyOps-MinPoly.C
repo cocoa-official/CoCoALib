@@ -406,7 +406,7 @@ namespace CoCoA
     for (long i=0; i<n; ++i) zero_x.push_back(zero(P));
     zero_x.push_back(x);
     RingHom psi = PolyAlgebraHom(S, P, zero_x);
-    RingElem s = indet(S, n); // auxiliar variable
+    RingElem s = indet(S, n); // auxiliary variable
     ideal J = elim(ideal(phi(gens(I))) + ideal(s-phi(L)), indetS_1);
     return psi(monic(gens(J)[0]));
   }
@@ -1214,7 +1214,7 @@ namespace CoCoA
 // -- improved MinPolyModular
 //
 // Revision 1.15  2016/11/25 17:06:53  bigatti
-// -- increased verbosity for some debugging entires
+// -- increased verbosity for some debugging entries
 //
 // Revision 1.14  2016/11/23 13:33:11  bigatti
 // -- MinPolyModular called automatically by MinPolyQuot

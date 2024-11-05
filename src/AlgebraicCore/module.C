@@ -423,7 +423,7 @@ namespace CoCoA
 // -- changed: operator== in now defined in .C
 //
 // Revision 1.11  2013/01/23 14:09:48  bigatti
-// -- removed "inline" for "oeprator=="
+// -- removed "inline" for "operator=="
 // -- redefined "operator!="
 //
 // Revision 1.10  2012/10/11 14:37:02  abbott

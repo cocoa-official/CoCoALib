@@ -1160,7 +1160,7 @@ namespace
 // Several consequential changes.
 //
 // Revision 1.46  2013/05/31 09:15:21  abbott
-// Changed arg type of fn "coeff" from MachineInt to long becaue it is an index.
+// Changed arg type of fn "coeff" from MachineInt to long because it is an index.
 //
 // Revision 1.45  2012/10/24 12:12:36  abbott
 // Changed return type of coeff and myLC.

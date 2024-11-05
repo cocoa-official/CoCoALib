@@ -178,7 +178,7 @@ namespace CoCoA
 
   bool PPMonoidBase::myIsIndetPosPower(long& indet, long& pow, ConstRawPtr rawpp) const
   {
-    if (myIsOne(rawpp)) return false; // changed in 0.99700 (previos gave error)
+    if (myIsOne(rawpp)) return false; // changed in 0.99700 (previous gave error)
     vector<long> expv(myNumIndets);  // SLUG wasteful new+delete ???
     myExponents(expv, rawpp);
     long TmpIndet = 0;
@@ -325,7 +325,7 @@ namespace CoCoA
 
 
 
-  // This function assumes onwership of the value pointed to by ToBeOwned
+  // This function assumes ownership of the value pointed to by ToBeOwned
   PPMonoidElem::PPMonoidElem(const PPMonoid& PPM, PPMonoidElemRawPtr rawToBeOwned):
       RefPPMonoidElem(PPM, rawToBeOwned)
   {}
@@ -1219,7 +1219,7 @@ namespace CoCoA
 // -- changed ExpvElem into SmallExponent_t
 //
 // Revision 1.8  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //
 // Revision 1.7  2004/06/29 17:10:22  cocoa
@@ -1286,7 +1286,7 @@ namespace CoCoA
 // Revision 1.10  2002/11/15 16:25:41  abbott
 // MAJOR CHANGE reflecting a new "philosophy".
 // The new philosophy is that PPMonoid::elems will be "slow and safe" since
-// they are now higly decoupled from the internal representation of
+// they are now highly decoupled from the internal representation of
 // polynomials (which use "order vectors").
 // Eliminated HalfPP, alias and temp subclasses.
 // Every RawPP now contains its own "divisibility mask" because Anna needs
@@ -1314,7 +1314,7 @@ namespace CoCoA
 // Names changed in accordance with the new coding conventions.
 //
 // Revision 1.4  2001/11/19 15:25:47  abbott
-// Corrected an imcompatibility between PPmonoid::cmp and
+// Corrected an incompatibility between PPmonoid::cmp and
 // bool operator<(const PPmonoid::elem&, const PPmonoid::elem&).
 // The latter expected cmp to return one of -1,0 or +1 whereas
 // cmp actually returned negative, zero, or positive.

@@ -972,7 +972,7 @@ namespace CoCoA
 // Added brackets as suggested by newish version of g++.
 //
 // Revision 1.18  2012/04/27 15:10:00  abbott
-// Cleaned ConvertDUPFFToRingElem; inproved factor fn.
+// Cleaned ConvertDUPFFToRingElem; improved factor fn.
 //
 // Revision 1.17  2012/04/18 14:26:29  abbott
 // Corrected an incorrect assertion (found via anna.cocoa5 test).

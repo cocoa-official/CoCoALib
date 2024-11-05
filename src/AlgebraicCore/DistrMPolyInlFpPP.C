@@ -764,7 +764,7 @@ namespace CoCoA
   }
 
 
-  // EXEPTION SAFE
+  // EXCEPTION SAFE
   void DistrMPolyInlFpPP::myAddMonomial(const DistrMPolyInlFpPP& g)
   {
     CoCoA_ASSERT(IsCompatible(*this, g));

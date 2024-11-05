@@ -14,7 +14,7 @@ const string ShortDescription =
 const string LongDescription =
   "This example shows some very basic features of CoCoALib.           \n"
   "We show types for representing \"big\" integers and rationals.     \n"
-  "We also show how to do some compututations with polynomials.       \n";
+  "We also show how to do some computations with polynomials.         \n";
 //----------------------------------------------------------------------
 
 namespace CoCoA
@@ -73,7 +73,7 @@ namespace CoCoA
     // To compute with polynomials you must first do some "set up":
     // (1) create the ring of coefficients, k  (e.g. just RinQQ())
     // (2) create the polynomial ring, p = k[x,y,z] specifying both
-    //     the coeffiicent ring and the indeterminates;
+    //     the coefficient ring and the indeterminates;
     // (3) now create your polynomials as "RingElem" belonging to P.
 
     ring P = NewPolyRing(RingQQ(), symbols("x,y"));  // poly ring  QQ[x,y]

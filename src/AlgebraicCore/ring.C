@@ -2739,7 +2739,7 @@ namespace CoCoA
 //
 // Revision 1.17  2003/04/16 14:16:46  abbott
 // Added code to handle some trivial cases in SequentialPower and
-// BinaryPower.  Added definition of new despatch function IsDivisible.
+// BinaryPower.  Added definition of new dispatch function IsDivisible.
 //
 // Revision 1.16  2003/01/21 15:38:48  abbott
 // Many minor syntactic modifications consequent from the new

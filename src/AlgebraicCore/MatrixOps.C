@@ -749,7 +749,7 @@ namespace CoCoA
 // Imported files
 //
 // Revision 1.8  2006/05/02 14:39:20  cocoa
-// -- Changed "not" into "!" becuase of M$Windoze (by M.Abshoff)
+// -- Changed "not" into "!" because of M$Windoze (by M.Abshoff)
 //
 // Revision 1.7  2006/04/27 13:45:30  cocoa
 // Changed name of NewIdentityRingHom to NewIdentityHom.

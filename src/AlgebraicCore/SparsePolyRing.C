@@ -350,7 +350,7 @@ namespace CoCoA
 // Summary: Removed NewLexOrdering, NewStdDegLexOrdering, NewStdDegRevLexOrdering; consequential changes
 //
 // Revision 1.194  2017/11/06 15:37:44  bigatti
-// -- added GBasisSelfSat (hidden, becuase buggy)
+// -- added GBasisSelfSat (hidden, because buggy)
 //
 // Revision 1.193  2017/09/25 12:38:12  abbott
 // Summary: Added QuotientBasisSorted

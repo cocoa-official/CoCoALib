@@ -61,7 +61,7 @@ namespace CoCoA
   it stores exp vector and order vector.
   Compared with PPMonoidSafe, PPMonoidEvOv is:
   - slower for gcd/lcm because it has to update the order vector;
-  - faster for comparisons expecially with matrix defined orderings.
+  - faster for comparisons especially with matrix defined orderings.
 
   So this type is good for you if
   (1) you do not perform many gcd/lcm

@@ -718,6 +718,6 @@ namespace CoCoA
 // -- fixed assignment of myAdjointMatrix for MatrixOrderingImpl
 //
 // Revision 1.7  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //

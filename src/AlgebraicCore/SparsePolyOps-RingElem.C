@@ -1448,7 +1448,7 @@ namespace // anonymous for file local defns
 // Summary: Added new include after splitting NumTheory
 //
 // Revision 1.3  2018/08/06 13:38:20  bigatti
-// -- added functins from SparsePolyOps.C
+// -- added functions from SparsePolyOps.C
 //
 // Revision 1.2  2018/07/26 15:25:38  abbott
 // Summary: Added comment about SLUG (not using geobucket in RandomLinearForm)

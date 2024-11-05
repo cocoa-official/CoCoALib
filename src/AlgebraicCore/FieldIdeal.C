@@ -254,7 +254,7 @@ namespace CoCoA
 // Author: JAA
 //
 // Revision 1.11  2014/06/17 10:07:39  abbott
-// Summary: Commented out unusued param; corrected error mesg
+// Summary: Commented out unused param; corrected error mesg
 // Author: JAA
 //
 // Revision 1.10  2014/04/30 16:07:00  abbott

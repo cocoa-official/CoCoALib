@@ -479,7 +479,7 @@ namespace CoCoA
 // -- changed: myInitialize into myInitializeOrCheck
 //
 // Revision 1.13  2018/05/28 08:43:09  bigatti
-// -- minor improvement to input to msat (vecotr of indetnames)
+// -- minor improvement to input to msat (vector of indetnames)
 //
 // Revision 1.12  2018/05/24 15:40:29  bigatti
 // -- minor improvement using msat_make_mpq_number

@@ -171,7 +171,7 @@ const SparsePolyRing& owner(const GPair& P)
   namespace // anonymous
   {
 
-    // *********** These 3 functions are strictly for use in the procdures below.
+    // *********** These 3 functions are strictly for use in the procedures below.
     // JAA: 2022-02-18  switched to "lambda fns"
     bool GPairDividesLCM(const GPair& P1, const GPair& P2)
     {
@@ -393,7 +393,7 @@ bool GPair::operator<(const GPair& the_gp)const
 // -- removed unused myStdDeg
 //
 // Revision 1.7  2009/10/27 17:15:14  bigatti
-// -- fixed: using sugar(g)->myWSugar() insted of wsugar(g)
+// -- fixed: using sugar(g)->myWSugar() instead of wsugar(g)
 //
 // Revision 1.6  2009/04/27 13:23:38  bigatti
 // -- changed (faster check in operator<)

@@ -136,7 +136,7 @@ namespace CoCoA
 
 
     // Choose a suitable positive value for any tolerance component which is zero,
-    // and replace that component by the chosen postive value.
+    // and replace that component by the chosen positive value.
     void ZeroToleranceHack(const vector<ApproxPts::PointR>& OrigPts, vector<RingElem>& tolerance)
     {
       const long dim = len(tolerance);
@@ -591,7 +591,7 @@ namespace CoCoA
         PPPts[j].myNumOrigPts = 0;
       }
       nbrs.remove_if(NearPairContains(j)); // since Pj has been eliminated.
-      // Update all entries refering to i-th point.
+      // Update all entries referring to i-th point.
 //      for (list<NearPair>::iterator nbr = nbrs.begin(); nbr != nbrs.end(); ++nbr)
       for (NearPair& nbr: nbrs)
       {
@@ -604,7 +604,7 @@ namespace CoCoA
       swap(PPPts[i].myCoords, CofG); // really an assignment to PPPts[i].myCoords
     }
 
-    // There are no futher possible mergings, so copy answer into NewPts & weights.
+    // There are no further possible mergings, so copy answer into NewPts & weights.
     NewPts.clear();
     weights.clear();
     for (long i=0; i < NumPts; ++i)

@@ -879,7 +879,7 @@ namespace CoCoA
 // Also corrected position of #include, etc.
 //
 // Revision 1.6  2006/09/27 14:31:59  cocoa
-// -- improved checks for CoeffRing in contructor (must be RingFp)
+// -- improved checks for CoeffRing in constructor (must be RingFp)
 //
 // Revision 1.5  2006/08/07 21:23:25  cocoa
 // Removed almost all publicly visible references to SmallExponent_t;

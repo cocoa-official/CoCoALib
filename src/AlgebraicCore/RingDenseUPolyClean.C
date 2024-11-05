@@ -62,7 +62,7 @@ namespace CoCoA
     std::unique_ptr<RingElem> myOnePtr;   ///< Every ring stores its own one.
     std::vector<RingElem> myIndetVector; ///< Vector for compatibility with SparsePolyRing ???
     symbol myIndetSymbolValue; ///< the indet name
-    long myMinCapacity;  // the minumum capacity for all coeff vectors
+    long myMinCapacity;  // the minimum capacity for all coeff vectors
 
   public:  // functions which every ring must implement
     BigInt myCharacteristic() const override  { return characteristic(myCoeffRingValue); }

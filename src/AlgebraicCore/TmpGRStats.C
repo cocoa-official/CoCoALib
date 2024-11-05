@@ -334,7 +334,7 @@ namespace CoCoA
 // $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/TmpGRStats.C,v 1.18 2024/05/28 12:58:30 bigatti Exp $
 // $Log: TmpGRStats.C,v $
 // Revision 1.18  2024/05/28 12:58:30  bigatti
-// Summary: changed   myDegValue  fron 120 to 100
+// Summary: changed   myDegValue  from 120 to 100
 //
 // Revision 1.17  2023/03/14 22:35:22  abbott
 // Summary: New iterator for loop syntax (redmine 1436)

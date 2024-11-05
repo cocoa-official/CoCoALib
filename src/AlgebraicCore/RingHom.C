@@ -400,7 +400,7 @@ namespace CoCoA
 // Summary: Redmine #1623: modified printing for RingHom
 //
 // Revision 1.20  2023/03/13 19:53:09  abbott
-// Summary: Removed some cruft; suggested impl via std::all_of (comented out)
+// Summary: Removed some cruft; suggested impl via std::all_of (commented out)
 //
 // Revision 1.19  2022/08/05 20:46:03  abbott
 // Summary: Took NumRows/NumCols out of for-loop exit conds

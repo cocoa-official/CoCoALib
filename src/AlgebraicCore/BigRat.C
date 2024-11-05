@@ -169,7 +169,7 @@ namespace CoCoA
   BigRat::BigRat(OneOverZero_t /*NotUsed*/)
   {
     mpq_init(myRepr);
-    myAssign(BigInt(1), BigInt(0), AlreadyReduced);  // AlreadyReduced diables check that denom is non-zero!!
+    myAssign(BigInt(1), BigInt(0), AlreadyReduced);  // AlreadyReduced disables check that denom is non-zero!!
   }
 
 
@@ -553,7 +553,7 @@ namespace CoCoA
 // Summary: Cleaned impl of ILogBase; fixed redmine 776
 //
 // Revision 1.12  2014/07/09 11:41:35  abbott
-// Summary: Corrected (embarassing) bug in ILogBase
+// Summary: Corrected (embarrassing) bug in ILogBase
 // Author: JAA
 //
 // Revision 1.11  2014/07/07 12:11:12  abbott

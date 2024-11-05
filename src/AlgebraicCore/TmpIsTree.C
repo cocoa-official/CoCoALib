@@ -298,7 +298,7 @@ namespace CoCoA
     //    std::cout<<endl<<"Standard Algorithm without optimization"<<endl;
     FacetComplexConstIter it1stop=--myElems.end();
     FacetComplexConstIter it2start;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     for (FacetComplexConstIter it=myElems.begin();
          it!=myElems.end();++it)
     {// std::cout<<"working with row "<<row_being_worked_on<<endl;
@@ -344,7 +344,7 @@ namespace CoCoA
     //    std::cout<<endl<<"Standard Algorithm with optimization"<<endl;
     FacetComplexConstIter it1stop=--myElems.end();
     FacetComplexConstIter it2start;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     FacetComplexIter it=myElems.begin();
     while (it!=myElems.end())
     { is_f_useless=true;
@@ -400,7 +400,7 @@ namespace CoCoA
     ConnectionBlock cb(*this);
     T = CpuTime() - T;
     //    std::cout<<endl<< "Connection Block time expended is " << T << endl;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     ConnBlockIter it=cb.my_array.begin();
     while (it!=cb.my_array.end())
     {// std::cout<<"working with row "<<row_being_worked_on<<endl;
@@ -448,7 +448,7 @@ namespace CoCoA
     ConnectionBlock cb(*this);
     T = CpuTime() - T;
     //    std::cout<<endl<< "Connection Block time expended is " << T << endl;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     ConnBlockIter it=cb.my_array.begin();
     while (it!=cb.my_array.end())
     {// std::cout<<"working with row "<<row_being_worked_on<<endl;
@@ -538,7 +538,7 @@ namespace CoCoA
   }//operator<<
 
 
-// This version is safe, erases all the occurences
+// This version is safe, erases all the occurrences
     ConnBlockIter ConnectionBlock::erase(ConnBlockIter& row_to_erase)
     {
       vector<FacetComplexConstIter>::iterator to_be_killed;

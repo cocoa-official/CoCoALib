@@ -70,7 +70,7 @@ namespace CoCoA
     {
       RingElem val = one(k);
       for (long j=0; j < NumVars; ++j)
-        if (expv[j] > 0) // to avoid accessing non-existant columns in matrix pts!!!
+        if (expv[j] > 0) // to avoid accessing non-existent columns in matrix pts!!!
           val *= power(pts(i,j), expv[j]);
       ans.push_back(val);
     }

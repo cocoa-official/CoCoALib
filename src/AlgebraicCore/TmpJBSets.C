@@ -59,7 +59,7 @@ namespace CoCoA {
     }
 
     TQSets::MultisetIterator TQSets::myChooseSmallestElement() {
-      //choosing the smalles element from mySetQ
+      //choosing the smallest element from mySetQ
       std::pair<TQSets::MultisetIterator, TQSets::MultisetIterator> IterPair(mySetQ.equal_range(*(mySetQ.begin())));
       TQSets::MultisetIterator iter(mySetQ.begin());
       for (TQSets::MultisetIterator ForIter = IterPair.first; ForIter != IterPair.second; ++ForIter) {
@@ -79,18 +79,18 @@ namespace CoCoA {
     }
 
     Iterator TQSets::myMinimizeAndInsertSetT(JanetTree& JTree) {
-      //choosing the smalles element from mySetQ
+      //choosing the smallest element from mySetQ
       TQSets::MultisetIterator iter = myChooseSmallestElement();
-      //deletes the choosen element from mySetQ
+      //deletes the chosen element from mySetQ
       Iterator BasicSetIter(*iter);
       mySetQ.erase(iter);
 
-      //perform a tail reduction at the choosen element
+      //perform a tail reduction at the chosen element
       myJTailNormalForm(JTree, BasicSetIter);
       PPMonoidElem ppelem(LPP(BasicSetIter->myGetPol()));
 
-      //if choosen element isn't a prolongation check if there is a bigger element in mySetT which is divided by the choosen elemnt
-      //if there is such an element every element which is bigger then the choosen element is moved to mySetQ
+      //if chosen element isn't a prolongation check if there is a bigger element in mySetT which is divided by the chosen element
+      //if there is such an element every element which is bigger then the chosen element is moved to mySetQ
       if (ppelem == BasicSetIter->myGetAnc()) {
         MultisetIterator iter(mySetT.upper_bound(BasicSetIter));
         bool DeleteElems(false);
@@ -110,7 +110,7 @@ namespace CoCoA {
         }
       }
 
-      //insert the choosen element to mySetT
+      //insert the chosen element to mySetT
       mySetT.insert(BasicSetIter);
       return BasicSetIter;
     }
@@ -413,7 +413,7 @@ namespace CoCoA {
           (*PIter)->myClearProlongedVars();
           ++PIter;
         } else {
-          //reduced to zero -> erase element completly
+          //reduced to zero -> erase element completely
           myBasicSet.erase(*PIter);
           MultisetIterator TempIter(PIter);
           ++PIter;

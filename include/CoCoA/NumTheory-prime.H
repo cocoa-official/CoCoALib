@@ -273,7 +273,7 @@ namespace CoCoA
 // Summary: Removed incorrect assertion; added helpful comments
 //
 // Revision 1.12  2021/10/14 12:10:29  abbott
-// Summary: Improved assetion in ctor for SmallPrime
+// Summary: Improved assertion in ctor for SmallPrime
 //
 // Revision 1.11  2021/03/03 22:09:32  abbott
 // Summary: New enum class (redmine 894)

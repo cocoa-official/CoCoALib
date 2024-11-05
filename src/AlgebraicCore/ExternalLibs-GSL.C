@@ -675,7 +675,7 @@ namespace CoCoA
 // $Log: ExternalLibs-GSL.C,v $
 // Revision 1.22  2024/09/04 14:42:42  bigatti
 // Summary: Error codes: removed MixedSizes (into IncompatDims),
-// removed BLASFailed, addes ExternalLibs,
+// removed BLASFailed, added ExternalLibs,
 // changed ExpectedCoeffsInField into ReqCoeffsInField,
 // now using CoCoA_THROW_ERROR1/2
 //

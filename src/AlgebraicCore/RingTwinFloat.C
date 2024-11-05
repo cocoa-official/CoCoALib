@@ -1740,7 +1740,7 @@ namespace CoCoA
 // A little tidying of #include directives (esp. in Max's code).
 //
 // Revision 1.2  2006/07/17 19:40:53  cocoa
-// Extensive changes following a slight variantion in the semantics.  Added fn IsRational.
+// Extensive changes following a slight variation in the semantics.  Added fn IsRational.
 //
 // Revision 1.1.1.1  2006/05/30 11:39:37  cocoa
 // Imported files

@@ -194,7 +194,7 @@ namespace CoCoA
 // Summary: Cleaned up impl of StarRoot
 //
 // Revision 1.5  2023/02/14 19:59:20  abbott
-// Summary: Partially improved & cleaned (stil needs work!)
+// Summary: Partially improved & cleaned (still needs work!)
 //
 // Revision 1.4  2022/08/05 11:37:29  abbott
 // Summary: Added comments

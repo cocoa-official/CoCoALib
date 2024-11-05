@@ -847,7 +847,7 @@ namespace CoCoA
 // integers (both big and small).  Many consequential changes.
 //
 // Revision 1.25  2012/04/02 17:06:00  bigatti
-// -- allowing QQ for BaseRing of oder matrices
+// -- allowing QQ for BaseRing of order matrices
 //
 // Revision 1.24  2012/03/30 17:29:01  bigatti
 // -- accepting matrices over QQ
@@ -990,7 +990,7 @@ namespace CoCoA
 // Imported files
 //
 // Revision 1.9  2006/05/02 14:40:19  cocoa
-// -- Changed "not" into "!" becuase of M$Windoze (by M.Abshoff)
+// -- Changed "not" into "!" because of M$Windoze (by M.Abshoff)
 //
 // Revision 1.8  2006/04/05 17:26:04  cocoa
 // -- added code to deal with ordering matrix with negative entries
@@ -1110,6 +1110,6 @@ namespace CoCoA
 // -- added MatrixOrderingMod32749Impl (not tested)
 //
 // Revision 1.1  2004/10/21 17:16:37  cocoa
-// Fairly major change: new OrdvArith namspace with various members,
+// Fairly major change: new OrdvArith namespace with various members,
 //   new global typedef  SmallExponent_t (defined in config.H).
 //

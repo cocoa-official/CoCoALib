@@ -404,7 +404,7 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
 // -- minor fix on (non-tested) SugarSat
 //
 // Revision 1.11  2009/03/18 17:16:05  bigatti
-// -- minor changes, getting ready for SugarDegree checkin
+// -- minor changes, getting ready for SugarDegree checking
 //
 // Revision 1.10  2009/02/09 08:17:28  bigatti
 // -- just comments and 1 error code

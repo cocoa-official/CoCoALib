@@ -456,5 +456,5 @@ namespace CoCoA
 // -- added ad-hoc functions for colon, elim on monomial ideals
 //
 // Revision 1.1  2011/06/27 13:26:51  bigatti
-// -- first import (soem functions were in SparsePolyRing)
+// -- first import (some functions were in SparsePolyRing)
 //

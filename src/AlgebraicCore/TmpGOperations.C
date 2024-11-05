@@ -497,7 +497,7 @@ void ComputeGBasisFrameWork(PolyList& theGB, const PolyList& theInputPolyList)
     const SparsePolyRing NewP(MakeNewPRingFromModule(FM,MOType));
     const SparsePolyRing OldP(RingOf(FM));
     // Note: the GRI should build itself SyzFM and NewP from the data and deduce FM and OldP.
-    //       All the embedding/deembedding functions should be memebers of GRI.
+    //       All the embedding/deembedding functions should be members of GRI.
     GRingInfo GRI(NewP,OldP,FM,SyzFM,IsHomogGrD0(theVL),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
     GPolyList EmbeddedPolys=SyzEmbedVectorList(theVL,GRI);
     GReductor GBR(GRI, EmbeddedPolys);

@@ -154,7 +154,7 @@ namespace CoCoA
     // deallocation of mpz_t, while guaranteeing that the only member
     // variable is an mpz_t, so that an array of WrappedMpzT can be
     // safely cast to an array of mpz_t. mpz_class does not guarantee
-    // this. In the absense of this class, it becomes very
+    // this. In the absence of this class, it becomes very
     // inconvenient to allocate and initialize an array of mpz_t's in
     // an exception-safe way.
     class WrappedMpzT
