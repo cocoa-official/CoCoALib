@@ -8,10 +8,10 @@ https://sites.google.com/view/cocoa-cocoalib
 
 INSTALLATION
 ------------
-Instructions are in doc/txt/INSTALL.txt (plain text)
-and also in doc/html/INSTALL.html
+Instructions are in `doc/txt/INSTALL.txt` (plain text)
+and also in `doc/html/INSTALL.html`
 
-Please also read doc/txt/00INTRODUCTION.txt or doc/html/00INTRODUCTION.html
+Please also read `doc/txt/00INTRODUCTION.txt` or `doc/html/00INTRODUCTION.html`
 
 
 Summary
@@ -25,11 +25,11 @@ the library you will need to have some knowledge of C++.
 
 Copyright Issues
 ----------------
-The source code files under src/ and include/ are distributed under the GPL
-(version 3, or later); the full text of the GPL can be found in COPYING-GPLv3.
+The source code files under `src/` and `include/` are distributed under the GPL
+(version 3, or later); the full text of the GPL can be found in `COPYING-GPLv3`.
 
-Files under doc/ are distributed under the GNU FDL; the full text of the
-licence is in doc/COPYING.
+Files under `doc/` are distributed under the GNU FDL; the full text of the
+licence is in `doc/COPYING`.
 
-Source code files under examples/ are released into the public domain
+Source code files under `examples/` are released into the public domain
 (licence: Creative Commons CC0).
