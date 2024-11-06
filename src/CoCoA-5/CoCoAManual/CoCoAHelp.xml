@@ -19459,10 +19459,11 @@ record[modulus := 32771069407757,
 RatReconstructWithBounds(e: <type>INT</type>, P: <type>INT</type>, Q: <type>INT</type>, res: <type>LIST</type> of INT, mod: <type>LIST</type> of INT): <rtn>RECORD</rtn>
 </syntax>
 <description>
-This function attempts to reconstruct a rational number from a
-collection of residue-modulus pairs <tt>(res[i],mod[i])</tt>.  The function
-also requires the input of three bounds: <tt>e</tt> is an upper bound on the
-number of bad moduli, and <tt>P</tt> and <tt>Q</tt> are upper bounds for
+This function attempts fault-tolerant reconstruction of a rational number
+from a collection of residue-modulus pairs <tt>(res[i],mod[i])</tt>; the moduli
+must be coprime and at most <tt>2^63-1</tt>.  The function also requires
+the input of three bounds: <tt>e</tt> is an upper bound on the number of
+bad residue-modulus pairs, and <tt>P</tt> and <tt>Q</tt> are upper bounds for
 (respectively the numerator and denominator of) the rational to be
 reconstructed.
 <par/>
