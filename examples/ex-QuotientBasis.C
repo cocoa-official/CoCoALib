@@ -154,7 +154,7 @@ int main()
 // Some other minor cleaning.
 //
 // Revision 1.6  2006/11/27 13:22:23  cocoa
-// -- detected unused #include file
+// -- deleted unused #include file
 //
 // Revision 1.5  2006/11/21 14:35:13  cocoa
 // -- fixed/hacked a problem with bind2nd: what's the correct way to fix it?

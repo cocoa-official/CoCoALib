@@ -150,9 +150,10 @@ namespace CoCoA
 
     for (int iter=0; iter < niters; ++iter)
     {
+      CheckForInterrupt("RandomUnimodularMat: main loop");
       const int i = RandomLong(0, n-1);
       int j = RandomLong(0, n-2);
-      if (j == i) j = n-1;
+      if (j == i)  j = n-1;
       // Decide whether to add or subtract row j to row i...
       if (RandomBool())
       {
