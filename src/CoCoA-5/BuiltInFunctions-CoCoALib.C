@@ -353,15 +353,17 @@ DECLARE_STD_BUILTIN_FUNCTION(RatReconstructWithBounds, 5) {
   const vector<BigInt> ResList = runtimeEnv->evalArgAsListOf<INT>(ARG(3));
   const vector<BigInt> ModList = runtimeEnv->evalArgAsListOf<INT>(ARG(4));
 
-        const long NumRes = len(ResList);
-        vector<long> res(NumRes);
-        for (long i=0; i < NumRes; ++i)
-          res[i] = ConvertTo<long>(ResList[i]);
         const long NumMod = len(ModList);
+        const long NumRes = len(ResList);
+        if (NumMod != NumRes)
+          CoCoA_THROW_ERROR2(ERR:IncompatDims,  "residue list and modulus list");
+        const long e = ConvertTo<long>(E->theBigInt);
         vector<long> mod(NumMod);
         for (long i=0; i < NumMod; ++i)
           mod[i] = ConvertTo<long>(ModList[i]);
-        const long e = ConvertTo<long>(E->theBigInt);
+        vector<long> res(NumRes);
+        for (long i=0; i < NumRes; ++i)
+          res[i] = ConvertTo<long>(ResList[i]%mod[i]);
         const BigRat result = RatReconstructWithBounds(e, P->theBigInt, Q->theBigInt, res, mod);
         // Create return value: ... record
         intrusive_ptr<RECORD> ans(new RECORD);
