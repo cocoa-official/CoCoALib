@@ -13,8 +13,10 @@
 == User documentation for PBMill ==
 %======================================================================
 
-The files ``PBMill.H``, ``StabilityAlgorithm.H`` introduce several classes for computing and working with **Pommaret Basis**.
-The normal user should only use the classes ``Involutive::PBMill`` and ``Involutive::PBMill::Builder`` to interact with Pommaret bases.
+The files ``PBMill.H``, ``StabilityAlgorithm.H`` introduce several classes
+for computing and working with **Pommaret Basis**.
+The normal user should only use the classes ``Involutive::PBMill``
+and ``Involutive::PBMill::Builder`` to interact with Pommaret bases.
 
 
 === Computing a Pommaret Basis ===
@@ -81,7 +83,12 @@ The Pommaret basis is always a Janet basis, too. Therefore the datastructures fo
 This file defines all necessary things for dealing with Pommaret bases.
 ====PBMill====
 
-This class has as base class ``JBMill``. It does not introduce new data members, because the representation of a Pommaret basis is the same than for a Janet basis. The main difference between these two classes is that ``PBMill`` only accept generating sets in delta-regular coordinates. In addition to that it implements some methods which are only applicable when we have a Pommaret basis.
+This class has as base class ``JBMill``.  It does not introduce new
+data members, because the representation of a Pommaret basis is the
+same as for a Janet basis.  The main difference between these two
+classes is that ``PBMill`` only accepts generating sets in delta-regular
+coordinates.  In addition to that it implements some methods which are
+only applicable when we have a Pommaret basis.
 
 ====PBMill::Builder====
 
@@ -94,50 +101,93 @@ This class is purley virtual. The real implementation is in the subclasses.
 To construct a ``PBMill`` out of the builder object the user can call a constructor of ``PBMill`` with a configured builder object.
 
 ====PBMill::Converter====
-This class is a subclass of ``PBMill::Builder``. It tries to convert a ``JBMill`` directly to a ``PBMill``, without changing coordinates.
+This class is a subclass of ``PBMill::Builder``.  It tries to convert
+a ``JBMill`` directly to a ``PBMill``, without changing coordinates.
 
 ====PBMill::Transformator====
-This class is a subclass of ``PBMill::Builder``. It is again a purley virtual class. It acts as base class for all Builder-classes which applying coordinate transformations to get a specific stability position.
+This class is a subclass of ``PBMill::Builder``.  It is again a purely
+virtual class.  It acts as base class for all Builder-classes which
+apply coordinate transformations to get a specific stability position.
 
 ====PBMill::DeltaRegularTransformator====
-This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with delta-regular coordinates. The user can choose between four different strategies which are defined in the enum ``PBMill::DeltaRegularTransformator::StrategyFlag``.
+This class is a subclass of ``PBMill::Transformator``.  It transforms a
+Janet basis to a Pommaret basis with delta-regular coordinates. The
+user can choose between four different strategies which are defined in
+the enum ``PBMill::DeltaRegularTransformator::StrategyFlag``.
 
 ====PBMill::StableLTITransformator====
-This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with stable leading ideal. The user can choose between two different strategies which are defined in the enum ``PBMill::StableLTITransformator::StrategyFlag``.
+This class is a subclass of ``PBMill::Transformator``.  It transforms a
+Janet basis to a Pommaret basis with stable leading ideal.  The user can
+choose between two different strategies which are defined in the
+enum ``PBMill::StableLTITransformator::StrategyFlag``.
 
 ====PBMill::StronglyStableLTITransformator====
-This class is a subclass of ``PBMill::Transformator``. It transforms a Janet basis to a Pommaret basis with strongly stable leading ideal. The user can choose between two different strategies which are defined in the enum ``PBMill::StronglyStableLTITransformator::StrategyFlag``.
+This class is a subclass of ``PBMill::Transformator``.  It transforms a
+Janet basis to a Pommaret basis with strongly stable leading ideal.
+The user can choose between two different strategies which are defined
+in the enum ``PBMill::StronglyStableLTITransformator::StrategyFlag``.
 
 ===StabilityAlgorithm===
 
 ==== StabilityAlgorithm ====
 
 This class provides an interface for computing different stability positions.
-It defines a method to compute a Janet basis (which is in our case always a Pommaret basis as well)for a given input, and a method to get a JanetContainer which should contain the computed Janet basis.
+It defines a method to compute a Janet basis (which is in our case
+always a Pommaret basis as well) for a given input, and a method to get
+a JanetContainer which should contain the computed Janet basis.
 Also it contains as basic data the polynomial ring and the PPMonoid.
 Every class which computes a stability position has to be a subclass of this class.
 
 ==== DeltaRegular ====
 
-This class is a subclass of ``StabilityAlgorithm``. It should transform the given ideal into delta-regular coordinates. The algorithm to compute delta-regular coordinates is quite simple. It checks if the given input is delta-regular. If not it changes the coordinates (only changes from x_i to x_i+x_j) and checks it again, until it reaches delta-regular coordinates. In addition to that it there is an ``enum DeltaRegular::UsagePermutations``, where the user can decide whether we also use variable permutations as transformation. The computation of transformations like x_i -> x_i + x_j is implemented in the method ``DoComputeImage`` which is virtual.
+This class is a subclass of ``StabilityAlgorithm``.  It should transform
+the given ideal into delta-regular coordinates.  The algorithm to compute
+delta-regular coordinates is quite simple.  It checks if the given input
+is delta-regular.  If not it changes the coordinates (only changes
+from x_i to x_i+x_j) and checks it again, until it reaches
+delta-regular coordinates.  In addition to that it there is
+an ``enum DeltaRegular::UsagePermutations``, where the user can decide
+whether we also use variable permutations as transformation.  The
+computation of transformations like x_i -> x_i + x_j is implemented in
+the method ``DoComputeImage`` which is virtual.
 
 ==== DeltaRegularAll ====
 
-This class is a subclass of ``DeltaRegular``. The implementation is almost the same than ``DeltaRegular``. The only difference is the method ``DoComputeImage``. This class also computes transformation like x_i -> x_i + x_j_1 + ... + x_j_s.
+This class is a subclass of ``DeltaRegular``.  The implementation is almost
+the same as ``DeltaRegular``.  The only difference is the
+method ``DoComputeImage``.  This class also computes transformations
+like x_i -> x_i + x_j_1 + ... + x_j_s.
 
 ==== StableLTI ====
 
-This class is a subclass of ``StabilityAlgorithm``. It should transform the given ideal into coordinates, such that the leading ideal is stable. The algorithm to compute this coordinates is quite simple. It checks if the given input are in the correct position. If not it changes the coordinates (only changes from x_i to x_i+x_j) and checks it again, until it reaches suitable coordinates. The computation of transformations like x_i -> x_i + x_j is implemented in the method ``DoComputeImage`` which is virtual. In addition to that the check if the position is correct is again a virtual method.
+This class is a subclass of ``StabilityAlgorithm``.  It should transform
+the given ideal into coordinates, such that the leading ideal is stable.
+The algorithm to compute this coordinates is quite simple.  It checks
+if the given input are in the correct position.  If not, it changes the
+coordinates (only changes from x_i to x_i+x_j) and checks it again,
+until it reaches suitable coordinates.  The computation of transformations
+like x_i -> x_i + x_j is implemented in the method ``DoComputeImage``
+which is virtual.  In addition to that the check if the position is
+correct is again a virtual method.
 
 ==== StableLTIAll ====
-This class is a subclass of ``StableLTI``. The implementation is almost the same than ``StableLTI``. The only difference is the method ``DoComputeImage``. This class also computes transformation like x_i -> x_i + x_j_1 + ... + x_j_s.
+This class is a subclass of ``StableLTI``.  The implementation is
+almost the same as ``StableLTI``.  The only difference is the
+method ``DoComputeImage``.  This class also computes transformations
+like x_i -> x_i + x_j_1 + ... + x_j_s.
 
 ==== StronglyStableLTI ====
-This class is a subclass of ``StableLTI``. It should transform the given ideal into coordinates, such that the leading ideal is strongly stable.
-The implementation is almost the same than ``StableLTI``. The only difference is the check of coordinates. It replaces the check of stability by a check of strong stability.
+This class is a subclass of ``StableLTI``.  It should transform the
+given ideal into coordinates, such that the leading ideal is strongly stable.
+The implementation is almost the same as ``StableLTI``.  The only difference
+is the check of coordinates.  It replaces the check for stability by
+a check for strong stability.
 
 ==== StronlyStableLTIAll ====
-This class is a subclass of ``StronglyStableLTI``. The implementation is almost the same than ``StronglyStableLTI``. The only difference is the method ``DoComputeImage``. This class also computes transformation like x_i -> x_i + x_j_1 + ... + x_j_s.
+This class is a subclass of ``StronglyStableLTI``.  The implementation
+is almost the same as ``StronglyStableLTI``.  The only difference is
+the method ``DoComputeImage``.  This class also computes transformations
+like x_i -> x_i + x_j_1 + ... + x_j_s.
 
 ====Problems&Ideas related to StabilityAlgorithm====
 If we could make ``StableLTI`` to a subclass of ``DeltaRegular`` it would be quite nice, because this would represent the mathematical hierarchy as well.

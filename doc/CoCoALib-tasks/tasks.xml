@@ -92,7 +92,7 @@ Time est.: 1 week.
   <compl-date>0000-00-00</compl-date>
   <description>
 The homomorphism R[x,y,z] into R[x][y][z] is, mathematically speaking,
-      quite canonical, and also the vice-versa.
+      quite canonical, and also vice-versa.
 We should make this kind of homomorphisms easier to define (automatically?).
 Even though intuitively it looks quite obvious, it might be quite
       tedious to define it properly (e.g. we should probably forbid

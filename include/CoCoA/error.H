@@ -267,7 +267,7 @@ namespace CoCoA
 //
 // Revision 1.82  2024/09/04 14:41:16  bigatti
 // Summary: Error codes: removed MixedSizes (into IncompatDims),
-// removed BLASFailed, adds ExternalLibs,
+// removed BLASFailed, added ExternalLibs,
 // changed ExpectedCoeffsInField into ReqCoeffsInField
 //
 // Revision 1.81  2024/08/28 15:21:55  bigatti

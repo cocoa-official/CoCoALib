@@ -66,6 +66,9 @@ namespace CoCoA
   template<typename ToType, typename FromType>
   inline ToType ConvertTo(const FromType& val, const CoCoA::ErrorInfo& ErrMesg) { ToType copy; if (!IsConvertible(copy, val)) ThrowException(ErrMesg); return copy; }
 
+  template<typename ToType, typename FromType>
+  inline ToType ConvertTo(const FromType& val, const CoCoA::ErrorContext& ErrCtx) { ToType copy; if (!IsConvertible(copy, val))  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadConvert, ErrCtx);  return copy; }
+
 
 //------------------------------------------------------------------
 // Replacement for rather poor NumericCast (now deleted).

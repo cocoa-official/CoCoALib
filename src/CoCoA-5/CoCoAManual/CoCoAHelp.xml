@@ -25046,7 +25046,7 @@ how the coefficient ring is mapped.
 Some "special" homomorphisms can be created easily via dedicated functions.
 If there is a canonical homomorphism between the rings then this
 may be specified using <ttref>CanonicalHom</ttref>.
-For the homomorphism which embed the coefficient ring into a polynomial
+For the homomorphism which embeds the coefficient ring into a polynomial
 ring use <ttref>CoeffEmbeddingHom</ttref>.
 <example>
 /**/ P1 ::= QQ[x,y];   // polys in x,y with coefficients in QQ
