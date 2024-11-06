@@ -1,10 +1,12 @@
 README for CoCoALib and CoCoA-5
 ===============================
 
-CoCoALib is a C++ library for Computational Commutative Algebra.
-CoCoA-5 is an interactive system for Computational Commutative Algebra.
-https://cocoa.dima.unige.it
-https://sites.google.com/view/cocoa-cocoalib
+**CoCoA-5** is an interactive system for Computations in Commutative Algebra.
+
+**CoCoALib** is a C++ library for Computations in Commutative Algebra,
+it is the C++ kernel of CoCoA-5.
+
+https://cocoa.dima.unige.it, https://sites.google.com/view/cocoa-cocoalib
 
 INSTALLATION
 ------------
@@ -16,11 +18,10 @@ Please also read `doc/txt/00INTRODUCTION.txt` or `doc/html/00INTRODUCTION.html`
 
 Summary
 -------
-This subtree contains the sources of the C++ library CoCoALib.  The CoCoA
-library offers functions to perform calculations in Computational Commutative
+The CoCoALib C++ library offers functions to perform Computations in Commutative
 Algebra, and some other related areas.  Our intention is that the library
-should be pleasant to use while offering good run-time performance.  To use
-the library you will need to have some knowledge of C++.
+should be pleasant to use while offering good run-time performance.  
+To use the library you will need to have some knowledge of C++.
 
 
 Copyright Issues
