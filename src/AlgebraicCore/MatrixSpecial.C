@@ -25,6 +25,7 @@
 #include "CoCoA/PolyRing.H" // for JacobianMat
 #include "CoCoA/SparsePolyOps-RingElem.H" // for CoeffVecWRT (in SylvesterMat)
 #include "CoCoA/error.H"
+#include "CoCoA/interrupt.H"
 #include "CoCoA/matrix.H"
 #include "CoCoA/random.H"
 #include "CoCoA/RingQQ.H"
