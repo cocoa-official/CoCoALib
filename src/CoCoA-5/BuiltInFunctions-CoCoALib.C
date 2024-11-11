@@ -356,7 +356,7 @@ DECLARE_STD_BUILTIN_FUNCTION(RatReconstructWithBounds, 5) {
         const long NumMod = len(ModList);
         const long NumRes = len(ResList);
         if (NumMod != NumRes)
-          CoCoA_THROW_ERROR2(ERR:IncompatDims,  "residue list and modulus list");
+          CoCoA_THROW_ERROR2(ERR::IncompatDims,  "residue list and modulus list");
         const long e = ConvertTo<long>(E->theBigInt);
         vector<long> mod(NumMod);
         for (long i=0; i < NumMod; ++i)
