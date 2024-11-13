@@ -102,42 +102,5 @@ namespace MathSAT
 } // end of namespace MathSAT
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/ExternalLibs-MathSAT.H,v 1.10 2022/02/18 14:11:45 abbott Exp $
-// $Log: ExternalLibs-MathSAT.H,v $
-// Revision 1.10  2022/02/18 14:11:45  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.9  2018/06/25 10:09:24  bigatti
-// -- changed: myInitialize into myInitializeOrCheck
-//
-// Revision 1.8  2018/05/28 08:47:25  bigatti
-// -- added myIndetNames
-// -- added myInitialize
-//
-// Revision 1.7  2017/08/08 14:25:49  bigatti
-// -- updated for SC2
-//
-// Revision 1.6  2017/07/24 14:52:55  bigatti
-// -- cleaned up design for MathSAT wrapper class
-//
-// Revision 1.5  2017/07/14 09:31:15  bigatti
-// -- new class MathSAT::env.  Consequent changes
-//
-// Revision 1.4  2017/07/12 16:44:53  bigatti
-// -- developed experimental code for MathSat and moved it from example
-//    to ExternalLib-MathSAT.[CH]
-//
-// Revision 1.3  2017/04/27 16:18:50  bigatti
-// -- changed copyright
-//
-// Revision 1.2  2017/03/13 12:17:08  abbott
-// Summary: Include PREPROCESSOR_DEFNS.H (in header files which need the info)
-//
-// Revision 1.1  2017/02/24 08:20:13  bigatti
-// -- first import
-//
-
 #endif // CoCoA_WITH_MATHSAT
 #endif

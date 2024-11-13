@@ -90,19 +90,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-GFan1.C,v 1.4 2016/07/20 08:42:19 abbott Exp $
-// $Log: ex-GFan1.C,v $
-// Revision 1.4  2016/07/20 08:42:19  abbott
-// Summary: Removed some cruft
-//
-// Revision 1.3  2015/09/02 16:44:49  bigatti
-// -- added RelativeInteriorPoint
-//
-// Revision 1.2  2015/09/02 16:26:05  bigatti
-// -- first real example through CoCoALib
-//
-// Revision 1.1  2015/09/02 09:29:08  bigatti
-// -- first import (in Aarhus)

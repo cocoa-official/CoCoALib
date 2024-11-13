@@ -101,33 +101,4 @@ namespace CoCoA
 
 }  // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/PPMonoidHom.H,v 1.7 2022/02/18 14:11:47 abbott Exp $
-// $Log: PPMonoidHom.H,v $
-// Revision 1.7  2022/02/18 14:11:47  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2022/02/08 20:18:53  abbott
-// Summary: Renamed OpenMath output fns (added suffix _OM) (redmine 1528)
-//
-// Revision 1.5  2021/10/30 17:11:20  abbott
-// Summary: Used keyword delete (redmine 1627)
-//
-// Revision 1.4  2021/01/07 14:20:46  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.3  2012/02/10 17:08:06  abbott
-// Added new pseudo-ctor for RestrictionHom (& related impl class).
-//
-// Revision 1.2  2011/03/10 16:39:35  abbott
-// Replaced (very many) size_t by long in function interfaces (for rings,
-// PPMonoids and modules).  Also replaced most size_t inside fn defns.
-//
-// Revision 1.1  2010/07/09 17:03:42  abbott
-// First simple implementation of PPMonoid homs.
-//
-//
-
 #endif

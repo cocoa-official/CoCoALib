@@ -243,44 +243,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/random.H,v 1.12 2022/02/18 14:11:52 abbott Exp $
-// $Log: random.H,v $
-// Revision 1.12  2022/02/18 14:11:52  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.11  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.10  2021/01/07 14:48:33  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.9  2019/02/28 11:42:26  abbott
-// Summary: Added reseed
-//
-// Revision 1.8  2018/04/20 18:51:25  abbott
-// Summary: Changed ctors for BigInt/BigRat from string or from MPZ/MPQ
-//
-// Revision 1.7  2013/05/14 14:21:59  abbott
-// Improved a comment.
-//
-// Revision 1.6  2013/02/19 18:50:46  abbott
-// Added RandomBiasedBool for (small) rational probabilities; but it is
-// commented out in the header.
-//
-// Revision 1.5  2013/02/15 17:44:38  abbott
-// Added RandomBiasedBool; changed name prob -->  NextBiasedBool (swapped args too).
-//
-// Revision 1.4  2012/12/05 11:03:17  abbott
-// Renamed RandomLongStream   --> RandomSeqLong
-//         RandomBoolStream   --> RandomSeqBool
-//         RandomBigIntStream --> RandomSeqBigInt
-//
-// Revision 1.3  2012/12/04 20:05:23  abbott
-// New unified header and source for all random generators.
-//
-//
-
 #endif

@@ -33,24 +33,3 @@ namespace CoCoA
   }
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/LogStream.C,v 1.5 2022/02/18 14:11:54 abbott Exp $
-// $Log: LogStream.C,v $
-// Revision 1.5  2022/02/18 14:11:54  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2021/01/07 15:07:03  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.3  2020/02/11 16:12:18  abbott
-// Summary: Added some checks for bad ostream (even to mem fns myOutput); see redmine 969
-//
-// Revision 1.2  2017/04/05 14:23:47  abbott
-// Summary: Revised impl of LogStream
-//
-// Revision 1.1  2017/01/25 13:03:48  abbott
-// Summary: Added new global CoCoA::LogStream
-//
-//

@@ -63,19 +63,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-involutive.H,v 1.3 2024/03/18 20:57:28 abbott Exp $
-// $Log: SparsePolyOps-involutive.H,v $
-// Revision 1.3  2024/03/18 20:57:28  abbott
-// Summary: Removed const from return value type (redmine 1606)
-//
-// Revision 1.2  2022/02/18 14:11:49  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2018/03/15 14:56:54  bigatti
-// -- from SparsePolyRing.H
-//
-
 #endif

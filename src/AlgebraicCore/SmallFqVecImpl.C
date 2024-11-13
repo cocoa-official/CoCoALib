@@ -362,33 +362,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SmallFqVecImpl.C,v 1.8 2022/02/18 14:11:58 abbott Exp $
-// $Log: SmallFqVecImpl.C,v $
-// Revision 1.8  2022/02/18 14:11:58  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.7  2021/07/19 11:14:40  abbott
-// Summary: Layout
-//
-// Revision 1.6  2021/02/10 19:40:00  abbott
-// Summary: Added noexcept (sometimes instead of throw()) -- redmine 1572
-//
-// Revision 1.5  2021/01/07 15:16:53  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.4  2020/06/17 15:49:27  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.3  2020/01/26 14:41:59  abbott
-// Summary: Revised includes after splitting NumTheory (redmine 1161)
-//
-// Revision 1.2  2018/05/18 12:22:30  bigatti
-// -- renamed IntOperations --> BigIntOps
-//
-// Revision 1.1  2015/12/18 15:25:07  abbott
-// Summary: Added impls of non-prime finite fields
-//
-//

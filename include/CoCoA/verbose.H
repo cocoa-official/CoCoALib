@@ -50,32 +50,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/verbose.H,v 1.7 2022/02/18 14:11:52 abbott Exp $
-// $Log: verbose.H,v $
-// Revision 1.7  2022/02/18 14:11:52  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2021/10/30 17:28:47  abbott
-// Summary: Used keyword delete (redmine 1627)
-//
-// Revision 1.5  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.4  2021/01/07 14:48:34  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.3  2019/11/14 17:47:27  abbott
-// Summary: Removed commented out cruft
-//
-// Revision 1.2  2017/03/02 10:04:22  bigatti
-// -- modified interface for VerbosityLevel
-//
-// Revision 1.1  2016/11/11 13:24:08  abbott
-// Summary: new file for "verbose" capabilities
-//
-//
-
 #endif

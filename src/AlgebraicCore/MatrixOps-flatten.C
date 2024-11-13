@@ -52,15 +52,3 @@ namespace CoCoA
   }
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-flatten.C,v 1.2 2022/02/18 14:11:55 abbott Exp $
-// $Log: MatrixOps-flatten.C,v $
-// Revision 1.2  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2020/10/02 18:40:37  abbott
-// Summary: Added new fns FlattenByRows & FlattenByCols
-//
-//

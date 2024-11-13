@@ -160,36 +160,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-RealRadical.C,v 1.8 2024/03/15 18:57:32 abbott Exp $
-// $Log: SparsePolyOps-RealRadical.C,v $
-// Revision 1.8  2024/03/15 18:57:32  abbott
-// Summary: Improved use of PolyRing inside fns; employed CoCoA_ERROR_CONTEXT
-//
-// Revision 1.7  2022/02/18 14:11:58  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2020/06/17 15:49:27  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.5  2018/05/18 16:38:52  bigatti
-// -- added include SparsePolyOps-RingElem.H
-//
-// Revision 1.4  2018/05/17 15:46:03  bigatti
-// -- added include SparsePolyIter
-//
-// Revision 1.3  2018/03/13 15:29:59  abbott
-// Summary: Minor cleaning
-//
-// Revision 1.2  2018/03/13 14:29:26  abbott
-// Summary: Minor cleaning/tidying
-//
-// Revision 1.1  2017/12/18 13:11:26  abbott
-// Summary: Renamed files (underscore becomes minus)
-//
-// Revision 1.1  2017/12/01 21:34:32  abbott
-// Summary: (approx) Real radical of a poly
-//
-//

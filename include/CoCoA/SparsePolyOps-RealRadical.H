@@ -31,20 +31,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-RealRadical.H,v 1.2 2022/02/18 14:11:49 abbott Exp $
-// $Log: SparsePolyOps-RealRadical.H,v $
-// Revision 1.2  2022/02/18 14:11:49  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2017/12/18 13:10:34  abbott
-// Summary: Renamed files (underscore becomes minus)
-//
-// Revision 1.1  2017/12/01 21:35:41  abbott
-// Summary: (approx) RealRadical
-//
-//
-
 #endif

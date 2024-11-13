@@ -56,38 +56,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/ULong2Long.H,v 1.9 2024/03/18 20:57:28 abbott Exp $
-// $Log: ULong2Long.H,v $
-// Revision 1.9  2024/03/18 20:57:28  abbott
-// Summary: Removed const from return value type (redmine 1606)
-//
-// Revision 1.8  2022/02/18 14:11:51  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.7  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.6  2021/01/07 14:44:47  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.5  2017/03/13 12:17:09  abbott
-// Summary: Include PREPROCESSOR_DEFNS.H (in header files which need the info)
-//
-// Revision 1.4  2017/03/03 13:48:54  abbott
-// Summary: Added check also for CoCoA_ULONG2LONG CPP setting
-//
-// Revision 1.3  2013/02/14 15:35:11  abbott
-// Corrected silly typo in a comment.
-//
-// Revision 1.2  2012/04/24 14:23:13  abbott
-// Correct casing of CoCoA_ULONG2LONG  CPP macro.
-//
-// Revision 1.1  2011/09/06 13:37:17  abbott
-// Separated ULong2Long from utils.H
-//
-//
-
 #endif

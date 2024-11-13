@@ -113,30 +113,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-PPWithMask1.C,v 1.7 2022/02/13 09:56:58 abbott Exp $
-// $Log: ex-PPWithMask1.C,v $
-// Revision 1.7  2022/02/13 09:56:58  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.6  2015/07/27 11:50:50  bigatti
-// -- now using "symbols(string)" for comma separated symbols
-//
-// Revision 1.5  2015/06/29 15:41:17  bigatti
-// *** empty log message ***
-//
-// Revision 1.4  2015/06/29 12:45:12  bigatti
-// -- code in namespace CoCoA
-//
-// Revision 1.3  2010/12/17 16:07:54  abbott
-// Ensured that all i/o in examples is on standard C++ streams
-// (rather than GlobalInput(), etc).
-//
-// Revision 1.2  2010/03/18 18:02:54  bigatti
-// -- improved syntax for PPOrdering argument
-//
-// Revision 1.1  2010/02/01 22:36:59  abbott
-// Added new examples for DivMasks and PPWithMask.
-//

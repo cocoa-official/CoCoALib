@@ -77,18 +77,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-c++-arith.C,v 1.3 2022/02/13 09:57:00 abbott Exp $
-// $Log: ex-c++-arith.C,v $
-// Revision 1.3  2022/02/13 09:57:00  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.2  2021/09/03 12:58:16  abbott
-// Summary: Minor improvements
-//
-// Revision 1.1  2017/02/10 16:31:25  abbott
-// Summary: Added new examples for C++: ex-c++-basic, ex-c++-arith, ex-c++-for-loop
-//
-//
