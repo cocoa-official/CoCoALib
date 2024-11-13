@@ -416,17 +416,17 @@ EndDefine; -- Pres_Im_Hom_Mod
 -- (c) Pres_Ker_Hom_Mod.
 -- Input:(P^r, M, P^s, N, [w_1,...,w_r])
 -- Output:
--- (1) Se il Ker è non nullo:
+-- (1) Se il Ker Ã¨ non nullo:
 -- Record[Free_Mod_Ker := P^u,
 --              Quot_Ker := submodule(P^u,[(l_i1,...,l_iu) : i in {1,...,u'}])]
--- (2) Se il Ker è nullo: [].
+-- (2) Se il Ker Ã¨ nullo: [].
 
 Define Pres_Ker_Hom_Mod(Pr,M,Ps,N,L) // L = list of phi(e_i)
   -- Richiamo la  funzione Gens_Ker_Hom_Mod.
   Gens_Ker := gens(Gens_Ker_Hom_Mod(Pr,M,Ps,N,L).Preimage_Ker);
-  -- Caso in cui il Ker è nullo.
+  -- Caso in cui il Ker Ã¨ nullo.
   If Gens_Ker=[] Then Return []; EndIf;
-  -- Caso in cui il Ker è non nullo.
+  -- Caso in cui il Ker Ã¨ non nullo.
   P := RingOf(Pr);
   u := len(Gens_Ker);
   Pu := NewFreeModule(P,u);
