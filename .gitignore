@@ -35,13 +35,7 @@ configuration/last-config-cmd
 include/CoCoA/library.H
 include/CoCoA/PREPROCESSOR_DEFNS.H
 lib/timestamp
-src/AlgebraicCore/Makefile_dependencies
-src/AlgebraicCore/TmpFactorDir/Makefile_dependencies
-src/AlgebraicCore/TmpFactorDir/linalg/Makefile_dependencies
-src/AlgebraicCore/TmpFactorDir/multivariate/Makefile_dependencies
-src/AlgebraicCore/TmpHilbertDir/Makefile_dependencies
 src/AlgebraicCore/leak_checker
-src/CoCoA-5/Makefile_dependencies
 src/CoCoA-5/CoCoAInterpreter
 src/CoCoA-5/check-version-defines
 src/CoCoA-5/**/*.Debug
@@ -62,8 +56,6 @@ src/CoCoA-5/C5Makefile
 src/CoCoA-5/C5.pro
 src/CoCoA-5/ui_*.h
 src/server/all
-src/server/Makefile_dependencies
-src/tests/Makefile_dependencies
 src/tests/*.cerr
 src/tests/*.cout
 src/tests/*found
