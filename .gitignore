@@ -13,11 +13,13 @@ doc/aux-txt2tags/DocTeX-VERSION.t2t
 doc/html/
 src/CoCoA-5/CoCoAManual/html/
 src/CoCoA-5/CoCoAManual/tex/
+doc/CoCoALib-tasks/HTMLTasks
 doc/CoCoALib-CompletedTasks.html
 doc/CoCoALib-tasks.html
 doc/CoCoALib-tasks/CoCoALib-CompletedTasks.html
 doc/CoCoALib-tasks/CoCoALib-tasks.html
 doc/tex/
+examples/CopyInfo
 *.html
 *.pdf
 
