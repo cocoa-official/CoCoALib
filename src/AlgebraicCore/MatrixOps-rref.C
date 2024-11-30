@@ -108,33 +108,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-rref.C,v 1.8 2024/07/11 15:42:42 bigatti Exp $
-// $Log: MatrixOps-rref.C,v $
-// Revision 1.8  2024/07/11 15:42:42  bigatti
-// *** empty log message ***
-//
-// Revision 1.7  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2020/06/17 15:49:23  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.5  2020/02/12 10:38:56  abbott
-// Summary: Added missing include
-//
-// Revision 1.4  2020/02/12 09:15:10  abbott
-// Summary: Renamed RowReducedForm to rref
-//
-// Revision 1.3  2020/01/27 19:55:16  abbott
-// Summary: Some comments; minor tidying
-//
-// Revision 1.2  2020/01/26 14:33:52  abbott
-// Summary: Added include MachineInt
-//
-// Revision 1.1  2020/01/09 18:35:41  abbott
-// Summary: Added rref (Row reduced echelon form)
-//
-//

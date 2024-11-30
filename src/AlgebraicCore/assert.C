@@ -48,36 +48,3 @@ namespace CoCoA
   }
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/assert.C,v 1.7 2022/02/18 14:12:01 abbott Exp $
-// $Log: assert.C,v $
-// Revision 1.7  2022/02/18 14:12:01  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2021/02/10 19:42:06  abbott
-// Summary: Renamed fn params
-//
-// Revision 1.5  2021/01/07 15:23:38  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.4  2020/06/19 19:39:21  abbott
-// Summary: Now all throws go through new template fn ThrowException; seems to work
-//
-// Revision 1.3  2010/12/17 16:11:06  abbott
-// Output related to assertions is now on standard C++ streams (rather
-// than GlobalErrput, etc).
-//
-// Revision 1.2  2007/10/30 17:14:07  abbott
-// Changed licence from GPL-2 only to GPL-3 or later.
-// New version for such an important change.
-//
-// Revision 1.1.1.1  2007/03/09 15:16:11  abbott
-// Imported files
-//
-// Revision 1.1  2006/10/06 14:04:57  cocoa
-// The new assert header and implementation files.
-// A new test.
-//
-//

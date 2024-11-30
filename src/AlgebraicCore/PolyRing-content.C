@@ -190,25 +190,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/PolyRing-content.C,v 1.5 2024/07/15 17:10:00 bigatti Exp $
-// $Log: PolyRing-content.C,v $
-// Revision 1.5  2024/07/15 17:10:00  bigatti
-// Summary: Error codes:  added CoCoA_THROW_ERROR1(ErrID);
-// Removed BadRowIndex, BadColIndex;  Renamed  ERR::Empty --> ERR::ReqNonEmpty
-//
-// Revision 1.4  2024/07/02 20:42:07  abbott
-// Summary: Renaming of errors (redmine 308)
-//
-// Revision 1.3  2022/02/18 14:11:56  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.2  2021/07/19 11:14:00  abbott
-// Summary: Minor: improved err mesg, removed cruft
-//
-// Revision 1.1  2021/03/01 19:39:43  abbott
-// Summary: Split off from PolyRing.C; added prim (redmine 1580)
-//
-//

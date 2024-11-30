@@ -152,37 +152,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/factor-AlgExtn.C,v 1.10 2022/08/05 20:48:11 abbott Exp $
-// $Log: factor-AlgExtn.C,v $
-// Revision 1.10  2022/08/05 20:48:11  abbott
-// Summary: Minor tidying (adding ref/const)
-//
-// Revision 1.9  2022/02/18 14:12:02  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.8  2021/10/04 09:03:09  abbott
-// Summary: Replaced calls to apply by direct applic of ringhom (redmine 1467, 1598)
-//
-// Revision 1.7  2021/07/20 11:28:37  abbott
-// Summary: Replaced apply(phi,x) by phi(x) where x is RingElem.
-//
-// Revision 1.6  2021/01/07 15:23:38  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.5  2020/06/17 15:49:29  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.4  2018/09/28 15:54:04  abbott
-// Summary: Removed pseudo-ctors NewPolyRing which took just num of indets; now must specify their names
-//
-// Revision 1.3  2018/05/18 16:39:39  bigatti
-// -- added include SparsePolyOps-RingElem.H
-//
-// Revision 1.2  2018/05/17 16:07:10  bigatti
-// -- renamed TmpChainCanonicalHom --> ChainCanonicalHom
-//
-// Revision 1.1  2018/04/19 13:38:10  bigatti
-// -- added factor_AlgExtn
-//
