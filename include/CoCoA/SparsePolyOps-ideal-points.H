@@ -37,35 +37,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-ideal-points.H,v 1.3 2022/02/18 14:11:49 abbott Exp $
-// $Log: SparsePolyOps-ideal-points.H,v $
-// Revision 1.3  2022/02/18 14:11:49  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.2  2021/01/07 14:44:46  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.1  2019/10/15 12:57:55  bigatti
-// -- renamed files for ideals
-//
-// Revision 1.1  2018/04/06 14:59:57  bigatti
-// -- renamed IdealOfPoints.H
-//
-// Revision 1.4  2017/03/01 18:35:00  bigatti
-// -- added IdealOfProjectivePoints
-//
-// Revision 1.3  2014/04/17 13:37:19  bigatti
-// -- MatrixViews --> MatrixView
-//
-// Revision 1.2  2013/05/20 16:00:50  abbott
-// Commented out fn BM -- gave a name clash in IdealOfPoints.C
-//
-// Revision 1.1  2013/01/21 15:30:36  abbott
-// Renamed files called BuchbergerMoeller* to IdealOfPoints*.
-//
-//
-
 #endif

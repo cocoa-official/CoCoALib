@@ -100,26 +100,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/NumTheory-ContFrac.H,v 1.5 2022/02/18 14:11:46 abbott Exp $
-// $Log: NumTheory-ContFrac.H,v $
-// Revision 1.5  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2021/02/10 19:32:00  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.3  2021/01/07 14:17:30  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.2  2020/11/03 20:02:40  abbott
-// Summary: Replaced BigRat computation by BigInt (redmine 897)
-//
-// Revision 1.1  2019/03/18 11:24:19  abbott
-// Summary: Split NumTheory into several smaller files
-//
-//
-
 #endif

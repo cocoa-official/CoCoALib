@@ -67,26 +67,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/NumTheory-CoprimeFactorBasis.H,v 1.4 2022/02/18 14:11:46 abbott Exp $
-// $Log: NumTheory-CoprimeFactorBasis.H,v $
-// Revision 1.4  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2021/02/10 19:32:00  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.2  2019/09/16 17:28:53  abbott
-// Summary: Changed arg names
-//
-// Revision 1.1  2019/03/27 14:14:27  bigatti
-// (abbott) renamed GCDFreeBasis --> CoprimeFactorBasis
-//
-// Revision 1.1  2018/06/25 15:31:34  abbott
-// Summary: GCDFreeBasis for integers
-//
-//
-
 #endif

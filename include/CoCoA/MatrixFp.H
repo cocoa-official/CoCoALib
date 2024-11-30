@@ -116,29 +116,4 @@ private: // data members
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/MatrixFp.H,v 1.6 2023/11/11 20:27:14 abbott Exp $
-// $Log: MatrixFp.H,v $
-// Revision 1.6  2023/11/11 20:27:14  abbott
-// Summary: Added printing for MatrixFp
-//
-// Revision 1.5  2023/10/25 19:21:36  abbott
-// Summary: Added InverseFp
-//
-// Revision 1.4  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2021/01/07 14:16:10  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.2  2018/02/15 14:40:01  abbott
-// Summary: update
-//
-// Revision 1.1  2018/01/17 12:41:26  abbott
-// Summary: new headers
-//
-//
-
 #endif
