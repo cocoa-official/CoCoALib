@@ -104,26 +104,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/tests/test-GFan1.C,v 1.6 2020/01/24 21:39:59 abbott Exp $
-// $Log: test-GFan1.C,v $
-// Revision 1.6  2020/01/24 21:39:59  abbott
-// Summary: Replaced CoCoAVector by braced ctor
-//
-// Revision 1.5  2018/05/17 16:08:42  bigatti
-// -- renamed VectorOperations --> VectorOps
-//
-// Revision 1.4  2017/03/08 15:58:53  bigatti
-// -- cleaned up
-//
-// Revision 1.3  2016/09/21 14:57:22  abbott
-// Summary: Added missing includes
-//
-// Revision 1.2  2016/09/19 06:37:57  bigatti
-// -- simplified (CoCoA_ASSERT_ALWAYS)
-//
-// Revision 1.1  2016/09/19 06:01:55  bigatti
-// -- first import
-//
