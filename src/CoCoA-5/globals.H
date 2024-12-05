@@ -41,29 +41,5 @@ namespace CoCoA
 
 } // namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/CoCoA-5/globals.H,v 1.6 2022/02/22 20:39:28 abbott Exp $
-// $Log: globals.H,v $
-// Revision 1.6  2022/02/22 20:39:28  abbott
-// Summary: Updated copyright message (redmine 1555)
-//
-// Revision 1.5  2021/11/08 15:41:19  abbott
-// Summary: Added proper include guard (redmine 1356); revised some copyright mesgs
-//
-// Revision 1.4  2021/02/22 19:40:28  abbott
-// Summary: Added flag to handle --no-prompt commandline option (redmine 500)
-//
-// Revision 1.3  2020/03/06 18:41:37  abbott
-// Summary: Changed name GlobalStatusOStream to GlobalStatusLogStream; changed name of CLI flag
-//
-// Revision 1.2  2020/02/21 14:03:38  abbott
-// Summary: Implemented status messages (redmine 1399) via a file (supplied on command line)
-//
-// Revision 1.1  2019/03/04 13:16:27  abbott
-// Summary: Added new files globals.H/globals.C
-//
-//
-
 // Close include guard:
 #endif
