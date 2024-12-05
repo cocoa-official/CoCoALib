@@ -46,39 +46,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/MatrixSpecial.H,v 1.9 2022/02/18 14:11:46 abbott Exp $
-// $Log: MatrixSpecial.H,v $
-// Revision 1.9  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.8  2020/05/26 12:06:18  abbott
-// Summary: Renamed TensorMat to KroneckerProd; doc & tests updated
-//
-// Revision 1.7  2020/02/27 17:39:45  bigatti
-// -- added LawrenceMat
-//
-// Revision 1.6  2019/10/11 19:54:28  abbott
-// Summary: Renamed jacobian to JacobianMat
-//
-// Revision 1.5  2019/10/11 12:54:47  abbott
-// Summary: Added SylvesterMat
-//
-// Revision 1.4  2017/11/08 14:04:39  abbott
-// Summary: Added new fn HilbertMat
-//
-// Revision 1.3  2016/10/27 14:03:04  abbott
-// Summary: Added RandomUnimodularMat
-//
-// Revision 1.2  2011/03/21 07:58:30  bigatti
-// -- added TensorMat
-// -- changed size into len
-//
-// Revision 1.1  2011/02/10 15:30:14  bigatti
-// -- first import: jacobian
-//
-
-
 #endif // CoCoA_MatrixSpecial_H

@@ -34,22 +34,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/RingFqVec.H,v 1.4 2022/02/18 14:11:48 abbott Exp $
-// $Log: RingFqVec.H,v $
-// Revision 1.4  2022/02/18 14:11:48  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2021/01/07 14:44:46  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.2  2016/01/27 14:00:26  abbott
-// Summary: Added new pseudo-ctors which accept BigInts
-//
-// Revision 1.1  2015/12/18 15:25:07  abbott
-// Summary: Added impls of non-prime finite fields
-//
-//
-
 #endif

@@ -47,13 +47,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-ideal-FGLM.H,v 1.1 2024/05/13 13:12:28 bigatti Exp $
-// $Log: SparsePolyOps-ideal-FGLM.H,v $
-// Revision 1.1  2024/05/13 13:12:28  bigatti
-// Summary: first import: added FGLM
-//
-
 #endif

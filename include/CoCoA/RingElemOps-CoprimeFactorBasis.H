@@ -65,29 +65,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/RingElemOps-CoprimeFactorBasis.H,v 1.4 2022/02/18 14:11:48 abbott Exp $
-// $Log: RingElemOps-CoprimeFactorBasis.H,v $
-// Revision 1.4  2022/02/18 14:11:48  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2021/01/07 14:24:04  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.2  2019/03/27 14:33:06  bigatti
-// -- minor fix: _ instead of - in "CoCoA_RingElemOps_CoprimeFactorBasis_H"
-//
-// Revision 1.1  2019/03/27 14:14:27  bigatti
-// (abbott) renamed GCDFreeBasis --> CoprimeFactorBasis
-//
-// Revision 1.2  2018/06/25 12:32:10  abbott
-// Summary: Restructured impl
-//
-// Revision 1.1  2017/02/01 10:37:35  abbott
-// Summary: GCDFreeBasis fns
-//
-//
-
 #endif

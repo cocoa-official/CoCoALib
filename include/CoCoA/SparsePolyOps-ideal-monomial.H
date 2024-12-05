@@ -51,37 +51,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-ideal-monomial.H,v 1.2 2022/02/18 14:11:49 abbott Exp $
-// $Log: SparsePolyOps-ideal-monomial.H,v $
-// Revision 1.2  2022/02/18 14:11:49  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2019/10/15 12:57:55  bigatti
-// -- renamed files for ideals
-//
-// Revision 1.3  2019/10/03 13:33:56  bigatti
-// -- implemented radical for monomial ideals (and used where useful)
-//
-// Revision 1.2  2018/04/19 13:28:36  bigatti
-// -- now only AlexanderDual is exported
-//
-// Revision 1.1  2018/04/06 15:03:31  bigatti
-// -- renamed TmpMonomialIdeal.H
-//
-// Revision 1.4  2018/03/20 11:39:26  bigatti
-// -- -- changed ***MonId --> ***_MonId
-//
-// Revision 1.3  2014/02/25 16:28:30  abbott
-// Summary: Commented out useless includes; added a fwd decl
-// Author: JAA
-//
-// Revision 1.2  2011/07/05 15:02:17  bigatti
-// -- added AlexanderDual
-// -- added ad-hoc functions for colon, elim on monomial ideals
-//
-// Revision 1.1  2011/06/27 13:26:51  bigatti
-// -- first import (some functions were in SparsePolyRing)
-//
-
 #endif

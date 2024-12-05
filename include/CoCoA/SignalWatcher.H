@@ -73,41 +73,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SignalWatcher.H,v 1.10 2024/03/22 20:53:12 abbott Exp $
-// $Log: SignalWatcher.H,v $
-// Revision 1.10  2024/03/22 20:53:12  abbott
-// Summary: Should work with MinGW now (redmine 1661)
-//
-// Revision 1.9  2024/01/21 19:53:30  abbott
-// Summary: Removed cruft
-//
-// Revision 1.8  2022/02/18 14:11:48  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.7  2021/10/30 17:17:05  abbott
-// Summary: Used keyword override (redmine 1625)
-//
-// Revision 1.6  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.5  2020/02/11 17:16:17  abbott
-// Summary: All mem fns like myOutput now return void (redmine 969)
-//
-// Revision 1.4  2019/03/18 17:13:24  abbott
-// Summary: Used nullptr instead of 0
-//
-// Revision 1.3  2017/07/23 15:28:46  abbott
-// Summary: Renamed SetInterruptSignalReceived to SetSignalReceived
-//
-// Revision 1.2  2017/07/22 13:00:59  abbott
-// Summary: Added new exception class InterruptedBySignal; some cleaning
-//
-// Revision 1.1  2017/07/21 13:21:22  abbott
-// Summary: Split olf interrupt into two ==> new file SignalWatcher; refactored interrupt and CpuTimeLimit
-//
-//
-
 #endif

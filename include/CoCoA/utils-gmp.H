@@ -30,34 +30,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/utils-gmp.H,v 1.4 2022/02/18 14:11:52 abbott Exp $
-// $Log: utils-gmp.H,v $
-// Revision 1.4  2022/02/18 14:11:52  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2021/01/31 09:59:37  abbott
-// Summary: Added mpq_get_d_2exp
-//
-// Revision 1.2  2021/01/07 14:48:34  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.1  2016/03/25 20:39:44  abbott
-// Summary: Renamed from utils_gmp to utils-gmp (as otherwise LaTeX crashed when generating doc)
-//
-// Revision 1.3  2016/03/25 20:01:07  abbott
-// Summary: Added new fns mpz_rounddiv & mpq_round
-//
-// Revision 1.2  2014/06/17 10:04:21  abbott
-// Summary: Corrected include directive (gmp.H -> gmp.h)
-// Author: JAA
-//
-// Revision 1.1  2014/06/13 12:08:39  abbott
-// Summary: Header for new GMP fn (CmpAbs for rationals)
-// Author: JAA
-//
-//
-
 #endif

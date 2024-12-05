@@ -39,23 +39,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/RootBound.H,v 1.4 2022/02/18 14:11:48 abbott Exp $
-// $Log: RootBound.H,v $
-// Revision 1.4  2022/02/18 14:11:48  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2020/07/28 08:01:48  abbott
-// Summary: Added RootBoundTransform
-//
-// Revision 1.2  2017/12/12 14:17:24  abbott
-// Summary: Added new fns RootBound_Cauchy and RootBound_LMS; commented out preprocess
-//
-// Revision 1.1  2017/09/14 15:54:54  abbott
-// Summary: Added RootBound
-//
-//
-
 #endif

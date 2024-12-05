@@ -37,27 +37,5 @@ namespace CoCoA
   void ColonIdeal(PPVector& , const PPVector& , const PPVector& );
 }
 
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/TmpMonomialFunctions.H,v 1.6 2024/05/03 12:08:26 abbott Exp $
-// $Log: TmpMonomialFunctions.H,v $
-// Revision 1.6  2024/05/03 12:08:26  abbott
-// Summary: Improved include guard (related to redmine 1811)
-//
-// Revision 1.5  2024/03/28 22:09:41  abbott
-// Summary: Corrected include guards (redmine 1811)
-//
-// Revision 1.4  2022/02/18 14:11:50  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2012/02/01 13:28:53  abbott
-// Changed 1st arg of support into vector<long> (was vector<size_t>)
-//
-// Revision 1.2  2010/02/04 10:54:49  bigatti
-// -- fix: moved forward class declaration inside namespace CoCoA
-//
-// Revision 1.1  2010/02/03 18:41:29  bigatti
-// -- first import
-//
-
 #endif /* TmpMonomialFunctions_H */
 

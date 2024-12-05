@@ -56,21 +56,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/ULongLong2LongLong.H,v 1.3 2024/03/18 20:57:28 abbott Exp $
-// $Log: ULongLong2LongLong.H,v $
-// Revision 1.3  2024/03/18 20:57:28  abbott
-// Summary: Removed const from return value type (redmine 1606)
-//
-// Revision 1.2  2022/02/18 14:11:51  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2022/02/16 21:30:56  abbott
-// Summary: Added long long handling to MachineInt (redmine 581)
-//
-//
-//
-
 #endif

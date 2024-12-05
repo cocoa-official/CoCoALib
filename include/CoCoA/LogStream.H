@@ -47,23 +47,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/LogStream.H,v 1.4 2022/02/18 14:11:46 abbott Exp $
-// $Log: LogStream.H,v $
-// Revision 1.4  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2021/01/07 14:15:03  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.2  2017/04/05 14:23:47  abbott
-// Summary: Revised impl of LogStream
-//
-// Revision 1.1  2017/01/25 13:03:48  abbott
-// Summary: Added new global CoCoA::LogStream
-//
-//
-
 #endif

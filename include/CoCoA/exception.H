@@ -77,48 +77,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/exception.H,v 1.12 2022/10/25 17:20:38 abbott Exp $
-// $Log: exception.H,v $
-// Revision 1.12  2022/10/25 17:20:38  abbott
-// Summary: Added attribute [[noreturn]]
-//
-// Revision 1.11  2022/02/18 14:11:51  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.10  2021/11/03 19:21:41  abbott
-// Summary: Changed ctor arg types (was const string&, now string)
-//
-// Revision 1.9  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.8  2021/01/07 14:48:33  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.7  2020/06/19 19:42:59  abbott
-// Summary: Cleaned; removed cruft
-//
-// Revision 1.6  2020/06/19 19:39:21  abbott
-// Summary: Now all throws go through new template fn ThrowException; seems to work
-//
-// Revision 1.5  2020/06/19 14:57:34  abbott
-// Summary: Added new fn ThrowException (similar to ThrowError)
-//
-// Revision 1.4  2020/02/11 17:16:17  abbott
-// Summary: All mem fns like myOutput now return void (redmine 969)
-//
-// Revision 1.3  2017/07/22 12:59:37  abbott
-// Summary: Added virt mem fn myOutputSelf; added PrintInFrame.
-//
-// Revision 1.2  2017/07/15 15:16:33  abbott
-// Summary: Removed useless include directive
-//
-// Revision 1.1  2015/06/26 14:56:25  abbott
-// Summary: Created new class "exception"
-// Author: JAA
-//
-//
-
 #endif

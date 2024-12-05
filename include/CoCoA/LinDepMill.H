@@ -54,22 +54,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/LinDepMill.H,v 1.4 2022/02/18 14:11:46 abbott Exp $
-// $Log: LinDepMill.H,v $
-// Revision 1.4  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2019/09/16 17:44:28  abbott
-// Summary: Minor tidying
-//
-// Revision 1.2  2019/03/04 10:18:08  abbott
-// Summary: Changed auto_ptr into unqiue_ptr
-//
-// Revision 1.1  2018/01/17 12:41:26  abbott
-// Summary: new headers
-//
-//
-
 #endif

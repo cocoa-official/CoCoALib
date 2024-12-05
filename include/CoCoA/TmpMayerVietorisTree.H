@@ -110,43 +110,5 @@ int MVTProjDim(const PPVector& );
 
 }
 
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/TmpMayerVietorisTree.H,v 1.12 2024/03/28 22:09:41 abbott Exp $
-// $Log: TmpMayerVietorisTree.H,v $
-// Revision 1.12  2024/03/28 22:09:41  abbott
-// Summary: Corrected include guards (redmine 1811)
-//
-// Revision 1.11  2022/02/18 14:11:50  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.10  2014/09/04 12:17:05  bigatti
-// -- handy interface with ideal (should it be here or in MonomialIdeal?)
-//
-// Revision 1.9  2014/08/16 13:23:24  abbott
-// Summary: Cleaned up include directives; added fwd decl; exposed a print operator
-// Author: JAA
-//
-// Revision 1.8  2011/08/14 15:52:17  abbott
-// Changed ZZ into BigInt (phase 1: just the library sources).
-//
-// Revision 1.7  2009/10/28 15:44:05  bigatti
-// -- changed MVTProjectiveDimension into MVTProjDim
-//
-// Revision 1.6  2009/10/28 10:12:22  bigatti
-// -- updates by Eduardo Saenz-de-Cabezon
-//
-// Revision 1.5  2009/06/10 08:19:16  bigatti
-// -- additions at the CoCoASchool
-//
-// Revision 1.4  2008/07/16 10:00:52  bigatti
-// -- added: Betti diagram (by Eduardo Saenz-de-Cabezon)
-//
-// Revision 1.3  2008/07/04 12:12:56  bigatti
-// -- added general MayerVietorisTree
-//
-// Revision 1.2  2008/07/04 09:11:04  bigatti
-// -- new PPVector class
-//
-
 #endif /* TmpMVT_H */
 

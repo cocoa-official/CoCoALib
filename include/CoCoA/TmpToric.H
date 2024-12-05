@@ -33,14 +33,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/TmpToric.H,v 1.2 2022/02/18 14:11:51 abbott Exp $
-// $Log: TmpToric.H,v $
-// Revision 1.2  2022/02/18 14:11:51  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2011/05/09 14:29:05  bigatti
-// (Module): first import
-//
 #endif

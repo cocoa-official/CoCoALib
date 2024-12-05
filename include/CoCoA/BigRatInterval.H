@@ -100,26 +100,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/BigRatInterval.H,v 1.5 2022/02/18 14:11:44 abbott Exp $
-// $Log: BigRatInterval.H,v $
-// Revision 1.5  2022/02/18 14:11:44  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2018/05/22 14:16:39  abbott
-// Summary: Split BigRat into BigRat (class defn + ctors) and BigRatOps
-//
-// Revision 1.3  2018/04/20 13:10:17  abbott
-// Summary: Corrected fn name
-//
-// Revision 1.2  2018/04/20 12:55:30  abbott
-// Summary: Added arith ops betw BigRatInterval and BigRat; added fn merge
-//
-// Revision 1.1  2018/04/18 14:15:21  abbott
-// Summary: New files for BigRatInterval
-//
-//
-
 #endif

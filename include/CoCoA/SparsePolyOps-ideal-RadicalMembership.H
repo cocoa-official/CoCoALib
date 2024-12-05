@@ -31,23 +31,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-ideal-RadicalMembership.H,v 1.2 2022/02/18 14:11:49 abbott Exp $
-// $Log: SparsePolyOps-ideal-RadicalMembership.H,v $
-// Revision 1.2  2022/02/18 14:11:49  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2022/02/05 19:59:29  abbott
-// Summary: Renamed RadicalMembership files (redmine 1612)
-//
-// Revision 1.1  2018/04/06 15:00:39  bigatti
-// -- renamed RadicalMembership.H
-//
-// Revision 1.1  2017/07/19 16:39:02  abbott
-// Summary: Added RadicalMembership
-//
-//
-
 #endif

@@ -55,41 +55,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-cyclotomic.H,v 1.10 2024/01/25 08:39:33 abbott Exp $
-// $Log: SparsePolyOps-cyclotomic.H,v $
-// Revision 1.10  2024/01/25 08:39:33  abbott
-// Summary: Improved comments
-//
-// Revision 1.9  2023/12/09 20:29:49  abbott
-// Summary: Split "eval" fns out of SparsePolyOps-cyclotomic, into SparsePolyOps-eval; added example & doc
-//
-// Revision 1.8  2023/11/21 22:07:46  abbott
-// Summary: Added TEMPORARY EvalUPoly (needs to proerly done)
-//
-// Revision 1.7  2023/10/05 18:06:10  abbott
-// Summary: Added CyclotomicFactors_BeukersSmyth
-//
-// Revision 1.6  2023/06/06 19:20:59  abbott
-// Summary: Now have CyclotomicTest and CyclotomicIndex
-//
-// Revision 1.5  2023/05/11 19:27:13  abbott
-// Summary: Added CycloFactorIndexes; some other temp changes
-//
-// Revision 1.4  2023/03/15 21:32:36  abbott
-// Summary: Renamed CycloFactors to CyclotomicFactors; also refined semantics
-//
-// Revision 1.3  2023/02/23 20:50:47  abbott
-// Summary: Added new fn CycloFactors (poor name)
-//
-// Revision 1.2  2023/01/31 12:32:56  abbott
-// Summary: Moved CyclotomicIndex (& unchecked version) here from SparsePolyOps-Cyclotomicity
-//
-// Revision 1.1  2023/01/01 11:33:43  abbott
-// Summary: Improved impl of cyclotomic; also cyclotomic moved to new file
-//
-//
-
-
 #endif

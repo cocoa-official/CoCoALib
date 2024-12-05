@@ -39,17 +39,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/RingExtAlg.H,v 1.2 2022/02/18 14:11:48 abbott Exp $
-// $Log: RingExtAlg.H,v $
-// Revision 1.2  2022/02/18 14:11:48  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2018/01/31 10:01:28  abbott
-// Summary: Added new files RingExtAlg (exterior algebra)
-//
-//
-
 #endif

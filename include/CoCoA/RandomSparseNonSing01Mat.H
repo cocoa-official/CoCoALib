@@ -30,23 +30,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/RandomSparseNonSing01Mat.H,v 1.4 2022/02/18 14:11:48 abbott Exp $
-// $Log: RandomSparseNonSing01Mat.H,v $
-// Revision 1.4  2022/02/18 14:11:48  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2020/01/26 14:17:25  abbott
-// Summary: Removed useless include
-//
-// Revision 1.2  2018/01/16 11:42:14  abbott
-// Summary: Changed include guard
-//
-// Revision 1.1  2017/11/14 14:59:35  abbott
-// Summary: New fns: RandomSmallPrime, RandomSparseNonSing01Matrix
-//
-//
-
 #endif

@@ -44,33 +44,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/RingElemInput.H,v 1.8 2022/02/18 14:11:48 abbott Exp $
-// $Log: RingElemInput.H,v $
-// Revision 1.8  2022/02/18 14:11:48  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.7  2020/10/30 19:32:44  abbott
-// Summary: Added RingElemVec (redmine 1509)
-//
-// Revision 1.6  2020/01/10 15:39:33  abbott
-// Summary: Corrected copyright notice
-//
-// Revision 1.5  2019/10/18 14:11:19  bigatti
-// -- Renamed ReadExprVector --> RingElems
-//
-// Revision 1.4  2019/10/09 16:37:36  bigatti
-// -- added ReadExprVector
-//
-// Revision 1.3  2014/07/15 16:54:35  abbott
-// Summary: Corrected name of include guard
-// Author: JAA
-//
-// Revision 1.2  2014/03/21 15:57:19  bigatti
-// -- Ring is now first argument of ReadExpr
-//
-// Revision 1.1  2014/01/30 15:15:01  bigatti
-// -- first import
-//
-
 #endif

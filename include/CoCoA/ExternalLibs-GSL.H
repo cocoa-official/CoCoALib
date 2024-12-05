@@ -80,26 +80,4 @@ namespace CoCoA
 }
 #endif
 
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/ExternalLibs-GSL.H,v 1.9 2022/02/18 14:11:45 abbott Exp $
-// $Log: ExternalLibs-GSL.H,v $
-// Revision 1.9  2022/02/18 14:11:45  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.8  2017/03/13 12:17:08  abbott
-// Summary: Include PREPROCESSOR_DEFNS.H (in header files which need the info)
-//
-// Revision 1.7  2014/09/02 15:40:09  bigatti
-// -- added "Gsl" prefix
-//
-// Revision 1.6  2014/04/17 13:37:07  bigatti
-// -- MatrixViews --> MatrixView
-//
-// Revision 1.5  2013/07/23 12:32:13  bigatti
-// -- removed indlude library.H
-//
-// Revision 1.4  2011/04/27 09:41:04  bigatti
-// -- minor reshape
-//
-
 #endif

@@ -124,48 +124,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/DUPFp.H,v 1.12 2024/07/31 07:52:46 abbott Exp $
-// $Log: DUPFp.H,v $
-// Revision 1.12  2024/07/31 07:52:46  abbott
-// Summary: Switched to new CoCoA_THROW_ERROR macros (with suffix 1 or 2)
-//
-// Revision 1.11  2022/03/07 14:28:19  abbott
-// Summary: Added explicit default copy ctor to avoid g++ v.9 warning
-//
-// Revision 1.10  2022/02/18 14:11:45  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.9  2021/01/07 14:11:05  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.8  2020/10/27 09:49:29  abbott
-// Summary: Added check that factorization is not over a field (redmine 1499)
-//
-// Revision 1.7  2020/06/17 15:49:20  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.6  2015/11/30 21:58:13  abbott
-// Summary: Minor cleaning; added 2 comments
-//
-// Revision 1.5  2015/11/04 12:16:27  abbott
-// Summary: Consequential changes (after revising SmallFpImpl)
-//
-// Revision 1.4  2014/03/24 12:12:25  abbott
-// Summary: Added template specializations for new factorization impl/interface
-// Author: JAA
-//
-// Revision 1.3  2013/03/25 17:24:28  abbott
-// Added several new fns (mostly just "copied" from old C4 code).
-//
-// Revision 1.2  2013/02/21 12:56:42  abbott
-// Added new fns monic, deriv, gcd, and factor.
-//
-// Revision 1.1  2012/11/23 17:32:16  abbott
-// Added new class DUPFp for dense univariate polys over a small finite field.
-//
-//
-
 #endif
