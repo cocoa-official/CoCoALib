@@ -39,31 +39,3 @@ veryclean: veryclean-local
 
 veryclean-local: clean-local
 	@/bin/rm -f  CoCoALib-tasks.html  CoCoALib-CompletedTasks.html
-
-
-# Next few lines are for RCS header/log
-# $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/doc/CoCoALib-tasks/Makefile,v 1.18 2022/11/04 15:23:57 abbott Exp $Log
-# $Log: Makefile,v $
-# Revision 1.18  2022/11/04 15:23:57  abbott
-# Summary: Replaced hardwired "g++" by $CXX -- fixed by Ulrich
-#
-# Revision 1.17  2022/03/16 18:16:47  abbott
-# Summary: Added some spaces
-#
-# Revision 1.16  2022/02/22 09:35:57  abbott
-# Summary: Corrected first comment
-#
-# Revision 1.15  2017/02/14 17:06:29  abbott
-# Summary: Updated clean/veryclean targets in all Makefiles
-#
-# Revision 1.14  2014/07/28 14:42:51  abbott
-# Summary: Improved the cleaning targets
-# Author: JAA
-#
-# Revision 1.13  2014/03/14 11:00:27  abbott
-# Summary: clean and veryclean targets now delete *~ and .*~ files too
-# Author: JAA
-#
-# Revision 1.12  2011/08/31 09:38:06  bigatti
-# -- made target "default" NOTPARALLEL
-#
