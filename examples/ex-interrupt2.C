@@ -104,33 +104,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-interrupt2.C,v 1.8 2024/03/08 19:59:58 abbott Exp $
-// $Log: ex-interrupt2.C,v $
-// Revision 1.8  2024/03/08 19:59:58  abbott
-// Summary: Used constexpr (redmine 1511)
-//
-// Revision 1.7  2024/01/21 19:52:07  abbott
-// Summary: Added clarification
-//
-// Revision 1.6  2022/02/13 09:57:01  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.5  2017/08/08 13:48:48  abbott
-// Summary: Improved var name and a comment
-//
-// Revision 1.4  2017/07/22 16:10:53  abbott
-// Summary: doc for SignalWatcher
-//
-// Revision 1.3  2017/07/22 12:53:11  abbott
-// Summary: Minor improvements
-//
-// Revision 1.2  2017/07/14 14:02:24  abbott
-// Summary: Removed cruft
-//
-// Revision 1.1  2017/07/08 19:07:48  abbott
-// Summary: updated example for interrupt; added new example too.
-//
-//

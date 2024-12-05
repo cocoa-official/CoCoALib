@@ -75,28 +75,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-NumTheory2.C,v 1.8 2022/02/13 09:56:57 abbott Exp $
-// $Log: ex-NumTheory2.C,v $
-// Revision 1.8  2022/02/13 09:56:57  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.7  2020/06/17 15:49:19  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.6  2015/11/21 19:14:39  abbott
-// Summary: Corrected "greater than" to "greater or equal"
-//
-// Revision 1.5  2015/06/29 15:27:25  bigatti
-// -- minor fix
-//
-// Revision 1.4  2015/06/29 12:20:43  bigatti
-// -- moved in cocoa namespace
-//
-// Revision 1.3  2015/06/25 16:08:05  abbott
-// Summary: New example for CRTMill (moved old ex-NumTheory2 --> ex-NumTheory4)
-// Author: JAA
-//
-//

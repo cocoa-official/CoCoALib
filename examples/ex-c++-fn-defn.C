@@ -109,24 +109,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-c++-fn-defn.C,v 1.4 2022/02/13 09:57:00 abbott Exp $
-// $Log: ex-c++-fn-defn.C,v $
-// Revision 1.4  2022/02/13 09:57:00  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.3  2021/09/03 12:59:37  abbott
-// Summary: Improved comments/descr
-//
-// Revision 1.2  2019/03/27 14:57:37  bigatti
-// -- better layout for example of C++ syntax
-//
-// Revision 1.1  2017/02/15 12:22:41  abbott
-// Summary: New C++ examples
-//
-// Revision 1.1  2017/02/10 16:31:25  abbott
-// Summary: Added new examples for C++: ex-c++-basic, ex-c++-arith, ex-c++-for-loop
-//
-//

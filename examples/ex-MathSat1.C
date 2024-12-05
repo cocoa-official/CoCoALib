@@ -106,29 +106,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-MathSat1.C,v 1.7 2019/09/16 14:38:52 abbott Exp $
-// $Log: ex-MathSat1.C,v $
-// Revision 1.7  2019/09/16 14:38:52  abbott
-// Summary: Removed useless include of gmpxx.h
-//
-// Revision 1.6  2017/12/15 16:03:22  bigatti
-// -- polished examples
-//
-// Revision 1.5  2017/08/08 14:22:20  bigatti
-// -- updated example (after SC2 worshop 2017)
-//
-// Revision 1.4  2017/07/14 09:31:15  bigatti
-// -- new class MathSAT::env.  Consequent changes
-//
-// Revision 1.3  2017/07/13 16:21:39  bigatti
-// -- three MathSAT examples, following the development of the interface
-//
-// Revision 1.2  2017/07/12 16:44:53  bigatti
-// -- developed experimental code for MathSat and moved it from example
-//    to ExternalLib-MathSAT.[CH]
-//
-// Revision 1.1  2017/02/24 08:19:39  bigatti
-// -- first import

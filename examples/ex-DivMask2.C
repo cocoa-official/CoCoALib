@@ -181,31 +181,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-DivMask2.C,v 1.7 2022/02/13 09:56:56 abbott Exp $
-// $Log: ex-DivMask2.C,v $
-// Revision 1.7  2022/02/13 09:56:56  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.6  2015/11/04 10:14:20  abbott
-// Summary: Made example faster
-//
-// Revision 1.5  2015/06/25 16:40:27  abbott
-// Summary: Moved code into namespace CoCoA (redmine 739)
-// Author: JAA
-//
-// Revision 1.4  2012/05/04 20:01:19  abbott
-// Minor modifications to reduce execution time (usu. by reducing number of iterations).
-//
-// Revision 1.3  2010/12/17 16:07:55  abbott
-// Ensured that all i/o in examples is on standard C++ streams
-// (rather than GlobalInput(), etc).
-//
-// Revision 1.2  2010/03/18 18:06:11  bigatti
-// -- improved syntax for PPOrdering argument
-//
-// Revision 1.1  2010/02/01 22:36:59  abbott
-// Added new examples for DivMasks and PPWithMask.
-//

@@ -105,29 +105,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-PPVector1.C,v 1.8 2022/02/13 09:56:58 abbott Exp $
-// $Log: ex-PPVector1.C,v $
-// Revision 1.8  2022/02/13 09:56:58  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.7  2019/10/29 16:01:17  bigatti
-// -- added use of constructor
-//
-// Revision 1.6  2018/09/28 15:54:03  abbott
-// Summary: Removed pseudo-ctors NewPolyRing which took just num of indets; now must specify their names
-//
-// Revision 1.5  2015/06/29 15:41:17  bigatti
-// *** empty log message ***
-//
-// Revision 1.4  2015/06/29 12:45:12  bigatti
-// -- code in namespace CoCoA
-//
-// Revision 1.3  2014/07/14 11:47:01  abbott
-// Summary: Minor tidying
-// Author: JAA
-//
-// Revision 1.2  2014/07/03 06:44:45  bigatti
-// -- improved
-//

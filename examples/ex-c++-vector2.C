@@ -107,30 +107,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-c++-vector2.C,v 1.5 2021/10/07 14:30:37 abbott Exp $
-// $Log: ex-c++-vector2.C,v $
-// Revision 1.5  2021/10/07 14:30:37  abbott
-// Summary: Minor clarifications
-//
-// Revision 1.4  2021/09/16 11:40:25  bigatti
-// Summary: polished
-//
-// Revision 1.3  2021/09/03 13:04:08  abbott
-// Summary: Added example for "concat"
-//
-// Revision 1.2  2020/03/06 17:37:08  bigatti
-// -- long (instead of int)
-//
-// Revision 1.1  2020/02/14 09:42:37  abbott
-// Summary: Moved Anna's example about translating first/last into C++ into new file ex-c++-vector2.C
-//
-// Revision 1.1  2017/02/15 12:22:42  abbott
-// Summary: New C++ examples
-//
-// Revision 1.1  2017/02/10 16:31:25  abbott
-// Summary: Added new examples for C++: ex-c++-basic, ex-c++-arith, ex-c++-for-loop
-//
-//

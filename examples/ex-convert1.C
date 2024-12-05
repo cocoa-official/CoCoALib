@@ -125,29 +125,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-convert1.C,v 1.6 2024/03/08 19:59:58 abbott Exp $
-// $Log: ex-convert1.C,v $
-// Revision 1.6  2024/03/08 19:59:58  abbott
-// Summary: Used constexpr (redmine 1511)
-//
-// Revision 1.5  2022/02/13 09:57:00  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.4  2015/06/25 16:40:28  abbott
-// Summary: Moved code into namespace CoCoA (redmine 739)
-// Author: JAA
-//
-// Revision 1.3  2014/03/19 15:44:12  abbott
-// Summary: Modified so that expected output appears on cout (and not cerr)
-// Author: JAA
-//
-// Revision 1.2  2014/02/28 16:08:58  bigatti
-// -- added example of ConvertTo with custom error message
-//
-// Revision 1.1  2013/03/26 14:54:11  abbott
-// New example for conversion fns.
-//
-//

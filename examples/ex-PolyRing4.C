@@ -101,32 +101,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-PolyRing4.C,v 1.8 2022/02/13 09:56:58 abbott Exp $
-// $Log: ex-PolyRing4.C,v $
-// Revision 1.8  2022/02/13 09:56:58  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.7  2018/09/28 15:54:03  abbott
-// Summary: Removed pseudo-ctors NewPolyRing which took just num of indets; now must specify their names
-//
-// Revision 1.6  2015/07/27 11:50:50  bigatti
-// -- now using "symbols(string)" for comma separated symbols
-//
-// Revision 1.5  2015/06/29 15:41:17  bigatti
-// *** empty log message ***
-//
-// Revision 1.4  2015/06/29 12:45:12  bigatti
-// -- code in namespace CoCoA
-//
-// Revision 1.3  2014/04/17 13:22:48  bigatti
-// -- more rings
-//
-// Revision 1.2  2014/04/17 13:15:35  bigatti
-// -- simplified
-//
-// Revision 1.1  2014/04/17 08:44:27  bigatti
-// -- first import
-//

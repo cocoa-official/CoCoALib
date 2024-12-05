@@ -107,30 +107,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-c++-loop-while.C,v 1.4 2023/03/09 22:31:02 abbott Exp $
-// $Log: ex-c++-loop-while.C,v $
-// Revision 1.4  2023/03/09 22:31:02  abbott
-// Summary: Improved do..while loop example
-//
-// Revision 1.3  2022/02/13 09:57:00  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.2  2021/09/16 20:00:01  abbott
-// Summary: Fixed minor bug
-//
-// Revision 1.1  2021/09/03 13:02:32  abbott
-// Summary: Example of while and do...while loops
-//
-// Revision 1.3  2019/03/27 14:57:37  bigatti
-// -- better layout for example of C++ syntax
-//
-// Revision 1.2  2017/02/15 12:22:24  abbott
-// Summary: Added countdown loop; several minor changes
-//
-// Revision 1.1  2017/02/10 16:31:25  abbott
-// Summary: Added new examples for C++: ex-c++-basic, ex-c++-arith, ex-c++-for-loop
-//
-//

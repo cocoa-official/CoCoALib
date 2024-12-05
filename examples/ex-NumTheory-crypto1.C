@@ -399,12 +399,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-NumTheory-crypto1.C,v 1.1 2018/05/16 14:05:42 bigatti Exp $
-// $Log: ex-NumTheory-crypto1.C,v $
-// Revision 1.1  2018/05/16 14:05:42  bigatti
-// -- first import
-//

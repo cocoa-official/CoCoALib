@@ -464,37 +464,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-MVT-SqFr.C,v 1.10 2022/03/04 11:29:57 bigatti Exp $
-// $Log: ex-MVT-SqFr.C,v $
-// Revision 1.10  2022/03/04 11:29:57  bigatti
-// Summary: added dates for Orig author
-//
-// Revision 1.9  2022/02/13 09:56:57  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.8  2020/06/17 15:49:19  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.7  2017/04/27 15:24:52  bigatti
-// -- changed ReadExpr --> RingElem
-//
-// Revision 1.6  2016/05/27 16:03:32  bigatti
-// -- class for MVTSquareFree
-// -- recursion
-//
-// Revision 1.4  2016/05/24 07:58:11  bigatti
-// -- minor changes in special_insert
-//
-// Revision 1.3  2016/05/24 07:35:01  bigatti
-// -- optimized special_insert
-// -- indentation
-//
-// Revision 1.2  2016/05/23 16:52:13  bigatti
-// -- new version with myAccumulatingPivot
-//
-// Revision 1.1  2016/05/23 12:49:45  bigatti
-// -- first import
-//

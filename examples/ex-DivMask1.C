@@ -122,28 +122,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-DivMask1.C,v 1.6 2022/02/13 09:56:56 abbott Exp $
-// $Log: ex-DivMask1.C,v $
-// Revision 1.6  2022/02/13 09:56:56  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.5  2015/07/28 11:54:18  bigatti
-// -- new syntax for indets in NewPolyRing
-//
-// Revision 1.4  2015/06/25 16:40:27  abbott
-// Summary: Moved code into namespace CoCoA (redmine 739)
-// Author: JAA
-//
-// Revision 1.3  2010/12/17 16:07:55  abbott
-// Ensured that all i/o in examples is on standard C++ streams
-// (rather than GlobalInput(), etc).
-//
-// Revision 1.2  2010/02/03 16:10:22  abbott
-// Changed to more compact PPMonoid pseudo ctor
-//
-// Revision 1.1  2010/02/01 22:36:59  abbott
-// Added new examples for DivMasks and PPWithMask.
-//

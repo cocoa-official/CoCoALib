@@ -73,18 +73,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-SmallFp2.C,v 1.3 2022/02/13 09:56:59 abbott Exp $
-// $Log: ex-SmallFp2.C,v $
-// Revision 1.3  2022/02/13 09:56:59  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.2  2021/03/04 21:03:45  abbott
-// Summary: enum revision and renaming (redmine 894)
-//
-// Revision 1.1  2015/11/04 10:12:02  abbott
-// Summary: New example
-//
-//
