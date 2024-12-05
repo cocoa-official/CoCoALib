@@ -132,27 +132,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-adj.C,v 1.6 2024/08/28 15:23:58 bigatti Exp $
-// $Log: MatrixOps-adj.C,v $
-// Revision 1.6  2024/08/28 15:23:58  bigatti
-// Summary: now using CoCoA_THROW_ERROR1/2
-//
-// Revision 1.5  2022/02/18 14:11:54  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2021/10/04 08:54:44  abbott
-// Summary: Replaced calls to apply by direct applic of ringhom (redmine 1467, 1598)
-//
-// Revision 1.3  2021/01/07 15:16:51  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.2  2020/10/06 19:15:02  abbott
-// Summary: Replaced power(-1,...) by SmallPower(-1,...)
-//
-// Revision 1.1  2020/09/28 11:13:36  abbott
-// Summary: Further splitting of MatrixOps (redmine 1196)
-//
-//

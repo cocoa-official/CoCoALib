@@ -103,39 +103,3 @@ namespace CoCoA
 
 
 }  // end of namespace CoCoA
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/TmpMonomialFunctions.C,v 1.16 2023/03/09 22:41:07 abbott Exp $
-// $Log: TmpMonomialFunctions.C,v $
-// Revision 1.16  2023/03/09 22:41:07  abbott
-// Summary: Tidied use of exponents (redmine 1694)
-//
-// Revision 1.15  2022/10/11 15:39:35  bigatti
-// Summary: using new interface of exponents returning vector
-//
-// Revision 1.14  2022/02/18 14:12:01  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.13  2021/07/19 11:26:08  abbott
-// Summary: Layout
-//
-// Revision 1.12  2014/04/30 16:24:27  abbott
-// Summary: Replaced X.size() by len(X)
-// Author: JAA
-//
-// Revision 1.11  2012/02/01 13:31:39  abbott
-// Removed several unnecessary includes.
-//
-// Revision 1.10  2011/12/23 14:57:11  bigatti
-// -- changed and --> && , or --> ||
-//
-// Revision 1.9  2011/08/14 15:52:16  abbott
-// Changed ZZ into BigInt (phase 1: just the library sources).
-//
-// Revision 1.8  2011/07/05 15:02:17  bigatti
-// -- added AlexanderDual
-// -- added ad-hoc functions for colon, elim on monomial ideals
-//
-// Revision 1.7  2011/03/22 15:30:07  bigatti
-// -- added cvs log
-//

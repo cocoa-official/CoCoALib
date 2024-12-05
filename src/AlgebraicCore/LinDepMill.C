@@ -185,38 +185,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/LinDepMill.C,v 1.9 2024/07/14 10:27:03 abbott Exp $
-// $Log: LinDepMill.C,v $
-// Revision 1.9  2024/07/14 10:27:03  abbott
-// Summary: Changed ERR::NotField into ERR::ReqField
-//
-// Revision 1.8  2024/07/02 15:31:12  bigatti
-// Summary: Changed error codes: LogZero into ReqNonZero
-//
-// and Not... into ReqNonNegative, ReqNonNegativeGrading, ReqPositive, ReqPositiveGrading
-//
-// Revision 1.7  2022/02/18 14:11:54  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2021/10/30 11:53:48  abbott
-// Summary: Used keyword override (redmine 1625); a little tidying too
-//
-// Revision 1.5  2020/06/17 15:49:23  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.4  2019/11/14 17:49:24  abbott
-// Summary: Removed some commented out cruft
-//
-// Revision 1.3  2018/12/17 14:44:17  bigatti
-// -- just comments
-//
-// Revision 1.2  2018/05/17 16:03:19  bigatti
-// -- renamed VectorOperations --> VectorOps
-//
-// Revision 1.1  2018/01/17 11:19:15  abbott
-// Summary: Separated LinDepMill from MinPoly
-//
-//

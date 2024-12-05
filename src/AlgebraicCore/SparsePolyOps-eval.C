@@ -199,16 +199,3 @@ namespace CoCoA
   
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-eval.C,v 1.2 2024/07/02 09:57:58 bigatti Exp $
-// $Log: SparsePolyOps-eval.C,v $
-// Revision 1.2  2024/07/02 09:57:58  bigatti
-// Summary: error codes, first batch:
-// ReqUnivariate, ReqNonZero, ReqNonZeroGradingDim, ReqNonZeroModulus,  ReqNonZeroRingElem
-//
-// Revision 1.1  2023/12/09 20:29:49  abbott
-// Summary: Split "eval" fns out of SparsePolyOps-cyclotomic, into SparsePolyOps-eval; added example & doc
-//
-//

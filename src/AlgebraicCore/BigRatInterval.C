@@ -141,33 +141,3 @@ namespace CoCoA
   }
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/BigRatInterval.C,v 1.8 2022/02/18 14:11:53 abbott Exp $
-// $Log: BigRatInterval.C,v $
-// Revision 1.8  2022/02/18 14:11:53  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.7  2021/01/15 16:59:33  abbott
-// Summary: Redmine 1563: new ctor for BigRat direct from integer
-//
-// Revision 1.6  2020/06/17 15:49:22  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.5  2020/01/26 14:41:58  abbott
-// Summary: Revised includes after splitting NumTheory (redmine 1161)
-//
-// Revision 1.4  2019/03/18 11:13:52  abbott
-// Summary: Added include directives after changing NumTheory
-//
-// Revision 1.3  2018/04/20 13:10:40  abbott
-// Summary: Corrected fn name
-//
-// Revision 1.2  2018/04/20 12:55:31  abbott
-// Summary: Added arith ops betw BigRatInterval and BigRat; added fn merge
-//
-// Revision 1.1  2018/04/18 14:15:21  abbott
-// Summary: New files for BigRatInterval
-//
-//

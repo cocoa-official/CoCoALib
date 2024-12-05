@@ -63,37 +63,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/exception.C,v 1.9 2022/02/18 14:12:02 abbott Exp $
-// $Log: exception.C,v $
-// Revision 1.9  2022/02/18 14:12:02  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.8  2021/01/07 15:23:38  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.7  2020/06/19 19:39:21  abbott
-// Summary: Now all throws go through new template fn ThrowException; seems to work
-//
-// Revision 1.6  2020/06/19 14:57:34  abbott
-// Summary: Added new fn ThrowException (similar to ThrowError)
-//
-// Revision 1.5  2020/02/11 16:56:42  abbott
-// Summary: Corrected last update (see redmine 969)
-//
-// Revision 1.4  2020/02/11 16:12:20  abbott
-// Summary: Added some checks for bad ostream (even to mem fns myOutput); see redmine 969
-//
-// Revision 1.3  2017/07/22 12:59:38  abbott
-// Summary: Added virt mem fn myOutputSelf; added PrintInFrame.
-//
-// Revision 1.2  2016/11/11 14:15:34  abbott
-// Summary: Added short-cut to operator<< when ostream is in bad state
-//
-// Revision 1.1  2015/06/26 14:56:25  abbott
-// Summary: Created new class "exception"
-// Author: JAA
-//
-//

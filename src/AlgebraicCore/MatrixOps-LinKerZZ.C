@@ -158,24 +158,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-LinKerZZ.C,v 1.5 2022/02/18 14:11:54 abbott Exp $
-// $Log: MatrixOps-LinKerZZ.C,v $
-// Revision 1.5  2022/02/18 14:11:54  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2022/02/07 17:30:51  abbott
-// Summary: Fixed bug (redmine 1658)
-//
-// Revision 1.3  2021/04/26 13:57:14  abbott
-// Summary: Fixed incorrect vector size; changed name of variable; redmine 1590
-//
-// Revision 1.2  2020/06/17 15:49:23  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.1  2020/02/28 08:56:18  abbott
-// Summary: Added LinKerZZ
-//
-//

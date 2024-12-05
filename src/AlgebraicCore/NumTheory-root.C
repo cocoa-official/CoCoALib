@@ -185,28 +185,3 @@ namespace CoCoA
   }
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/NumTheory-root.C,v 1.6 2023/02/16 20:47:39 abbott Exp $
-// $Log: NumTheory-root.C,v $
-// Revision 1.6  2023/02/16 20:47:39  abbott
-// Summary: Cleaned up impl of StarRoot
-//
-// Revision 1.5  2023/02/14 19:59:20  abbott
-// Summary: Partially improved & cleaned (still needs work!)
-//
-// Revision 1.4  2022/08/05 11:37:29  abbott
-// Summary: Added comments
-//
-// Revision 1.3  2022/02/18 14:11:56  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.2  2022/02/02 09:24:46  abbott
-// Summary: Minor improvements (redmine 1657)
-//
-// Revision 1.1  2022/01/20 19:15:57  abbott
-// Summary: Added new fns StarRoot and CertifyNotPower
-//
-//
-//

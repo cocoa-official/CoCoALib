@@ -150,34 +150,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/utils-gmp.C,v 1.6 2022/08/05 11:38:18 abbott Exp $
-// $Log: utils-gmp.C,v $
-// Revision 1.6  2022/08/05 11:38:18  abbott
-// Summary: Added parens & a comment
-//
-// Revision 1.5  2022/02/18 14:12:03  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2021/09/13 15:34:14  abbott
-// Summary: Some commented out code (probably useless, but notto lose it yet)
-//
-// Revision 1.3  2021/01/31 10:00:18  abbott
-// Summary: Added mpq_get_d_2exp; added some brief doc
-//
-// Revision 1.2  2021/01/07 15:23:39  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.1  2016/03/25 20:39:44  abbott
-// Summary: Renamed from utils_gmp to utils-gmp (as otherwise LaTeX crashed when generating doc)
-//
-// Revision 1.2  2016/03/25 20:01:07  abbott
-// Summary: Added new fns mpz_rounddiv & mpq_round
-//
-// Revision 1.1  2014/06/13 12:05:58  abbott
-// Summary: new GMP fn for CmpAbs of rationals
-// Author: JAA
-//
-//

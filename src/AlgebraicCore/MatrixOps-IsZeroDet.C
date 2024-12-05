@@ -184,22 +184,3 @@ namespace CoCoA
 
 
 }  // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-IsZeroDet.C,v 1.4 2024/08/28 15:23:58 bigatti Exp $
-// $Log: MatrixOps-IsZeroDet.C,v $
-// Revision 1.4  2024/08/28 15:23:58  bigatti
-// Summary: now using CoCoA_THROW_ERROR1/2
-//
-// Revision 1.3  2024/04/12 16:55:52  abbott
-// Summary: Changed name of CPP symbol which signifies that longs are 32 bits (redmine 1661/1804)
-//
-// Revision 1.2  2024/03/25 08:04:26  abbott
-// Summary: Modifications to work  on MinGW (& 32 bitters) (redmine 1661)
-//
-// Revision 1.1  2022/12/05 21:44:02  abbott
-// Summary: New impl of IsZeroDet
-//
-//
-//

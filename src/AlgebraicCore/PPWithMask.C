@@ -97,33 +97,3 @@ namespace CoCoA
   }
 
 }  // end of namespace CoCoA
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/PPWithMask.C,v 1.10 2022/02/18 14:11:56 abbott Exp $
-// $Log: PPWithMask.C,v $
-// Revision 1.10  2022/02/18 14:11:56  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.9  2019/12/11 14:51:18  abbott
-// Summary: Removed 1 line of cruft
-//
-// Revision 1.8  2016/11/11 14:15:33  abbott
-// Summary: Added short-cut to operator<< when ostream is in bad state
-//
-// Revision 1.7  2011/03/10 17:28:56  bigatti
-// -- using len instead of size in assert
-//
-// Revision 1.6  2010/12/26 13:04:37  abbott
-// Changed "GlobalXXXput" into corresponding std C++ stream
-// (even in commented out code).
-//
-// Revision 1.5  2010/07/14 08:59:05  bigatti
-// -- added mySwap
-//
-// Revision 1.4  2008/09/16 15:02:52  bigatti
-// -- added operator=(pp)
-// -- added operator=(v)
-//
-// Revision 1.3  2008/05/27 16:20:10  bigatti
-// *** empty log message ***
-//

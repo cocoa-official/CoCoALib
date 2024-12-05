@@ -61,27 +61,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/ring-AutomaticConversion.C,v 1.6 2023/07/04 09:20:13 abbott Exp $
-// $Log: ring-AutomaticConversion.C,v $
-// Revision 1.6  2023/07/04 09:20:13  abbott
-// Summary: Changed TimeOut to Timeout
-//
-// Revision 1.5  2022/02/18 14:12:02  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2020/06/22 15:43:11  abbott
-// Summary: AutomaticConversionHom now expects a ErrorInfo obj
-//
-// Revision 1.3  2020/06/20 19:12:17  abbott
-// Summary: AutomaticConversionHom now requires 3rd arg (FnName of caller)
-//
-// Revision 1.2  2020/06/19 19:39:42  abbott
-// Summary: Added useles line to keep compiler quiet
-//
-// Revision 1.1  2020/06/19 14:59:55  abbott
-// Summary: Added new fn AutomaticConversionHom
-//
-//
