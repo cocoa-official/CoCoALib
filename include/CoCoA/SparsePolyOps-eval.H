@@ -59,17 +59,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-eval.H,v 1.2 2024/03/08 20:01:33 abbott Exp $
-// $Log: SparsePolyOps-eval.H,v $
-// Revision 1.2  2024/03/08 20:01:33  abbott
-// Summary: Added comment
-//
-// Revision 1.1  2023/12/09 20:29:49  abbott
-// Summary: Split "eval" fns out of SparsePolyOps-cyclotomic, into SparsePolyOps-eval; added example & doc
-//
-//
-
 #endif

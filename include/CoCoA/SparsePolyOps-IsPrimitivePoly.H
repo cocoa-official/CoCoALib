@@ -32,15 +32,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-IsPrimitivePoly.H,v 1.1 2023/03/15 21:33:24 abbott Exp $
-// $Log: SparsePolyOps-IsPrimitivePoly.H,v $
-// Revision 1.1  2023/03/15 21:33:24  abbott
-// Summary: New fn IsPrimitivePoly
-//
-//
-//
-
-
 #endif

@@ -75,38 +75,5 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/ExternalLibs-GFan.H,v 1.9 2022/02/25 10:36:37 abbott Exp $
-// $Log: ExternalLibs-GFan.H,v $
-// Revision 1.9  2022/02/25 10:36:37  abbott
-// Summary: Removed unnecessary includes from header filed
-//
-// Revision 1.8  2022/02/18 14:11:45  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.7  2020/01/24 21:37:37  abbott
-// Summary: Changed name of include guard
-//
-// Revision 1.6  2017/03/13 12:17:08  abbott
-// Summary: Include PREPROCESSOR_DEFNS.H (in header files which need the info)
-//
-// Revision 1.5  2015/09/10 16:03:24  abbott
-// Summary: Removed ctrl-M before each newline
-//
-// Revision 1.4  2015/09/04 09:47:12  bigatti
-// -- lost new functions with Gfan! (by Anders Nedergaard Jensen)
-//
-// Revision 1.3  2015/09/02 16:44:25  bigatti
-// -- added RelativeInteriorPoint
-// -- added conversion for ZVector
-//
-// Revision 1.2  2015/09/02 16:24:52  bigatti
-// -- first real functions
-//
-// Revision 1.1  2015/09/02 09:29:08  bigatti
-// -- first import (in Aarhus)
-//
-
 #endif // CoCoA_WITH_GFAN
 #endif

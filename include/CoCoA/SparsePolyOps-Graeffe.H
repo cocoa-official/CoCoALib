@@ -79,12 +79,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-Graeffe.H,v 1.2 2022/11/24 21:11:29 abbott Exp $
-// $Log: SparsePolyOps-Graeffe.H,v $
-// Revision 1.2  2022/11/24 21:11:29  abbott
-// Summary: Added copyright notice
-//
-
-
 #endif

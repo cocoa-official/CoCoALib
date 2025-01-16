@@ -64,29 +64,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/NumTheory-gcd.H,v 1.6 2022/02/18 14:11:46 abbott Exp $
-// $Log: NumTheory-gcd.H,v $
-// Revision 1.6  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.5  2022/02/08 20:20:45  abbott
-// Summary: Corrected GcdAndCofacs (but had to add include directive).
-//
-// Revision 1.4  2021/08/04 19:06:00  abbott
-// Summary: Removed const (redmine 1606)
-//
-// Revision 1.3  2021/02/10 19:32:00  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.2  2020/02/28 08:57:08  abbott
-// Summary: Added gcd & lcm for vector of values; also ExtGcd (prototype)
-//
-// Revision 1.1  2020/01/26 14:14:31  abbott
-// Summary: Finished splitting NumTheory into smaller pieces (redming 1161)
-//
-//
-//
-
 #endif
