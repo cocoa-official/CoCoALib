@@ -45,27 +45,3 @@ veryclean: veryclean-local
 
 veryclean-local: clean-local
 	@/bin/rm -f  index.html
-
-
-#############################################################################
-# Next few lines are for RCS header/log
-# $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/Makefile-indexhtml,v 1.6 2022/03/17 16:13:14 abbott Exp $
-# $Log: Makefile-indexhtml,v $
-# Revision 1.6  2022/03/17 16:13:14  abbott
-# Summary: Cosmetic changes (spaces)
-#
-# Revision 1.5  2019/09/16 14:37:21  abbott
-# Summary: Added defn of CWD
-#
-# Revision 1.4  2018/08/02 15:06:02  abbott
-# Summary: Added dependency on CopyInfo.C for target index.html
-#
-# Revision 1.3  2018/08/02 15:02:31  abbott
-# Summary: Fixed small bug
-#
-# Revision 1.2  2018/08/02 14:56:31  abbott
-# Summary: Improved so depends only files called ex-*.C (instead of *.C)
-#
-# Revision 1.1  2018/08/02 11:19:20  bigatti
-# -- split Makefile and Makefile-indexhtml
-#

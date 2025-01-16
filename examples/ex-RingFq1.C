@@ -74,18 +74,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-RingFq1.C,v 1.3 2022/02/13 09:56:59 abbott Exp $
-// $Log: ex-RingFq1.C,v $
-// Revision 1.3  2022/02/13 09:56:59  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.2  2019/03/15 16:31:43  bigatti
-// minor fix
-//
-// Revision 1.1  2016/01/27 14:47:55  abbott
-// Summary: Example for RingFqLog
-//
-//
