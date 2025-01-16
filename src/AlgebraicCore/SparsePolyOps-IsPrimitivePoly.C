@@ -93,24 +93,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-IsPrimitivePoly.C,v 1.4 2024/08/01 16:53:02 bigatti Exp $
-// $Log: SparsePolyOps-IsPrimitivePoly.C,v $
-// Revision 1.4  2024/08/01 16:53:02  bigatti
-// Summary: error codes: Req(Elem)SparsePolyRing;
-// now using CoCoA_THROW_ERROR1/2
-//
-// Revision 1.3  2024/07/02 09:57:58  bigatti
-// Summary: error codes, first batch:
-// ReqUnivariate, ReqNonZero, ReqNonZeroGradingDim, ReqNonZeroModulus,  ReqNonZeroRingElem
-//
-// Revision 1.2  2023/03/17 19:26:49  abbott
-// Summary: Added comment about sorting the factors
-//
-// Revision 1.1  2023/03/15 21:33:24  abbott
-// Summary: New fn IsPrimitivePoly
-//
-//
-//

@@ -261,38 +261,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/NumTheory-gcd.C,v 1.9 2024/07/02 09:57:57 bigatti Exp $
-// $Log: NumTheory-gcd.C,v $
-// Revision 1.9  2024/07/02 09:57:57  bigatti
-// Summary: error codes, first batch:
-// ReqUnivariate, ReqNonZero, ReqNonZeroGradingDim, ReqNonZeroModulus,  ReqNonZeroRingElem
-//
-// Revision 1.8  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.7  2022/02/08 20:20:45  abbott
-// Summary: Corrected GcdAndCofacs (but had to add include directive).
-//
-// Revision 1.6  2021/08/04 19:08:17  abbott
-// Summary: Removed const (redmine 1606)
-//
-// Revision 1.5  2021/04/26 13:57:37  abbott
-// Summary: Corrected typo in comment
-//
-// Revision 1.4  2021/02/10 19:40:00  abbott
-// Summary: Added noexcept (sometimes instead of throw()) -- redmine 1572
-//
-// Revision 1.3  2020/06/17 15:49:24  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.2  2020/02/28 08:57:08  abbott
-// Summary: Added gcd & lcm for vector of values; also ExtGcd (prototype)
-//
-// Revision 1.1  2020/01/26 14:14:31  abbott
-// Summary: Finished splitting NumTheory into smaller pieces (redming 1161)
-//
-//
-//

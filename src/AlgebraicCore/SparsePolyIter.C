@@ -44,7 +44,3 @@ namespace CoCoA
   }
 
 } // end of namespace CoCoA
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyIter.C,v 1.5 2024/08/02 14:28:58 bigatti Exp $
-//

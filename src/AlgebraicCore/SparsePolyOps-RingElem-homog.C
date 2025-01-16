@@ -214,35 +214,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-RingElem-homog.C,v 1.8 2024/08/01 16:52:23 bigatti Exp $
-// $Log: SparsePolyOps-RingElem-homog.C,v $
-// Revision 1.8  2024/08/01 16:52:23  bigatti
-// Summary: error codes: Req(Elem)SparsePolyRing;
-// now using CoCoA_THROW_ERROR1/2
-//
-// Revision 1.7  2024/07/03 16:07:44  bigatti
-// Summary: Error codes (Redmine #427): changed some string messages into equivalent error codes
-//
-// Revision 1.6  2024/07/02 15:36:15  bigatti
-// Summary:Changed error codes: LogZero into ReqNonZero
-// and Not... into ReqNonNegative, ReqNonNegativeGrading, ReqPositive, ReqPositiveGrading
-//
-// Revision 1.5  2024/07/02 09:57:58  bigatti
-// Summary: error codes, first batch:
-// ReqUnivariate, ReqNonZero, ReqNonZeroGradingDim, ReqNonZeroModulus,  ReqNonZeroRingElem
-//
-// Revision 1.4  2022/02/18 14:11:59  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2020/06/17 15:49:27  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.2  2020/03/11 17:06:55  abbott
-// Summary: Added check for GradingDim
-//
-// Revision 1.1  2020/03/11 17:00:27  abbott
-// Summary: Added new fn HomogCompt; split of fns to do with homog polys into new file.  Cleaned includes.
-//
-//

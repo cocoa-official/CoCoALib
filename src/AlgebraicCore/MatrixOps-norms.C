@@ -70,24 +70,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-norms.C,v 1.5 2024/07/02 20:42:07 abbott Exp $
-// $Log: MatrixOps-norms.C,v $
-// Revision 1.5  2024/07/02 20:42:07  abbott
-// Summary: Renaming of errors (redmine 308)
-//
-// Revision 1.4  2022/08/05 20:44:30  abbott
-// Summary: Took NumRows/NumCols out of for-loop exit conds
-//
-// Revision 1.3  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.2  2021/01/07 15:16:51  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.1  2020/09/28 11:13:37  abbott
-// Summary: Further splitting of MatrixOps (redmine 1196)
-//
-//

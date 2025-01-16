@@ -201,27 +201,3 @@ namespace CoCoA
   }
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-EvalInterval.C,v 1.6 2022/02/18 14:11:58 abbott Exp $
-// $Log: SparsePolyOps-EvalInterval.C,v $
-// Revision 1.6  2022/02/18 14:11:58  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.5  2021/01/15 16:59:34  abbott
-// Summary: Redmine 1563: new ctor for BigRat direct from integer
-//
-// Revision 1.4  2018/05/17 15:45:25  bigatti
-// -- renamed VectorOperations --> VectorOps
-//
-// Revision 1.3  2018/05/05 15:24:43  abbott
-// Summary: Decreased "reduction factor" in main loop; faster, but looser result
-//
-// Revision 1.2  2018/04/23 09:00:13  abbott
-// Summary: Minor improvements
-//
-// Revision 1.1  2018/04/20 13:12:15  abbott
-// Summary: Added new fn eval(poly, interval) -- still only a prototype
-//
-//

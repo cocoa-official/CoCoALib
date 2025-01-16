@@ -65,37 +65,3 @@ namespace CoCoA
   }
   
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/VectorOps.C,v 1.8 2024/07/15 17:12:42 bigatti Exp $
-// $Log: VectorOps.C,v $
-// Revision 1.8  2024/07/15 17:12:42  bigatti
-// Summary: Error codes:  added CoCoA_THROW_ERROR1(ErrID);
-// Removed BadRowIndex, BadColIndex;  Renamed  ERR::Empty --> ERR::ReqNonEmpty
-//
-// Revision 1.7  2022/02/18 14:12:01  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2021/01/07 15:16:53  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.5  2020/06/17 15:49:29  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.4  2020/02/18 11:30:16  abbott
-// Summary: Some tidying; change var name l in to L
-//
-// Revision 1.3  2018/05/22 14:16:40  abbott
-// Summary: Split BigRat into BigRat (class defn + ctors) and BigRatOps
-//
-// Revision 1.2  2018/05/18 12:24:47  bigatti
-// -- renamed IntOperations --> BigIntOps
-//
-// Revision 1.1  2018/05/17 15:24:30  bigatti
-// -- renamed VectorOperations --> VectorOps
-//
-// Revision 1.1  2017/02/01 12:17:57  abbott
-// Summary: Added new fn BinaryProduct -- never called currently
-//
-//

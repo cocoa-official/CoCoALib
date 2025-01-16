@@ -72,21 +72,3 @@ namespace CoCoA
   }
 
 }
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/NumTheory-PrimeModSeq.C,v 1.5 2023/10/05 17:52:52 abbott Exp $
-// $Log: NumTheory-PrimeModSeq.C,v $
-// Revision 1.5  2023/10/05 17:52:52  abbott
-// Summary: Removed arbitrary upper limit
-//
-// Revision 1.4  2023/02/22 20:20:47  abbott
-// Summary: Moved impl from header file to source file
-//
-// Revision 1.3  2023/01/31 12:28:45  abbott
-// Summary: Changed arg type of myAdvance to unsigned long
-//
-// Revision 1.2  2022/11/24 21:16:11  abbott
-// Summary: Added copyright notice
-//
-//
