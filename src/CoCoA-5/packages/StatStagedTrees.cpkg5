@@ -4,12 +4,11 @@ export StagedTrees;
 export PrintTree;
 export PrintTrees;
   
--- export LabelledEventTrees;
--- export florets;
--- export PrintTree;
--- export PrintTrees;
+export LabelledEventTrees;
+export florets;
+
 -- export TreeToPoly;
--- export AreGoodFlorets;
+export AreGoodFlorets;
 -- export OneTree;
   
 ----------------------------------------------------------------------
@@ -53,10 +52,16 @@ enddefine; -- AllTrees
 
 
 define AllTreesRec(mons)
+  IsVERBOSE := IsVERBOSE_func("AllTreesRec");
   if mons=[1] then return [[]]; endif;
   AllTrees := [];
-  foreach X in PrimaryDecomposition(ideal(mons)) do
-    if NumGens(X)=1 then  error("Single branch");  endif;
+  PD := PrimaryDecomposition(ideal(mons));
+  if IsVERBOSE(50) then println "PrimaryDecomposition: ", PD; endif;
+  foreach X in PD do
+    if NumGens(X)=1 then
+      if IsVERBOSE(70) then println "---->   NO: Single branch"; endif;
+      error("Single branch");
+    endif;
     try
       T := AllTreesFromX(gens(X), mons);
       AllTrees := concat(AllTrees, T);
@@ -69,15 +74,23 @@ define AllTreesRec(mons)
       error("unexpected error: "+GetErrMesg(E));
     endtry;
   endforeach;
-  if AllTrees = [] then  error("No subtrees");  endif;
+  if AllTrees = [] then
+    if IsVERBOSE(70) then println "---->   NO: No subtrees"; endif;
+    error("No subtrees");
+  endif;
   return AllTrees;
 enddefine; -- AllTreesRec
   
 
 define AllTreesFromX(X, mons)
+  IsVERBOSE := IsVERBOSE_func("AllTreesRec");
+  if IsVERBOSE(60) then println "-- arguments ", X, ",   ", mons; endif;
   r := len(X);
   Ix := [ [ pp in mons | IsDivisible(pp,X[i])] | i in 1..r ];
-  if not(ArePairwiseDisjoint(Ix)) then error("More than one divisor"); endif;
+  if not(ArePairwiseDisjoint(Ix)) then
+    if IsVERBOSE(70) then println "---->   NO: More than one divisor"; endif;
+    error("More than one divisor");
+  endif;
   T := [ AllTreesRec(Ix[i]/X[i]) | i in 1..r ]; ---> might give error
   xT := [ [ [X[i],tree] | tree in T[i] ] | i in 1..r ];
   return CartesianProductList(xT);
@@ -157,7 +170,10 @@ define PrintTrees(trees)
   println "-- number of trees = ", len(trees), " -----------------------";
   for i := 1 to len(trees) do
     println "-------- tree ",i, " ----------------------------------";
-    println "-- florets: ", florets(trees[i]);
+    println "-- florets: ";
+    foreach F in florets(trees[i]) do
+      println "--   ", F;
+    endforeach;
     PrintTree(trees[i], "");
     println;
   endfor;
