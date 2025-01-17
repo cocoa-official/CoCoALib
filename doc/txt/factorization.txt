@@ -72,7 +72,7 @@ Let ``FactorInfo`` be of type ``factorization<T>``.  These are the operations av
 %======================================================================
 
 Being template code it's all in the header file.
-It's mostly fairly straightfoward.
+It's mostly fairly straightforward.
 
 The main point to note is that ``ourCheckNotZeroDiv`` and ``ourCheckNotUnit``
 need to be written by hand for each instantiation -- this is enforced by the
@@ -106,7 +106,7 @@ Maybe add fn to get ring of a ``factorization<RingElem>``?
 Maybe add fn to change the multiplicity of a factor?
 
 Bruns questioned the necessity of the restriction that factors be
-non-zero-divisiors and non-units.  JAA prefers to apply these restrictions
+non-zero-divisors and non-units.  JAA prefers to apply these restrictions
 for the time being, because it will be easier to relax the restrictions
 later than it would be to tighten them (might break some existing code).
 

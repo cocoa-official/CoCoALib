@@ -39,29 +39,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/SparsePolyOps-resultant.H,v 1.4 2022/02/18 14:11:49 abbott Exp $
-// $Log: SparsePolyOps-resultant.H,v $
-// Revision 1.4  2022/02/18 14:11:49  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2022/02/02 09:27:40  abbott
-// Summary: Added discriminant, and new version of resultant; added arg checks; redmine (1653, 1656)
-//
-// Revision 1.2  2021/01/07 14:44:46  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.1  2019/10/08 20:29:24  abbott
-// Summary: Renamed subresultant to SparsePolyOps-resultant
-//
-// Revision 1.2  2017/04/05 14:30:42  abbott
-// Summary: Correct fn name
-//
-// Revision 1.1  2017/02/20 12:08:53  abbott
-// Summary: Added new files MatrixFp.C and subresultant.C
-//
-//
-
 #endif

@@ -91,7 +91,7 @@ Conversion to C++ integral types other than (unsigned) int/long is not yet suppo
 Indeed the ``IsConvertible`` functions are a hotch potch, but how can it be done better?
 
 BOOST has ``numeric_cast`` which is like ``IntegerCast`` for built-in numerical types.
-Sooner or later we could pehaps use that?
+Sooner or later we could perhaps use that?
 
 
 Should conversion of ``BigRat`` to ``double`` ignore underflow, or should it fail?

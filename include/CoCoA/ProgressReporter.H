@@ -61,31 +61,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/ProgressReporter.H,v 1.6 2024/06/09 20:10:20 abbott Exp $
-// $Log: ProgressReporter.H,v $
-// Revision 1.6  2024/06/09 20:10:20  abbott
-// Summary: Renamed myPrepareForNewLoop to myReset (ProgressReporter & CpuTimeLimit); remine 1705
-//
-// Revision 1.5  2022/11/04 15:40:03  abbott
-// Summary: Added myPrepareForNewLoop (redmine 1705)
-//
-// Revision 1.4  2022/02/18 14:11:47  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2018/06/25 15:32:22  abbott
-// Summary: Corrected copyright line
-//
-// Revision 1.2  2014/10/13 18:05:43  abbott
-// Summary: Added code to print out measured rate in each progress report
-// Author: JAA
-//
-// Revision 1.1  2014/04/28 16:48:41  abbott
-// Summary: Header file for ProgressReporter
-// Author: JAA
-//
-//
-
 #endif

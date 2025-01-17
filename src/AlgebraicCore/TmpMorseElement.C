@@ -92,7 +92,7 @@ namespace CoCoA
           break;
         }
       }
-      // r is completly new -> compute inv Standard Representation
+      // r is completely new -> compute inv Standard Representation
       if (res == myContainer.end())
       {
         ++myReallyNormalForms; // statistic

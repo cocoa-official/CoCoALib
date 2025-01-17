@@ -178,7 +178,7 @@ namespace CoCoA
 // -- removed unused myStdDeg
 //
 // Revision 1.7  2009/10/27 17:15:14  bigatti
-// -- fixed: using sugar(g)->myWSugar() insted of wsugar(g)
+// -- fixed: using sugar(g)->myWSugar() instead of wsugar(g)
 //
 // Revision 1.6  2009/02/05 15:21:22  bigatti
 // -- split inline/friend function definitions to please the new compiler

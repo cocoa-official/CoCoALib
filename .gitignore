@@ -13,11 +13,13 @@ doc/aux-txt2tags/DocTeX-VERSION.t2t
 doc/html/
 src/CoCoA-5/CoCoAManual/html/
 src/CoCoA-5/CoCoAManual/tex/
+doc/CoCoALib-tasks/HTMLTasks
 doc/CoCoALib-CompletedTasks.html
 doc/CoCoALib-tasks.html
 doc/CoCoALib-tasks/CoCoALib-CompletedTasks.html
 doc/CoCoALib-tasks/CoCoALib-tasks.html
 doc/tex/
+examples/CopyInfo
 *.html
 *.pdf
 
@@ -35,6 +37,9 @@ configuration/last-config-cmd
 include/CoCoA/library.H
 include/CoCoA/PREPROCESSOR_DEFNS.H
 lib/timestamp
+src/AlgebraicCore/leak_checker
+src/CoCoA-5/CoCoAInterpreter
+src/CoCoA-5/check-version-defines
 src/CoCoA-5/**/*.Debug
 src/CoCoA-5/**/*.Release
 src/CoCoA-5/**/moc_C5.cpp

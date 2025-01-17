@@ -80,7 +80,7 @@ or make a dedicated file ``MyRegisterServerOps.H``
 (see, for example, ``src/server/RegisterServerOpsFrobby.H``)
 and include it in ``src/server/CoCoAServer.C``
 
-== Mantainer documentation ==
+== Maintainer documentation ==
 %======================================================================
 
 How does this work?  When ``CoCoAServer.C`` is compiled the global

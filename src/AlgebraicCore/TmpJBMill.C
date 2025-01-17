@@ -764,7 +764,7 @@ hp(q) = \summe_{t \in T}((q - q_t + k_t - 1)(q - q_t))
 /*
     std::pair<RingHom, std::vector<bool> > JBMill::myNoetherNormalization() const
     {
-      //construnction of decomposition
+      //construction of decomposition
       std::vector< std::pair<PPMonoidElem, std::vector<bool> > > CompDecomp = myComplementaryDecompositionPolynomial();
       //construction of nu
       std::vector<bool> nu;

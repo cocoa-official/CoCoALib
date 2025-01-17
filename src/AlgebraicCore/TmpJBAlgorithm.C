@@ -140,7 +140,7 @@ namespace CoCoA
           // mySets.myTailReduceSetTAll(myJTree);
         }
         TQSets::MultisetIterator IterP = mySets.myEndSetP();
-        //constant input -> retun
+        //constant input -> return
         if (IsConstant((*(mySets.myBeginSetP()))->myGetPol())) {
           myTrivialIdeal();
           return;

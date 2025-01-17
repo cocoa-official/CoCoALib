@@ -125,7 +125,7 @@ Define Man()
   PrintLn "            C5.GBasis5x(I, Info5);";
   PrintLn "            C5.ReducedGBasis5x(I, Info5);";
   PrintLn "            C5.LT5x(I, Info5);";
-  PrintLn "    peform the computation is a \"similar\" environment as the one defined in";
+  PrintLn "    perform the computation is a \"similar\" environment as the one defined in";
   PrintLn "    CoCoA-4, but with the extra properties defined in Info5.";
   PrintLn "    (Info5 := Record[], for only default values)";
 EndDefine; -- Man
@@ -220,7 +220,7 @@ EndDefine; -- DefaultInfo
 
 
 -- It then execute the C++ program CoCoAServerServer, which sends the result back
--- by socket as an assigment to the cocoa var MEMORY.PKG.CoCoAServer.Result of a
+-- by socket as an assignment to the cocoa var MEMORY.PKG.CoCoAServer.Result of a
 -- list of lists of monomials. The sum of each sublist gives the corresponding GB
 -- element.
 -- Every sublist then is collapsed in a poly and the list of polys (the GBasis)
@@ -955,7 +955,7 @@ EndDefine; -- LLL5
 -- FloatUsed [0 ,1,2,3,4]=
 --  [FP(double),QP(quadruple),XD(xdouble),RR(gmp float)] default FP
 -- OrthoMethod [0,1]=[Givens,GS] default Givens
--- RAT Delta should be between 0.5 and 1, exluded default =0.99
+-- RAT Delta should be between 0.5 and 1, excluded default =0.99
 -- see Shoup NTL home, LLL packages for an explanation
 -- */
 Define LLLFP5(Basis,FloatUsed,OrthoMethod,Delta)
@@ -988,7 +988,7 @@ EndDefine; -- Babai5
 --  [FP(double),QP(quadruple),XD(xdouble),RR(gmp float),QP1(quad for ortho, double
 --  for the rest)] default FP
 -- OrthoMethod [0,1]=[Givens,GS] default Givens
--- RAT Delta should be between 0.5 and 1, exluded default =0.99
+-- RAT Delta should be between 0.5 and 1, excluded default =0.99
 -- BlockSize INT default 10
 -- prune INT default 0
 -- see Shoup NTL home, LLL packages for an explanation

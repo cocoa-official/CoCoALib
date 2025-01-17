@@ -339,36 +339,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/NumTheory-RatReconstruct.C,v 1.8 2024/07/02 15:32:23 bigatti Exp $
-// $Log: NumTheory-RatReconstruct.C,v $
-// Revision 1.8  2024/07/02 15:32:23  bigatti
-// Summary: Changed error codes: LogZero into ReqNonZero
-//
-// and Not... into ReqNonNegative, ReqNonNegativeGrading, ReqPositive, ReqPositiveGrading
-//
-// Revision 1.7  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2021/01/15 16:59:33  abbott
-// Summary: Redmine 1563: new ctor for BigRat direct from integer
-//
-// Revision 1.5  2021/01/07 15:16:51  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.4  2020/06/17 15:49:24  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.3  2020/01/26 14:41:59  abbott
-// Summary: Revised includes after splitting NumTheory (redmine 1161)
-//
-// Revision 1.2  2019/03/18 11:57:39  abbott
-// Summary: Added missing includes
-//
-// Revision 1.1  2019/03/18 11:24:19  abbott
-// Summary: Split NumTheory into several smaller files
-//
-//
-//

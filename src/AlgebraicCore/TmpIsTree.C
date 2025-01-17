@@ -298,7 +298,7 @@ namespace CoCoA
     //    std::cout<<endl<<"Standard Algorithm without optimization"<<endl;
     FacetComplexConstIter it1stop=--myElems.end();
     FacetComplexConstIter it2start;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     for (FacetComplexConstIter it=myElems.begin();
          it!=myElems.end();++it)
     {// std::cout<<"working with row "<<row_being_worked_on<<endl;
@@ -344,7 +344,7 @@ namespace CoCoA
     //    std::cout<<endl<<"Standard Algorithm with optimization"<<endl;
     FacetComplexConstIter it1stop=--myElems.end();
     FacetComplexConstIter it2start;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     FacetComplexIter it=myElems.begin();
     while (it!=myElems.end())
     { is_f_useless=true;
@@ -400,7 +400,7 @@ namespace CoCoA
     ConnectionBlock cb(*this);
     T = CpuTime() - T;
     //    std::cout<<endl<< "Connection Block time expended is " << T << endl;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     ConnBlockIter it=cb.my_array.begin();
     while (it!=cb.my_array.end())
     {// std::cout<<"working with row "<<row_being_worked_on<<endl;
@@ -448,7 +448,7 @@ namespace CoCoA
     ConnectionBlock cb(*this);
     T = CpuTime() - T;
     //    std::cout<<endl<< "Connection Block time expended is " << T << endl;
-    list<facet> cycle; // void if this is a tree, contais a 3-cycle otherwise
+    list<facet> cycle; // void if this is a tree, contains a 3-cycle otherwise
     ConnBlockIter it=cb.my_array.begin();
     while (it!=cb.my_array.end())
     {// std::cout<<"working with row "<<row_being_worked_on<<endl;
@@ -538,7 +538,7 @@ namespace CoCoA
   }//operator<<
 
 
-// This version is safe, erases all the occurences
+// This version is safe, erases all the occurrences
     ConnBlockIter ConnectionBlock::erase(ConnBlockIter& row_to_erase)
     {
       vector<FacetComplexConstIter>::iterator to_be_killed;
@@ -595,122 +595,3 @@ sparse representation for facets? Use vector, (sort?).
 Only reasonable if density is much much lower than #VARS!
 
 */
-
-// RCS header/log on the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/TmpIsTree.C,v 1.24 2024/07/03 15:38:54 bigatti Exp $
-// $Log: TmpIsTree.C,v $
-// Revision 1.24  2024/07/03 15:38:54  bigatti
-// Summary: commented out unused variable  row_being_worked_on
-//
-// Revision 1.23  2024/03/03 21:15:01  abbott
-// Summary: Commented out unused vars (for stats)
-//
-// Revision 1.22  2023/03/13 21:06:40  abbott
-// Summary: New iterator "for" syntax; some cruft removed where the "for" has already been changed.  Redmine 1346
-//
-// Revision 1.21  2022/02/18 14:12:00  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.20  2022/02/14 14:32:48  bigatti
-// Summary: added date for original author
-//
-// Revision 1.19  2022/02/11 09:49:35  abbott
-// Summary: Updated copyright notices (redmine 855)
-//
-// Revision 1.18  2021/07/19 11:24:01  abbott
-// Summary: Updated "for" loops (redmine 1346)
-//
-// Revision 1.17  2020/02/18 11:32:16  abbott
-// Summary: redmine 1346: new for loop syntax
-//
-// Revision 1.16  2018/05/18 16:38:51  bigatti
-// -- added include SparsePolyOps-RingElem.H
-//
-// Revision 1.15  2016/11/11 14:15:34  abbott
-// Summary: Added short-cut to operator<< when ostream is in bad state
-//
-// Revision 1.14  2016/09/08 14:14:30  bigatti
-// -- commented out unused variable
-//
-// Revision 1.13  2014/06/17 10:15:28  abbott
-// Summary: Commented out unused param in FacetComplex
-// Author: JAA
-//
-// Revision 1.12  2014/04/30 16:17:23  abbott
-// Summary: Commented out some useless code
-// Author: JAA
-//
-// Revision 1.11  2011/03/11 12:36:55  bigatti
-// -- changed size(DynamicBitset) into len(DynamicBitset)
-//
-// Revision 1.10  2010/05/28 15:50:42  bigatti
-// -- cleaning
-// -- commented out ctor taking a list of long
-// -- moved some "facet" functions to TmpIsTree
-//
-// Revision 1.9  2010/04/15 16:01:39  bigatti
-// -- DynamicBitset going towards final version
-//
-// Revision 1.8  2010/04/13 15:30:25  bigatti
-// -- reorganized into (almost) final shape
-//
-// Revision 1.7  2010/03/31 13:53:42  bigatti
-// -- naming convention: size --> mySize
-//
-// Revision 1.6  2010/03/30 15:36:39  bigatti
-// -- using DynamicBitset.HC (with former code for facet)
-//
-// Revision 1.5  2007/10/30 17:14:07  abbott
-// Changed licence from GPL-2 only to GPL-3 or later.
-// New version for such an important change.
-//
-// Revision 1.4  2007/04/11 12:26:50  bigatti
-// -- fix for Microsoft compiler
-//
-// Revision 1.3  2007/03/27 16:57:04  bigatti
-// -- removed logging printouts
-//
-// Revision 1.2  2007/03/27 15:27:05  bigatti
-// -- minor update for TmpIsTree + test
-//
-// Revision 1.1.1.1  2007/03/09 15:16:11  abbott
-// Imported files
-//
-// Revision 1.9  2007/03/08 18:22:28  cocoa
-// Just whitespace cleaning.
-//
-// Revision 1.8  2007/03/07 14:59:02  cocoa
-// -- renamed complex --> FacetComplex
-//
-// Revision 1.7  2007/02/10 18:44:03  cocoa
-// Added "const" twice to each test and example.
-// Eliminated dependency on io.H in several files.
-// Improved BuildInfo, and added an example about how to use it.
-// Some other minor cleaning.
-//
-// Revision 1.6  2006/12/21 13:48:32  cocoa
-// Made all increment/decrement calls prefix (except where the must be postfix).
-//
-// Revision 1.5  2006/11/24 17:12:05  cocoa
-// -- reorganized includes of header files
-//
-// Revision 1.4  2006/11/22 14:43:32  cocoa
-// -- minor cleaning (indicated by Intel compiler)
-//
-// Revision 1.3  2006/10/06 14:04:14  cocoa
-// Corrected position of #ifndef in header files.
-// Separated CoCoA_ASSERT into assert.H from config.H;
-// many minor consequential changes (have to #include assert.H).
-// A little tidying of #include directives (esp. in Max's code).
-//
-// Revision 1.2  2006/08/07 21:23:25  cocoa
-// Removed almost all publicly visible references to SmallExponent_t;
-// changed to long in all PPMonoid functions and SparsePolyRing functions.
-// DivMask remains to sorted out.
-//
-// Revision 1.1.1.1  2006/05/30 11:39:37  cocoa
-// Imported files
-//
-// Revision 1.1  2006/05/16 09:03:11  cocoa
-// -- first import
-//

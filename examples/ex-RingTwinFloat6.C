@@ -141,20 +141,3 @@ int main()
   CoCoA::BuildInfo::PrintAll(cerr);
   return 1;
 }
-
-//----------------------------------------------------------------------
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/examples/ex-RingTwinFloat6.C,v 1.4 2024/03/08 19:59:58 abbott Exp $
-// $Log: ex-RingTwinFloat6.C,v $
-// Revision 1.4  2024/03/08 19:59:58  abbott
-// Summary: Used constexpr (redmine 1511)
-//
-// Revision 1.3  2022/02/13 09:56:59  abbott
-// Summary: Updated copyright (John & Anna in almost all cases, redmine 855)
-//
-// Revision 1.2  2021/01/15 16:59:33  abbott
-// Summary: Redmine 1563: new ctor for BigRat direct from integer
-//
-// Revision 1.1  2016/03/30 09:45:47  abbott
-// Summary: New example (used to be a test)
-//

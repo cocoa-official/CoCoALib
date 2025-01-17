@@ -856,7 +856,7 @@ namespace CoCoA
   /*
     vector<PPMonoidElem> AlgIndVars(vector<PPMonoidElem> L, long codim){
     //cout << "L: " << L << endl;
-    //first converst vec<PPMonidElem> to PPVector
+    //first convert vec<PPMonidElem> to PPVector
     VerboseLog VERBOSE("AlgIndVars: ");
     VERBOSE(40) << "L: " << L << endl;
     const PPMonoid PPM1 = owner(First(L));
@@ -1180,7 +1180,7 @@ namespace CoCoA
     VERBOSE(60) << "N: " << N << endl;
     while (len(Inds) >= N){
       for (long i=0; i < N; ++i){
-        // first N elments
+        // first N elements
         firstN.push_back(Inds[i]); //append(ref L, first(Inds, N))
       }
       //sort(firstN.begin(), firstN.end());
@@ -1553,7 +1553,7 @@ namespace CoCoA
         //RADICAL_BRANCHING++;
         //VERBOSE(30) << "[ " << len(L) << " ]" << RADICAL_BRANCHING << endl;
         //RingElem K1 = radical(G);
-        //RingElem K2 = radical(P/G);   //P never definied????? 
+        //RingElem K2 = radical(P/G);   //P never defined????? 
         //K =concat([I+ideal(K1)],[I+ideal(K2)|PP In L]); WHAT IS THIS??
       }
       else{
@@ -2082,35 +2082,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-ideal-radical.C,v 1.9 2024/08/01 08:36:05 bigatti Exp $
-// $Log: SparsePolyOps-ideal-radical.C,v $
-// Revision 1.9  2024/08/01 08:36:05  bigatti
-// Summary: new CoCoA_THROW_ERROR1/2;   cleaning spacing
-//
-// Revision 1.8  2024/07/03 15:37:17  bigatti
-// Summary: Specialized some ERR:BadArg with explicit error codes
-//
-// Revision 1.7  2024/04/12 16:57:58  abbott
-// Summary: Changed many param into const-ref
-//
-// Revision 1.6  2024/03/25 19:41:27  abbott
-// Summary: Removed superfluous include directive
-//
-// Revision 1.5  2024/03/22 09:11:00  bigatti
-// Summary: now using new function saturate Redmine #1619
-//
-// Revision 1.4  2024/02/29 14:38:04  abbott
-// Summary: Change pipe into double-pipe (smart "or" operator)
-//
-// Revision 1.3  2024/02/15 15:29:00  bigatti
-// Summary: just style of curly brackets
-//
-// Revision 1.2  2024/02/06 13:33:50  bigatti
-// Summary: some cleaning (spaces, functions IsSubset, "foreach" loops, ...)
-//
-// Revision 1.1  2024/02/05 11:26:10  bigatti
-// Summary: first import
-//

@@ -39,32 +39,4 @@ namespace CoCoA
   
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/HomomorphismOps.H,v 1.3 2022/02/18 14:11:46 abbott Exp $
-// $Log: HomomorphismOps.H,v $
-// Revision 1.3  2022/02/18 14:11:46  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.2  2021/06/21 11:16:48  abbott
-// Summary: Fixed include guard
-//
-// Revision 1.1  2017/12/18 13:08:38  bigatti
-// -- renamed Ops from Fns
-//
-// Revision 1.4  2017/12/07 15:41:15  bigatti
-// -- added ker_H (ker via homogenous computation: to be completed)
-//
-// Revision 1.3  2017/08/08 13:49:28  abbott
-// Summary: Removed cruft
-//
-// Revision 1.2  2017/07/24 12:06:37  abbott
-// Summary: Added preimage0 (and some cruft)
-//
-// Revision 1.1  2017/07/22 16:12:51  abbott
-// Summary: Addin to allow compilation; these files are NOT YET READY TO BE USED
-//
-//
-
 #endif

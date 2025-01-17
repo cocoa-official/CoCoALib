@@ -61,7 +61,7 @@
  
 // void rum_empty(int rum);
  
-// /* TODO: examinate the possibility to use shifts */
+// /* TODO: examine the possibility to use shifts */
  
 // #define rum_is_empty(rum) (rum_status[rum] & rum_EMPTY)
 // #define rum_is_full(rum) (rum_status[rum] & rum_FULL)

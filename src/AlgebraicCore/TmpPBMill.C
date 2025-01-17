@@ -279,7 +279,7 @@ namespace CoCoA
           res.push_back(iter->second);
         }
       }
-      // not minimzed!
+      // not minimized!
       return res;
     }
 

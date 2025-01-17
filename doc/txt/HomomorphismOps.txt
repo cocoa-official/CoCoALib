@@ -43,7 +43,7 @@ either polynomial rings or quotients of polynomial rings.
 The centrepiece is the structure ``RichRingHom`` which contains several
 components useful for actually doing the computation.  In particular,
 all operations require computation in a new ring ``RS`` which contains "orthogonal"
-copies of the polynomial rings in ``R`` and ``S``  There are natutal homomorphisms
+copies of the polynomial rings in ``R`` and ``S``  There are natural homomorphisms
 from ``RS`` to ``R`` and from ``S`` into ``RS``.
 
 The hope is that this structure will be memorized inside the ``RingHom``

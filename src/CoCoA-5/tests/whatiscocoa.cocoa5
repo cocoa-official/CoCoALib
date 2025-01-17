@@ -29,7 +29,7 @@ L;
 [ first(X,3) | X in L and X[4]=1 ];
 
 ----------------------------------------------------------------------
--- Chi è il mentitore?
+-- Chi Ã¨ il mentitore?
 use ZZ/(2)[a,b,c];
 I1 := ideal(a, b-1);
 I2 := ideal(a-1, b);

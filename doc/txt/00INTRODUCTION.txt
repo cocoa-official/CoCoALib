@@ -69,7 +69,7 @@ In case you are already familiar with the debugger ``gdb``,
 with ``gdb``.
 
 %If your program seems to have memory leaks, or other problems to do with
-%memory alloccation, try reading the files doc/MemPool.txt, doc/debug_new.txt
+%memory allocation, try reading the files doc/MemPool.txt, doc/debug_new.txt
 %and doc/leak_checker.txt which give advice on tracking down such problems.
 %These facilities are oriented towards programmers with a fair amount of
 %experience.
@@ -107,7 +107,7 @@ The source for this documentation is in the CoCoALib directory ``doc/txt/``, and
 converted into html (``doc/html/``) and LaTeX (``doc/tex/``) using
 [``txt2tags`` http://txt2tags.sourceforge.net/].
 
-A template file fo adding to this documentation and some basic
+A template file for adding to this documentation and some basic
 instructions for [``txt2tags`` http://txt2tags.sourceforge.net/] are
 in the file [doc/txt/empty.txt empty.html].
 

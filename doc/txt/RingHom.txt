@@ -57,7 +57,7 @@ offer an easy way of building certain simple canonical homomorphisms.
 
 - ``EmbeddingHom(FrF)`` --
          where ``FrF`` is a [[FractionField]], gives the embedding homomorphism
-         from the base ring into the fracion field (i.e. x |-> x/1)
+         from the base ring into the fraction field (i.e. x |-> x/1)
 
 
 ==== Induced homomorphisms ====

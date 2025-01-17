@@ -66,6 +66,9 @@ namespace CoCoA
   template<typename ToType, typename FromType>
   inline ToType ConvertTo(const FromType& val, const CoCoA::ErrorInfo& ErrMesg) { ToType copy; if (!IsConvertible(copy, val)) ThrowException(ErrMesg); return copy; }
 
+  template<typename ToType, typename FromType>
+  inline ToType ConvertTo(const FromType& val, const CoCoA::ErrorContext& ErrCtx) { ToType copy; if (!IsConvertible(copy, val))  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadConvert, ErrCtx);  return copy; }
+
 
 //------------------------------------------------------------------
 // Replacement for rather poor NumericCast (now deleted).
@@ -136,112 +139,5 @@ namespace CoCoA
   };
 
 } // end of namespace CoCoA
-
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/convert.H,v 1.28 2024/07/31 07:52:46 abbott Exp $
-// $Log: convert.H,v $
-// Revision 1.28  2024/07/31 07:52:46  abbott
-// Summary: Switched to new CoCoA_THROW_ERROR macros (with suffix 1 or 2)
-//
-// Revision 1.27  2022/02/18 14:11:51  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.26  2021/10/30 17:26:49  abbott
-// Summary: Used keyword delete (redmine 1627)
-//
-// Revision 1.25  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.24  2021/01/07 14:48:33  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.23  2020/06/19 19:39:21  abbott
-// Summary: Now all throws go through new template fn ThrowException; seems to work
-//
-// Revision 1.22  2020/06/17 15:49:21  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.21  2014/04/02 15:55:45  abbott
-// Summary: Reorganized file contents (more sensible order now, I hope)
-// Author: JAA
-//
-// Revision 1.20  2014/01/28 09:51:03  abbott
-// Added new template fn ConvertTo which accepts 2nd arg containing error info
-// to throw in case of failure.
-//
-// Revision 1.19  2013/03/26 14:56:06  abbott
-// Updated the conversion fns (in ptic removed procedure "convert");
-// numerous consequential changes.
-//
-// Revision 1.18  2013/03/25 17:21:49  abbott
-// Replaced ConvertTo by a simpler more obvious impl which works better
-// (why didn't I think of that before?)
-//
-// Revision 1.17  2013/02/15 16:32:44  abbott
-// Removed IsInRange (moved to MachineInt).
-// Added IsConvertible(BigInt, RingElem) and IsConvertible(BigRat, RingElem).
-//
-// Revision 1.16  2011/11/09 15:09:08  bigatti
-// -- removed fwd decl MachineInt (included)
-//
-// Revision 1.15  2011/11/09 15:02:29  bigatti
-// -- added include MachineInt
-//
-// Revision 1.14  2011/11/09 13:50:01  bigatti
-// -- renamed MachineInteger --> MachineInt
-//
-// Revision 1.13  2011/08/27 20:48:39  abbott
-// Added fwd decl for MachineInt, & removed the include directive.
-//
-// Revision 1.12  2011/08/24 10:22:45  bigatti
-// -- renamed QQ --> BigRat
-//
-// Revision 1.11  2011/08/14 15:52:17  abbott
-// Changed ZZ into BigInt (phase 1: just the library sources).
-//
-// Revision 1.10  2011/08/12 16:07:48  abbott
-// Hastily added conversion fns for BigInt (same as those for ZZ).
-//
-// Revision 1.9  2011/03/22 20:26:12  abbott
-// Added  IsConvertible(long&, double).
-// Activated commented out ConvertTo template.
-// Checking in because some other files need the new code.
-//
-// Revision 1.8  2010/04/23 13:21:45  abbott
-// Conversion from string to ZZ now defaults to decimal (and not the quirky C standard).
-//
-// Revision 1.7  2009/12/23 22:27:28  abbott
-// Added conversions from QQ to machine integers.
-//
-// Revision 1.6  2009/12/23 18:53:52  abbott
-// Major change to conversion functions:
-//   convert(..) is now a procedure instead of a function
-//   IsConvertible(..) replaces the former convert(..) function
-//   Added new NumericCast conversion function (placeholder for BOOST feature)
-//   Consequent changes in code which uses these features.
-//
-// Revision 1.5  2009/12/11 11:46:32  abbott
-// Changed fn  convert  into  IsConvertible.
-// Added template procedure  convert.
-// New version because change is not backward compatible.
-//
-// Revision 1.4  2009/07/02 16:32:11  abbott
-// Consequential changes stemming from new class QQ, and modified interface to the member
-// function RingBase::myIsRational.  Also some new conversion functions.
-//
-// Revision 1.3  2008/07/21 07:59:11  abbott
-// Improved two comments.
-//
-// Revision 1.2  2007/10/30 17:14:11  abbott
-// Changed licence from GPL-2 only to GPL-3 or later.
-// New version for such an important change.
-//
-// Revision 1.1  2007/03/23 18:38:43  abbott
-// Separated the "convert" functions (and CheckedCast) into their own files.
-// Many consequential changes.  Also corrected conversion to doubles.
-//
-//
 
 #endif

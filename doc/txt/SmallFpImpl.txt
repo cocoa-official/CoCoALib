@@ -48,7 +48,7 @@ The default export convention is ``SymmResidues`` (unless changed in the [[Globa
 the default convention is determined by the [[GlobalManager]].
 
 
-**Note** if the first argment is of type ``SmallPrime`` then the constructor
+**Note** if the first argument is of type ``SmallPrime`` then the constructor
 skips testing for primality.
 
 

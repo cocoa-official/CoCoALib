@@ -130,7 +130,7 @@ enddefine; -- RationalSolveHomog
 
 
 define RationalProjectivePoints(PolyList)
-// SUPERFLUOS  RationalSolveArgCheck(PolyList, "RationalProjectivePoints");
+// SUPERFLUOUS  RationalSolveArgCheck(PolyList, "RationalProjectivePoints");
 //  if not(IsHomog(PolyList)) then
 //    error("RationalProjectivePoints: generators must be homogeneous");
 //  endif;

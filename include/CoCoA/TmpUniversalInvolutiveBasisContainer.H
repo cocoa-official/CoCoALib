@@ -64,7 +64,7 @@ namespace CoCoA
       typedef std::vector< std::pair<PPMonoidElem, std::vector<bool> > >  ComplementaryDecomposition;
 
       /**
-       * Constructor, it sets the generators and inititalizes the numerical
+       * Constructor, it sets the generators and initializes the numerical
        * values with -1.
        *
        * @param gens

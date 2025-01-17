@@ -86,7 +86,7 @@ EndDefine; -- PerpOfSet
 
 
 Define HomogeneousPiece(I,D)
-  -- homegeneous part of the ideal I in degree D
+  -- homogeneous part of the ideal I in degree D
   GensI:=gens(I);
   Temp:=[0];
   Foreach F In diff(GensI,[0]) Do 

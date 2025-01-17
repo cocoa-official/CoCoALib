@@ -111,19 +111,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/NumTheory-SimplestRat.C,v 1.3 2022/02/18 14:11:55 abbott Exp $
-// $Log: NumTheory-SimplestRat.C,v $
-// Revision 1.3  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.2  2021/01/15 16:59:33  abbott
-// Summary: Redmine 1563: new ctor for BigRat direct from integer
-//
-// Revision 1.1  2020/01/26 14:14:31  abbott
-// Summary: Finished splitting NumTheory into smaller pieces (redming 1161)
-//
-//
-//

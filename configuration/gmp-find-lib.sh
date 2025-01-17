@@ -10,7 +10,7 @@ SCRIPT_NAME=[[$(basename "$0")]]
 # If none is found, it prints out an error message (on stderr)
 # and returns with exit code 2.
 
-# EXIT CODES: 0 = "found 1 GMP insallation";  prints full path
+# EXIT CODES: 0 = "found 1 GMP installation";  prints full path
 #             1 = "found several installations"; prints full path of one
 #             2 = "found no GMP installation"
 

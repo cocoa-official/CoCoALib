@@ -112,7 +112,7 @@ namespace CoCoA
     }
 
     /**
-     * Calculate Newton coeffcients for next iteration
+     * Calculate Newton coefficients for next iteration
      */
     GraeffeSeq &GraeffeSeq::operator++()
     {
@@ -132,7 +132,7 @@ namespace CoCoA
     }
 
     /**
-     * Calculate Newton coeffcients for next iteration
+     * Calculate Newton coefficients for next iteration
      */
     GraeffeSeq GraeffeSeq::operator++(int)
     {
@@ -204,33 +204,3 @@ namespace CoCoA
     }
 
 }
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-Graeffe.C,v 1.8 2024/08/01 16:52:44 bigatti Exp $
-// $Log: SparsePolyOps-Graeffe.C,v $
-// Revision 1.8  2024/08/01 16:52:44  bigatti
-// Summary: error codes: Req(Elem)SparsePolyRing;
-// now using CoCoA_THROW_ERROR1/2
-//
-// Revision 1.7  2024/07/02 15:36:15  bigatti
-// Summary:Changed error codes: LogZero into ReqNonZero
-// and Not... into ReqNonNegative, ReqNonNegativeGrading, ReqPositive, ReqPositiveGrading
-//
-// Revision 1.6  2024/07/02 09:57:57  bigatti
-// Summary: error codes, first batch:
-// ReqUnivariate, ReqNonZero, ReqNonZeroGradingDim, ReqNonZeroModulus,  ReqNonZeroRingElem
-//
-// Revision 1.5  2024/01/21 19:57:24  abbott
-// Summary: Improved err mesg
-//
-// Revision 1.4  2023/11/11 20:28:48  abbott
-// Summary: Improved GraeffeN when order has several primes greater than 3
-//
-// Revision 1.3  2023/08/06 10:12:56  abbott
-// Summary: Remove incorrect "sign trick" (redmine 1758)
-//
-// Revision 1.2  2022/11/24 21:11:29  abbott
-// Summary: Added copyright notice
-//
-//

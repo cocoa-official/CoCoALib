@@ -38,7 +38,7 @@ The ``ExternalLibInfo`` struct contains 3 fields (all have type ``std::string``)
 
 The implementation is not so pretty: it depends on the preprocessor
 flags set in the file ``PREPROCESS_DEFNS.H``.  The library name is
-the name I usually use when refering to the library.  The version
+the name I usually use when referring to the library.  The version
 number is whatever the library makes available (otherwise just the
 string "UNKNOWN").  The URL was typed in by hand.
 

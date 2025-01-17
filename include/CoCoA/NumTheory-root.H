@@ -31,18 +31,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/NumTheory-root.H,v 1.2 2022/02/18 14:11:47 abbott Exp $
-// $Log: NumTheory-root.H,v $
-// Revision 1.2  2022/02/18 14:11:47  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2022/01/20 19:15:57  abbott
-// Summary: Added new fns StarRoot and CertifyNotPower
-//
-//
-//
-
 #endif

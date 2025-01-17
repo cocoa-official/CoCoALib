@@ -47,23 +47,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/PolyFamilies.H,v 1.2 2022/02/18 14:11:47 abbott Exp $
-// $Log: PolyFamilies.H,v $
-// Revision 1.2  2022/02/18 14:11:47  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.1  2019/09/23 08:08:26  abbott
-// Summary: Renamed from OrthogonalPolys
-//
-// Revision 1.2  2019/02/28 11:28:40  abbott
-// Summary: Added DicksonPoly family
-//
-// Revision 1.1  2017/10/16 19:53:49  abbott
-// Summary: Added new fns ChebyshevPoly, HermitePoly, LaguerrePoly
-//
-//
-
 #endif

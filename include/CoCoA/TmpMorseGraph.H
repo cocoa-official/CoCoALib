@@ -171,7 +171,7 @@ namespace CoCoA
                                       std::vector< std::pair<RingElem, std::vector<bool> > >::const_iterator e2);
 
       /**
-       * Recursive function. It generates all orderd subset of InputSet.
+       * Recursive function. It generates all ordered subset of InputSet.
        * It is a call-by-ref function. The result is stored in result.
        *
        * @param result
@@ -186,9 +186,9 @@ namespace CoCoA
 
       /*
        * the basic datastructure
-       * myRing and myPPM are basic datas about the ring itself
+       * myRing and myPPM are basic data about the ring itself
        * myMill represents the janet basis, but for faster access we also save the JB also
-       * in myBasis which is a vector of JBElems (for more informations take a look at the class documentation of JBElems)
+       * in myBasis which is a vector of JBElems (for more information take a look at the class documentation of JBElems)
        * myResolution contains the resolution as a MorseGraph i.e. a list of nodes and directed edges between
        * this notes.
        * The edges have a value. For computing the betti numbers it is suitable to compute these maps

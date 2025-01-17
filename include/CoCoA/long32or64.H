@@ -27,20 +27,4 @@
 #define CoCoA_32BIT_LONG
 #endif
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/long32or64.H,v 1.3 2024/04/12 16:55:52 abbott Exp $
-// $Log: long32or64.H,v $
-// Revision 1.3  2024/04/12 16:55:52  abbott
-// Summary: Changed name of CPP symbol which signifies that longs are 32 bits (redmine 1661/1804)
-//
-// Revision 1.2  2024/03/23 13:05:44  abbott
-// Summary: Corrected (previsouly it always gave error.. oops)
-//
-// Revision 1.1  2024/03/23 11:45:57  abbott
-// Summary: First attempt at a macro for detecting 32-bitters (redmine 1661)
-//
-//
-
 #endif

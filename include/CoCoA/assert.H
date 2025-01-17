@@ -43,44 +43,4 @@ namespace CoCoA
 #define CoCoA_ASSERT(cond) CoCoA_ASSERT_ALWAYS(cond)
 #endif
 
-// RCS header/log in the next few lines.
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/assert.H,v 1.9 2022/02/18 14:11:51 abbott Exp $
-// $Log: assert.H,v $
-// Revision 1.9  2022/02/18 14:11:51  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.8  2021/11/03 19:20:59  abbott
-// Summary: Added comment
-//
-// Revision 1.7  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.6  2021/01/07 14:48:33  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.5  2019/03/18 17:56:49  abbott
-// Summary: Changed 0 into nullptr where appropriate
-//
-// Revision 1.4  2017/03/13 12:17:09  abbott
-// Summary: Include PREPROCESSOR_DEFNS.H (in header files which need the info)
-//
-// Revision 1.3  2016/09/16 16:27:09  abbott
-// Summary: Created CoCoA_ASSERT_ALWAYS (was TEST_ASSERT in each test file)
-//
-// Revision 1.2  2007/10/30 17:14:11  abbott
-// Changed licence from GPL-2 only to GPL-3 or later.
-// New version for such an important change.
-//
-// Revision 1.1.1.1  2007/03/09 15:16:11  abbott
-// Imported files
-//
-// Revision 1.2  2006/12/06 17:17:44  cocoa
-// -- removed #include "config.H"
-//
-// Revision 1.1  2006/10/06 14:04:57  cocoa
-// The new assert header and implementation files.
-// A new test.
-//
-//
-
 #endif

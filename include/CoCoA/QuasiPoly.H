@@ -47,32 +47,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/QuasiPoly.H,v 1.6 2022/02/18 14:11:47 abbott Exp $
-// $Log: QuasiPoly.H,v $
-// Revision 1.6  2022/02/18 14:11:47  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.5  2021/01/07 14:21:51  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.4  2015/04/16 16:20:14  abbott
-// Summary: Removed useless include directive
-// Author: JAA
-//
-// Revision 1.3  2014/07/14 14:19:51  abbott
-// Summary: Removed a rogue "e" at start of the file
-// Author: JAA
-//
-// Revision 1.2  2014/07/14 13:16:25  abbott
-// Summary: Minor cleaning
-// Author: JAA
-//
-// Revision 1.1  2014/07/14 10:04:29  abbott
-// Summary: Added new impl of quasipolynomials
-// Author: JAA
-//
-
 #endif

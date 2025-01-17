@@ -124,7 +124,7 @@ namespace CoCoA
 
       /**
        * Computes the wasteless rank for the map from (PosInRes + 1)=F1 to PosInRes=F0.
-       * In terms of Betti and pseudo Betti diagramms: We compute the difference
+       * In terms of Betti and pseudo Betti diagrams: We compute the difference
        * for the F1-th column.
        *
        * The map from F1 to F0 can be represented as matrix. These matrix can be divided into submatrices, s.t.

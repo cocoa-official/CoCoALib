@@ -83,7 +83,7 @@ IsArrCentral(A2);
 ------------------------------------------------------------------------
 
 -- EXERCISE:
--- Try to write the funcion IsArrEssential.
+-- Try to write the function IsArrEssential.
 -- HINT: see
 ? IsZeroDim
 

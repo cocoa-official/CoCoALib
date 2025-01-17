@@ -33,7 +33,7 @@ void program()
   cout << ShortDescription << endl;
   cout << boolalpha << endl;
   ring Q = RingQQ();
-  cout <<"///////////////A homogenous ideal with a Pommaret basis//////////////////////////////////////////" << endl;
+  cout <<"///////////////A homogeneous ideal with a Pommaret basis//////////////////////////////////////////" << endl;
   SparsePolyRing polyRing6 = NewPolyRing(Q, SymbolRange("x",0,5));
   vector<RingElem> x = indets(polyRing6);
   vector<RingElem> polys;

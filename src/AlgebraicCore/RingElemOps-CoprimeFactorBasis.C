@@ -161,33 +161,3 @@ namespace CoCoA
 
   
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/RingElemOps-CoprimeFactorBasis.C,v 1.6 2022/02/18 14:11:57 abbott Exp $
-// $Log: RingElemOps-CoprimeFactorBasis.C,v $
-// Revision 1.6  2022/02/18 14:11:57  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.5  2020/06/17 15:49:26  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.4  2020/02/11 16:12:19  abbott
-// Summary: Added some checks for bad ostream (even to mem fns myOutput); see redmine 969
-//
-// Revision 1.3  2019/11/14 17:52:09  abbott
-// Summary: Removed commented out cruft
-//
-// Revision 1.2  2019/09/16 17:25:27  abbott
-// Summary: Corrected myRefineBasis in some edge cases
-//
-// Revision 1.1  2019/03/27 14:19:42  bigatti
-// (abbott) renamed GCDFreeBasis --> CoprimeFactorBasis
-//
-// Revision 1.2  2018/06/25 12:31:13  abbott
-// Summary: Restructured code
-//
-// Revision 1.1  2017/02/01 10:36:49  abbott
-// Summary: IMpl of GCDFreeBasis (transl from CoCoA-5)
-//
-//

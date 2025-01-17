@@ -87,7 +87,7 @@ The following (simplified but real) code excerpt is mildly problematic:
 }
 ```
 When compiled without debugging (//i.e.// ``CoCoA_DEBUG`` is zero) the compiler
-(gcc-3) complains that the variable ``OK`` is unusued.  It does not appear
+(gcc-3) complains that the variable ``OK`` is unused.  It does not appear
 to be possible to make the macro "depend on its argument" in the
 non-debugging case without incurring the run-time cost of evaluating the
 argument (if the argument is just a variable the cost is negligible, but

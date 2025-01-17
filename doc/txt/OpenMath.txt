@@ -44,7 +44,7 @@ of ``operator<<`` cast to either ``long`` or ``unsigned long``.
 Use ``boost::shared_ptr`` instead of [[SmartPtrIRC]]?
 
 Documentation woefully incomplete.  Actually the whole implementation needs a
-thorough revision, perhaps in collaboration with some others who are attemtping
+thorough revision, perhaps in collaboration with some others who are attempting
 to implement OpenMath.
 
 Code written hastily, so incomplete, largely untested, does not follow the

@@ -92,29 +92,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-KroneckerProd.C,v 1.6 2024/07/15 17:03:56 bigatti Exp $
-// $Log: MatrixOps-KroneckerProd.C,v $
-// Revision 1.6  2024/07/15 17:03:56  bigatti
-// Summary: Error codes:  added CoCoA_THROW_ERROR1(ErrID);
-// Removed BadRowIndex, BadColIndex;  Renamed  ERR::Empty --> ERR::ReqNonEmpty
-//
-// Revision 1.5  2022/02/18 14:11:54  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.4  2021/10/04 08:54:21  abbott
-// Summary: Replaced calls to apply by direct applic of ringhom (redmine 1467, 1598)
-//
-// Revision 1.3  2020/06/22 15:43:37  abbott
-// Summary: Use new CoCoA_STATIC_ERROR_MESG macro
-//
-// Revision 1.2  2020/06/17 15:49:23  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.1  2020/05/26 12:06:18  abbott
-// Summary: Renamed TensorMat to KroneckerProd; doc & tests updated
-//
-//
-//

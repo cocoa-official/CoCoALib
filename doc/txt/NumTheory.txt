@@ -216,7 +216,7 @@ There is also a function for deterministic rational reconstruction which
 requires certain bounds to be given in input.  It uses the continued fraction
 method.
 
-- ``RatReconstructWithBounds(e,P,Q,res,mod)`` where ``e`` is upper bound for number of "bad" moduli, ``P`` and ``Q`` are upper bounds for numerator and denominator of the rational to be reconstructed, and ``(res[i],mod[i])`` is a residue-modulus pair with distinct moduli being coprime.
+- ``RatReconstructWithBounds(e,P,Q,res,mod)`` where ``e`` is upper bound for number of "bad" moduli, ``P`` and ``Q`` are upper bounds for numerator and denominator of the rational to be reconstructed, and ``(res[i],mod[i])`` is a residue-modulus pair with distinct moduli being coprime: note that ``res`` and ``mod`` are of type ``vector<long>``.
 
 
 == Maintainer Documentation ==

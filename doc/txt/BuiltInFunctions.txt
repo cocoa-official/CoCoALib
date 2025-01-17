@@ -176,8 +176,8 @@ END_STD_BUILTIN_FUNCTION
 == Maintainer documentation ==
 %======================================================================
 
-*For overloaded functions explicitely*:
-Explicitely define all cases and make an extra default case
+*For overloaded functions explicitly*:
+Explicitly define all cases and make an extra default case
 for safety (gives protection in development when one type has been forgotten)
 ```
 DECLARE_STD_BUILTIN_FUNCTION(LT, 1) {

@@ -14,7 +14,7 @@ const string ShortDescription =
   "In this file we explain how to compute the Janet Basis in CoCoA.  \n";
 
 const string LongDescription =
-  " We explain the function JanetBasis and show whicht options we can choose. \n";
+  " We explain the function JanetBasis and show which options we can choose. \n";
 //----------------------------------------------------------------------
 
 void output(vector<RingElem> vec)

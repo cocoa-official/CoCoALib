@@ -131,7 +131,7 @@ namespace CoCoA {
                             std::vector<RingElem>::const_iterator endInput);
 
       /**
-       * It modifies the instance such that it represents the trival ideal:
+       * It modifies the instance such that it represents the trivial ideal:
        * The set T in TQSets contains only the JanetTriple of the RingElem 1.
        */
       void myTrivialIdeal();

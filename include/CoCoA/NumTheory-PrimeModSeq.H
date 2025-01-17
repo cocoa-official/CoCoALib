@@ -82,24 +82,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/NumTheory-PrimeModSeq.H,v 1.6 2024/01/21 19:54:27 abbott Exp $
-// $Log: NumTheory-PrimeModSeq.H,v $
-// Revision 1.6  2024/01/21 19:54:27  abbott
-// Summary: JumpTo now takes UNSIGNED arg
-//
-// Revision 1.5  2023/02/22 20:20:46  abbott
-// Summary: Moved impl from header file to source file
-//
-// Revision 1.4  2023/01/31 12:26:08  abbott
-// Summary: Changed internal repr to unsigned long
-//
-// Revision 1.3  2022/11/24 21:17:05  abbott
-// Summary: Added commented out include (why not needed?)
-//
-// Revision 1.2  2022/11/24 21:12:10  abbott
-// Summary: Added copyright notice (& some spacing)
-//
-
-
 #endif

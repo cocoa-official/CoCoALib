@@ -17,7 +17,7 @@ together (analogously to the triple ``ring``, ``RingBase`` and ``RingElem``).
 
 The class ``module`` is a reference counting smart pointer to an object of
 type derived from ``ModuleBase``; all concrete types for representing modules
-are derived from ``ModuleBase``.  For a library implementor the class
+are derived from ``ModuleBase``.  For a library implementer the class
 ``ModuleBase`` defines the minimal interface which every concrete module
 class must offer; indeed the concrete class must be derived from
 ``ModuleBase``.

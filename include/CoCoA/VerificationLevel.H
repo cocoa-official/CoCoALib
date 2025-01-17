@@ -47,23 +47,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/VerificationLevel.H,v 1.4 2022/02/18 14:11:51 abbott Exp $
-// $Log: VerificationLevel.H,v $
-// Revision 1.4  2022/02/18 14:11:51  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.3  2021/02/10 19:32:01  abbott
-// Summary: Added noexcept (redmine 1572)
-//
-// Revision 1.2  2018/03/15 10:47:01  abbott
-// Summary: Added new fns, IsGuaranteed & level (for VerificationLevel)
-//
-// Revision 1.1  2018/03/13 17:34:07  abbott
-// Summary: Added new files VerificationLevel
-//
-//
-
 #endif

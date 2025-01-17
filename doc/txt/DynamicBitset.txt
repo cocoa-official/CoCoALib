@@ -128,8 +128,8 @@ a vector with 2 ``BitBlock``s and will have 4 unused bits)
 === boost? ===
 This class is needed because C++ ``bitset`` length has to be fixed at
 compile time.  There is a class in boost named ``dynamic_bitset``:
-if/when we decide CoCoALib inlude boost ``DynamicBitset`` will just
-call the boost implementation.
+if/when we decide that CoCoALib will depend on boost ``DynamicBitset``
+will just call the boost implementation.
 
 === Stretchable? ===
 ``DynamicBitset``s, unlike boost's ``dynamic_bitset``s, are not
@@ -146,5 +146,5 @@ to forbid it, so we might make it available.
 - moved definition of class ``facet`` from ``TmpIsTree`` into
   ``DynamicBitset.H,C`` (and renamed).
   Rearranged and changed names for similarity with bitsets in STL and
-  boost.  Stuctured in //safe// or //fast// functions according to
+  boost.  Structured in //safe// or //fast// functions according to
   coding conventions.  Test and example.

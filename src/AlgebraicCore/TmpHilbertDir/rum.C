@@ -40,7 +40,7 @@ short rum_status[RUM_MAX_ALLOCATION+1];
 
 void rum_empty(int rum);
 
-/* TODO: examinate the possibility of using shifts (?) */
+/* TODO: examine the possibility of using shifts (?) */
 
 #define rum_is_empty(rum) (rum_status[rum] & rum_EMPTY)
 #define rum_is_full(rum) (rum_status[rum] & rum_FULL)

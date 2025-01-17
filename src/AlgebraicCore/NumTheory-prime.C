@@ -83,7 +83,7 @@ namespace CoCoA
     }
 
     // SAME AS StrongPseudoPrime but uses BigInt for PowerMod;
-    // necssary when n > MaxSquarableInteger!
+    // necessary when n > MaxSquarableInteger!
     bool StrongPseudoPrime_SLOW(unsigned long b, unsigned long n)
     {
 //      CoCoA_ASSERT(n > MaxSquarableInteger<unsigned long>());
@@ -1032,103 +1032,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/NumTheory-prime.C,v 1.29 2024/07/03 15:41:22 bigatti Exp $
-// $Log: NumTheory-prime.C,v $
-// Revision 1.29  2024/07/03 15:41:22  bigatti
-// Summary: Specialized some ERR::BadArg with explicit error codes
-//
-// Revision 1.28  2024/07/02 15:33:32  bigatti
-// Summary: Changed error codes: LogZero into ReqNonZero
-//
-// and Not... into ReqNonNegative, ReqNonNegativeGrading, ReqPositive, ReqPositiveGrading
-// Specialized some BadArg with explicit codes
-// Tidied up some CoCoA_THROW_ERROR second argument (string)
-//
-// Revision 1.27  2024/03/25 08:04:26  abbott
-// Summary: Modifications to work  on MinGW (& 32 bitters) (redmine 1661)
-//
-// Revision 1.26  2023/12/10 20:28:40  abbott
-// Summary: Added new fn EstNumPrimesUpto (so as not to lose it)
-//
-// Revision 1.25  2022/06/08 15:20:18  abbott
-// Summary: Added new fn RandomNBitPrime
-//
-// Revision 1.24  2022/05/14 16:01:25  abbott
-// Summary: Split long line into two
-//
-// Revision 1.23  2022/05/06 12:56:29  abbott
-// Summary: Minor tidying in IsPrime
-//
-// Revision 1.22  2022/03/16 18:23:47  abbott
-// Summary: Minor cosmetic improvements
-//
-// Revision 1.21  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.20  2021/10/14 12:10:52  abbott
-// Summary: Removed cruft
-//
-// Revision 1.19  2021/09/20 12:32:14  abbott
-// Summary: Revised behaviour of NextPrime/PrevPrime (redmine 1608)
-//
-// Revision 1.18  2021/02/10 19:40:00  abbott
-// Summary: Added noexcept (sometimes instead of throw()) -- redmine 1572
-//
-// Revision 1.17  2021/01/07 15:16:51  abbott
-// Summary: Corrected copyright
-//
-// Revision 1.16  2020/06/17 15:49:24  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.15  2020/02/11 16:12:18  abbott
-// Summary: Added some checks for bad ostream (even to mem fns myOutput); see redmine 969
-//
-// Revision 1.14  2020/01/26 14:41:59  abbott
-// Summary: Revised includes after splitting NumTheory (redmine 1161)
-//
-// Revision 1.13  2019/12/11 14:48:23  abbott
-// Summary: Made NextProbPrime and PrevProbPrime interruptible
-//
-// Revision 1.12  2019/03/18 11:26:33  abbott
-// Summary: Added include after splitting NumTheory
-//
-// Revision 1.11  2019/03/04 16:24:40  abbott
-// Summary: Updated NoSmallFactorSeq (to make it a bit faster, but more complicated...)
-//
-// Revision 1.10  2018/08/08 16:51:19  abbott
-// Summary: Added hack to hide code on 32-bit platforms
-//
-// Revision 1.9  2018/03/12 15:05:56  abbott
-// Summary: Minor cleaning to RandomSmallPrime
-//
-// Revision 1.8  2018/03/12 14:43:53  abbott
-// Summary: Corrected bug in RandomSmallPrime (could never give primes 2,3,5); now gives only from 5 upwards
-//
-// Revision 1.7  2018/03/12 14:28:06  abbott
-// Summary: Fixed 1 bug in RandomSmallPrime
-//
-// Revision 1.6  2018/03/12 12:52:35  abbott
-// Summary: Cleaning; should be more 32-bit safe.
-//
-// Revision 1.5  2018/03/09 14:11:41  abbott
-// Summary: Major cleaning to impl of IsPrime (& related aux fns)
-//
-// Revision 1.4  2018/03/02 13:42:21  abbott
-// Summary: Fixed some minor bugs
-//
-// Revision 1.3  2018/02/28 15:50:10  abbott
-// Summary: Revised IsPrime/IsSmallPrime/IsBigPrime to work better also on 32-bitters
-//
-// Revision 1.2  2018/02/28 13:23:09  abbott
-// Summary: Revised to avoid 32-bit problem
-//
-// Revision 1.1  2018/02/27 17:29:14  abbott
-// Summary: Renamed from NumTheory_prime
-//
-// Revision 1.1  2018/02/27 10:50:08  abbott
-// Summary: Split off from NumTheory; also major revision
-//
-//

@@ -140,7 +140,7 @@ namespace CoCoA
 
     QBGenerator QBG(PPM(P_new));         // to generate the new QB
     vector<PPMonoidElem> QB_old = QuotientBasisSorted(I);
-    LinDepMill LDM(K, len(QB_old)); // to serach for lin dep
+    LinDepMill LDM(K, len(QB_old)); // to search for lin dep
     vector<RingElem> coeffs(len(QB_old), zero(K));
 
     // add pp 1
@@ -174,11 +174,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/SparsePolyOps-ideal-FGLM.C,v 1.1 2024/05/13 13:12:28 bigatti Exp $
-// $Log: SparsePolyOps-ideal-FGLM.C,v $
-// Revision 1.1  2024/05/13 13:12:28  bigatti
-// Summary: first import: added FGLM
-//

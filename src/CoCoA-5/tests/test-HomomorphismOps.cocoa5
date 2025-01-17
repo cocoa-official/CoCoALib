@@ -45,7 +45,7 @@ T0 := CpuTime();
 -- (3) Isomorfismo di K-algebre affini,
 -- avente come dominio e come codominio due anelli quoziente.
 
--- (4) Omomorfismo di K-algebre polinomiali, né iniettivo, né surgettivo.
+-- (4) Omomorfismo di K-algebre polinomiali, nÃ© iniettivo, nÃ© surgettivo.
 
 -- (5) Omomorfismo di K-algebre affini, surgettivo ma non iniettivo,
 -- avente come dominio un anello di polinomi e come codominio un anello
@@ -56,8 +56,8 @@ T0 := CpuTime();
 -- x+I1=[x] -----> a^2
 -- y+I1=[y] -----> a^3
 
--- Nota: Questo omomorfismo è iniettivo e ha come immagine
--- QQ[a^2,a^3], quindi non è surgettivo.
+-- Nota: Questo omomorfismo Ã¨ iniettivo e ha come immagine
+-- QQ[a^2,a^3], quindi non Ã¨ surgettivo.
 
 use ZZ/(4)[a,b]; -- just to make sure it's not using CurrentRing
 

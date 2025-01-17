@@ -1418,7 +1418,7 @@ namespace CoCoA
           }
 	  else
           {
-            //AddToCornerAndUpdate(t, QBG, Alpha, S, J); ///non posso più usarla!!!
+            //AddToCornerAndUpdate(t, QBG, Alpha, S, J); ///non posso piÃ¹ usarla!!!
             sol=xbar;
 ///	      cout << endl;
 ///	      cout << endl << "Spostamento totale= " << convertVector(sol) << endl;
@@ -1456,7 +1456,7 @@ namespace CoCoA
 ///		  cout << " +" << d << "*" << QBAsPoly[i];
 ///		}
 ///	      cout << endl << endl;
-            //vedere se è almost vanishing
+            //vedere se Ã¨ almost vanishing
 ////??            double VV=Norm2Double(NewVectorGSL(NewRho));
             //cout << "||f(Xbar)|| = " << VV << endl;
             vector<RingElem> CoeffsF;

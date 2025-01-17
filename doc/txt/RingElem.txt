@@ -96,7 +96,7 @@ between ``RingElem``s will fail if they do not belong to the same ring
 
 ==== Assignment & Swapping ====
 
-Assigning an integer or rational to a ``RingElem`` wil automatically map
+Assigning an integer or rational to a ``RingElem`` will automatically map
 the value into the ring to which the ``RingElem`` belongs.
  | ``r = n;``     | map ``n`` into ``owner(r)`` and assign the result |
  | ``r = q;``     | map ``q`` into ``owner(r)`` and assign the result |
@@ -545,7 +545,7 @@ might find this section informative.
 ``RingElem``s are designed to be easy and pleasant to use, but this
 convenience has a price: a run-time performance penalty (and a memory
 space penalty too).
-Both penalities may be avoided by using //raw values// but at a
+Both penalties may be avoided by using //raw values// but at a
 considerable loss of programming convenience and safety.  You should
 consider using raw values only if you are desperate for speed; even
 so, performance gains may be only marginal except perhaps for

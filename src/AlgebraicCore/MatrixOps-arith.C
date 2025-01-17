@@ -315,36 +315,3 @@ namespace CoCoA
   
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/MatrixOps-arith.C,v 1.9 2024/08/21 20:26:07 abbott Exp $
-// $Log: MatrixOps-arith.C,v $
-// Revision 1.9  2024/08/21 20:26:07  abbott
-// Summary: Made matrix mult interruptible
-//
-// Revision 1.8  2023/04/12 12:30:17  bigatti
-// Summary: modified error msg: "no automatic promotion *mapping* .."
-//
-// Revision 1.7  2023/03/09 22:34:36  abbott
-// Summary: Improved err mesg
-//
-// Revision 1.6  2022/02/18 14:11:54  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.5  2021/10/04 08:55:27  abbott
-// Summary: Replaced calls to apply by direct applic of ringhom (redmine 1467, 1598)
-//
-// Revision 1.4  2021/07/19 11:12:48  abbott
-// Summary: Layout
-//
-// Revision 1.3  2021/01/07 15:28:07  abbott
-// Summary: Corrected copyright; removed some cruft
-//
-// Revision 1.2  2020/10/27 20:00:40  abbott
-// Summary: Revised according to redmine 635
-//
-// Revision 1.1  2020/09/28 11:13:36  abbott
-// Summary: Further splitting of MatrixOps (redmine 1196)
-//
-//

@@ -92,7 +92,7 @@ Time est.: 1 week.
   <compl-date>0000-00-00</compl-date>
   <description>
 The homomorphism R[x,y,z] into R[x][y][z] is, mathematically speaking,
-      quite canonical, and also the viceversa.
+      quite canonical, and also vice-versa.
 We should make this kind of homomorphisms easier to define (automatically?).
 Even though intuitively it looks quite obvious, it might be quite
       tedious to define it properly (e.g. we should probably forbid
@@ -636,7 +636,7 @@ Time est.: 1+ weeks.
   <compl-date>0000-00-00</compl-date>
   <description>
 It appears it can be useful to have a (template?) class for
-"Homogenous lists", i.e. vectors (?) of RingElems/PPMonoidElems having
+"Homogeneous lists", i.e. vectors (?) of RingElems/PPMonoidElems having
 the same owner.  It should be reference counted.
 It would be quite useful for the generators of an ideal: to avoid
 making copies, to guarantee that all elements are in the same ring.
@@ -1026,7 +1026,7 @@ Time est: 2-3 days.
 Right now only gradings with non-negative entries are allowed
 (because only ordering matrices with non-negative entries are allowed)
 Design how to deal with negative entries.
-Tiem est: ???
+Time est: ???
   </description>
 </task>
 
@@ -1181,7 +1181,7 @@ The real problem is that BOOST is huge.
 Review of the requirements for the new interactive language
 and how they interact.  The aim is to produce a report which analyses the various compromises
 and then indicates a final choice to proceed with for the production of a parser.  All decisions
-should be justfied so that a later reconsideration could be effected cheaply.  Time est.: 3-4 weeks.
+should be justified so that a later reconsideration could be effected cheaply.  Time est.: 3-4 weeks.
   </description>
 </task>
 
@@ -1238,7 +1238,7 @@ CoCoA-4.  Time est.: 1-2 weeks.
   <lastnews-date>2011-01</lastnews-date>
   <compl-date>0000-00-00</compl-date>
   <description>
-As a useful particular case of Homogenous lists 
+As a useful particular case of Homogeneous lists 
 <a href="#Descr:HomogList">(task)</a>
 We have a prototype in RingElemVector:
 reference counted (copy on write) vector of RingElems in the same
@@ -2128,7 +2128,7 @@ There are some basic arithmetic operations too.
 <authors>Abbott</authors>
 <compl-date>2009-07-02</compl-date>
 <description>
-Varius functions in the recent NumTheory file have been improved: <i>e.g.</i>
+Various functions in the recent NumTheory file have been improved: <i>e.g.</i>
 better
 interface, fewer bugs, clearer documentation.  Thanks to the participants of the recent CoCoA
 School in Barcelona whose opinions help answer some philosophical design questions.
@@ -2171,7 +2171,7 @@ The code should also work correctly on both 32 and 64 bit computers (but in fact
 There is now a global option for specifying whether elements of a
 quotient of ZZ are printed as least non-negative residues or as
 least magnitude residues.  The default is least magnitude (a change
-from the previous deault behaviour).  The residues are now always
+from the previous default behaviour).  The residues are now always
 printed without brackets -- previously brackets were used in some
 cases and not in others.
 </description>
@@ -2338,7 +2338,7 @@ done by a single implementation of each underlying algorithm.
 <compl-date>2008-11-24</compl-date>
 <description>
 The preprocessing algorithms are now rational, so give exact results (rather
-than the rational aproximations produced when all input data were converted
+than the rational approximations produced when all input data were converted
 into <code>double</code>s).  The speed of computation remains essentially unchanged.
 </description>
 </task>
@@ -2371,7 +2371,7 @@ To help non-english speakers, each error should
 produce an alphanumeric key/code which can be used to search in a manual of errors.
 We want to create an "index" of all coded errors with a more verbose
 explanation.  Possibly it should also include some information about
-the most common occurences of a given error and some suggestions for
+the most common occurrences of a given error and some suggestions for
 debugging and/or fixing it.
 See <span class=file>CoCoAErrorCodes.html</span>:
 <a href="http://cocoa.dima.unige.it/cocoalib/CoCoAErrorCodes.html">CoCoA
@@ -2563,7 +2563,7 @@ single quotes.  Check other places too (e.g. manual).
 <authors>Bigatti</authors>
 <compl-date>2007-09-25</compl-date>
 <description>
-The contructor for <span class=class>ServerOpBase</span> requires a
+The constructor for <span class=class>ServerOpBase</span> requires a
 <span class=class>LibraryInfo</span>.
 This way the server can print all libraries which have been linked in
 (or the list of all available operations with the library they are

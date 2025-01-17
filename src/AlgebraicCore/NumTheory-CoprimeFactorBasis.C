@@ -183,39 +183,3 @@ namespace CoCoA
 
 
 } // end of namespace CoCoA
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/AlgebraicCore/NumTheory-CoprimeFactorBasis.C,v 1.7 2022/02/18 14:11:55 abbott Exp $
-// $Log: NumTheory-CoprimeFactorBasis.C,v $
-// Revision 1.7  2022/02/18 14:11:55  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.6  2020/12/04 10:43:52  abbott
-// Summary: Added inline doc; now interruptible
-//
-// Revision 1.5  2020/02/11 16:12:18  abbott
-// Summary: Added some checks for bad ostream (even to mem fns myOutput); see redmine 969
-//
-// Revision 1.4  2020/01/26 14:41:59  abbott
-// Summary: Revised includes after splitting NumTheory (redmine 1161)
-//
-// Revision 1.3  2019/11/14 17:50:28  abbott
-// Summary: Removed use of clog in some commented out code
-//
-// Revision 1.2  2019/09/16 17:30:05  abbott
-// Summary: Correct handling of negative values
-//
-// Revision 1.1  2019/03/27 14:19:42  bigatti
-// (abbott) renamed GCDFreeBasis --> CoprimeFactorBasis
-//
-// Revision 1.3  2019/03/18 11:25:26  abbott
-// Summary: Added include after splitting NumTheory
-//
-// Revision 1.2  2018/10/03 12:43:47  abbott
-// Summary: Commented out arg to op<< to avoid compiler warning
-//
-// Revision 1.1  2018/06/25 12:29:47  abbott
-// Summary: New GCDFreeBasis_BigInt
-//
-//

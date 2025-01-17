@@ -106,7 +106,7 @@ namespace CoCoA
     }
 
   // we can now access an element via <NumberWedges, Position In NumberWedges>
-  // orderd by degree
+  // ordered by degree
     std::map<std::pair<long, MorseElement>, long> MorseBetti::myGradedPositionMorseElements(long NumberWedges) const
     {
       std::map<std::pair<long, MorseElement>, long> res;

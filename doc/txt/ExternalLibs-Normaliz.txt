@@ -27,7 +27,7 @@ moment look at the examples for available functions on
 
 Download and compile **Normaliz** following the instructions from the website.
 
-Altenatively, you can download the sources from Github:
+Alternatively, you can download the sources from Github:
 First time
 ``` git clone https://github.com/Normaliz/Normaliz.git
 Update (from the Normaliz git folder)
@@ -182,7 +182,7 @@ g++  -I /Users/bigatti/0.99/gmp-6.1.0/ -L/Users/bigatti/0.99/gmp-6.1.0/.libs -lg
 == Bugs, shortcomings and other ideas ==
 %======================================================================
 
-We are still updating CoCoALib configuraton to use properly installed
+We are still updating CoCoALib configuration to use properly installed
 external libs.
 
 

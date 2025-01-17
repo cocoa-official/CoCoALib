@@ -50,20 +50,4 @@ namespace CoCoA
 
 } // end of namespace CoCoA
 
-
-
-// RCS header/log in the next few lines
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/include/CoCoA/ExternalLibs.H,v 1.3 2022/02/18 14:11:45 abbott Exp $
-// $Log: ExternalLibs.H,v $
-// Revision 1.3  2022/02/18 14:11:45  abbott
-// Summary: Updated copyright notice (now restrictive; see redmine 1555)
-//
-// Revision 1.2  2017/04/27 16:20:11  bigatti
-// -- separated name and lib file
-//
-// Revision 1.1  2017/04/26 14:52:37  abbott
-// Summary: Fns to find out about external libs in CoCoALib
-//
-//
-
 #endif
