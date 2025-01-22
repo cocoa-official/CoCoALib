@@ -9899,16 +9899,30 @@ record[
 <!-- ===  COMMAND  =============================================== -->
 <command>
   <title>indet</title>
-  <short_description>individual indeterminates</short_description>
+  <short_description>individual indeterminate</short_description>
 <syntax>
 indet(R: <type>RING</type>, N: <type>INT</type>): <rtn>RINGELEM</rtn>
 </syntax>
 <description>
-This function returns the N-th indeterminate of the current ring.
+This function returns the <tt>N</tt>-th indeterminate of the polynomial ring <tt>R</tt>.
 <example>
-/**/  use R ::= QQ[x,y,z];
-/**/  indet(R, 2);
+/**/ use R ::= QQ[x,y, c[1..3, 7..8]];
+/**/ indets(R);
+[x,  y,  c[1,7],  c[1,8],  c[2,7],  c[2,8],  c[3,7],  c[3,8]]
+/**/ indet(R, 2);
 y
+/**/ C := indets(R, "c");  C;
+[c[1,7],  c[1,8],  c[2,7],  c[2,8],  c[3,7],  c[3,8]]
+/**/ indet(R, 6);
+c[2,8]
+/**/ C[4];
+c[2,8]
+/**/ i := 2;  RingElem(R, ["c",i,i^3]); -- handier with indices (but slower)
+c[2,8]
+-- RingElem works in all rings, with expressions and indices
+-- it is far more flexible, but, therefore, is slower
+/**/  RingElem(NewFractionField(R), ["c",1,8]);
+c[1,8]
 </example>
 </description>
 <seealso>
@@ -9917,6 +9931,7 @@ y
   <see>IndetName</see>
   <see>indets</see>
   <see>NumIndets</see>
+  <see>RingElem</see>
   <see>UnivariateIndetIndex</see>
 </seealso>
 </command>
@@ -10015,8 +10030,8 @@ indets(R: <type>RING</type>): <rtn>LIST</rtn>
 indets(R: <type>RING</type>, X: <type>STRING</type>): <rtn>LIST</rtn>
 </syntax>
 <description>
-With one argument (a polynomial ring), this function returns the
-list of indeterminates of that polynomial ring.
+With one argument (a polynomial ring <tt>R</tt>), this function returns the
+list of indeterminates of <tt>R</tt>.
 With two arguments (the second a STRING), it returns the
 list of all indeterminates whose name is the given string.
 The indeterminates in the list appear in order of increasing
@@ -10038,8 +10053,6 @@ allowed because it is ambiguous:
 [x, y, z]
 /**/  indets(S,"x");
 [x]
-/**/  RingElem(S,"x"); -- works also if R is not a polynomial ring
-x
 
 /**/  use R ::= QQ[x[1..4],a[1..2,1..3]];
 /**/  indets(R,"x");
@@ -10048,6 +10061,10 @@ x
 [a[1,1], a[1,2], a[1,3], a[2,1], a[2,2], a[2,3]]
 /**/  indets(R,"b"); -- empty list if no indet has a matching head
 []
+-- RingElem works in all rings, with expressions and indices
+-- it is far more flexible, but, therefore, is slower
+/**/  RingElem(NewFractionField(R), ["a",1,2]);
+a[1,2]
 </example>
 </description>
 <seealso>
@@ -20303,38 +20320,38 @@ If <tt>E</tt> is a RINGELEM it is equivalent to applying the
 <ttref>CanonicalHom</ttref> from <tt>RingOf(E)</tt> to <tt>R</tt>
 (for other homomorphisms see <ttref>RINGHOM</ttref>).
 <example>
-/**/ P ::= ZZ/(5)[x,y];  S ::= QQ[x,y,z[1..4]];  K := NewFractionField(S);
+/**/ P ::= ZZ/(5)[x,y];  S ::= QQ[x,y,z[1..4, 7..9]];  K := NewFractionField(S);
 /**/ QR := NewQuotientRing(S, "x^2-3, y^2-5");
 
-/**/  -- STRING
-/**/  RingElem(P, "7*x");  --> 7*x as an element of P
+/**/ -- indet with indices
+/**/ i := 2;  RingElem(S, ["z",i,i^3]);
+z[2,8]
+
+/**/ -- expression in a STRING
+/**/ RingElem(P, "7*x");  --> 7*x as an element of P
 2*x
-/**/  RingElem(S, "7*x");  --> 7*x as an element of S
+/**/ RingElem(S, "7*x");  --> 7*x as an element of S
 7*x
-/**/  RingElem(S, "((7/3)*z[2] - 1)^2" ); -- expr without function calls
+/**/ RingElem(S, "((7/3)*z[2] - 1)^2" ); -- expr without function calls
 (49/9)*z[2]^2 +(-14/3)*z[2] +1
-/**/  RingElem(K, "(x^2-x*y)/(x*y-y^2)");
+/**/ RingElem(K, "(x^2-x*y)/(x*y-y^2)");
 x/y
 /**/ RingElem(QR, "(x+y)^3");
 (18*x +14*y)
 
-/**/  -- RINGELEM (via CanonicalHom)
-/**/  use S;
-/**/  f := 2*x-3;
+/**/ -- canonical mapping of a RINGELEM (via CanonicalHom)
+/**/ use S;
+/**/ f := 2*x-3;
 -- /**/  1/f; --> !!! ERROR !!! as expected: f in P is not invertible
-/**/  1/RingElem(K, f); -- f in K is invertible
+/**/ 1/RingElem(K, f); -- f in K is invertible
 1/(2*x -3)
 
-/**/  use P;
-/**/  -- INT and RAT
-/**/  RingElem(P, 7);
+/**/ use P;
+/**/ -- INT and RAT
+/**/ RingElem(P, 7);
 2
-/**/  RingElem(P, 3/2);
+/**/ RingElem(P, 3/2);
 -1
-
-/**/  -- LIST for indexed indets
-/**/  i := 2;  RingElem(S, ["z",i]);
-z[2]
 </example>
 </description>
 <seealso>
