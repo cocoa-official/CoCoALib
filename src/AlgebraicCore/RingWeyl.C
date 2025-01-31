@@ -972,7 +972,7 @@ namespace CoCoA
                         GBCriteria::UseBack, GBCriteria::DontUseDiv);
     GReductor GR(GRI, GensList,
                  GReductor::AffineAlg,
-                 Reductors::DontUseBorel, GReductor::DontUseDynamicAlg,
+                 //                 Reductors::DontUseBorel, GReductor::DontUseDynamicAlg,
                  criteria);
     GR.myDoGBasis();
     //    GR.myDoAFFGBasis();

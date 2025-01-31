@@ -66,42 +66,30 @@ public:
   {
   public:
 
-    enum UseDynamicAlgFlag    { UseDynamicAlg, DontUseDynamicAlg };
     enum BuchbergerOpTypeFlag { HomogeneousAlg, SaturatingAlg, AffineAlg };
 
-
+    void myCtorAux(const BuchbergerOpTypeFlag theBuchbergerOpType);
+    
     GReductor(const GRingInfo&,
               const PolyList&,
-//              const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit(),
               const BuchbergerOpTypeFlag theBuchbergerOpType=HomogeneousAlg,
-              const Reductors::UseBorelFlag=Reductors::DontUseBorel,
-              const UseDynamicAlgFlag IsDynamic=DontUseDynamicAlg,
               const GBCriteria criteria=GBCriteria(GBCriteria::AllSet));
-
     GReductor(const GRingInfo&,
               const GPolyList&,
-//              const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit(),
               const BuchbergerOpTypeFlag theBuchbergerOpType=HomogeneousAlg,
-              const Reductors::UseBorelFlag=Reductors::DontUseBorel,
-              const UseDynamicAlgFlag IsDynamic=DontUseDynamicAlg,
               const GBCriteria criteria=GBCriteria(GBCriteria::AllSet));
     GReductor(const GReductor&);// copy ctor not working, to be fixed
     ~GReductor(){};
-    void myCtorAux(const BuchbergerOpTypeFlag theBuchbergerOpType,
-                   const UseDynamicAlgFlag IsDynamic);
-    GReductor(const GRingInfo&,
-              GPolyList&,
-              const ClearMarker,
-//              const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit(),
-              const BuchbergerOpTypeFlag theBuchbergerOpType=HomogeneousAlg,
-              const Reductors::UseBorelFlag=Reductors::DontUseBorel,
-              const UseDynamicAlgFlag IsDynamic=DontUseDynamicAlg,
-              const GBCriteria criteria=GBCriteria(GBCriteria::AllSet));
 
-    bool IsDynamic() const {return IsDynamicAlgorithm;}
+    // GReductor(const GRingInfo&,
+    //           GPolyList&,
+    //           const ClearMarker,
+    //           const BuchbergerOpTypeFlag theBuchbergerOpType=HomogeneousAlg,
+    //           const GBCriteria criteria=GBCriteria(GBCriteria::AllSet));
+
     BuchbergerOpTypeFlag myGetBuchbergerOpType() const {return myBuchbergerOpType;}
     bool myPreparationDone() const {return myPrepared;}
-    bool WrongLPPFound() const {return myWrongLPPFoundValue;}
+    //    bool WrongLPPFound() const {return myWrongLPPFoundValue;}
     const Stats& myStats() const {return myStat;}
 
     long myReductorsLen() const {return myTrueReductors.myLen();}
@@ -118,18 +106,16 @@ public:
     void myCopyGBasis(VectorList& outGBasis);
     void myCopyMinGens(VectorList& outMinGens);
     void myDoAFFGBasis(); // I am working on sugar selection strategies
-    void myDoGBasis(); ///< flag may be set for using Borel reductors
-    void myDoGBasisTEST(); ///< flag may be set for using Borel reductors
+    void myDoGBasis();
+    void myDoGBasisTEST();
     RingElem myDoGBasisElimFirst(ConstRefPPMonoidElem ElimIndsProd);
     void myReduceCurrentSPoly();
-    void myPrepareGBasis(); ///< flag may be set for using Borel reductors
+    void myPrepareGBasis();
     void myFinalizeGBasis();//Last operations (stats at the moment) immediately before shutting down a GB computation
     void myDoGBasis(const int ReductionNumber); // Performs ReductionNumber reductions, -1 means unlimited
     void myReduceUntilNonZeroRedSPoly(); // Reduces until an SPoly does not reduces to zero. Stop immediately when that happens (no updates)
-     // DYNAMIC ALG: reduces until a non zero SPoly has a LPP with is different from the best possible LPP w.r.t. HPoly.
-     // In that case, settles the WrongLPP filed in the reductor.
-    void myReduceUntilWrongLPPFound(RefPPMonoidElem,
-                                    std::vector<RingElem>& );
+    // void myReduceUntilWrongLPPFound(RefPPMonoidElem,
+    //                                 std::vector<RingElem>& );
 //A24    GPoly GetSPoly()const{return mySPoly;};// Reads the SPoly
 //A24    void GetCandidateGBasis(PolyList&)const;// the polys computed up to now and the non processed generators
     long myAge() const {return myAgeValue;}
@@ -184,8 +170,8 @@ public:
     Stats myStat;// the statistics
     bool myPrepared; // Default false. True after a myPrepareGBasis has been performed
     long myAgeValue;
-    bool IsDynamicAlgorithm;
-    bool myWrongLPPFoundValue; // DYNAMIC ALGORITHM
+    //    bool IsDynamicAlgorithm;
+    //    bool myWrongLPPFoundValue; // DYNAMIC ALGORITHM
     GBCriteria myCriteria;
     BuchbergerOpTypeFlag myBuchbergerOpType; // Type of operation performed on the reductor
     static int ourDefaultStatLevel; ///< default verbosity level for statistics

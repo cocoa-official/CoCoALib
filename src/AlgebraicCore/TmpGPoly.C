@@ -470,26 +470,26 @@ clog << "operator+=: result " <<myPoly<< endl;
 
 //******** ReductorData ******************************************************
 
-  ReductorData::ReductorData(GPoly* p, const long p_component,  const long count):
-      myLPPForDivwMask(LPPForDivwMask(*p))
+  ReductorData::ReductorData(GPoly* p, const long p_component,  const long count)//:
+    //      myLPPForDivwMask(LPPForDivwMask(*p))
   {
     myGPolyPtr=p;
     myKey=MakeKey(*p);
-    myComponent=p_component;
+    //    myComponent=p_component;
     myCount = count;
-    IamBorelUpdated = true;
+    //    IamBorelUpdated = true;
     myIamNotToBeUsedValue=false;
   }
 
 
-  ReductorData::ReductorData(const ReductorData& RD):
-      myLPPForDivwMask(RD.myLPPForDivwMask)
+  ReductorData::ReductorData(const ReductorData& RD)//:
+    //      myLPPForDivwMask(RD.myLPPForDivwMask)
   {
     myGPolyPtr=RD.myGPolyPtr;
     myKey=RD.myKey;
-    myComponent=RD.myComponent;
+    //    myComponent=RD.myComponent;
     myCount = RD.myCount;
-    IamBorelUpdated = RD.IamBorelUpdated;
+    //    IamBorelUpdated = RD.IamBorelUpdated;
     myIamNotToBeUsedValue=RD.myIamNotToBeUsedValue;
   }
 
@@ -500,11 +500,12 @@ clog << "operator+=: result " <<myPoly<< endl;
 
     out<<"Record[ Key=" << RD.myKey
        <<", age=" << age(*(RD.myGPolyPtr))
-       <<", LPPForDiv=" << PP(RD.myLPPForDivwMask)
+      //       <<", LPPForDiv=" << PP(RD.myLPPForDivwMask)
+       <<", LPPForDiv=" << LPPForDiv(*(RD.myGPolyPtr))
        <<", LPPForOrd=" << LPPForOrd(*(RD.myGPolyPtr))
-       <<", MdCmp=" << RD.myComponent
+      //       <<", MdCmp=" << RD.myComponent
        //<<", Used = " << RD.myCount  //TMP SAT
-       <<", Upd = " << RD.IamBorelUpdated
+      //       <<", Upd = " << RD.IamBorelUpdated
        <<", ToBeUsd = " << RD.myIamNotToBeUsedValue
        <<", Wdeg=" << wdeg(*(RD.myGPolyPtr))
        <<", Sugar=" << sugar(*(RD.myGPolyPtr))
@@ -527,25 +528,25 @@ clog << "operator+=: result " <<myPoly<< endl;
 //********* Reductors *****************************************************
 
 
-  Reductors::Reductors(const GRingInfo& P, const UseBorelFlag UBR):
-      myGRingInfoValue(P)
-  {
-    myReductors.reserve(10000);
-    if (UBR == DontUseBorel)
-      IhaveBorelReductorsFlag = false;
-    else
-    {
-      IhaveBorelReductorsFlag = true;
-      myBorelReductors.reserve(10000);
-    }
-  }
+  // Reductors::Reductors(const GRingInfo& P, const UseBorelFlag UBR):
+  //     myGRingInfoValue(P)
+  // {
+  //   myReductors.reserve(10000);
+  //   if (UBR == DontUseBorel)
+  //     IhaveBorelReductorsFlag = false;
+  //   else
+  //   {
+  //     IhaveBorelReductorsFlag = true;
+  //     myBorelReductors.reserve(10000);
+  //   }
+  // }
 
 
   Reductors::Reductors(const GRingInfo& P):
       myGRingInfoValue(P)
   {
     myReductors.reserve(10000);
-    IhaveBorelReductorsFlag = false;
+    //    IhaveBorelReductorsFlag = false;
   }
 
 
@@ -568,12 +569,12 @@ clog << "operator+=: result " <<myPoly<< endl;
     for (long i=0;i!=N;++i)
       if (myReductors[N]<myReductors[i]) std::swap(myReductors[i],myReductors[N]);
     // ANNA : Borel algorithm
-    if (IhaveBorelReductorsFlag)
-    {
-      myBorelGPolys.push_back(*p); // ANNA
-      GPoly* f = &myBorelGPolys.back();
-      myBorelReductors.push_back(ReductorData(f,component(*f), count));
-    }
+    // if (IhaveBorelReductorsFlag)
+    // {
+    //   myBorelGPolys.push_back(*p); // ANNA
+    //   GPoly* f = &myBorelGPolys.back();
+    //   myBorelReductors.push_back(ReductorData(f, component(*f), count));
+    // }
   }
 
 
@@ -583,8 +584,8 @@ clog << "operator+=: result " <<myPoly<< endl;
 
     out << "TheREDUCTORS := " << myReductors << endl;
 
-    if (IhaveBorelReductorsFlag)
-      out << "The_BOREL_REDUCTORS := " << myBorelReductors << endl;
+    // if (IhaveBorelReductorsFlag)
+    //   out << "The_BOREL_REDUCTORS := " << myBorelReductors << endl;
   }
 
 
@@ -641,8 +642,8 @@ clog << "operator+=: result " <<myPoly<< endl;
   void Reductors::myClear()
   {
     myReductors.clear();
-    myBorelReductors.clear();
-    myBorelGPolys.clear();
+    // myBorelReductors.clear();
+    // myBorelGPolys.clear();
   }//clean
 
 //   void swap(Reductors& R1,Reductors& R2)
@@ -653,14 +654,14 @@ clog << "operator+=: result " <<myPoly<< endl;
 
 
 // This function prepares the Borel Reductors for the next degree
-  void Reductors::myBorelReductorsUpdateInNextDegree()
-  {
-    for (ReductorData& R: myBorelReductors)
-//    for (vector<ReductorData>::const_iterator it = myBorelReductors.begin();
-//         it != myBorelReductors.end();
-//         ++it)
-      R.IamBorelUpdated = false;
-  }
+//   void Reductors::myBorelReductorsUpdateInNextDegree()
+//   {
+//     for (ReductorData& R: myBorelReductors)
+// //    for (vector<ReductorData>::const_iterator it = myBorelReductors.begin();
+// //         it != myBorelReductors.end();
+// //         ++it)
+//       R.IamBorelUpdated = false;
+//   }
 
 
   // forward declaration of class GPoly needed.
