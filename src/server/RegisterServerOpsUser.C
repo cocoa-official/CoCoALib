@@ -217,31 +217,3 @@ class MonomialIsPrime: public ServerOpBase
 
 
 }
-
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/server/RegisterServerOpsUser.C,v 1.5 2022/02/22 20:40:04 abbott Exp $
-// $Log: RegisterServerOpsUser.C,v $
-// Revision 1.5  2022/02/22 20:40:04  abbott
-// Summary: Updated copyright message (redmine 1555)
-//
-// Revision 1.4  2020/06/17 19:01:50  abbott
-// Summary: Updated include of CoCoA4io.H to CoCoA5io.H
-//
-// Revision 1.3  2019/03/04 11:38:52  abbott
-// Summary: Changed auto_ptr into unique_ptr
-//
-// Revision 1.2  2017/11/10 16:02:28  abbott
-// Summary: Removed NewLexOrdering, NewStdDegLexOrdering, NewStdDegRevLexOrdering; consequential changes
-//
-// Revision 1.1  2013/05/27 12:57:39  abbott
-// Moved all server-related code into src/server/
-//
-// Revision 1.4  2012/10/02 10:36:12  abbott
-// Revised interface to BuildInfo information strings.
-// Several consequential changes.
-//
-// Revision 1.3  2010/02/04 09:43:26  bigatti
-// -- added IsPrimary and IsPrime
-//
-// Revision 1.2  2010/02/03 17:06:44  bigatti
-// -- temporary operation (monomial days) will go to RegisterServerOps.C
-//

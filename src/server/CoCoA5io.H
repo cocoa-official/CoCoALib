@@ -78,14 +78,4 @@ namespace CoCoA
   SparsePolyRing NewPolyRingServer(const BigInt& charact, long FloatPrecision, long NumParams, const PPOrdering& O);
 }
 
-
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/server/CoCoA5io.H,v 1.2 2022/02/22 20:40:04 abbott Exp $
-// $Log: CoCoA5io.H,v $
-// Revision 1.2  2022/02/22 20:40:04  abbott
-// Summary: Updated copyright message (redmine 1555)
-//
-// Revision 1.1  2019/03/20 16:22:15  bigatti
-// -- first import
-//
-
 #endif
