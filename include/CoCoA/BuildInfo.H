@@ -30,6 +30,7 @@ namespace CoCoA
   {
     // These are probably NOT noexcept because the 1st call creates a std::string object.
     const std::string& version();       ///< Which version of CoCoALib is this?
+    const std::string& GitRevision();   ///< Which Git revision of CoCoALib is this?
     const std::string& compiler();
     const std::string& CompilationFlags();
     const std::string& CompilationPlatform();

@@ -114,7 +114,7 @@ check-source-files:
 BuildInfo.o: BuildInfo.C $(COCOA_ROOT)/include/CoCoA/BuildInfo.H
 	@echo "Compiling BuildInfo.o (with special preprocessor flags)"
 	PLATFORM=$$(uname -snr); \
-	$(COMPILE) -c  -DCOCOA_VERSION="\"$(COCOALIB_VERSION)\""  -DCOCOA_CXX="\"$(CXX)\""  -DCOCOA_CXXFLAGS="\"$(CXXFLAGS)\""  -DCOCOA_PLATFORM="\"$(PLATFORM)\""  -o BuildInfo.o BuildInfo.C
+	$(COMPILE) -c  -DCOCOA_VERSION="\"$(COCOALIB_VERSION)\""  -DCOCOA_GIT_REVISION="\"$(COCOALIB_GIT_REV)\""  -DCOCOA_CXX="\"$(CXX)\""  -DCOCOA_CXXFLAGS="\"$(CXXFLAGS)\""  -DCOCOA_PLATFORM="\"$(PLATFORM)\""  -o BuildInfo.o BuildInfo.C
 
 IdealOfPoints.o: IdealOfPoints.C $(COCOA_ROOT)/include/CoCoA/IdealOfPoints.H
 	@echo "Compiling IdealOfPoints --  keep your fingers crossed"

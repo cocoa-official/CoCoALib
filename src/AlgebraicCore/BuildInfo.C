@@ -33,12 +33,18 @@ namespace CoCoA
 
   namespace BuildInfo
   {
-    // Build info is actually passed in via three preprocessor variables:
-    // COCOA_VERSION, COCOA_CXX, COCOA_CXXFLAGS -- all three are quoted strings.
+    // Build info is actually passed in via these preprocessor variables:
+    // COCOA_VERSION, COCOA_GIT_REVISION, COCOA_CXX, COCOA_CXXFLAGS, COCOA_PLATFORM -- all are quoted strings.
 
     const std::string& version()
     {
       static const string info(COCOA_VERSION);
+      return info;
+    }
+
+    const std::string& GitRevision()
+    {
+      static const string info(COCOA_GIT_REVISION);
       return info;
     }
 
@@ -105,6 +111,7 @@ namespace CoCoA
       out << endl
           << "CoCoA::BuildInfo Summary of build information for CoCoALib:" << endl
           << "CoCoA::BuildInfo CoCoALib Version: " << version() << endl
+          << "CoCoA::BuildInfo CoCoALib Git Revision: " << GitRevision() << endl
           << "CoCoA::BuildInfo Compiler: " << compiler() << endl
           << "CoCoA::BuildInfo Compilation Flags: " << CompilationFlags() << endl
           << "CoCoA::BuildInfo Compilation Platform: " << CompilationPlatform() << endl
