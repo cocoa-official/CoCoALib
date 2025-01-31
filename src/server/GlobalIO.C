@@ -143,22 +143,3 @@ namespace CoCoA
 
 // It would be nice to avoid the potential pitfalls of dangling references,
 // but I do not currently see how to achieve this.
-
-
-
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/server/GlobalIO.C,v 1.4 2022/02/22 20:40:04 abbott Exp $
-// $Log: GlobalIO.C,v $
-// Revision 1.4  2022/02/22 20:40:04  abbott
-// Summary: Updated copyright message (redmine 1555)
-//
-// Revision 1.3  2020/06/17 15:49:31  abbott
-// Summary: Changed CoCoA_ERROR into CoCoA_THROW_ERROR
-//
-// Revision 1.2  2019/03/19 12:53:00  bigatti
-// -- just some debugging info
-//
-// Revision 1.1  2014/05/15 12:30:52  abbott
-// Summary: New files for impls previously in CoCoA/io.HC but needed only in the server
-// Author: JAA
-//
-//

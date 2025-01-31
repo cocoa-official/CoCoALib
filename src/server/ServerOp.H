@@ -95,34 +95,4 @@ namespace CoCoA
   std::ostream& operator<<(std::ostream& out, const ServerOpBase::LibraryInfo& l);
 }
 
-// $Header: /Volumes/Home_1/cocoa/cvs-repository/CoCoALib-0.99/src/server/ServerOp.H,v 1.2 2022/02/22 20:40:04 abbott Exp $
-// $Log: ServerOp.H,v $
-// Revision 1.2  2022/02/22 20:40:04  abbott
-// Summary: Updated copyright message (redmine 1555)
-//
-// Revision 1.1  2013/05/27 12:57:39  abbott
-// Moved all server-related code into src/server/
-//
-// Revision 1.5  2008/09/22 16:07:02  bigatti
-// -- tested (and fixed) communication with cocoa-4 (number of arguments
-//    passed to myReadArgs   )
-//
-// Revision 1.4  2007/10/30 17:14:11  abbott
-// Changed licence from GPL-2 only to GPL-3 or later.
-// New version for such an important change.
-//
-// Revision 1.3  2007/09/27 10:31:42  bigatti
-// -- added function PrintLibraries
-//
-// Revision 1.2  2007/09/25 16:28:31  bigatti
-// -- ServerOp includes infos about the library it is defined in
-// -- CoCoAServer no longer prints its own version
-// -- CoCoAServer prints all offered operations
-// -- CoCoAServer can change stat_level (Max's verbosity) at runtime
-//
-// Revision 1.1  2007/04/27 14:54:22  bigatti
-// -- content of CoCoAServer.C split into dedicated files
-// -- new registration mechanism (through include "RegisterServerOps.H")
-//
-
 #endif
