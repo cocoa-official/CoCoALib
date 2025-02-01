@@ -174,8 +174,11 @@ namespace CoCoA
 
     matrix ans = NewDenseMat(R, Nrows, Ncols);
     for (long i=0; i < Nrows; ++i)
+    {
+      CheckForInterrupt("Scalar-Matrix multiplication");
       for (long j=0; j < Ncols; ++j)
         SetEntry(ans, i, j, x*M(i,j));
+    }
     return ans;
   }
   
