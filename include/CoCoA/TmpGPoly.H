@@ -228,40 +228,38 @@ typedef std::list<GPoly> GPolyList;
     //inline friend long Deg(const ReductorData& RD) {return Deg(*myGPoly);};
     friend const SparsePolyRing& owner(const Reductors&);
     friend const PPMonoid& PPM(const Reductors&);
-    friend long component(const ReductorData& RD) { return RD.myComponent; }
+    friend long component(const ReductorData& RD) { return component(*(RD.myGPolyPtr)); }
     bool IamNotToBeUsed() const { return myIamNotToBeUsedValue; }
     void mySetIamNotToBeUsed(const bool b) { myIamNotToBeUsedValue=b; }
     GPoly* myGetGPolyPtr() const { return myGPolyPtr; }
-
-
-
+    
   private:
     friend class Reductors;
     GPoly* myGPolyPtr;
     long myKey; ///< integer "key" used to sort the list of reducers
-    long myComponent;
-    mutable PPWithMask myLPPForDivwMask;
+    //    long myComponent; // really necessary?
+    //    mutable PPWithMask myLPPForDivwMask; // really necessary?
     mutable long myCount; ///< how many times it has been used
-    mutable bool IamBorelUpdated; ///< true if its degree is the current degree (Homogeneous algorithm)
+    //    mutable bool IamBorelUpdated; ///< true if its degree is the current degree (Homogeneous algorithm)
     bool myIamNotToBeUsedValue;///<true if not to be used for reducing (used in final interreduction)
 
     friend GPoly* FindReducer(const PPWithMask& pp, const long pp_component,
                               const Reductors& theReductors);
-    bool myBorelUpdate(ConstRefPPMonoidElem pp, const Reductors& theReductors);
+    //bool myBorelUpdate(ConstRefPPMonoidElem pp, const Reductors& theReductors);
   };
 
 
   class Reductors{
 
   public:
-    enum UseBorelFlag { UseBorel, DontUseBorel };
+    //    enum UseBorelFlag { UseBorel, DontUseBorel };
 
     Reductors(const GRingInfo& P);
-    Reductors(const GRingInfo& P, const UseBorelFlag);
+    //    Reductors(const GRingInfo& P, const UseBorelFlag);
     ~Reductors(){};
     void Insert(GPoly*, const long count=0);
-    UseBorelFlag IhaveBorelReductors()const
-    {if(IhaveBorelReductorsFlag) return UseBorel; else return DontUseBorel;};
+    //    UseBorelFlag IhaveBorelReductors()const
+    //    {if(IhaveBorelReductorsFlag) return UseBorel; else return DontUseBorel;};
 
     long myLen() const {return len(myReductors);};
     void myStampaReductors(std::ostream&) const;
@@ -289,7 +287,7 @@ typedef std::list<GPoly> GPolyList;
     // This new class would insulate Reductors from end user, which will see only
     // this new interface class which would rule all reductors functions.
     // data in a GReductor will be pruned accordingly.
-    void myBorelReductorsUpdateInNextDegree();
+    //    void myBorelReductorsUpdateInNextDegree();
     void myClear();
     std::vector<ReductorData>::iterator find(GPoly*);// Find the (unique) Reductor data which ptr is equal to GPolyPtr. Returns end() if nothing is found.
 
@@ -300,9 +298,9 @@ typedef std::list<GPoly> GPolyList;
   private:
     /// the poly used for reductions NB polys are ptrs to myPolys
     std::vector<ReductorData> myReductors;
-    mutable std::vector<ReductorData> myBorelReductors;
-    GPolyList myBorelGPolys;
-    bool IhaveBorelReductorsFlag;
+    //    mutable std::vector<ReductorData> myBorelReductors;
+    //    GPolyList myBorelGPolys;
+    //    bool IhaveBorelReductorsFlag;
     const GRingInfo& myGRingInfoValue;
     //@}
 

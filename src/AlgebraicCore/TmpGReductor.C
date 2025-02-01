@@ -113,15 +113,14 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
     return PPM(owner(f))->myCmp(raw(LPPForOrd(f)),raw(LPPForOrd(g)))>0;
   }
 
-  void GReductor::myCtorAux(const BuchbergerOpTypeFlag theBuchbergerOpType,
-                            const UseDynamicAlgFlag IsDynamic)
+  void GReductor::myCtorAux(const BuchbergerOpTypeFlag theBuchbergerOpType)
+  //,                        const UseDynamicAlgFlag IsDynamic)
   {
     myPrepared=false;
     myAgeValue = 0;
-    myWrongLPPFoundValue=false;
+    //    myWrongLPPFoundValue=false;
 
     myBuchbergerOpType=theBuchbergerOpType;
-    IsDynamicAlgorithm=IsDynamic;
 
     if (!myCriteria.myCoprime) myStat.myCopLevel=1000;
     if (!myCriteria.myGM) myStat.myGMLevel=1000;
@@ -132,19 +131,16 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   GReductor::GReductor(const GRingInfo& theGRI,
                        const PolyList& TheInputPolys,
                        const BuchbergerOpTypeFlag theBuchbergerOpType,
-                       const Reductors::UseBorelFlag UBR,
-                       const UseDynamicAlgFlag IsDynamic,
                        const GBCriteria criteria):
       myGRingInfoValue(theGRI),
-      myTrueReductors(theGRI, UBR),
+      myTrueReductors(theGRI),
       mySPoly(theGRI),
       myOldDeg(GradingDim(theGRI.myNewSPR())),
       myIncomingWDeg(GradingDim(theGRI.myNewSPR())),
       myStat(len(TheInputPolys)),
       myCriteria(criteria)
   {
-    //myNReductions=0;
-    myCtorAux(theBuchbergerOpType, IsDynamic);
+    myCtorAux(theBuchbergerOpType);
 
     for (const RingElem& g: TheInputPolys)
     {
@@ -152,22 +148,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
         myPolys.push_back(GPoly(g,myGRingInfoValue));
     }
     myPolys.sort(BoolCmpLPPGPoly);
-    myTruncDegValue = 0;
-    
-  // myNewReductors is void at start;
-    // These are for fine tuning of the GReductor statistics
-    //myStat.myReductionLevel=true;
-    //myStat.myDegLevel=true;
-    //myStat.myCopLevel=true;
-    //myStat.myGMLevel=true;
-    //myStat.myBCLevel=true;
-    //myStat.myNumPairLevel=true;
-    //myStat.myFinalLevel=true;
-    //myStat.myFinalFullLevel=true;
-    //myStat.myNewPairsLevel=true;
-    //myStat.myPolyDeletedLevel=true;
-    //myStat.myPolyDHLevel=true;
-    //myStat.myPolyLenLevel=true;
+    myTruncDegValue = 0;    
   } //  GReductor ctor
 
 
@@ -177,11 +158,9 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   GReductor::GReductor(const GRingInfo& theGRI,
                        const GPolyList& TheInputGPolys,
                        const BuchbergerOpTypeFlag theBuchbergerOpType,
-                       const Reductors::UseBorelFlag UBR,
-                       const UseDynamicAlgFlag IsDynamic,
                        const GBCriteria criteria):
       myGRingInfoValue(theGRI),
-      myTrueReductors(theGRI, UBR),
+      myTrueReductors(theGRI),
       mySPoly(theGRI),
       myOldDeg(GradingDim(theGRI.myNewSPR())),
       myIncomingWDeg(GradingDim(theGRI.myNewSPR())),
@@ -189,8 +168,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
       myCriteria(criteria)
   {
     myPolys=TheInputGPolys;
-    //myNReductions=0;
-    myCtorAux(theBuchbergerOpType, IsDynamic);
+    myCtorAux(theBuchbergerOpType);
     myTruncDegValue = 0;
 
     // If you want to remove zeros and/or sort your input GPolys.
@@ -198,41 +176,6 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
     // myPolys.remove(Zero);
     // myPolys.sort(BoolCmpLPPGPoly);
   } // GReductor ctor
-
-
-  // This ctor allows to avoid transforming gpolys to polys and back if
-  // you want to evaluate complex expressions. The input GPolys may contain
-  // zeros and/or not be sorted. Take care.
-  GReductor::GReductor(const GRingInfo& theGRI,
-                       GPolyList& TheInputGPolys,
-                       const ClearMarker,// just for ctor ariety
-                       const BuchbergerOpTypeFlag theBuchbergerOpType,
-                       const Reductors::UseBorelFlag UBR,
-                       const UseDynamicAlgFlag IsDynamic,
-                       const GBCriteria criteria):
-      myGRingInfoValue(theGRI),
-      myTrueReductors(theGRI, UBR),
-      mySPoly(theGRI),
-      myOldDeg(GradingDim(theGRI.myNewSPR())),
-      myIncomingWDeg(GradingDim(theGRI.myNewSPR())),
-      myStat(len(TheInputGPolys)),
-      myCriteria(criteria)
-  {
-    for (GPoly& g: TheInputGPolys)
-    {
-      myPolys.push_back(GPoly(theGRI));
-      myPolys.back().AssignClear(g);
-    }
-    TheInputGPolys.clear();
-    //myNReductions=0;
-    myCtorAux(theBuchbergerOpType, IsDynamic);
-    myTruncDegValue = 0;
-    // If you want to remove zeros and/or sort your input GPolys.
-    // GPoly Zero(zero(myPolyRing),myGRingInfoValue,Component(LPP(zero(myPolyRing),myGRingInfoValue)),0);
-    // myPolys.remove(Zero);
-    // myPolys.sort(BoolCmpLPPGPoly);
-  } // GReductor ctor
-
 
 
   ostream& operator<<(ostream& out, const GReductor& GR)
@@ -249,20 +192,14 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
     GR.myStampaPairs(out);
     out<<"\n";
     out<<"The Ring"<<GR.myGRingInfoValue<<"\n";
-    //matrix OrdM(NewDenseMat(Z,
-    //                             NumIndets(GR.myGRingInfoValue.myNewSPR())),
-    //                             NumIndets(GR.myGRingInfoValue.myNewSPR())));
-    //(PPM(GR.myGRingInfoValue.myNewSPR())->myOrdering())->myOrdMatCopy(OrdM);
-    //out<<OrdM;
     out<<"GradingDim  is "<<GradingDim(GR.myGRingInfoValue.myNewSPR())<<endl;
     out<<"The Ring Module Index "<<ModuleVarIndex(GR.myGRingInfoValue.myNewSPR())<<"\n";
-    //out<<"Reductions performed "<<GR.myNReductions<<"\n";
     out<<"Age "<< GR.myAgeValue <<"\n";
     out<<"Preparation done? "<<GR.myPrepared<<"\n";
     out<<"myOldDeg "<<GR.myOldDeg<<"\n";
     out<<"myIncomingWDeg " << GR.myIncomingWDeg << "\n";
-    out<<"Is Dynamic Algorithm? "<<GR.IsDynamicAlgorithm<<"\n";
-    out<<"Is Wrong LPP been Found? "<<GR.myWrongLPPFoundValue<<"\n";
+    //    out<<"Is Dynamic Algorithm? "<<GR.IsDynamicAlgorithm<<"\n";
+    //    out<<"Is Wrong LPP been Found? "<<GR.myWrongLPPFoundValue<<"\n";
     out<<"Cop Criterion " <<GR.myCriteria.myCoprime<<"\n";
     out<<"GM Criteria "   <<GR.myCriteria.myGM<<"\n";
     out<<"Back Criterion "<<GR.myCriteria.myBack<<"\n";
@@ -765,9 +702,9 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
       {
         myUpdateBasisAndPairs();
         VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-        if (!myPairs.empty())
-          if (myIncomingWDeg!=myOldDeg && myTrueReductors.IhaveBorelReductors())
-            myTrueReductors.myBorelReductorsUpdateInNextDegree();
+        // if (!myPairs.empty())
+        //   if (myIncomingWDeg!=myOldDeg && myTrueReductors.IhaveBorelReductors())
+        //     myTrueReductors.myBorelReductorsUpdateInNextDegree();
       }
       myUpdateIncomingWDeg();
       if (myTruncDeg() != 0)
@@ -816,9 +753,9 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
         }
         myUpdateBasisAndPairs();
         VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-        if (!myPairs.empty())
-          if (myIncomingWDeg!=myOldDeg&&myTrueReductors.IhaveBorelReductors())
-            myTrueReductors.myBorelReductorsUpdateInNextDegree();
+        // if (!myPairs.empty())
+        //   if (myIncomingWDeg!=myOldDeg&&myTrueReductors.IhaveBorelReductors())
+        //     myTrueReductors.myBorelReductorsUpdateInNextDegree();
       }
     } // while
     return zero(RingZZ()); // just to keep the compiler quiet
@@ -855,9 +792,9 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
         } // if
         myUpdateBasisAndPairs();
         VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-        if (!myPairs.empty())
-          if (myIncomingWDeg!=myOldDeg&&myTrueReductors.IhaveBorelReductors())
-            myTrueReductors.myBorelReductorsUpdateInNextDegree();
+        // if (!myPairs.empty())
+        //   if (myIncomingWDeg!=myOldDeg&&myTrueReductors.IhaveBorelReductors())
+        //     myTrueReductors.myBorelReductorsUpdateInNextDegree();
       }
     } // while
     VERBOSE(100) << "--Final clean up ... " << endl;

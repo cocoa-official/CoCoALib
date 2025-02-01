@@ -49,41 +49,44 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
 
   //---------------------------------------------------------
 
-  bool ReductorData::myBorelUpdate(ConstRefPPMonoidElem pp, const Reductors& theReductors)
-  {
-    if (myCount < 100) return false;
+  // bool ReductorData::myBorelUpdate(ConstRefPPMonoidElem pp, const Reductors& theReductors)
+  // {
+  //   if (myCount < 100) return false;
 
-    GPoly* f = myGPolyPtr;
-    const PPMonoid thePPM(PPM(*f));
-    const long BorelIndetIndex = NumIndets(owner(*f))-1;
-    PPMonoidElem quot(thePPM);
+  //   GPoly* f = myGPolyPtr;
+  //   const PPMonoid thePPM(PPM(*f));
+  //   const long BorelIndetIndex = NumIndets(owner(*f))-1;
+  //   PPMonoidElem quot(thePPM);
 
-    thePPM->myDiv(raw(quot), raw(pp), raw(PP(myLPPForDivwMask)));
-    if (quot != IndetPower(thePPM, BorelIndetIndex, exponent(quot, BorelIndetIndex)))
-      return false;
+  //   //    thePPM->myDiv(raw(quot), raw(pp), raw(PP(myLPPForDivwMask)));
+  //   thePPM->myDiv(raw(quot), raw(pp), raw(PP(LPPForDivwMask(*f))));
+  //   if (quot != IndetPower(thePPM, BorelIndetIndex, exponent(quot, BorelIndetIndex)))
+  //     return false;
 
-    f->MultiplyByPP(quot);
-    myLPPForDivwMask.myAssign(pp);
-    IamBorelUpdated = true;
-    f->myReduceTail(theReductors);
-    return true;
-  }
+  //   f->MultiplyByPP(quot);
+  //   //    myLPPForDivwMask.myAssign(pp);
+  //   IamBorelUpdated = true;
+  //   f->myReduceTail(theReductors);
+  //   return true;
+  // }
 
 
   inline GPoly* FindReducer(const PPWithMask& pm,
                             const long comp,
                             const Reductors& theReductors)
   {
-    for (ReductorData& R: theReductors.myBorelReductors)
-      if ( comp == R.myComponent && IsDivisibleFast(pm, R.myLPPForDivwMask))
-        if (R.IamBorelUpdated || R.myBorelUpdate(PP(pm), theReductors) )
-        {
-          ++(R.myCount);
-          return R.myGPolyPtr;
-        }
+    // for (ReductorData& R: theReductors.myBorelReductors)
+    //   //      if ( comp == R.myComponent && IsDivisibleFast(pm, R.myLPPForDivwMask))  AMB 2024-06-13
+    //   if ( comp == component(*(R.myGPolyPtr)) && IsDivisibleFast(pm, LPPForDivwMask(*(R.myGPolyPtr))))
+    //     if (R.IamBorelUpdated || R.myBorelUpdate(PP(pm), theReductors) )
+    //     {
+    //       ++(R.myCount);
+    //       return R.myGPolyPtr;
+    //     }
     for (const ReductorData& R: theReductors.myReductors)
     {
-      if (comp == R.myComponent && IsDivisibleFast(pm, R.myLPPForDivwMask) && !R.IamNotToBeUsed())
+      //      if (comp == R.myComponent && IsDivisibleFast(pm, R.myLPPForDivwMask) && !R.IamNotToBeUsed())  AMB 2024-06-13
+      if (comp == component(*(R.myGPolyPtr)) && IsDivisibleFast(pm, LPPForDivwMask(*(R.myGPolyPtr))) && !R.IamNotToBeUsed())
       {
         ++(R.myCount);
         return R.myGPolyPtr;
