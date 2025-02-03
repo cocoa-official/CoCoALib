@@ -673,6 +673,7 @@ DECLARE_STD_BUILTIN_FUNCTION(VersionInfo, 0) { // AMB
   intrusive_ptr<RECORD> rec(new RECORD);
   rec->setFieldNoCheck("CoCoALibVersion", Value::from(BuildInfo::version()));
   rec->setFieldNoCheck("CoCoAVersion", Value::from(CoCoAVersion()));
+  rec->setFieldNoCheck("CoCoAGitRevision", Value::from(BuildInfo::GitRevision()));
   rec->setFieldNoCheck("CompilationDate", Value::from(CompilationDate()));
   rec->setFieldNoCheck("CompilationFlags", Value::from(BuildInfo::CompilationFlags()));
   rec->setFieldNoCheck("CompilationPlatform", Value::from(BuildInfo::CompilationPlatform()));

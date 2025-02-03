@@ -1227,6 +1227,20 @@ echo "# Version number of CoCoALib we shall build."           >> "$CONFIG_TMP"
 echo "COCOALIB_VERSION=$COCOALIB_VERSION"                     >> "$CONFIG_TMP"
 echo                                                          >> "$CONFIG_TMP"
 
+# Get current Git revision hash (if possible)
+COCOALIB_GIT_REV=$(git rev-parse --short HEAD)
+if [ $? -ne 0 ]
+then
+  COCOALIB_GIT_REV="unknown"
+elif [ -n "$(git status --porcelain)" ]
+then
+  # Check if the working directory is clean
+  COCOALIB_GIT_REV="$COCOALIB_GIT_REV-modified"
+fi
+echo "# Git revision hash of CoCoALib we shall build."        >> "$CONFIG_TMP"
+echo "COCOALIB_GIT_REV=$COCOALIB_GIT_REV"                     >> "$CONFIG_TMP"
+echo                                                          >> "$CONFIG_TMP"
+
 # Installation command and directory (just placeholders, 20140323)
 echo "Installation options are:"
 echo "  command   INSTALL_CMD          = $INSTALL_CMD"
