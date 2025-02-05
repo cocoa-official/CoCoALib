@@ -125,8 +125,9 @@ namespace CoCoA
 
   RingElem ImplicitDirect(const std::vector<RingElem>& ParamDescrOrig)
   {
-    if (ParamDescrOrig.empty() || len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectLPP");
+    if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr and NumIndets");
     const ring& Porig = owner(ParamDescrOrig[0]);
     const int n = len(ParamDescrOrig);
 
@@ -135,7 +136,7 @@ namespace CoCoA
     vector<RingElem> ParamDescr = phi(ParamDescrOrig);
     // Originally the code was like this (ie. compute in the originally given ring)
     // if (ParamDescr.empty() || len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
-    //   CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirect");
+    //   CoCoA_THROW_ERROR2(ERR::BadArg, "ImplicitDirect");
     // ring P = owner(ParamDescr[0]);
     // const int n = len(ParamDescr);
     ring Kx = NewPolyRingForImplicit(CoeffRing(Porig), "x", n);
@@ -179,8 +180,9 @@ namespace CoCoA
 
   RingElem ImplicitDirectLPP(const std::vector<RingElem>& ParamDescrOrig)
   {
-    if (ParamDescrOrig.empty() || len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectLPP");
+    if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr and NumIndets");
     const ring& Porig = owner(ParamDescrOrig[0]);
     const int n = len(ParamDescrOrig);
 
@@ -293,8 +295,9 @@ namespace CoCoA
   
   RingElem ImplicitDirectLPP2(const std::vector<RingElem>& ParamDescrOrig)
   {
-    if (ParamDescrOrig.empty() || len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectLPP");
+    if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr and NumIndets");
     if (IsHomog(ParamDescrOrig))
     {
       long i;
@@ -357,8 +360,9 @@ namespace CoCoA
 
   RingElem ImplicitDirectOrd2(const std::vector<RingElem>& ParamDescrOrig)
   {
-    if (ParamDescrOrig.empty() || len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectOrd2");
+    if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescrOrig) != 1+NumIndets(owner(ParamDescrOrig[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr and NumIndets");
     if (IsHomog(ParamDescrOrig))
     {
       long i;
@@ -644,7 +648,7 @@ namespace CoCoA
 //   std::vector<RingElem> BM_param(const std::vector<RingElem>& ParamDescrOrig)
 //   {
 //     if (ParamDescrOrig.empty())
-//       CoCoA_THROW_ERROR(ERR::BadArg, "BM_param");
+//       CoCoA_THROW_ERROR2(ERR::BadArg, "BM_param");
 //     const ring& Porig = owner(ParamDescrOrig[0]);
 //     const int n = len(ParamDescrOrig);
 
@@ -700,8 +704,9 @@ namespace CoCoA
 
   RingElem ImplicitDirectWithCond(const std::vector<RingElem>& ParamDescrOrig, const std::vector<RingElem>& cond)
   {
-    if (ParamDescrOrig.empty() || len(ParamDescrOrig)+len(cond) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectWithCond");
+    if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescrOrig)+len(cond) != 1+NumIndets(owner(ParamDescrOrig[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr, cond, and NumIndets");
     if (cond.empty()) return ImplicitDirect(ParamDescrOrig);
     const ring& Porig = owner(ParamDescrOrig[0]);
     const int n = len(ParamDescrOrig);
@@ -716,7 +721,7 @@ namespace CoCoA
     ideal RelationIdeal(relations);
     // Originally the code was like this (ie. compute in the originally given ring)
     // if (ParamDescr.empty() || len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
-    //   CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirect");
+    //   CoCoA_THROW_ERROR2(ERR::BadArg, "ImplicitDirect");
     // const ring& P = owner(ParamDescr[0]);
     // const int n = len(ParamDescr);
     ring Kx = NewPolyRingForImplicit(CoeffRing(Kt), "x",n);
@@ -750,7 +755,7 @@ namespace CoCoA
   {
     if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     if (len(ParamDescrOrig)+len(cond) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectWithCondLPP");
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr, cond, and NumIndets");
     if (cond.empty()) return ImplicitDirectLPP(ParamDescrOrig);
     ring Porig = owner(ParamDescrOrig[0]);
     const int n = len(ParamDescrOrig);
@@ -762,7 +767,7 @@ namespace CoCoA
     ideal RelationIdeal(relations);
     // Originally the code was like this (ie. compute in the originally given ring)
     // if (ParamDescr.empty() || len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
-    //   CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirect");
+    //   CoCoA_THROW_ERROR2(ERR::BadArg, "ImplicitDirect");
     // const ring& P = owner(ParamDescr[0]);
     // const int n = len(ParamDescr);
     ring Kx = NewPolyRingForImplicit(CoeffRing(Kt), "x",n);
@@ -807,9 +812,9 @@ namespace CoCoA
   {
     if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     if (len(ParamDescrOrig)+len(cond) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectWithCondOrd2");
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr, cond, and NumIndets");
     if (cond.empty()) return ImplicitDirectOrd2(ParamDescrOrig);
-    CoCoA_THROW_ERROR(ERR::NYI, "ImplicitDirectOrd2");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return zero(RingZZ()); // just to keep the compiler quiet
   }
   
@@ -818,7 +823,7 @@ namespace CoCoA
   {
     if (ParamDescrOrig.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     if (len(ParamDescrOrig)+len(cond) != 1+NumIndets(owner(ParamDescrOrig[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitDirectWithCondLPP2");
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr, cond, and NumIndets");
     if (cond.empty()) return ImplicitDirectLPP2(ParamDescrOrig);
     const ring& Porig = owner(ParamDescrOrig[0]);
     const int n = len(ParamDescrOrig);
@@ -920,8 +925,9 @@ namespace CoCoA
 
   RingElem ImplicitByPoints(const std::vector<RingElem>& ParamDescr)
   {
-    if (ParamDescr.empty() || len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitByPoints");
+    if (ParamDescr.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr and NumIndets");
     const ring& P = owner(ParamDescr[0]);
     const long n = len(ParamDescr);
     ring Kx = NewPolyRing(CoeffRing(P), SymbolRange("x", 1, n));
@@ -974,8 +980,9 @@ namespace CoCoA
   RingElem ImplicitByPoints2(const std::vector<RingElem>& ParamDescr)
   {
     using std::list;
-    if (ParamDescr.empty() || len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitByPoints");
+    if (ParamDescr.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr and NumIndets");
     const ring& P = owner(ParamDescr[0]);
     const long p = ConvertTo<long>(characteristic(P));
     CoCoA_ASSERT(IsPrime(p));
@@ -1105,8 +1112,9 @@ namespace CoCoA
   RingElem ImplicitByPoints3(const std::vector<RingElem>& ParamDescr)
   {
     using std::list;
-    if (ParamDescr.empty() || len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ImplicitByPoints");
+    if (ParamDescr.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (len(ParamDescr) != 1+NumIndets(owner(ParamDescr[0])))
+      CoCoA_THROW_ERROR2(ERR::IncompatDims, "ParamDescr and NumIndets");
     const ring& P = owner(ParamDescr[0]);
     const long p = ConvertTo<long>(characteristic(P));
     CoCoA_ASSERT(IsPrime(p));
@@ -1164,7 +1172,7 @@ namespace CoCoA
 
         RowReducers[i].push_back(ModP.myNormalize(EvalAtNewPt));
 ////        RowReducers[i].push_back(ModP.myReduce(ConvertTo<long>(eval(polyx[i], NewPt)))); // clear but inefficient
-////        if (ModP.myExport(EvalAtNewPt) != ModP.myExport(RowReducers[i].back())) CoCoA_THROW_ERROR("BUNGLED", "eval check");
+////        if (ModP.myExport(EvalAtNewPt) != ModP.myExport(RowReducers[i].back())) CoCoA_THROW_ERROR2("BUNGLED", "eval check");
       }
 ///JAA      CoCoA_ASSERT(ModP.myExport(RowReducers[NumPts-1][NumPts-1]) == ModP.myExport(RowReducers2[NumPts-1][NumPts-1]));
 //      if (IsZero(RowReducers[NumPts-1][NumPts-1])) return polyx[NumPts-1];
@@ -1279,7 +1287,7 @@ namespace CoCoA
   std::vector<T> first(const std::vector<T>& v, long n)
   {
     std::vector<T> w;
-    if (n>len(v)) CoCoA_THROW_ERROR("vector too short", "first(v, n)");
+    if (n>len(v))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     for (long i=0; i<n; ++i) w.push_back(v[i]);
     return w;
   }
@@ -1288,7 +1296,7 @@ namespace CoCoA
   std::vector<T> last(const std::vector<T>& v, long n)
   {
     std::vector<T> w;
-    if (n>len(v)) CoCoA_THROW_ERROR("vector too short", "first(v, n)");
+    if (n>len(v))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     for (long i=len(v)-n; i<len(v); ++i) w.push_back(v[i]);
     return w;
   }
@@ -1342,7 +1350,7 @@ namespace CoCoA
     //    myKt = owner(ParamDescr[0]);
     long NumT = NumIndets(Ktorig);
     long NumX = len(ParamDescr);
-    if (NumT != NumX-1) CoCoA_THROW_ERROR("NumT != NumX-1", "ImplicitMill");
+    if (NumT != NumX-1)  CoCoA_THROW_ERROR2(ERR::IncompatDims, "NumT != NumX-1");
     myKx = NewPolyRingForImplicit(CoeffRing(Ktorig), "x",NumX);
     myKt = NewPolyRingForImplicit(CoeffRing(Ktorig), "t",NumT);
     myParamDescr = PolyAlgebraHom(Ktorig,myKt,indets(myKt))( ParamDescr );
@@ -1357,7 +1365,7 @@ namespace CoCoA
     else if (FinalCall == "IDWCLPP") myFinalCall = IDWCLPP;
     else if (FinalCall == "IDWCLPP2") myFinalCall = IDWCLPP2;
     else if (FinalCall == "IDWCOrd2") myFinalCall = IDWCOrd2;
-    else CoCoA_THROW_ERROR("either elim(1)(th), IDWC, IDWCLPP2, or IDWCLPP ","ImplicitMill");
+    else CoCoA_THROW_ERROR2(ERR::BadArg, "either elim(1)(th), IDWC, IDWCLPP2, or IDWCLPP");
 
     myXEndRec = first(indets(myKx), myNumXEndRec);
 
@@ -1403,7 +1411,7 @@ namespace CoCoA
       }
       break;
     default:
-      CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "ImplicitMill ctor");
+      CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     }
   }
 
@@ -1516,56 +1524,56 @@ namespace CoCoA
     
 
     RingElem SliceCoreRec(const ImplicitMill& IM, long NumX)
-  {  // X = [x[0], .., x[NumX-1],   a[NumX], .., a[N-1]]
-    VerboseLog VERBOSE("SliceCoreRec");
-    ring KX = IM.myKx;
-    ring KT = IM.myKt;
-    if (NumX <= IM.myNumXEndRec)
-      switch (IM.myFinalCall)
+    {  // X = [x[0], .., x[NumX-1],   a[NumX], .., a[N-1]]
+      VerboseLog VERBOSE("SliceCoreRec");
+      ring KX = IM.myKx;
+      ring KT = IM.myKt;
+      if (NumX <= IM.myNumXEndRec)
+        switch (IM.myFinalCall)
+        {
+        case ImplicitMill::elim:  return CallElim(IM, NumX);
+        case ImplicitMill::elim1: return CallElim(IM, NumX);
+        case ImplicitMill::elimth: return CallElimTH(IM, NumX);
+        case ImplicitMill::IDWC: return CallImplicitDirectWithCond(IM, NumX);
+        case ImplicitMill::IDWCLPP: return CallImplicitDirectWithCondLPP(IM,NumX);
+        case ImplicitMill::IDWCLPP2: return CallImplicitDirectWithCondLPP2(IM, NumX);
+        case ImplicitMill::IDWCOrd2: return CallImplicitDirectWithCondOrd2(IM, NumX);
+        default: CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
+        }
+      RingElem x_n = indet(KX, NumX-1);
+      vector<RingElem> Slices;
+      vector<RingElem> ResultSlices;
+      for (long i=1; i<=50; ++i)
       {
-      case ImplicitMill::elim:  return CallElim(IM, NumX);
-      case ImplicitMill::elim1: return CallElim(IM, NumX);
-      case ImplicitMill::elimth: return CallElimTH(IM, NumX);
-      case ImplicitMill::IDWC: return CallImplicitDirectWithCond(IM, NumX);
-      case ImplicitMill::IDWCLPP: return CallImplicitDirectWithCondLPP(IM,NumX);
-      case ImplicitMill::IDWCLPP2: return CallImplicitDirectWithCondLPP2(IM, NumX);
-      case ImplicitMill::IDWCOrd2: return CallImplicitDirectWithCondOrd2(IM, NumX);
-      default: CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "SliceCoreRec");
+        //      std::cout << " " << i << "(" << NumX << ")" << std::flush;
+        Slices.push_back(x_n - i);
+        IM.myXValues[NumX-1] = i; // [0,.., 0, *i*, a[NumX], .., a[N-1]]
+        ResultSlices.push_back(SliceCoreRec(IM, NumX-1));
+        if (i < IM.myMinNumSlices[NumX-1]) continue;
+        RingElem candidate = monic(reconstruction(ResultSlices, Slices));
+        if (IM.myMinNumSlices[NumX-1]==0 &&
+            deg(candidate,NumX-1) == len(Slices)-1)
+        {
+          //        std::cout << ":LowD" << std::flush;
+          continue;
+        }
+        vector<RingElem> v, img(NumIndets(KX), zero(KT)); 
+        for (long j=0; j<NumX; ++j) img[j] = IM.myParamDescr[j];
+        for (long j=NumX; j<len(IM.myXValues); ++j) img[j] = IM.myXValues[j];
+        for (long j=NumX; j<len(IM.myXValues); ++j) v.push_back(IM.myParamDescr[j]-IM.myXValues[j]);
+        RingElem sbst = NF(PolyAlgebraHom(KX,KT,img)(candidate), ideal(KT,v));
+        if (IsZero(sbst))
+        {
+          if (IM.myMinNumSlices[NumX-1]==0) IM.myMinNumSlices[NumX-1] = i-1;
+          //        std::cout << "\n--> MinNumSlices = " << MinNumSlices;
+          //        std::cout << "  time: " << CpuTime()-T << std::endl;
+          return candidate;
+        }
+        VERBOSE(50) << "    !!!wrong candidate!!! one more slice...";
       }
-    RingElem x_n = indet(KX, NumX-1);
-    vector<RingElem> Slices;
-    vector<RingElem> ResultSlices;
-    for (long i=1; i<=50; ++i)
-    {
-      //      std::cout << " " << i << "(" << NumX << ")" << std::flush;
-      Slices.push_back(x_n - i);
-      IM.myXValues[NumX-1] = i; // [0,.., 0, *i*, a[NumX], .., a[N-1]]
-      ResultSlices.push_back(SliceCoreRec(IM, NumX-1));
-      if (i < IM.myMinNumSlices[NumX-1]) continue;
-      RingElem candidate = monic(reconstruction(ResultSlices, Slices));
-      if (IM.myMinNumSlices[NumX-1]==0 &&
-          deg(candidate,NumX-1) == len(Slices)-1)
-      {
-        //        std::cout << ":LowD" << std::flush;
-        continue;
-      }
-      vector<RingElem> v, img(NumIndets(KX), zero(KT)); 
-      for (long j=0; j<NumX; ++j) img[j] = IM.myParamDescr[j];
-      for (long j=NumX; j<len(IM.myXValues); ++j) img[j] = IM.myXValues[j];
-      for (long j=NumX; j<len(IM.myXValues); ++j) v.push_back(IM.myParamDescr[j]-IM.myXValues[j]);
-      RingElem sbst = NF(PolyAlgebraHom(KX,KT,img)(candidate), ideal(KT,v));
-      if (IsZero(sbst))
-      {
-        if (IM.myMinNumSlices[NumX-1]==0) IM.myMinNumSlices[NumX-1] = i-1;
-        //        std::cout << "\n--> MinNumSlices = " << MinNumSlices;
-        //        std::cout << "  time: " << CpuTime()-T << std::endl;
-        return candidate;
-      }
-      VERBOSE(50) << "    !!!wrong candidate!!! one more slice...";
+      CoCoA_THROW_ERROR2(ERR::BadArg, "More than 50 slices: probably bad slicer!");
+      return zero(KX);
     }
-    CoCoA_THROW_ERROR("More than 50 slices: probably bad slicer!","SliceCoreRec");
-    return zero(KX);
-  }
   }
   
 

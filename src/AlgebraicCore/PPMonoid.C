@@ -57,25 +57,23 @@ namespace CoCoA
 
   namespace // for functions local to this file/compilation unit.
   {
-    inline void CheckCompatible(const ConstRefPPMonoidElem& pp1, const ConstRefPPMonoidElem& pp2, const char* const FnName)
+    inline void CheckCompatible(const ConstRefPPMonoidElem& pp1, const ConstRefPPMonoidElem& pp2, const ErrorContext& ErrCtx)
     {
       if (owner(pp1) != owner(pp2))
-        CoCoA_THROW_ERROR(ERR::MixedPPMs, FnName);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedPPMs, ErrCtx);
     }
   }
 
 
   inline PPMonoidElemRawPtr PPMonoidBase::myNewCheckVecSize(const std::vector<long>& v) const
   {
-    if (len(v) != myNumIndets)
-      CoCoA_THROW_ERROR(ERR::BadArraySize, "PPMonoidElem(PPM, ExpVec)  or  PPMonoidBase::myNewCheckVecSize");
+    if (len(v) != myNumIndets)  CoCoA_THROW_ERROR1(ERR::BadArraySize);
     return myNew(v);
   }
 
   inline PPMonoidElemRawPtr PPMonoidBase::myNewCheckVecSize(const std::vector<BigInt>& v) const
   {
-    if (len(v) != myNumIndets)
-      CoCoA_THROW_ERROR(ERR::BadArraySize, "PPMonoidElem(PPM, ExpVec)  or  PPMonoidBase::myNewCheckVecSize");
+    if (len(v) != myNumIndets)  CoCoA_THROW_ERROR1(ERR::BadArraySize);
     return myNew(v);
   }
 
@@ -112,8 +110,7 @@ namespace CoCoA
   {
     CoCoA_ASSERT(EXP >= 0);
     long exp;
-    if (!IsConvertible(exp, EXP))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "IndetPower/myMulIndetPower");
+    if (!IsConvertible(exp, EXP))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     myMulIndetPower(rawpp, var, exp);
   }
 
@@ -151,9 +148,7 @@ namespace CoCoA
 
   // Default defn of virtual fn: just gives an error.
   void PPMonoidBase::myPowerBigExp(RawPtr /*rawpp*/, ConstRawPtr /*rawpp1*/, const BigInt& /*EXP*/) const
-  {
-    CoCoA_THROW_ERROR(ERR::ExpTooBig, "power(pp,N)");
-  }
+  { CoCoA_THROW_ERROR1(ERR::ExpTooBig); }
 
 
   // Generic implementation -- default defn of virtual function.
@@ -251,7 +246,7 @@ namespace CoCoA
 
   const symbol& IndetSymbol(const PPMonoid& PPM, long idx)
   { 
-    if (idx < 0 || idx >= NumIndets(PPM)) CoCoA_THROW_ERROR(ERR::BadIndex, "IndetSymbol");
+    if (idx < 0 || idx >= NumIndets(PPM))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     return PPM->myIndetSymbol(idx);
   }
 
@@ -267,7 +262,7 @@ namespace CoCoA
     for (long i=0; i < myNumIndets; ++i)
       if ( s == myIndetSymbol(i) )
         return myIndets()[i];
-    CoCoA_THROW_ERROR("unknown symbol in PPM", "PPMonoid::mySymbolValue");
+    CoCoA_THROW_ERROR2(ERR::BadArg, "unknown symbol in PPM");
     return myOne(); // Just to keep the compiler quiet
   }
 
@@ -281,7 +276,7 @@ namespace CoCoA
 
   RefPPMonoidElem& RefPPMonoidElem::operator=(const RefPPMonoidElem& rhs)
   {
-    CheckCompatible(*this, rhs, "PPMonoidElem::operator=");
+    CheckCompatible(*this, rhs, CoCoA_ERROR_CONTEXT);
     // if (this == &rhs) return *this;  // trivial check not really needed
     myPPM->myAssign(myPPPtr, raw(rhs));
     return *this;
@@ -290,7 +285,7 @@ namespace CoCoA
 
   RefPPMonoidElem& RefPPMonoidElem::operator=(const ConstRefPPMonoidElem& rhs)
   {
-    CheckCompatible(*this, rhs, "PPMonoidElem::operator=");
+    CheckCompatible(*this, rhs, CoCoA_ERROR_CONTEXT);
     // if (this == &rhs) return *this;  // trivial check not really needed
     myPPM->myAssign(myPPPtr, raw(rhs));
     return *this;
@@ -350,7 +345,7 @@ namespace CoCoA
 
   PPMonoidElem& PPMonoidElem::operator=(const PPMonoidElem& rhs)
   {
-    CheckCompatible(*this, rhs, "PPMonoidElem::operator=");
+    CheckCompatible(*this, rhs, CoCoA_ERROR_CONTEXT);
     // if (this == &rhs) return *this;  // trivial check not really needed
     myPPM->myAssign(myPPPtr, raw(rhs));
     return *this;
@@ -358,7 +353,7 @@ namespace CoCoA
 
   PPMonoidElem& PPMonoidElem::operator=(const ConstRefPPMonoidElem& rhs)
   {
-    CheckCompatible(*this, rhs, "PPMonoidElem::operator=");
+    CheckCompatible(*this, rhs, CoCoA_ERROR_CONTEXT);
     // if (this == &rhs) return *this;  // trivial check not really needed
     myPPM->myAssign(myPPPtr, raw(rhs));
     return *this;
@@ -393,32 +388,30 @@ namespace CoCoA
 
   int CmpWDeg(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)
   {
-    CheckCompatible(pp1, pp2, "CmpWDeg(PP,PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myCmpWDeg(raw(pp1), raw(pp2));
   }
 
 
   int CmpWDegPartial(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2, long PartialGradingDim)
   {
-    CheckCompatible(pp1, pp2, "CmpWDeg(PP,PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     if ( PartialGradingDim < 0 || PartialGradingDim > GradingDim(owner(pp1)) )
-      CoCoA_THROW_ERROR("PartialGradingDim > GradingDim", "CmpWDegPartial");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "PartialGradingDim > GradingDim");
     return owner(pp1)->myCmpWDegPartial(raw(pp1), raw(pp2), PartialGradingDim);
   }
 
 
   long exponent(ConstRefPPMonoidElem pp, long indet) // degree in indet
   {
-    if (indet >= NumIndets(owner(pp)))
-      CoCoA_THROW_ERROR(ERR::BadIndex, "exponent(PP)");
+    if (indet >= NumIndets(owner(pp)))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     return owner(pp)->myExponent(raw(pp), indet);
   }
 
 
   BigInt BigExponent(ConstRefPPMonoidElem pp, long indet)
   {
-    if (indet >= NumIndets(owner(pp)))
-      CoCoA_THROW_ERROR(ERR::BadIndex, "BigExponent(PP)");
+    if (indet >= NumIndets(owner(pp)))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     BigInt ans;
     owner(pp)->myBigExponent(ans, raw(pp), indet);
     return ans;
@@ -458,7 +451,7 @@ namespace CoCoA
 
   void swap(RefPPMonoidElem pp1, RefPPMonoidElem pp2)
   {
-    CheckCompatible(pp1, pp2, "swap(PP,PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     owner(pp1)->mySwap(raw(pp1), raw(pp2));
   }
 
@@ -507,49 +500,49 @@ namespace CoCoA
 
   int cmp(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)                  // <0, =0, >0 as pp1 < = > pp2
   {
-    CheckCompatible(pp1, pp2, "cmp(PP,PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myCmp(raw(pp1), raw(pp2));
   }
 
 
   bool operator==(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)          // pp1 == pp2
   {
-    CheckCompatible(pp1, pp2, "PP == PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myIsEqual(raw(pp1), raw(pp2));
   }
 
 
   bool operator!=(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)          // pp1 != pp2
   {
-    CheckCompatible(pp1, pp2, "PP != PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return !owner(pp1)->myIsEqual(raw(pp1), raw(pp2));
   }
 
 
   bool operator<(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)           // pp1 < pp2
   {
-    CheckCompatible(pp1, pp2, "PP < PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myCmp(raw(pp1), raw(pp2)) < 0;
   }
 
 
   bool operator<=(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)          // pp1 <= pp2
   {
-    CheckCompatible(pp1, pp2, "PP <= PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myCmp(raw(pp1), raw(pp2)) <= 0;
   }
 
 
   bool operator>(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)           // pp1 > pp2
   {
-    CheckCompatible(pp1, pp2, "PP > PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myCmp(raw(pp1), raw(pp2)) > 0;
   }
 
 
   bool operator>=(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)          // pp1 >= pp2
   {
-    CheckCompatible(pp1, pp2, "PP >= PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myCmp(raw(pp1), raw(pp2)) >= 0;
   }
 
@@ -558,7 +551,7 @@ namespace CoCoA
 
   PPMonoidElem operator*(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)   //  pp1*pp2;
   {
-    CheckCompatible(pp1, pp2, "PP * PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     PPMonoidElem ans(owner(pp1));
     owner(pp1)->myMul(raw(ans), raw(pp1), raw(pp2));
     return ans;
@@ -567,9 +560,8 @@ namespace CoCoA
 
   PPMonoidElem operator/(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)   // pp1/pp2;
   {
-    CheckCompatible(pp1, pp2, "PP / PP");
-    if (!owner(pp1)->myIsDivisible(raw(pp1), raw(pp2)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "PP / PP");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
+    if (!owner(pp1)->myIsDivisible(raw(pp1), raw(pp2)))  CoCoA_THROW_ERROR1(ERR::BadQuot);
     PPMonoidElem ans(owner(pp1));
     owner(pp1)->myDiv(raw(ans), raw(pp1), raw(pp2));
     return ans;
@@ -578,7 +570,7 @@ namespace CoCoA
 
   PPMonoidElem colon(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)       //  pp1:pp2;
   {
-    CheckCompatible(pp1, pp2, "colon(PP, PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     PPMonoidElem ans(owner(pp1));
     owner(pp1)->myColon(raw(ans), raw(pp1), raw(pp2));
     return ans;
@@ -587,7 +579,7 @@ namespace CoCoA
 
   PPMonoidElem gcd(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)         // gcd(pp1,pp2);
   {
-    CheckCompatible(pp1, pp2, "gcd(PP, PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     PPMonoidElem ans(owner(pp1));
     owner(pp1)->myGcd(raw(ans), raw(pp1), raw(pp2));
     return ans;
@@ -596,7 +588,7 @@ namespace CoCoA
 
   PPMonoidElem lcm(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)         // lcm(pp1,pp2);
   {
-    CheckCompatible(pp1, pp2, "lcm(PP, PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     PPMonoidElem ans(owner(pp1));
     owner(pp1)->myLcm(raw(ans), raw(pp1), raw(pp2));
     return ans;
@@ -627,8 +619,7 @@ namespace CoCoA
 
   PPMonoidElem power(ConstRefPPMonoidElem pp, long exp)                        // pp^exp
   {
-    if (exp < 0)
-      CoCoA_THROW_ERROR(ERR::NegExp, "power(pp, n) and n < 0");
+    if (exp < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
     PPMonoidElem ans(owner(pp));
     owner(pp)->myPower(raw(ans), raw(pp), exp);
     return ans;
@@ -637,8 +628,7 @@ namespace CoCoA
 
   PPMonoidElem power(ConstRefPPMonoidElem pp, const BigInt& EXP)                 // pp^EXP
   {
-    if (EXP < 0)
-      CoCoA_THROW_ERROR(ERR::NegExp, "power(pp, N) and N < 0");
+    if (EXP < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
     PPMonoidElem ans(owner(pp));
     owner(pp)->myPower(raw(ans), raw(pp), EXP);
     return ans;
@@ -647,22 +637,21 @@ namespace CoCoA
 
   void PowerOverflowCheck(ConstRefPPMonoidElem pp, long exp)
   {
-    if (exp < 0)
-      CoCoA_THROW_ERROR(ERR::NegExp, "PowerOverflowCheck(pp, n) and n < 0");
+    if (exp < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
     owner(pp)->myPowerOverflowCheck(raw(pp), exp);
   }
 
 
   PPMonoidElem root(ConstRefPPMonoidElem pp, const MachineInt& exp)
   {
-    if (IsNegative(exp) || IsZero(exp)) CoCoA_THROW_ERROR(ERR::ReqPositive, "root(PP, exp)");
+    if (IsNegative(exp) || IsZero(exp))  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     const long n = AsSignedLong(exp);
     if (n == 1) return pp;
     vector<long> exps = exponents(pp);
     const long nvars = NumIndets(owner(pp));
     for (long i=0; i < nvars; ++i)
     {
-      if (exps[i]%n != 0) CoCoA_THROW_ERROR(ERR::BadArg, "root(PP,exp)");
+      if (exps[i]%n != 0) CoCoA_THROW_ERROR2(ERR::BadArg, "non an nth-power");
       exps[i] /= n;
     }
     return PPMonoidElem(owner(pp), exps);
@@ -671,7 +660,7 @@ namespace CoCoA
 
   bool IsPower(ConstRefPPMonoidElem pp, const MachineInt& exp)
   {
-    if (IsNegative(exp)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "IsPower(PP, exp)");
+    if (IsNegative(exp))  CoCoA_THROW_ERROR1(ERR::NegExp);
     if (IsZero(exp)) return IsOne(pp);
     const long n = AsSignedLong(exp);
     if (n == 1) return true;
@@ -686,14 +675,14 @@ namespace CoCoA
 
   bool IsCoprime(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)  // are pp1, pp2 coprime?
   {
-    CheckCompatible(pp1, pp2, "IsCoprime(PP, PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myIsCoprime(raw(pp1), raw(pp2));
   }
 
 
   bool IsDivisible(ConstRefPPMonoidElem pp1, ConstRefPPMonoidElem pp2)
   {
-    CheckCompatible(pp1, pp2, "IsDivisible(PP, PP)");
+    CheckCompatible(pp1, pp2, CoCoA_ERROR_CONTEXT);
     return owner(pp1)->myIsDivisible(raw(pp1), raw(pp2));
   }
 
@@ -749,7 +738,7 @@ namespace CoCoA
 
   bool IsFactorClosed(const std::vector<PPMonoidElem>& SetPP)
   {
-    if (SetPP.empty()) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (SetPP.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     PPMonoid PPM = owner(SetPP.front());
     const long NumPPs = len(SetPP);
     vector<long> expv(NumIndets(PPM));
@@ -795,7 +784,7 @@ namespace CoCoA
 
   RefPPMonoidElem operator*=(RefPPMonoidElem pp, ConstRefPPMonoidElem pp1)
   {
-    CheckCompatible(pp, pp1, "PP *= PP");
+    CheckCompatible(pp, pp1, CoCoA_ERROR_CONTEXT);
     owner(pp)->myMul(raw(pp), raw(pp), raw(pp1));
     return pp;
   }
@@ -803,7 +792,7 @@ namespace CoCoA
 
   RefPPMonoidElem operator/=(RefPPMonoidElem pp, ConstRefPPMonoidElem pp1)
   {
-    CheckCompatible(pp, pp1, "PP /= PP");
+    CheckCompatible(pp, pp1, CoCoA_ERROR_CONTEXT);
     owner(pp)->myDiv(raw(pp), raw(pp), raw(pp1));
     return pp;
   }
@@ -811,7 +800,7 @@ namespace CoCoA
 
   const PPMonoidElem& indet(const PPMonoid& M, long index)
   {
-    if (index >= NumIndets(M)) CoCoA_THROW_ERROR(ERR::BadIndex, "indet(PPMonoid, index)");
+    if (index >= NumIndets(M))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     return indets(M)[index];
   }
 
@@ -820,15 +809,15 @@ namespace CoCoA
   {
     CoCoA_ASSERT(index >= 0);
     long i;
-    if (!IsConvertible(i, index)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "indet(PPMonoid, index)");
+    if (!IsConvertible(i, index))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return indet(M, i);
   }
 
 
   PPMonoidElem IndetPower(const PPMonoid& M, long indet, long exp)
   {
-    if (exp < 0) CoCoA_THROW_ERROR(ERR::NegExp, "IndetPower(PPMonoid, indet, exp)");
-    if (indet >= NumIndets(M)) CoCoA_THROW_ERROR(ERR::BadIndex, "IndetPower(PPMonoid, indet, exp)");
+    if (exp < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
+    if (indet >= NumIndets(M))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     PPMonoidElem ans(M);
     M->myMulIndetPower(raw(ans), indet, exp);
     return ans;
@@ -836,8 +825,8 @@ namespace CoCoA
 
   PPMonoidElem IndetPower(const PPMonoid& M, long indet, const BigInt& EXP)
   {
-    if (EXP < 0) CoCoA_THROW_ERROR(ERR::NegExp, "IndetPower(PPMonoid, indet, EXP)");
-    if (indet >= NumIndets(M)) CoCoA_THROW_ERROR(ERR::BadIndex, "IndetPower(PPMonoid, indet, EXP)");
+    if (EXP < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
+    if (indet >= NumIndets(M))  CoCoA_THROW_ERROR1(ERR::BadIndex);
     PPMonoidElem ans(M);
     M->myMulIndetPower(raw(ans), indet, EXP);
     return ans;

@@ -86,10 +86,7 @@ namespace CoCoA
   const std::vector<RingElem>& GBasis(const ideal& I,
                                       const CpuTimeLimit& CheckForTimeout)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-      CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
-//    if (!IsField(CoeffRing(RingOf(I))))
-//      CoCoA_THROW_ERROR(ERR::NotField, "GBasis(I)");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
     return TidyGens(I, CheckForTimeout);
   }
 
@@ -98,8 +95,7 @@ namespace CoCoA
                                     const long TruncDeg,
                                     const CpuTimeLimit& CheckForTimeout)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-      CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
     const SparsePolyRingBase::IdealImpl* const ptrI = 
       SparsePolyRingBase::IdealImpl::ourGetPtr(I);
     return ptrI->myGBasisTrunc(TruncDeg, CheckForTimeout);
@@ -109,8 +105,7 @@ namespace CoCoA
   const std::vector<RingElem>& GBasisByHomog(const ideal& I,
                                              const CpuTimeLimit& CheckForTimeout)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-      CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
     const SparsePolyRingBase::IdealImpl* const ptrI = 
       SparsePolyRingBase::IdealImpl::ourGetPtr(I);
     return ptrI->myGBasisByHomog(CheckForTimeout);
@@ -138,8 +133,8 @@ namespace CoCoA
 
   std::vector<RingElem> GBasisRealSolve(const ideal& I)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-      CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    //    if (!IsField(CoeffRing(RingOf(I))))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     const SparsePolyRingBase::IdealImpl* const ptrI = 
       SparsePolyRingBase::IdealImpl::ourGetPtr(I);
     return ptrI->myGBasisRealSolve();
@@ -148,6 +143,7 @@ namespace CoCoA
 
   const std::vector<RingElem>& ReducedGBasis(const ideal& I)
   {
+    //    if (!IsField(CoeffRing(RingOf(I))))  CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in field");
     if (IsCommutative(RingOf(I))) return GBasis(I); // the same (2017)
     CoCoA_THROW_ERROR2(ERR::NYI, "non-commutative");  // ExtAlg e Weyl?
     return GBasis(I); // just to keep the compiler quiet
@@ -157,8 +153,8 @@ namespace CoCoA
   const std::vector<RingElem>& MinGens(const ideal& I)
   {
     if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
-    if (len(gens(I))>1 && !HasPositiveGrading(RingOf(I)))
-      CoCoA_THROW_ERROR1(ERR::ReqPositiveGrading);
+    //    if (!IsField(CoeffRing(RingOf(I))))  CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in field");
+    if (len(gens(I))>1 && !HasPositiveGrading(RingOf(I)))  CoCoA_THROW_ERROR1(ERR::ReqPositiveGrading);
     const SparsePolyRingBase::IdealImpl* const ptrI = 
       SparsePolyRingBase::IdealImpl::ourGetPtr(I);
     return ptrI->myMinGens();
@@ -169,17 +165,16 @@ namespace CoCoA
   {
     const bool OverField = IsField(CoeffRing(myRing()));
     //if (IhaveMonomialGens()) return myPrimaryDecomposition_MonId();
-    if (OverField && IhaveSqFreeMonomialGens()) return myPrimaryDecomposition_MonId();
-    if (IamZeroDim()) return myPrimaryDecomposition_0dim();
-    CoCoA_THROW_ERROR2(ERR::NYI, "general ideal");
+    if (OverField && IhaveSqFreeMonomialGens())  return myPrimaryDecomposition_MonId();
+    if (IamZeroDim())  return myPrimaryDecomposition_0dim();
+    CoCoA_THROW_ERROR2(ERR::NYI, "general case");
     return vector<ideal>(); // just to keep compiler quiet
   }
 
 
   ideal LT(const ideal& I)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
     const std::vector<RingElem>& GB = TidyGens(I);
     std::vector<RingElem> v;
     const SparsePolyRing P = RingOf(I);
@@ -235,9 +230,8 @@ namespace CoCoA
 
   ideal elim(const ideal& I, const std::vector<RingElem>& ElimIndets) //const CpuTimeLimit& CheckForTimeout)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
-    //    if (!IsField(CoeffRing(RingOf(I)))) CoCoA_THROW_ERROR(ERR::NotField, "GBasis(I)");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    //    if (!IsField(CoeffRing(RingOf(I)))) CoCoA_THROW_ERROR2(ERR::NotField, "GBasis(I)");
     if (IsZero(I)) return I;
     ideal J(zero(RingOf(I)));
     MakeUnique(J)->myAssignElim(I, ElimIndets);
@@ -248,8 +242,7 @@ namespace CoCoA
   // Anna: must be friend for ourGetPtr
   bool HasGBasis(const ideal& I)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
     const SparsePolyRingBase::IdealImpl* const ptrI = 
       SparsePolyRingBase::IdealImpl::ourGetPtr(I);
     return ptrI->IhaveGBasis();
@@ -259,8 +252,7 @@ namespace CoCoA
   // Anna: must be friend for ourGetPtr
   bool AreGensMonomial(const ideal& I)
   {
-    if (!IsSparsePolyRing(RingOf(I)))
-  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
+    if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
     const SparsePolyRingBase::IdealImpl* const ptrI = 
       SparsePolyRingBase::IdealImpl::ourGetPtr(I);
     return ptrI->IhaveMonomialGens();
@@ -317,7 +309,7 @@ namespace CoCoA
     // IhaveMonomialGens3Value = uncertain3; // default for bool3
     // IhaveSqFreeMonomial3Gens = uncertain3; // default for bool3
 /////    if (!IsField(CoeffRing(P)))
-/////      CoCoA_THROW_ERROR("ERR:NYI ideal of polynomials with coeffs not in a field", "ideal(SparsePolyRing, gens)");//???
+/////      CoCoA_THROW_ERROR2("ERR:NYI ideal of polynomials with coeffs not in a field", "ideal(SparsePolyRing, gens)");//???
   }
 
 
@@ -429,8 +421,7 @@ namespace CoCoA
         myAssignMaximalFlag(F.myMultiplicities()[0] == 1); // since we have the info
       return;
     }
-    if (!IamZeroDim())
-      CoCoA_THROW_ERROR("Not Yet Implemented for general ideals", "myTestIsPrimary");
+    if (!IamZeroDim())  CoCoA_THROW_ERROR2(ERR::NYI, "general case");
     myTestIsPrimary_0dim();
   }
 
@@ -439,7 +430,7 @@ namespace CoCoA
   {
     if (NumIndets(myP) == 1 && IsField(CoeffRing(myP)))
     { myTestIsMaximal(); return; }
-    CoCoA_THROW_ERROR(ERR::NYI, "SparsePolyRingBase::IdealImpl::myTestIsPrime()");//???
+    CoCoA_THROW_ERROR2(ERR::NYI, "general case");//???
   }
 
 
@@ -454,8 +445,7 @@ namespace CoCoA
       if (F.myMultiplicities()[0] == 1) myAssignMaximalFlag(true);
       return;
     }
-    if (!IamZeroDim())
-      CoCoA_THROW_ERROR("Not Yet Implemented for general ideals", "myTestIsRadical");
+    if (!IamZeroDim())  CoCoA_THROW_ERROR2(ERR::NYI, "general case");
     myTestIsRadical_0dim();
   }
 
@@ -570,7 +560,7 @@ namespace CoCoA
       myIntersect_MonId(J);
       return;
     }
-    if (!OverField) CoCoA_THROW_ERROR(ERR::NYI, "intersection over non field");
+    if (!OverField)  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     ComputeIntersection(myGensValue, myGensValue, gens(J));
     myReset(); // can we recover some info?
   }
@@ -754,6 +744,7 @@ namespace CoCoA
     if (IhaveGBasis()) return myGBasisValue;
     return myGBasisTrunc_compute(TruncDeg, CheckForTimeout);
   }
+
   
   std::vector<RingElem> SparsePolyRingBase::IdealImpl::myGBasisTrunc_compute(long TruncDeg, const CpuTimeLimit& CheckForTimeout) const
   {

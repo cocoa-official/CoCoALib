@@ -637,21 +637,15 @@ namespace CoCoA
 
 
   const ring& ConstColMatImpl::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long ConstColMatImpl::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long ConstColMatImpl::myNumCols() const
-  {
-    return 1;
-  }
+  { return 1; }
 
 
   RingElemAlias ConstColMatImpl::myEntry(long i, long j) const
@@ -695,10 +689,8 @@ namespace CoCoA
 
   ConstMatrixView ColMat(const std::vector<RingElem>& v)
   {
-    if (v.empty())
-      CoCoA_THROW_ERROR("empty vector of ring elems", "ColMat(v)");
-    if (!HasUniqueOwner(v))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ColMat(v)");
+    if (v.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (!HasUniqueOwner(v))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return ConstMatrixView(new ConstColMatImpl(v));
   }
 
@@ -754,21 +746,15 @@ namespace CoCoA
 
 
   const ring& ColMatImpl::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long ColMatImpl::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long ColMatImpl::myNumCols() const
-  {
-    return 1;
-  }
+  { return 1; }
 
 
   RingElemAlias ColMatImpl::myEntry(long i, long j) const
@@ -859,10 +845,8 @@ namespace CoCoA
 
   MatrixView ColMat(std::vector<RingElem>& v)
   {
-    if (v.empty())
-      CoCoA_THROW_ERROR("empty vector of ring elems", "ColMat(v)");
-    if (!HasUniqueOwner(v))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ColMat(v)");
+    if (v.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (!HasUniqueOwner(v))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return MatrixView(new ColMatImpl(v));
   }
 
@@ -871,15 +855,11 @@ namespace CoCoA
   // Very simple definitions... but may not be very efficient.
 
   MatrixView RowMat(std::vector<RingElem>& v)
-  {
-    return transpose(ColMat(v));
-  }
+  { return transpose(ColMat(v)); }
 
+  
   ConstMatrixView RowMat(const std::vector<RingElem>& v)
-  {
-    return transpose(ColMat(v));
-  }
-
+  { return transpose(ColMat(v)); }
 
 
   /***************************************************************************/
@@ -933,21 +913,15 @@ namespace CoCoA
 
 
   const ring& ConstDiagMatImpl::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long ConstDiagMatImpl::myNumRows() const
-  {
-    return myDim;
-  }
+  { return myDim; }
 
 
   long ConstDiagMatImpl::myNumCols() const
-  {
-    return myDim;
-  }
+  { return myDim; }
 
 
   RingElemAlias ConstDiagMatImpl::myEntry(long i, long j) const
@@ -1050,10 +1024,8 @@ namespace CoCoA
 
   ConstMatrixView DiagMat(const std::vector<RingElem>& DiagEntries)
   {
-    if (DiagEntries.empty())
-      CoCoA_THROW_ERROR("Empty vector", "DiagMat(v)");
-    if (!HasUniqueOwner(DiagEntries))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "DiagMat(v)");
+    if (DiagEntries.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (!HasUniqueOwner(DiagEntries))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return ConstMatrixView(new ConstDiagMatImpl(owner(DiagEntries[0]), DiagEntries));
   }
 
@@ -1101,13 +1073,13 @@ namespace CoCoA
   //----------------------------------------------------------------------
 
   bool IsDiagMatImpl(ConstMatrixView M)  
-  {return dynamic_cast<DiagMatImpl*>(M.mySmartPtr.myRawPtr()) != nullptr;}
+  { return dynamic_cast<DiagMatImpl*>(M.mySmartPtr.myRawPtr()) != nullptr; }
 
 
   DiagMatImpl::DiagMatImpl(const ring& R, std::vector<RingElem>& DiagEntries):
-      myR(R),
-      myDim(len(DiagEntries)),
-      myDiagEntries(DiagEntries)
+    myR(R),
+    myDim(len(DiagEntries)),
+    myDiagEntries(DiagEntries)
   {
 #ifdef CoCoA_DEBUG
     for (long i=0; i < myDim; ++i)
@@ -1117,21 +1089,15 @@ namespace CoCoA
 
 
   const ring& DiagMatImpl::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long DiagMatImpl::myNumRows() const
-  {
-    return myDim;
-  }
+  { return myDim; }
 
 
   long DiagMatImpl::myNumCols() const
-  {
-    return myDim;
-  }
+  { return myDim; }
 
 
   RingElemAlias DiagMatImpl::myEntry(long i, long j) const
@@ -1281,10 +1247,8 @@ namespace CoCoA
 
   MatrixView DiagMat(std::vector<RingElem>& DiagEntries)
   {
-    if (DiagEntries.empty())
-      CoCoA_THROW_ERROR("Empty vector", "DiagMat(v)");
-    if (!HasUniqueOwner(DiagEntries))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "DiagMat(v)");
+    if (DiagEntries.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (!HasUniqueOwner(DiagEntries))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return MatrixView(new DiagMatImpl(owner(DiagEntries[0]), DiagEntries));
   }
 
@@ -1336,41 +1300,34 @@ namespace CoCoA
 
   std::vector<RingElem>& MatByRowsImpl::CtorArgCheck(long nrows, long ncols, std::vector<RingElem>& v)
   {
-    if (nrows < 1 || ncols < 1) CoCoA_THROW_ERROR(ERR::ReqPositive, "MatByRows ctor");
+    if (nrows < 1 || ncols < 1)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     const long n = len(v);
-    if (n/nrows != ncols || n != nrows*ncols) // condition just tests if n = nrows*ncols but avoids overflow
-      CoCoA_THROW_ERROR(ERR::BadArraySize, "MatByRows ctor");
-//???    if (v.empty()) CoCoA_THROW_ERROR(ERR::Empty, "MatByRows ctor");
-    if (!HasUniqueOwner(v))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "MatByRows ctor");
+    // condition just tests if n = nrows*ncols but avoids overflow
+    if (n/nrows != ncols || n != nrows*ncols)  CoCoA_THROW_ERROR1(ERR::BadArraySize);
+//???    if (v.empty()) CoCoA_THROW_ERROR2(ERR::Empty, "MatByRows ctor");
+    if (!HasUniqueOwner(v))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return v;
   }
 
 
   MatByRowsImpl::MatByRowsImpl(long nrows, long ncols, std::vector<RingElem>& v):
-      myNumRowsValue(nrows),
-      myNumColsValue(ncols),
-      myR(owner(CtorArgCheck(nrows, ncols,v)[0])),
-      myV(v)
+    myNumRowsValue(nrows),
+    myNumColsValue(ncols),
+    myR(owner(CtorArgCheck(nrows, ncols,v)[0])),
+    myV(v)
   {}
 
 
   const ring& MatByRowsImpl::myRing() const
-  {
-    return myR; // return owner(myV[0]);
-  }
+  { return myR; } // return owner(myV[0]);
 
 
   long MatByRowsImpl::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long MatByRowsImpl::myNumCols() const
-  {
-    return myNumColsValue;
-  }
+  { return myNumColsValue; }
 
 
   RingElemAlias MatByRowsImpl::myEntry(long i, long j) const
@@ -1496,41 +1453,36 @@ namespace CoCoA
 
   std::vector< std::vector<RingElem> >& MatByRowsImpl2::CtorArgCheck(std::vector< std::vector<RingElem> >& vv)
   {
-    if (vv.empty()) CoCoA_THROW_ERROR(ERR::ReqNonEmpty, "MatByRows ctor");
+    if (vv.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     const long nrows = len(vv);
     for (long i=0; i < nrows; ++i)
-      if (!HasUniqueOwner(vv[i]) ||
-          len(vv[i]) != len(vv[0]) ||
-          owner(vv[i][0]) != owner(vv[0][0]))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "MatByRows ctor");
+    {
+      if (len(vv[i]) != len(vv[0]) )  CoCoA_THROW_ERROR1(ERR::IncompatDims);
+      if (!HasUniqueOwner(vv[i]) || owner(vv[i][0]) != owner(vv[0][0]))
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
+    }
     return vv;
   }
 
 
   MatByRowsImpl2::MatByRowsImpl2(std::vector< std::vector<RingElem> >& vv):
-      myR(owner(CtorArgCheck(vv)[0][0])),
-      myNumRowsValue(len(vv)),
-      myNumColsValue(len(vv[0])),
-      myVV(vv)
+    myR(owner(CtorArgCheck(vv)[0][0])),
+    myNumRowsValue(len(vv)),
+    myNumColsValue(len(vv[0])),
+    myVV(vv)
   {}
-
+  
 
   const ring& MatByRowsImpl2::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long MatByRowsImpl2::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long MatByRowsImpl2::myNumCols() const
-  {
-    return myNumColsValue;
-  }
+  { return myNumColsValue; }
 
 
   RingElemAlias MatByRowsImpl2::myEntry(long i, long j) const
@@ -1655,42 +1607,34 @@ namespace CoCoA
 
   std::vector<RingElem>& MatByColsImpl::CtorArgCheck(long nrows, long ncols, std::vector<RingElem>& v)
   {
-    if (nrows < 1 || ncols < 1) CoCoA_THROW_ERROR(ERR::ReqPositive, "MatByCols ctor");
+    if (nrows < 1 || ncols < 1)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     const long n = len(v);
     // Check that n = nrows*ncols (avoiding overflow)
-    if (n/nrows != ncols || n != nrows*ncols)
-      CoCoA_THROW_ERROR(ERR::BadArraySize, "MatByCols ctor");
-//???    if (v.empty()) CoCoA_THROW_ERROR(ERR::Empty, "MatByCols ctor");
-    if (!HasUniqueOwner(v))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "MatByCols ctor");
+    if (n/nrows != ncols || n != nrows*ncols)  CoCoA_THROW_ERROR1(ERR::IncompatDims);
+//???    if (v.empty()) CoCoA_THROW_ERROR2(ERR::Empty, "MatByCols ctor");
+    if (!HasUniqueOwner(v))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return v;
   }
 
 
   MatByColsImpl::MatByColsImpl(long nrows, long ncols, std::vector<RingElem>& v):
-      myNumRowsValue(nrows),
-      myNumColsValue(ncols),
-      myR(owner(CtorArgCheck(nrows, ncols,v)[0])),
-      myV(v)
+    myNumRowsValue(nrows),
+    myNumColsValue(ncols),
+    myR(owner(CtorArgCheck(nrows, ncols,v)[0])),
+    myV(v)
   {}
 
 
   const ring& MatByColsImpl::myRing() const
-  {
-    return myR; // return owner(myV[0]);
-  }
+  { return myR; }// return owner(myV[0]);
 
 
   long MatByColsImpl::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long MatByColsImpl::myNumCols() const
-  {
-    return myNumColsValue;
-  }
+  { return myNumColsValue; }
 
 
   RingElemAlias MatByColsImpl::myEntry(long i, long j) const
@@ -1802,7 +1746,7 @@ namespace CoCoA
       bool myIsZeroCol(long) const override  { return true; }
 
       bool myIsWritable(long, long) const override  { return false; }
-      RingElemRawPtr myRawEntry(long, long) override  { CoCoA_THROW_ERROR(ERR::ConstMatEntry, "myRawEntry"); RingElem JUNK;return raw(JUNK); /*just to keep compiler quiet*/ }
+      RingElemRawPtr myRawEntry(long, long) override  { CoCoA_THROW_ERROR1(ERR::ConstMatEntry); RingElem JUNK;return raw(JUNK); /*just to keep compiler quiet*/ }
       void mySetEntry(long, long, ConstRefRingElem) override  { CoCoA_ASSERT(0 && "ERR::ConstMatEntry"); }
       void mySetEntry(long, long, const MachineInt&) override  { CoCoA_ASSERT(0 && "ERR::ConstMatEntry"); }
       void mySetEntry(long, long, const BigInt&) override  { CoCoA_ASSERT(0 && "ERR::ConstMatEntry"); }
@@ -1910,21 +1854,15 @@ namespace CoCoA
 
 
     const ring& ConstBlockMat2x2Impl::myRing() const
-    {
-      return myR;
-    }
+    { return myR; }
 
 
     long ConstBlockMat2x2Impl::myNumRows() const
-    {
-      return myNumRowsValue;
-    }
+    { return myNumRowsValue; }
 
 
     long ConstBlockMat2x2Impl::myNumCols() const
-    {
-      return myNumColsValue;
-    }
+    { return myNumColsValue; }
 
 
     RingElemAlias ConstBlockMat2x2Impl::myEntry(long i, long j) const
@@ -1967,14 +1905,14 @@ namespace CoCoA
       // Check that the rings are all the same
       const ring R = RingOf(A);
       if (RingOf(B) != R || RingOf(C) != R || RingOf(D) != R)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "BlockMat2x2(A,B,C,D)");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
     }
     // Check that the matrix sizes are suitably matched.
     if (NumRows(A) != NumRows(B) ||
         NumRows(C) != NumRows(D) ||
         NumCols(A) != NumCols(C) ||
         NumCols(B) != NumCols(D))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "BlockMat2x2(A,B,C,D)");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     if (NumCols(A) > numeric_limits<long>::max() -NumCols(B)) //avoid overflow  
       CoCoA_THROW_ERROR2(ERR::BadIndex, "num cols");
     if (NumRows(A) > numeric_limits<long>::max() -NumRows(C)) //avoid overflow  
@@ -1985,21 +1923,16 @@ namespace CoCoA
 
   ConstMatrixView BlockMat2x2(ConstMatrixView A, ZeroBlockIndicator, ZeroBlockIndicator, ConstMatrixView D)
   {
-    {
-      // Check that the rings are the same
-      if (RingOf(A) != RingOf(D))
-        CoCoA_THROW_ERROR(ERR::MixedRings, "BlockMat2x2(A,zeroes,zeroes,D)");
-    }
+    // Check that the rings are the same
+    if (RingOf(A) != RingOf(D))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return ConstMatrixView(new ConstBlockMat2x2Impl(A, zeroes, zeroes, D));
   }
 
+  
   ConstMatrixView BlockMat2x2(ZeroBlockIndicator, ConstMatrixView B, ConstMatrixView C,  ZeroBlockIndicator)
   {
-    {
-      // Check that the rings are the same
-      if (RingOf(B) != RingOf(C))
-        CoCoA_THROW_ERROR(ERR::MixedRings, "BlockMat2x2(A,zeroes,zeroes,D)");
-    }
+    // Check that the rings are the same
+    if (RingOf(B) != RingOf(C))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return ConstMatrixView(new ConstBlockMat2x2Impl(zeroes, B, C, zeroes));
   }
 
@@ -2109,21 +2042,15 @@ namespace CoCoA
 
 
   const ring& BlockMat2x2Impl::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long BlockMat2x2Impl::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long BlockMat2x2Impl::myNumCols() const
-  {
-    return myNumColsValue;
-  }
+  { return myNumColsValue; }
 
 
   RingElemAlias BlockMat2x2Impl::myEntry(long i, long j) const
@@ -2219,18 +2146,15 @@ namespace CoCoA
 
   MatrixView BlockMat2x2(MatrixView A, MatrixView B, MatrixView C, MatrixView D)
   {
-    {
-      // Check that the rings are all the same
-      const ring R = RingOf(A);
-      if (RingOf(B) != R || RingOf(C) != R || RingOf(D) != R)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "BlockMat2x2(A,B,C,D)");
-    }
+    const ring R = RingOf(A);
+    if (RingOf(B) != R || RingOf(C) != R || RingOf(D) != R)
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     // Check that the matrix sizes are suitably matched.
     if (NumRows(A) != NumRows(B) ||
         NumRows(C) != NumRows(D) ||
         NumCols(A) != NumCols(C) ||
         NumCols(B) != NumCols(D))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "BlockMat2x2(A,B,C,D)");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     if (NumCols(A) > numeric_limits<long>::max() -NumCols(B)) //avoid overflow  
       CoCoA_THROW_ERROR2(ERR::BadIndex, "num col");
     if (NumRows(A) > numeric_limits<long>::max() -NumRows(C)) //avoid overflow  
@@ -2238,24 +2162,19 @@ namespace CoCoA
     return MatrixView(new BlockMat2x2Impl(A, B, C, D));
   }
 
+  
   MatrixView BlockMat2x2(MatrixView A, ZeroBlockIndicator, ZeroBlockIndicator, MatrixView D)
   {
-    {
-      // Check that the rings are the same
-      if (RingOf(A) != RingOf(D))
-        CoCoA_THROW_ERROR(ERR::MixedRings, "BlockMat2x2(A,zeroes,zeroes,D)");
-    }
-    return MatrixView(new BlockMat2x2Impl(A, zeroes, zeroes, D));
+    // Check that the rings are the same
+    if (RingOf(A) != RingOf(D))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    return MatrixView(new BlockMat2x2Impl(A, zeroes,   zeroes, D));
   }
 
+  
   MatrixView BlockMat2x2(ZeroBlockIndicator, MatrixView B, MatrixView C,  ZeroBlockIndicator)
   {
-    {
-      // Check that the rings are the same
-      if (RingOf(B) != RingOf(C))
-        CoCoA_THROW_ERROR(ERR::MixedRings, "BlockMat2x2(A,zeroes,zeroes,D)");
-    }
-    return MatrixView(new BlockMat2x2Impl(zeroes, B, C, zeroes));
+    if (RingOf(B) != RingOf(C))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    return MatrixView(new BlockMat2x2Impl(zeroes, B,   C, zeroes));
   }
 
 
@@ -2308,21 +2227,15 @@ namespace CoCoA
 
 
   const ring& ConstConcatVerImpl::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long ConstConcatVerImpl::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long ConstConcatVerImpl::myNumCols() const
-  {
-    return myNumColsValue;
-  }
+  { return myNumColsValue; }
 
 
   RingElemAlias ConstConcatVerImpl::myEntry(long i, long j) const
@@ -2353,13 +2266,10 @@ namespace CoCoA
 
   ConstMatrixView ConcatVer(ConstMatrixView A, ConstMatrixView B)
   {
-    if (RingOf(A) != RingOf(B))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatVer(A,B)");
-    if (NumCols(A) != NumCols(B))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "ConcatVer(A,B)");
+    if (RingOf(A) != RingOf(B))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (NumCols(A) != NumCols(B))  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     if (NumRows(A) > numeric_limits<long>::max() -NumRows(B)) //avoid overflow  
-      CoCoA_THROW_ERROR(ERR::BadIndex, "num rows");
-
+      CoCoA_THROW_ERROR2(ERR::BadIndex, "num rows");
     return ConstMatrixView(new ConstConcatVerImpl(A, B));
   }
 
@@ -2427,21 +2337,15 @@ namespace CoCoA
 
 
   const ring& ConcatVerImpl::myRing() const
-  {
-    return myR;
-  }
+  { return myR; }
 
 
   long ConcatVerImpl::myNumRows() const
-  {
-    return myNumRowsValue;
-  }
+  { return myNumRowsValue; }
 
 
   long ConcatVerImpl::myNumCols() const
-  {
-    return myNumColsValue;
-  }
+  { return myNumColsValue; }
 
 
   RingElemAlias ConcatVerImpl::myEntry(long i, long j) const
@@ -2520,13 +2424,9 @@ namespace CoCoA
 
   MatrixView ConcatVer(MatrixView A, MatrixView B)
   {
-    {
-      // Check that the base rings are the same.
-      if (RingOf(A) != RingOf(B))
-        CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatVer(A,B)");
-    }
-    if (NumCols(A) != NumCols(B))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "ConcatVer(A,B)");
+    // Check that the base rings are the same.
+    if (RingOf(A) != RingOf(B))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (NumCols(A) != NumCols(B))  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     return MatrixView(new ConcatVerImpl(A, B));
   }
 
@@ -2537,21 +2437,16 @@ namespace CoCoA
 
   ConstMatrixView ConcatHor(ConstMatrixView M1, ConstMatrixView M2)
   {
-    if (RingOf(M1) != RingOf(M2))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatHor(A,B)");
-    if (NumRows(M1) != NumRows(M2))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "ConcatHor(A,B)");
-
+    if (RingOf(M1) != RingOf(M2))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (NumRows(M1) != NumRows(M2))  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     return transpose(ConcatVer(transpose(M1), transpose(M2)));
   }
 
+  
   MatrixView ConcatHor(MatrixView M1, MatrixView M2)
   {
-    if (RingOf(M1) != RingOf(M2))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatHor(A,B)");
-    if (NumRows(M1) != NumRows(M2))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "ConcatHor(A,B)");
-
+    if (RingOf(M1) != RingOf(M2))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (NumRows(M1) != NumRows(M2))  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     return transpose(ConcatVer(transpose(M1), transpose(M2)));
   }
 
@@ -2561,42 +2456,31 @@ namespace CoCoA
   MatrixView ConcatDiag(MatrixView M1, MatrixView M2)
   {
     ring R = RingOf(M1);
-    if (RingOf(M2) != R)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatDiag(A,B)");
-
-    return BlockMat2x2(M1, zeroes,
-                       zeroes, M2);
+    if (RingOf(M2) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    return BlockMat2x2(M1, zeroes,   zeroes, M2);
   }
 
+  
   ConstMatrixView ConcatDiag(ConstMatrixView M1, ConstMatrixView M2)
   {
     ring R = RingOf(M1);
-    if (RingOf(M2) != R)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatDiag(A,B)");
-
-    return BlockMat2x2(M1, zeroes,
-                       zeroes, M2);
+    if (RingOf(M2) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    return BlockMat2x2(M1, zeroes,   zeroes, M2);
   }
 
 
   MatrixView ConcatAntiDiag(MatrixView M1, MatrixView M2)
   {
     ring R = RingOf(M1);
-    if (RingOf(M2) != R)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatAntiDiag(A,B)");
-
-    return BlockMat2x2(zeroes, M1,
-                       M2, zeroes);
+    if (RingOf(M2) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    return BlockMat2x2(zeroes, M1,   M2, zeroes);
   }
 
   ConstMatrixView ConcatAntiDiag(ConstMatrixView M1, ConstMatrixView M2)
   {
     ring R = RingOf(M1);
-    if (RingOf(M2) != R)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ConcatAntiDiag(A,B)");
-
-    return BlockMat2x2(zeroes, M1,
-                       M2, zeroes);
+    if (RingOf(M2) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    return BlockMat2x2(zeroes, M1,   M2, zeroes);
   }
 
 
