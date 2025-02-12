@@ -83,11 +83,9 @@ namespace CoCoA
 
   RingElem monomial(const DenseUPolyRing& P, ConstRefRingElem c, const MachineInt& exp)
   {
-    if (owner(c) != CoeffRing(P)) CoCoA_THROW_ERROR(ERR::MixedCoeffRings, "monomial(P,c,d)");
-    if (IsNegative(exp))
-      CoCoA_THROW_ERROR(ERR::NegExp, "monomial(P,c,d)");
-    if (!IsSignedLong(exp))
-      CoCoA_THROW_ERROR(ERR::ExpTooBig, "monomial(P,c,d)");
+    if (owner(c) != CoeffRing(P))  CoCoA_THROW_ERROR1(ERR::MixedCoeffRings);
+    if (IsNegative(exp))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (!IsSignedLong(exp))  CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     if (IsZero(c)) return zero(P);
     return P->myMonomial(raw(c), AsSignedLong(exp));
   }
@@ -132,21 +130,21 @@ namespace CoCoA
 
   long DenseUPolyRingBase::myStdDeg(ConstRawPtr rawf) const
   {
-    if (myIsZero(rawf)) CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "myStdDeg(rawf)");
+    if (myIsZero(rawf))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     return myDegPlus1(rawf) - 1;
   }
 
 
   long DenseUPolyRingBase::myDeg(ConstRawPtr rawf, long index) const
   {
-    if (index!=0) CoCoA_THROW_ERROR(ERR::BadIndex, "myDeg(rawf, index)");
+    if (index!=0)  CoCoA_THROW_ERROR1(ERR::BadIndex);
     return myStdDeg(rawf);
   }
 
 
   RingElemAlias DenseUPolyRingBase::myLC(ConstRawPtr rawf) const
   {
-    if (myIsZero(rawf)) CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "DenseUPolyRingBase::myLC(rawf)");
+    if (myIsZero(rawf))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     return myCoeff(rawf, myStdDeg(rawf));
   }
   
@@ -335,7 +333,7 @@ namespace CoCoA
     if (!IsField(myCoeffRing()))
     {
       if (!IsTrueGCDDomain(myCoeffRing()))
-        CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::myGcd");
+        CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
       else
       {
         const FractionField K = NewFractionField(myCoeffRing());
@@ -387,8 +385,7 @@ namespace CoCoA
       mySwap(rawycofac, raw(OneP));
       return;
     }
-    if (!IsField(myCoeffRing()))
-      CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::myGcd(RawPtr, ConstRawPtr, ConstRawPtr) const");
+    if (!IsField(myCoeffRing()))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     // finally Euclid's Algorithm
     RingElem res(P), acofac(P), bcofac(P);
     ExgcdAux(acofac, bcofac, a, b);
@@ -663,7 +660,7 @@ namespace CoCoA
 //   bool DenseUPolyRingBase::myIsHomog(ConstRawPtr rawf) const
 //   {
 //     if (myIsConstant(rawf)) { return true; }
-//     CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::myIsHomog(ConstRawPtr)");
+//     CoCoA_THROW_ERROR1(ERR::NYI);
 //     return true;
 //   }
 
@@ -690,8 +687,7 @@ namespace CoCoA
 
   const symbol& DenseUPolyRingBase::myIndetSymbol(long idx) const
   {
-    if (idx!=0)
-      CoCoA_THROW_ERROR(ERR::BadIndex, "DenseUPolyRingBase::myIndetSymbol(idx)");
+    if (idx!=0)  CoCoA_THROW_ERROR2(ERR::BadIndex, "Must be 0");
     return myIndetSymbol();
   }
 
@@ -712,18 +708,15 @@ namespace CoCoA
     myGensValue(gens)
   {
     myTidyGensIsValid = false;
-    if (!IsField(CoeffRing(P)))
-      CoCoA_THROW_ERROR("NYI ideal of polynomials with coeffs not in a field", "ideal(DenseUPolyRing, gens)");//???
+    if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     const long ngens = len(gens);
     for (long i=0; i < ngens; ++i)
-      if (owner(gens[i]) != myP) CoCoA_THROW_ERROR(ERR::MixedRings, "DenseUPolyRingBase::IdealImpl ctor");
+      if (owner(gens[i]) != myP)  CoCoA_THROW_ERROR1(ERR::MixedRings);
   }
 
 
   IdealBase* DenseUPolyRingBase::IdealImpl::myClone() const
-  {
-    return new IdealImpl(*this);
-  }
+  { return new IdealImpl(*this); }
 
 
   bool DenseUPolyRingBase::IdealImpl::IamZero() const
@@ -739,24 +732,20 @@ namespace CoCoA
 
   void DenseUPolyRingBase::IdealImpl::myTestIsMaximal() const
   {
-    if (!IsField(CoeffRing(myP)))
-      CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::myTestIsMaximal() non-field CoeffRing");
+    if (!IsField(CoeffRing(myP)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     myTestIsPrime();
   }
 
 
   void DenseUPolyRingBase::IdealImpl::myTestIsPrimary() const
-  {
-    CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::myTestIsPrimary()");
-  }
+  { CoCoA_THROW_ERROR1(ERR::NYI); }
 
 
   void DenseUPolyRingBase::IdealImpl::myTestIsPrime() const
   {
     if (IamZero())
     { myAssignPrimeFlag(IsIntegralDomain(CoeffRing(myRing()))); return; }
-    if (!IsField(CoeffRing(myP)))
-      CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::myTestIsPrime() non-field CoeffRing");
+    if (!IsField(CoeffRing(myP)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     // The ring is K[x], thus a PID; hence ideal has a single generator.
     CoCoA_ASSERT(len(myTidyGens(NoCpuTimeLimit()))==1);
     const RingElem& f = myTidyGens(NoCpuTimeLimit())[0];
@@ -766,8 +755,7 @@ namespace CoCoA
   // redefine myAssignMaximalFlag etc, for PID
   void DenseUPolyRingBase::IdealImpl::myTestIsRadical() const
   {
-    if (!IsField(CoeffRing(myP)))
-      CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::myTestIsRadical() non-field CoeffRing");
+    if (!IsField(CoeffRing(myP)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     // The ring is K[x], thus a PID; hence ideal has a single generator.
     CoCoA_ASSERT(len(myTidyGens(NoCpuTimeLimit()))==1);
     myAssignRadicalFlag(IsSqFree(myTidyGens(NoCpuTimeLimit())[0]));
@@ -808,9 +796,7 @@ namespace CoCoA
 
 
   void DenseUPolyRingBase::IdealImpl::myMul(const ideal& Jin)
-  {
-    CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::mul");
-  }
+  { CoCoA_THROW_ERROR1(ERR::NYI); }
 
 
   void DenseUPolyRingBase::IdealImpl::myIntersect(const ideal& J)
@@ -823,8 +809,7 @@ namespace CoCoA
       myTidyGensIsValid = true;
       return;
     }
-    if (!IsField(CoeffRing(myP)))
-      CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::intersect non-field CoeffRing");
+    if (!IsField(CoeffRing(myP)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     RingElem f = myTidyGens(NoCpuTimeLimit())[0];
     RingElem g = TidyGens(J)[0];
     //    ideal I(myP, (g*f)/gcd(f,g));
@@ -838,8 +823,7 @@ namespace CoCoA
 
   void DenseUPolyRingBase::IdealImpl::myColon(const ideal& J)
   {
-    if (!IsField(CoeffRing(myP)))
-      CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::colon non-field CoeffRing");
+    if (!IsField(CoeffRing(myP)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     if (IamZero()) return;
     if (IsZero(J))
     {
@@ -861,15 +845,14 @@ namespace CoCoA
 
   bool DenseUPolyRingBase::IdealImpl::myDivMod(RingElemRawPtr /*rawlhs*/, RingElemConstRawPtr /*rawnum*/, RingElemConstRawPtr /*rawden*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::myDivMod");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return false; // just to keep compiler quiet!!
   }
 
 
   const std::vector<RingElem>& DenseUPolyRingBase::IdealImpl::myTidyGens(const CpuTimeLimit& CheckForTimeout) const
   {
-    if (!IsField(CoeffRing(myP)))
-      CoCoA_THROW_ERROR(ERR::NYI, "DenseUPolyRingBase::IdealImpl::myTidyGens non-field CoeffRing");
+    if (!IsField(CoeffRing(myP)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
     if (myTidyGensIsValid) return myTidyGensValue;
     CoCoA_ASSERT(myTidyGensValue.empty());
     RingElem g(myP);
@@ -891,9 +874,8 @@ namespace CoCoA
   {
     DenseUPolyRing DUP(owner(f), CoCoA_ERROR_CONTEXT);
 //    if (!IsDenseUPolyRing(owner(f)))
-//      CoCoA_THROW_ERROR(ERR::BadRing, "coeff(f,d)");
-    if (d < 0)
-      CoCoA_THROW_ERROR(ERR::NegExp, "coeff(f,d);");
+//      CoCoA_THROW_ERROR2(ERR::BadRing, "coeff(f,d)");
+    if (d < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     return DUP->myCoeff(raw(f), AsSignedLong(d));
 //    return DenseUPolyRingPtr(owner(f))->myCoeff(raw(f), AsSignedLong(d));
   }

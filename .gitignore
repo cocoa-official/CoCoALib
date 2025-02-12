@@ -86,3 +86,4 @@ tramp
 !doc/aux-txt2tags/index*.html
 !doc/CoCoATranslationTable.html
 !src/CoCoA-5/CoCoAManual/aux-files/GUI-extra-files/*.html
+src/tests/test-BigInt2

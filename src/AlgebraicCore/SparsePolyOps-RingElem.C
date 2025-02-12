@@ -70,8 +70,8 @@ namespace CoCoA
 
   RingElem monomial(const SparsePolyRing& P, ConstRefRingElem c, ConstRefPPMonoidElem pp)
   {
-    if (owner(c) != CoeffRing(P)) CoCoA_THROW_ERROR(ERR::MixedCoeffRings, "monomial(P,c,pp)");
-    if (owner(pp) != PPM(P)) CoCoA_THROW_ERROR(ERR::MixedPPMs, "monomial(P,c,pp)");
+    if (owner(c) != CoeffRing(P))  CoCoA_THROW_ERROR1(ERR::MixedCoeffRings);
+    if (owner(pp) != PPM(P))  CoCoA_THROW_ERROR1(ERR::MixedPPMs);
     if (IsZero(c)) return zero(P);
     return P->myMonomial(raw(c), raw(pp));
   }
@@ -112,7 +112,7 @@ namespace CoCoA
       return myMonomial(raw(one(myCoeffRing())), raw(myPPM()->mySymbolValue(s)));
     if (AreArityConsistent(syms))
       return myCoeffEmbeddingHomCtor()(myCoeffRing()->mySymbolValue(s));
-    CoCoA_THROW_ERROR(ERR::BadIndetNames, "SparsePolyRingBase::mySymbolValue");
+    CoCoA_THROW_ERROR1(ERR::BadIndetNames);
     return myZero(); // just to keep the compiler quiet
   }
 
@@ -122,10 +122,8 @@ namespace CoCoA
 
     RingElem RandomLinearForm(const ring& P, long lo, long hi)
     {
-      if (!IsSparsePolyRing(P))
-        CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing,"RandomLinearForm");
-      if (lo >= hi)
-        CoCoA_THROW_ERROR("Bad range lo-hi","RandomLinearForm");
+      if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
+      if (lo >= hi)  CoCoA_THROW_ERROR2(ERR::IncompatArgs,"lo >= hi");
       const long nvars = NumIndets(P);
       while (true)
       {
@@ -141,10 +139,8 @@ namespace CoCoA
 
   RingElem RandomLinearForm(const ring& P)
   {
-    const char* fn("RandomLinearForm(P)");
-    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, fn);
-    if (!IsRingFp(CoeffRing(P)))
-      CoCoA_THROW_ERROR("only for coefficient ring = Fp", fn);
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
+    if (!IsRingFp(CoeffRing(P)))  CoCoA_THROW_ERROR2(ERR::BadRing, "only for CoeffRing = Fp");
     return RandomLinearForm(P, 1, ConvertTo<long>(characteristic(P)));
   }
 
@@ -158,36 +154,37 @@ namespace CoCoA
   {
     // inline void CheckCompatible(ConstRefRingElem x, ConstRefRingElem y, const char* const FnName)
     // {
-    //   if (owner(x) != owner(y))  CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+    //   if (owner(x) != owner(y))  CoCoA_THROW_ERROR2(ERR::MixedRings, FnName);
     // }
 
     inline void CheckElemSparsePolyRing(ConstRefRingElem f, const ErrorContext& ErrCtx)
     {
       if (!IsSparsePolyRing(owner(f)))
-        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqSparsePolyRing, ErrCtx);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqElemSparsePolyRing, ErrCtx);
     }
 
     
     // inline void CheckElemSparsePolyRing(ConstRefRingElem f, const char* const FnName)
     // {
-    //   if (!IsSparsePolyRing(owner(f))) CoCoA_THROW_ERROR(ERR::ReqElemSparsePolyRing, FnName);
+    //   if (!IsSparsePolyRing(owner(f))) CoCoA_THROW_ERROR2(ERR::ReqElemSparsePolyRing, FnName);
     // }
 
     
     void CheckCoeffExpv(const SparsePolyRing& P,
                         ConstRefRingElem c, const std::vector<long>& expv,
-                        const char* const FnName)
+                        const ErrorContext& ErrCtx)
     {
-      if (CoeffRing(P) != owner(c))    CoCoA_THROW_ERROR(ERR::MixedCoeffRings, FnName);
-      if (NumIndets(P) != len(expv))   CoCoA_THROW_ERROR(ERR::BadArraySize, FnName);
+      if (CoeffRing(P) != owner(c))  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedCoeffRings, ErrCtx);
+      if (NumIndets(P) != len(expv))  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::IncompatDims, ErrCtx);
     }
+
     
     void CheckCoeffPP(const SparsePolyRing& P,
                       ConstRefRingElem c, ConstRefPPMonoidElem pp,
-                      const char* const FnName)
+                      const ErrorContext& ErrCtx)
     {
-      if (CoeffRing(P) != owner(c))    CoCoA_THROW_ERROR(ERR::MixedCoeffRings, FnName);
-      if (PPM(P) != owner(pp))         CoCoA_THROW_ERROR(ERR::MixedPPMs, FnName);
+      if (CoeffRing(P) != owner(c))  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedCoeffRings, ErrCtx);
+      if (PPM(P) != owner(pp))  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedPPMs, ErrCtx);
     }
   }
   
@@ -196,10 +193,9 @@ namespace CoCoA
   {
     CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing Rx = owner(f);
-    CheckCoeffExpv(Rx, c, expv, "PushFront(f, c, expv)");
+    CheckCoeffExpv(Rx, c, expv, CoCoA_ERROR_CONTEXT);
     PPMonoidElem pp(PPM(Rx), expv);
-    if (!IsZero(f) && pp <= LPP(f))
-      CoCoA_THROW_ERROR(ERR::PPOrder, "PushFront(f, c, expv)");
+    if (!IsZero(f) && pp <= LPP(f))  CoCoA_THROW_ERROR1(ERR::PPOrder);
     Rx->myPushFront(raw(f), raw(c), raw(pp)); // OK 'cos makes a copy of raw(pp)
     return f;
   }
@@ -209,9 +205,8 @@ namespace CoCoA
   {
     CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing Rx = owner(f);
-    CheckCoeffPP(Rx, c, pp, "PushFront(f, c, pp)");
-    if (!IsZero(f) && pp <= LPP(f))
-      CoCoA_THROW_ERROR(ERR::PPOrder, "PushFront(f, c, pp)");
+    CheckCoeffPP(Rx, c, pp, CoCoA_ERROR_CONTEXT);
+    if (!IsZero(f) && pp <= LPP(f))  CoCoA_THROW_ERROR1(ERR::PPOrder);
     Rx->myPushFront(raw(f), raw(c), raw(pp));
     return f;
   }
@@ -221,7 +216,7 @@ namespace CoCoA
   {
     CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing Rx = owner(f);
-    CheckCoeffExpv(Rx, c, expv, "PushBack(f, c, expv)");
+    CheckCoeffExpv(Rx, c, expv, CoCoA_ERROR_CONTEXT);
     PPMonoidElem pp(PPM(Rx), expv);
     Rx->myPushBack(raw(f), raw(c), raw(pp)); // OK 'cos makes a copy of raw(pp)
     return f;
@@ -232,7 +227,7 @@ namespace CoCoA
   {
     CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing Rx = owner(f);
-    CheckCoeffPP(Rx, c, pp, "PushBack(f, c, pp)");
+    CheckCoeffPP(Rx, c, pp, CoCoA_ERROR_CONTEXT);
     Rx->myPushBack(raw(f), raw(c), raw(pp));
     return f;
   }
@@ -241,11 +236,10 @@ namespace CoCoA
   RingElem ClearDenom(const SparsePolyRing& ZZx, const RingElem& f)
   {
     const ring& P = owner(f);
-    if (!IsSparsePolyRing(P) ||
-        !IsFractionField(CoeffRing(P)) ||
-        BaseRing(CoeffRing(P)) != CoeffRing(ZZx) ||
-        PPM(P) != PPM(ZZx))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ClearDenom(NewRing, f)");
+    if (!IsSparsePolyRing(P) || !IsFractionField(CoeffRing(P)) )
+      CoCoA_THROW_ERROR2(ERR::BadRing, "ring of f must be PolyRing over a FractionField");
+    if ( BaseRing(CoeffRing(P)) != CoeffRing(ZZx) || PPM(P) != PPM(ZZx))
+      CoCoA_THROW_ERROR2(ERR::BadRing, "ring of f incompatible with given ZZx");
     const RingElem D = CommonDenom(f);
     RingElem ans(ZZx);
     for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
@@ -279,7 +273,7 @@ namespace CoCoA
 
   long SparsePolyRingBase::myStdDeg(ConstRawPtr rawf) const
   {
-    if (myIsZero(rawf)) CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "myStdDeg(rawf)");
+    if (myIsZero(rawf)) CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     if (IsStdGraded(ordering(myPPM())))
       return deg(PP(myBeginIter(rawf))); // same as deg(LPP(f))
     long PolyDegree = 0;
@@ -291,7 +285,7 @@ namespace CoCoA
 
   long SparsePolyRingBase::myDeg(ConstRawPtr rawf, long index) const
   {
-    if (myIsZero(rawf))  CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "myDeg(rawf, index)");
+    if (myIsZero(rawf))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     if (myNumIndets() == 1)  return deg(PP(myBeginIter(rawf))); // same as deg(LPP(f)), all term-orders are deg compat
     // ???MAYBE: check if 1st row of OrdMat is non-zero only in posn index???
     long res = 0;
@@ -429,7 +423,7 @@ namespace CoCoA
       mySwap(rawlhs, raw(ans));
       return true;
     }
-    if (!IamCommutative()) { CoCoA_THROW_ERROR(ERR::NYI, "SparsePolyRingBase::myDiv non commutative"); }
+    if (!IamCommutative())  CoCoA_THROW_ERROR2(ERR::NYI, "non-commutative case");
     const SparsePolyRing P(this);
     RingElem xCopy(RingElemAlias(P, rawx));
     geobucket gbk(P);
@@ -651,12 +645,12 @@ namespace CoCoA
 
   bool SparsePolyRingBase::myIsZeroDivisor(ConstRawPtr rawx) const
   {
-    if (myIsZero(rawx)) return true;
-    if (IsTrue3(IamIntegralDomain3(true/*quick*/))) return false;
+    if (myIsZero(rawx))  return true;
+    if (IsTrue3(IamIntegralDomain3(true/*quick*/)))  return false;
     if (myIsConstant(rawx)) return myCoeffRing()->myIsZeroDivisor(raw(myLC(rawx)));
-    if (!myCoeffRing()->myIsZeroDivisor(raw(myLC(rawx)))) return false; // LC is not zd
-    CoCoA_THROW_ERROR(ERR::NYI, "SparsePolyRingBase::myIsZeroDivisor when coeffs are not int dom,and LC(poly) is zd ");
-    return true; // just to kep compiler quiet
+    if (!myCoeffRing()->myIsZeroDivisor(raw(myLC(rawx))))  return false; // LC not 0-div
+    CoCoA_THROW_ERROR2(ERR::NYI, "when coeffs are not int dom, and LC(poly) is 0-divisor");
+    return true; // just to keep compiler quiet
   }
 
 
@@ -665,9 +659,8 @@ namespace CoCoA
     // needed for fn immediately after this namespace
     RingElem GCDBySyz(const RingElem& f, const RingElem& g)
     {
-         const vector<ModuleElem> v = gens(SyzOfGens(ideal(f,g)));//syz(vector<RingElem>({f,g})) ???
-     if ( len(v) != 1 ) 
-       CoCoA_THROW_ERROR("Unable to compute GCD", "SparsePolyRingBase::gcd");
+      const vector<ModuleElem> v = gens(SyzOfGens(ideal(f,g)));//syz(vector<RingElem>({f,g})) ???
+      if ( len(v) != 1 )  CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "len syz != 1");
      return f/((v[0])[1]);
     }
   } // end of namespace anonymous
@@ -692,7 +685,7 @@ namespace CoCoA
     if (!IsField(myCoeffRing()))
     {
       if (!IsTrueGCDDomain(myCoeffRing()))
-        CoCoA_THROW_ERROR("NYI gcd of poly with coeffs not in field or TrueGCDDomain", "myGcd");
+        CoCoA_THROW_ERROR2(ERR::NYI, "when coeffs not in field or TrueGCDDomain");
       else
       {
         FractionField K = NewFractionField(myCoeffRing());
@@ -832,7 +825,7 @@ namespace CoCoA
       myNegate(rawden, rawden);
       return;
     }
-    CoCoA_THROW_ERROR(ERR::NYI, "SparsePolyRing::myNormalizeFracNoGcd");
+    CoCoA_THROW_ERROR2(ERR::NYI, "myNormalizeFracNoGcd");
   }
 
 
@@ -910,8 +903,7 @@ namespace CoCoA
   {
     const SparsePolyRing P = owner(f);
     const long nvars = NumIndets(P);
-    if (IsConstant(f))
-      CoCoA_THROW_ERROR("Poly must be non-constant","UnivariateIndetIndex"); // f is constant
+    if (IsConstant(f))  CoCoA_THROW_ERROR2(ERR::BadArg, "Poly must be non-constant");
     if (nvars == 1) return 0; // there is only 1 indet, and f is non-const.
     vector<long> expv = exponents(LPP(f));
     long ans = 0;
@@ -952,7 +944,7 @@ namespace CoCoA
   RingElem IndetsProd(ConstRefRingElem f) // (monomial) prod of indets appearing in f
   {
     const ring& P = owner(f);
-    if (!IsSparsePolyRing(P)) CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "IndetsProd");
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     const vector<long> VarIndices = IndetsIn(f);
     RingElem ans = one(P);
     for (auto k: VarIndices)
@@ -963,7 +955,7 @@ namespace CoCoA
 
   std::vector<long> IndetsIn(ConstRefRingElem f)
   {
-    if (!IsSparsePolyRing(owner(f))) CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "IndetsIn");
+    if (!IsSparsePolyRing(owner(f)))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     const int nvars = NumIndets(owner(f));
 
     // This approach is cleaner but about 10% slower :-(
@@ -1006,25 +998,20 @@ namespace CoCoA
   {
     // SLUG??? simple impl via iterator; might be able to access last term directly via a pointer???
     const ring& P = owner(f);
-    if (!IsSparsePolyRing(P))
-      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "ConstantCoeff(f)");
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
 //???    if (IsZero(f)) return zero(CoeffRing(P));
     for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
-    {
       if (IsOne(PP(it))) return coeff(it);
-    }
     return zero(CoeffRing(P));
   }
 
 
   RingElem ContentWRT(ConstRefRingElem f, const std::vector<long>& indets)
   {
-    if (!IsSparsePolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "ContentWRT(f,indets)");
+    if (!IsSparsePolyRing(owner(f)))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     const SparsePolyRing P = owner(f);
     for (long i=0; i < len(indets); ++i)
-      if (indets[i] < 0 || indets[i] >= NumIndets(P))
-        CoCoA_THROW_ERROR(ERR::BadIndex, "ContentWRT(f,indets)");
+      if (indets[i] < 0 || indets[i] >= NumIndets(P))  CoCoA_THROW_ERROR1(ERR::BadIndex);
 
     const vector<CoeffPP> CoeffList = CoefficientsWRT(f, indets);
     RingElem ans(P);
@@ -1037,11 +1024,9 @@ namespace CoCoA
 
   RingElem ContentWRT(ConstRefRingElem f, ConstRefRingElem x)
   {
-    if (owner(f) != owner(x))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ContentWRT(f,x)");
+    if (owner(f) != owner(x))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     vector<long> indices(1);
-    if (!IsIndet(indices[0], x))
-      CoCoA_THROW_ERROR(ERR::ReqIndet, "ContentWRT(f,x)");
+    if (!IsIndet(indices[0], x))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
     return ContentWRT(f, indices);
   }
 
@@ -1053,8 +1038,7 @@ namespace // anonymous for file local defns
   {
     RatReconstructByContFrac reconstructor; // default ctor arg
     reconstructor.myAddInfo(X, M);
-    if (!IsConvincing(reconstructor))
-      CoCoA_THROW_ERROR(ERR::CannotReconstruct, "RatReconstruct");
+    if (!IsConvincing(reconstructor))  CoCoA_THROW_ERROR1(ERR::CannotReconstruct);
     // std::cout << " rat = " << ReconstructedRat(reconstructor) << std::endl;
     return ReconstructedRat(reconstructor);
   }
@@ -1063,7 +1047,8 @@ namespace // anonymous for file local defns
   BigInt AsINT(ConstRefRingElem c)
   {
     BigInt i;
-    if (!IsInteger(i, c)) CoCoA_THROW_ERROR("not integer", "AsINT");
+    if (!IsInteger(i, c))
+      CoCoA_THROW_ERROR2(ERR::BadArg, "value of c must be an integer");
     return i;
   }
 
@@ -1092,8 +1077,7 @@ namespace // anonymous for file local defns
   {
     const SparsePolyRing P = owner(f1);
     RingElem ans(P);
-    if (!IsQQ(CoeffRing(P)))
-      CoCoA_THROW_ERROR("reconstruction only into QQ","RatReconstructPoly");
+    if (!IsQQ(CoeffRing(P)))  CoCoA_THROW_ERROR2(ERR::BadRing, "reconstruction only into QQ");
     SparsePolyIter it1 = BeginIter(f1);
     SparsePolyIter it2 = BeginIter(f2);
     const BigInt Zero;
@@ -1130,8 +1114,7 @@ namespace // anonymous for file local defns
   RingElem RatReconstructPoly(ConstRefRingElem fCRT, const BigInt& modulus)
   {
     const SparsePolyRing P(owner(fCRT));
-    if (!IsQQ(CoeffRing(P)))
-      CoCoA_THROW_ERROR("reconstruction only into QQ","RatReconstructPoly");
+    if (!IsQQ(CoeffRing(P)))  CoCoA_THROW_ERROR2(ERR::BadRing, "reconstruction only into QQ");
     RingElem f(P);
     for (SparsePolyIter it = BeginIter(fCRT); !IsEnded(it); ++it)
       f += monomial(P, RatReconstruct(AsINT(coeff(it)), modulus), PP(it));
@@ -1142,12 +1125,9 @@ namespace // anonymous for file local defns
   //--- move to PolyOps-RingElem.C ???
   RingElem CoeffHeight(ConstRefRingElem f)
   {
-    const char* const FnName = "CoeffHeight";
     const ring& P = owner(f);
-    if (!IsPolyRing(P))
-      CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName);
-    if (!IsOrderedDomain(CoeffRing(P)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, FnName);
+    if (!IsPolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
+    if (!IsOrderedDomain(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     RingElem ans = zero(CoeffRing(P));
     // Loop below makes wasteful copies of the coeffs.
     for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
@@ -1165,11 +1145,9 @@ namespace // anonymous for file local defns
   bool IsPalindromic(ConstRefRingElem f)
   {
     const ring& Rx = owner(f);
-    if (!IsSparsePolyRing(Rx))
-      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "IsPalindromic");
+    if (!IsSparsePolyRing(Rx))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     if (IsConstant(f)) return true;
-    if (UnivariateIndetIndex(f) < 0)
-      CoCoA_THROW_ERROR(ERR::ReqUnivariate, "IsPalindromic");
+    if (UnivariateIndetIndex(f) < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const long n = NumTerms(f);
     if (n == 1 || IsZero(ConstantCoeff(f))) return false;
     const long degf = deg(f);
@@ -1207,19 +1185,17 @@ namespace // anonymous for file local defns
   RingElem reverse(ConstRefRingElem f)
   {
     const ring& P = owner(f);
-    if (!IsSparsePolyRing(P))
-      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "reverse");
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     if (IsZero(f)) return f;
-    if (UnivariateIndetIndex(f) < 0)
-      CoCoA_THROW_ERROR(ERR::ReqUnivariate, "reverse");
+    if (UnivariateIndetIndex(f) < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     return reverse(f, LPP(f));
   }
 
+  
   RingElem reverse(ConstRefRingElem f, ConstRefPPMonoidElem t)
   {
     const SparsePolyRing P = owner(f);
-    if (!IsSparsePolyRing(P))
-      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "reverse");
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     if (IsZero(f)) return f;
     RingElem ans = zero(P);
     for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
@@ -1236,12 +1212,11 @@ namespace // anonymous for file local defns
   {
     const SparsePolyRing P(owner(f), CoCoA_ERROR_CONTEXT);
 ////    if (!IsSparsePolyRing(P))
-////      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "graeffe");
+////      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsZero(f))  return f;
     if (deg(f) == 0)  return one(P); //?????
     const long IndetIndex = UnivariateIndetIndex(f);
-    if (IndetIndex < 0)
-      CoCoA_THROW_ERROR(ERR::ReqUnivariate, "graeffe");
+    if (IndetIndex < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     PPMonoidElem pp = indet(PPM(P),IndetIndex);
     RingElem EvenPart(P);
     RingElem OddPart(P);
@@ -1267,12 +1242,10 @@ namespace // anonymous for file local defns
   RingElem graeffe3(ConstRefRingElem f)
   {
     const ring& P = owner(f);
-    if (!IsSparsePolyRing(P))
-      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "graeffe");
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsZero(f)) return f;
     const long IndetIndex = UnivariateIndetIndex(f);
-    if (IndetIndex < 0)
-      CoCoA_THROW_ERROR(ERR::ReqUnivariate, "graeffe");
+    if (IndetIndex < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
 
     PPMonoidElem pp = indet(PPM(P),IndetIndex);
     vector<RingElem> part(3, zero(P));

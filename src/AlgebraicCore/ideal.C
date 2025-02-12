@@ -66,8 +66,7 @@ namespace CoCoA
     vector<RingElem> gens;
     gens.push_back(RingElem(r1));
     gens.push_back(RingElem(r2));
-    if (!HasUniqueOwner(gens))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ideal(r1, r2)");
+    if (!HasUniqueOwner(gens))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal tmp = owner(r1)->myIdealCtor(gens);
     myPtr = tmp.myPtr;
     myPtr->myRefCountInc();
@@ -80,8 +79,7 @@ namespace CoCoA
     gens.push_back(RingElem(r1));
     gens.push_back(RingElem(r2));
     gens.push_back(RingElem(r3));
-    if (!HasUniqueOwner(gens))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ideal(r1, r2, r3)");
+    if (!HasUniqueOwner(gens))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal tmp = owner(r1)->myIdealCtor(gens);
     myPtr = tmp.myPtr;
     myPtr->myRefCountInc();
@@ -95,8 +93,7 @@ namespace CoCoA
     gens.push_back(RingElem(r2));
     gens.push_back(RingElem(r3));
     gens.push_back(RingElem(r4));
-    if (!HasUniqueOwner(gens))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ideal(r1, r2, r3, r4)");
+    if (!HasUniqueOwner(gens))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal tmp = owner(r1)->myIdealCtor(gens);
     myPtr = tmp.myPtr;
     myPtr->myRefCountInc();
@@ -106,7 +103,7 @@ namespace CoCoA
   ideal::ideal(const std::vector<RingElem>& gens)
   {
     if (gens.empty()) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
-    if (!HasUniqueOwner(gens)) CoCoA_THROW_ERROR(ERR::MixedRings, "ideal(gens)");
+    if (!HasUniqueOwner(gens))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal tmp = owner(gens[0])->myIdealCtor(gens);
     myPtr = tmp.myPtr;
     myPtr->myRefCountInc();
@@ -117,7 +114,7 @@ namespace CoCoA
   {
     if (!gens.empty())
       if (owner(gens[0]) != R || !HasUniqueOwner(gens))
-        CoCoA_THROW_ERROR(ERR::MixedRings, "ideal(R, gens)");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal tmp = R->myIdealCtor(gens);
     myPtr = tmp.myPtr;
     myPtr->myRefCountInc();
@@ -187,8 +184,7 @@ namespace CoCoA
 
   RingElem operator%(ConstRefRingElem r, const ideal& I)
   {
-    if (owner(r) != RingOf(I))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "r%I  -- reduction of RingElem modulo an ideal");
+    if (owner(r) != RingOf(I))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     RingElem ans(r);
     I->myReduceMod(raw(ans));
     return ans;
@@ -198,8 +194,7 @@ namespace CoCoA
   // Two separate impls in case ring is not commutative
   ideal operator*(ConstRefRingElem r, const ideal& I)
   {
-    if (owner(r) != RingOf(I))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "r*I, product of RingElem and ideal");
+    if (owner(r) != RingOf(I))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (IsZero(r)) return ideal(r);
     if (IsInvertible(r)) return I;
     vector<RingElem> g = gens(I);
@@ -211,8 +206,7 @@ namespace CoCoA
 
   ideal operator*(const ideal& I, ConstRefRingElem r)
   {
-    if (owner(r) != RingOf(I))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "I*r, product of ideal and RingElem");
+    if (owner(r) != RingOf(I))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (IsZero(r)) return ideal(r);
     if (IsInvertible(r)) return I;
     vector<RingElem> g = gens(I);
@@ -225,8 +219,7 @@ namespace CoCoA
 
   ideal operator+(const ideal& I, const ideal& J)
   {
-    if (RingOf(I) != RingOf(J))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ideal+ideal");
+    if (RingOf(I) != RingOf(J))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal ans(I);
     MakeUnique(ans)->myAdd(J);
     return ans;
@@ -235,8 +228,7 @@ namespace CoCoA
 
   ideal& operator+=(ideal& I, const ideal& J)
   {
-    if (RingOf(I) != RingOf(J))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ideal+=ideal");
+    if (RingOf(I) != RingOf(J))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     MakeUnique(I)->myAdd(J);
     return I;
   }
@@ -244,8 +236,7 @@ namespace CoCoA
 
   ideal operator*(const ideal& I, const ideal& J)
   {
-    if (RingOf(I) != RingOf(J))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ideal*ideal");
+    if (RingOf(I) != RingOf(J))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal ans(I);
     MakeUnique(ans)->myMul(J);
     return ans;
@@ -254,8 +245,7 @@ namespace CoCoA
 
   ideal& operator*=(ideal& I, const ideal& J)
   {
-    if (RingOf(I) != RingOf(J))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "ideal*=ideal");
+    if (RingOf(I) != RingOf(J))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     MakeUnique(I)->myMul(J);
     return I;
   }
@@ -264,7 +254,7 @@ namespace CoCoA
   ideal power(const ideal& I, const MachineInt& n)
   {
     const ring R = RingOf(I);
-    if (IsNegative(n)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "power(I,n)");
+    if (IsNegative(n))  CoCoA_THROW_ERROR1(ERR::NegExp);
     unsigned long N = AsUnsignedLong(n);
     if (N == 0) return ideal(one(R));
 
@@ -284,7 +274,7 @@ namespace CoCoA
   ideal power(const ideal& I, const BigInt& N)
   {
     long n;
-    if (!IsConvertible(n, N)) CoCoA_THROW_ERROR(ERR::ExpTooBig, "power(I,N)");
+    if (!IsConvertible(n, N))  CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     return power(I, n);
   }
 
@@ -292,8 +282,7 @@ namespace CoCoA
   ///// ideal intersection(const ideal& I, const ideal& J)
  ideal intersect(const ideal& I, const ideal& J)
   {
-    if (RingOf(I) != RingOf(J))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "intersect(ideal,ideal)");
+    if (RingOf(I) != RingOf(J))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (IsZero(I) || IsZero(J))
       return ideal(RingOf(I), vector<RingElem>(0));
     // case IsOne in general can be very expensive
@@ -305,8 +294,7 @@ namespace CoCoA
 
   ideal colon(const ideal& I, const ideal& J)
   {
-    if (RingOf(I) != RingOf(J))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "colon(ideal,ideal)");
+    if (RingOf(I) != RingOf(J))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal ans(I);
     MakeUnique(ans)->myColon(J);
     return ans;
@@ -316,8 +304,7 @@ namespace CoCoA
   ///  ideal saturation(const ideal& I, const ideal& J)
   ideal saturate(const ideal& I, const ideal& J)
   {
-    if (RingOf(I) != RingOf(J))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "saturate(ideal,ideal)");
+    if (RingOf(I) != RingOf(J))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     ideal ans(I);
     MakeUnique(ans)->mySaturate(J);
     return ans;
@@ -343,7 +330,7 @@ namespace CoCoA
 
   bool IsElem(ConstRefRingElem r, const ideal& I)
   {
-    if (owner(r) != RingOf(I)) CoCoA_THROW_ERROR(ERR::MixedRings, "IsElem(r, I)");
+    if (owner(r) != RingOf(I))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return I->IhaveElem(raw(r));
   }
 
@@ -388,7 +375,7 @@ namespace CoCoA
 
   bool IdealBase::IamMaximal() const
   {
-    if (IamOne()) CoCoA_THROW_ERROR("Must be a proper ideal", "IamMaximal");
+    if (IamOne())  CoCoA_THROW_ERROR2(ERR::BadArg, "Must be a proper ideal");
     if (IsUncertain3(IamMaximal3Flag))  myTestIsMaximal();
     CoCoA_ASSERT_ALWAYS(!IsUncertain3(IamMaximal3Flag)); // paranoia2020
     return IsTrue3(IamMaximal3Flag);
@@ -397,7 +384,7 @@ namespace CoCoA
 
   bool IdealBase::IamPrimary() const
   {
-    if (IamOne()) CoCoA_THROW_ERROR("Must be a proper ideal", "IamPrimary");
+    if (IamOne())  CoCoA_THROW_ERROR2(ERR::BadArg, "Must be a proper ideal");
     if (IsUncertain3(IamPrimary3Flag))  myTestIsPrimary();
     CoCoA_ASSERT_ALWAYS(!IsUncertain3(IamPrimary3Flag)); // paranoia2020
     return IsTrue3(IamPrimary3Flag);
@@ -406,7 +393,7 @@ namespace CoCoA
 
   bool IdealBase::IamPrime() const
   {
-    if (IamOne()) CoCoA_THROW_ERROR("Must be a proper ideal", "IamPrime");
+    if (IamOne())  CoCoA_THROW_ERROR2(ERR::BadArg, "Must be a proper ideal");
     if (IsUncertain3(IamPrime3Flag))  myTestIsPrime();
     CoCoA_ASSERT_ALWAYS(!IsUncertain3(IamPrime3Flag)); // paranoia2020
     return IsTrue3(IamPrime3Flag);
@@ -415,7 +402,7 @@ namespace CoCoA
 
   bool IdealBase::IamRadical() const
   {
-    if (IamOne()) CoCoA_THROW_ERROR("Must be a proper ideal", "IamRadical");
+    if (IamOne())  CoCoA_THROW_ERROR2(ERR::BadArg, "Must be a proper ideal");
     if (IsUncertain3(IamRadical3Flag))  myTestIsRadical();
     CoCoA_ASSERT_ALWAYS(!IsUncertain3(IamRadical3Flag)); // paranoia2020
     return IsTrue3(IamRadical3Flag);
@@ -429,7 +416,7 @@ namespace CoCoA
     if (!IsUncertain3(IamMaximal3Flag))
     {
       if ( IsTrue3(IamMaximal3Flag) != b )
-        CoCoA_THROW_ERROR("Contradictory user assertion", "myAssignMaximalFlag");
+        CoCoA_THROW_ERROR2(ERR::IncompatArgs, "Contradictory user assertion");
       return b;
     }
     if (b)
@@ -451,7 +438,7 @@ namespace CoCoA
     if (!IsUncertain3(IamPrimary3Flag))
     {
       if ( IsTrue3(IamPrimary3Flag) != b )
-        CoCoA_THROW_ERROR("Contradictory user assertion", "myAssignPrimaryFlag");
+        CoCoA_THROW_ERROR2(ERR::IncompatArgs, "Contradictory user assertion");
       return b;
     }
     if (b) // user asserts  primary true
@@ -470,7 +457,7 @@ namespace CoCoA
     if (!IsUncertain3(IamPrime3Flag))
     {
       if ( IsTrue3(IamPrime3Flag) != b )
-        CoCoA_THROW_ERROR("Contradictory user assertion", "myAssignPrimeFlag");
+        CoCoA_THROW_ERROR2(ERR::IncompatArgs, "Contradictory user assertion");
       return b;
     }
     if (b) // user asserts  prime true
@@ -494,7 +481,7 @@ namespace CoCoA
     if (!IsUncertain3(IamRadical3Flag))
     {
       if ( IsTrue3(IamRadical3Flag) != b )
-        CoCoA_THROW_ERROR("Contradictory user assertion", "myAssignRadicalFlag");
+        CoCoA_THROW_ERROR2(ERR::IncompatArgs, "Contradictory user assertion");
       return b;
     }
     if (b) // user asserts  radical true
@@ -541,27 +528,30 @@ namespace CoCoA
   //--- member functions only for SparsePolyRing ---------------------------
   // ideal IdealBase::myElim(const std::vector<RingElem>& /*v*/)
   // { // default implementation
-  //   CoCoA_THROW_ERROR(ERR::NYI, "myElim (only for SparsePolyRing)");
+  //   CoCoA_THROW_ERROR2(ERR::NYI, "myElim (only for SparsePolyRing)");
   // }
 
   void IdealBase::myAssignElim(const ideal& /*I*/, const std::vector<RingElem>& /*v*/)
   { // default implementation
-    CoCoA_THROW_ERROR(ERR::NYI, "myAssignElim (only for SparsePolyRing)");
+    CoCoA_THROW_ERROR2(ERR::NYI, "general case");
   }
 
+  
   void IdealBase::mySaturate(const ideal& /*v*/)
   { // default implementation
-    CoCoA_THROW_ERROR(ERR::NYI, "myElim (only for SparsePolyRing)");
+    CoCoA_THROW_ERROR2(ERR::NYI, "general case");
   }
 
+  
   void IdealBase::myMinimalize()
   { // default implementation
-    CoCoA_THROW_ERROR(ERR::NYI, "myMinimalize (only for SparsePolyRing)");
+    CoCoA_THROW_ERROR2(ERR::NYI, "general case");
   }
 
+  
   std::vector<ideal> IdealBase::myPrimaryDecomposition() const
   { // default implementation
-    CoCoA_THROW_ERROR(ERR::NYI, "myPrimaryDecomposition (only for SparsePolyRing)");
+    CoCoA_THROW_ERROR2(ERR::NYI, "general case");
     return std::vector<ideal>(); // just to keep the compiler quiet
   }
 

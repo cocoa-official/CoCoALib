@@ -204,7 +204,7 @@ namespace CoCoA
     DEFINE_ERROR(GlobalManager1, "You must create a GlobalManager object before using CoCoALib features");
     DEFINE_ERROR(GlobalManager2, "Attempt to create more than one GlobalManager object");
     DEFINE_ERROR(IdealNotInRing, "Incompatible ring and ideal: ideal is not in the given ring");
-    DEFINE_ERROR(IncompatArgs, "Args given are incompatible");
+    DEFINE_ERROR(IncompatArgs, "Incompatible arguments");
     DEFINE_ERROR(IncompatDims, "Incompatible dimensions");
     DEFINE_ERROR(InputFail, "An input operation failed (e.g. premature EOF or wrong type of input)");
     DEFINE_ERROR(InsuffPrec, "RingTwinFloat: insufficient precision (e.g. error growth impedes further computation)");
@@ -231,7 +231,7 @@ namespace CoCoA
     DEFINE_ERROR(NotElemGCDDomain, "RingElem is not in a GCD domain");
     DEFINE_ERROR(ReqElemPolyRing, "RingElem is not in a polynomial ring");
     DEFINE_ERROR(NotElemQuotientRing, "RingElem is not in quotient ring");
-    DEFINE_ERROR(ReqElemSparsePolyRing, "RingElem is not in a sparse polynomial ring");
+    DEFINE_ERROR(ReqElemSparsePolyRing, "RingElem is not in a polynomial ring"); // = ReqElemPolyRing
     DEFINE_ERROR(ReqFGModule, "Module must be FGModule, but is not");
     DEFINE_ERROR(ReqField, "Ring must be a field");
     DEFINE_ERROR(NotFracField, "Ring must be a FractionField");
