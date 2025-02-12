@@ -660,7 +660,7 @@ namespace CoCoA
 //   bool DenseUPolyRingBase::myIsHomog(ConstRawPtr rawf) const
 //   {
 //     if (myIsConstant(rawf)) { return true; }
-//     CoCoA_THROW_ERROR2(ERR::NYI, "DenseUPolyRingBase::myIsHomog(ConstRawPtr)");
+//     CoCoA_THROW_ERROR1(ERR::NYI);
 //     return true;
 //   }
 
