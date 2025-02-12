@@ -231,7 +231,7 @@ namespace CoCoA
     DEFINE_ERROR(NotElemGCDDomain, "RingElem is not in a GCD domain");
     DEFINE_ERROR(ReqElemPolyRing, "RingElem is not in a polynomial ring");
     DEFINE_ERROR(NotElemQuotientRing, "RingElem is not in quotient ring");
-    DEFINE_ERROR(ReqElemSparsePolyRing, "RingElem is not in a sparse polynomial ring");
+    DEFINE_ERROR(ReqElemSparsePolyRing, "RingElem is not in a polynomial ring"); // = ReqElemPolyRing
     DEFINE_ERROR(ReqFGModule, "Module must be FGModule, but is not");
     DEFINE_ERROR(ReqField, "Ring must be a field");
     DEFINE_ERROR(NotFracField, "Ring must be a FractionField");

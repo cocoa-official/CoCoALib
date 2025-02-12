@@ -1145,7 +1145,7 @@ namespace // anonymous for file local defns
   bool IsPalindromic(ConstRefRingElem f)
   {
     const ring& Rx = owner(f);
-    if (!IsSparsePolyRing(Rx))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
+    if (!IsSparsePolyRing(Rx))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     if (IsConstant(f)) return true;
     if (UnivariateIndetIndex(f) < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const long n = NumTerms(f);
@@ -1185,7 +1185,7 @@ namespace // anonymous for file local defns
   RingElem reverse(ConstRefRingElem f)
   {
     const ring& P = owner(f);
-    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     if (IsZero(f)) return f;
     if (UnivariateIndetIndex(f) < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     return reverse(f, LPP(f));
@@ -1195,7 +1195,7 @@ namespace // anonymous for file local defns
   RingElem reverse(ConstRefRingElem f, ConstRefPPMonoidElem t)
   {
     const SparsePolyRing P = owner(f);
-    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
+    if (!IsSparsePolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqElemSparsePolyRing);
     if (IsZero(f)) return f;
     RingElem ans = zero(P);
     for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
