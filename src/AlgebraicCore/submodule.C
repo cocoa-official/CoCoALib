@@ -105,7 +105,7 @@ namespace CoCoA
 
 //   ideal::ideal(const std::vector<RingElem>& gens)
 //   {
-//     if (gens.empty()) CoCoA_THROW_ERROR2(ERR::ReqNonEmpty);
+//     if (gens.empty()) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
 //     if (!HasUniqueOwner(gens)) CoCoA_THROW_ERROR1(ERR::MixedRings);
 //     ideal tmp = owner(gens[0])->myIdealCtor(gens);
 //     myPtr = tmp.myPtr;
