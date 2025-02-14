@@ -90,89 +90,65 @@ namespace CoCoA
       myDenom(Mdenom)
   {
     if (AmbientFreeModule(Mnumer) != AmbientFreeModule(Mdenom))
-      CoCoA_THROW_ERROR("Modules reside in different ambient free modules", "QuotientModule ctor");
+      CoCoA_THROW_ERROR2(ERR::MixedModules, "FreeModule of modules is different");
     //??????? MISSING CODE  inherit gens of Mnumer directly??
     myRefCountZero();
   }
 
 
   long QuotientModuleImpl::myNumCompts() const
-  {
-    return NumCompts(myM);
-  }
+  { return NumCompts(myM); }
 
 
   const ring& QuotientModuleImpl::myRing() const
-  {
-    return RingOf(myM);
-  }
+  { return RingOf(myM); }
 
 
   const FreeModule& QuotientModuleImpl::myAmbientFreeModule() const
-  {
-    return myM;
-  }
+  { return myM; }
 
 
   const vector<ModuleElem>& QuotientModuleImpl::myGens() const
-  {
-    return myGensArray;
-  }
+  { return myGensArray; }
 
 
   const vector<ModuleElem>& QuotientModuleImpl::myMinGens(const CpuTimeLimit& /*CheckForTimeout*/) const
   {
-//    if (!IsSparsePolyRing(myRing()))
-//      CoCoA_THROW_ERROR(ERR::NotSparsePolyRing, "QuotientModuleImpl::myMinGens()");
-    CoCoA_THROW_ERROR(ERR::NYI, "QuotientModuleImpl::myMinGens");
+//  if (!IsSparsePolyRing(myRing()))  CoCoA_THROW_ERROR1(ERR::NotSparsePolyRing);
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return myGensArray;
   }
 
 
   const vector<ModuleElem>& QuotientModuleImpl::myTidyGens(const CpuTimeLimit& /*CheckForTimeout*/) const
   {
-    if (!myTidyGensIsValid)
-    {
-      CoCoA_THROW_ERROR(ERR::NYI, "QuotientModuleImpl::myTidyGens");
-    }
+    if (!myTidyGensIsValid)  CoCoA_THROW_ERROR1(ERR::NYI);
     return myGensArray;
   }
 
 
   const ModuleElem& QuotientModuleImpl::myZero() const
-  {
-    return zero(myM);
-  }
+  { return zero(myM); }
 
 
   void QuotientModuleImpl::myNew(RawPtr& rawv) const
-  {
-    myM->myNew(rawv);
-  }
+  { myM->myNew(rawv); }
 
 
   void QuotientModuleImpl::myNew(RawPtr& rawv, ConstRawPtr rawcopy) const
-  {
-    myM->myNew(rawv, rawcopy);
-  }
+  { myM->myNew(rawv, rawcopy); }
 
 
   void QuotientModuleImpl::myDelete(RawPtr& rawv) const
-  {
-    myM->myDelete(rawv);
-  }
+  { myM->myDelete(rawv); }
 
 
   void QuotientModuleImpl::mySwap(RawPtr& rawv, RawPtr& raww) const
-  {
-    myM->mySwap(rawv, raww);
-  }
+  { myM->mySwap(rawv, raww); }
 
 
   void QuotientModuleImpl::myAssign(RawPtr& rawlhs, ConstRawPtr rawv) const
-  {
-    myM->myAssign(rawlhs, rawv);
-  }
+  { myM->myAssign(rawlhs, rawv); }
 
 
   ConstRefRingElem QuotientModuleImpl::myCompt(const RawPtr& rawv, long pos) const
@@ -182,37 +158,23 @@ namespace CoCoA
   }
 
   void QuotientModuleImpl::myNegate(RawPtr& rawlhs, ConstRawPtr rawv) const
-  {
-    myM->myNegate(rawlhs, rawv);
-  }
+  { myM->myNegate(rawlhs, rawv); }
 
 
   void QuotientModuleImpl::myAdd(RawPtr& rawlhs, ConstRawPtr rawv, ConstRawPtr raww) const
-  {
-    myM->myAdd(rawlhs, rawv, raww);
-    //??? reduce module Mdenom
-  }
+  { myM->myAdd(rawlhs, rawv, raww); } //??? reduce module Mdenom
 
 
   void QuotientModuleImpl::mySub(RawPtr& rawlhs, ConstRawPtr rawv, ConstRawPtr raww) const
-  {
-    myM->mySub(rawlhs, rawv, raww);
-    //??? reduce module Mdenom
-  }
+  { myM->mySub(rawlhs, rawv, raww); } //??? reduce module Mdenom
 
 
   void QuotientModuleImpl::myMul(RawPtr& rawlhs, RingElemConstRawPtr rawx, ConstRawPtr rawv) const
-  {
-    myM->myMul(rawlhs, rawx, rawv);
-    //??? reduce module Mdenom
-  }
+  { myM->myMul(rawlhs, rawx, rawv); } //??? reduce module Mdenom
 
 
   void QuotientModuleImpl::myDiv(RawPtr& rawlhs, RingElemConstRawPtr rawx, ConstRawPtr rawv) const
-  {
-    myM->myDiv(rawlhs, rawx, rawv);
-    //??? reduce module Mdenom
-  }
+  { myM->myDiv(rawlhs, rawx, rawv); } //??? reduce module Mdenom
 
 
   void QuotientModuleImpl::myOutput(ostream& out, ConstRawPtr rawv) const
@@ -253,24 +215,18 @@ namespace CoCoA
 
 
   bool QuotientModuleImpl::myIsZero(ConstRawPtr rawv) const
-  {
-    return myM->myIsZero(rawv);
-  }
+  { return myM->myIsZero(rawv); }
 
 
 //???    bool IsZeroAddMul(RawPtr& rawlhs, RingElemConstRawPtr rawy, ConstRawPtr rawz) const;  // lhs += y*z, result says whether lhs == 0.
 
 
   bool QuotientModuleImpl::myIsEqual(ConstRawPtr rawv, ConstRawPtr raww) const
-  {
-    return myM->myIsEqual(rawv, raww);
-  }
+  { return myM->myIsEqual(rawv, raww); }
 
 
   FGModule NewQuotientModule(const FGModule& Mnumer, const FGModule& Mdenom)
-  {
-    return FGModule(new QuotientModuleImpl(Mnumer, Mdenom));
-  }
+  { return FGModule(new QuotientModuleImpl(Mnumer, Mdenom)); }
 
 
 }  // end of namespace CoCoA
