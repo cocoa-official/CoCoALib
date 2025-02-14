@@ -90,7 +90,7 @@ namespace CoCoA
       myDenom(Mdenom)
   {
     if (AmbientFreeModule(Mnumer) != AmbientFreeModule(Mdenom))
-      CoCoA_THROW_ERROR2(ERR::MixedModules, "AMBIENT FreeModules are different");
+      CoCoA_THROW_ERROR2(ERR::MixedModules, "Ambient FreeModules are different");
     //??????? MISSING CODE  inherit gens of Mnumer directly??
     myRefCountZero();
   }
