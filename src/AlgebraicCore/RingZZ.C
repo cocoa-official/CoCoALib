@@ -120,7 +120,7 @@ namespace CoCoA
     BigInt myCeil(ConstRawPtr rawx) const override;                                // identity fn
     BigInt myNearestInt(ConstRawPtr rawx) const override;                          // identity fn
 
-    RingElem mySymbolValue(const symbol& /*sym*/) const override  {CoCoA_THROW_ERROR("This ring has no symbols", "RingZZImpl::mySymbolValue"); return myZero();}
+    RingElem mySymbolValue(const symbol& /*sym*/) const override {CoCoA_THROW_ERROR2(ERR::BadRing, "This ring has no symbols: RingZZImpl"); return myZero();}
     ideal myIdealCtor(const std::vector<RingElem>& gens) const override;
 
     RingHom myCompose(const RingHom& phi, const RingHom& theta) const override; // phi(theta(...))
@@ -222,7 +222,7 @@ namespace CoCoA
 
   const ring& RingZZImpl::myBaseRing() const
   {
-    CoCoA_THROW_ERROR(ERR::BadRing, "BaseRing");
+    CoCoA_THROW_ERROR2(ERR::BadRing, "ZZ");
     return RingZZ();
   }
 
@@ -358,7 +358,7 @@ namespace CoCoA
 
   void RingZZImpl::myRecvTwinFloat(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingZZImpl::myRecvTwinFloat");
+    CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "RingZZImpl");
   }
 
   void RingZZImpl::myNegate(RawPtr rawlhs, ConstRawPtr rawx) const
@@ -410,7 +410,7 @@ namespace CoCoA
   bool RingZZImpl::myIsIrred(ConstRawPtr rawx) const
   {
     CoCoA_ASSERT(!myIsZero(rawx));
-//    if (myIsZero(rawx)) CoCoA_THROW_ERROR(ERR::ZeroRingElem, "IsIrred");
+//    if (myIsZero(rawx)) CoCoA_THROW_ERROR1(ERR::ZeroRingElem);
     return IsPrime(abs(BigIntFromMPZ(import(rawx))));
   }
 
@@ -533,7 +533,7 @@ namespace CoCoA
   {
     long exp;
     d = mpz_get_d_2exp(&exp, import(rawx)); // BUG, ignore possible overflow in exp
-    if (numeric_limits<double>::radix != 2) CoCoA_THROW_ERROR(ERR::NYI, "RingZZImpl::myIsDouble");
+    if (numeric_limits<double>::radix != 2) CoCoA_THROW_ERROR2(ERR::NYI, "RingZZImpl");
     if (exp < numeric_limits<double>::min_exponent) { d=0; return true; }  // ???false also for underflow???
     if (exp > numeric_limits<double>::max_exponent) return false;
     d = ldexp(d,exp);
@@ -701,7 +701,6 @@ namespace CoCoA
   void RingZZImpl::IdealImpl::myMul(const ideal& J)
   {
     if (IamZero()) return;
-    //    CoCoA_THROW_ERROR(ERR::NYI, "RingZZImpl::IdealImpl::mul");
     if (IsZero(J)) { myGensValue.clear(); myTidyGensValue.clear(); IamPrime3Flag = true3; IamMaximal3Flag = false3; return; }
     const IdealImpl* J1 = GetPtr(J);
     myTidyGensValue[0] = myTidyGensValue[0]*J1->myTidyGensValue[0];
@@ -755,7 +754,7 @@ namespace CoCoA
 //2013-06-15    BigInt quo, rem;
 //2013-06-15    mpz_fdiv_qr(mpzref(quo), mpzref(rem), import(rawnum), mpzref(g));
 //2013-06-15    if (!IsZero(rem)) { ZZ->myAssignZero(rawlhs); return; }
-//???    if (!CoCoA::IsZero(rem)) CoCoA_THROW_ERROR(ERR::DivByZero, "RingZZImpl::IdealImpl::inverse");
+//???    if (!CoCoA::IsZero(rem)) CoCoA_THROW_ERROR2(ERR::DivByZero, "RingZZImpl::IdealImpl");
 //2013-06-15    mpz_mul(import(rawlhs), mpzref(quo), mpzref(RecipDen));
     mpz_mul(mpzref(junk), import(rawnum), mpzref(RecipDen));
     mpz_mod(import(rawlhs), mpzref(junk), mpzref(m));
@@ -782,7 +781,7 @@ namespace CoCoA
 
 
   void RingZZImpl::IdealImpl::myTestIsPrimary() const
-  { CoCoA_THROW_ERROR(ERR::NYI, "myTestIsPrimary ZZ"); }
+  { CoCoA_THROW_ERROR2(ERR::NYI, "myTestIsPrimary ZZ"); }
 
 
   void RingZZImpl::IdealImpl::myTestIsPrime() const
@@ -790,7 +789,7 @@ namespace CoCoA
 
 
   void RingZZImpl::IdealImpl::myTestIsRadical() const
-  { CoCoA_THROW_ERROR(ERR::NYI, "myTestIsRadical ZZ"); }
+  { CoCoA_THROW_ERROR2(ERR::NYI, "myTestIsRadical ZZ"); }
 
 
   //---------------------------------------------------------------------------
@@ -802,8 +801,7 @@ namespace CoCoA
 
   const ring& RingZZ()
   {
-    if (GlobalManager::ourGlobalDataPtr == nullptr)
-      CoCoA_THROW_ERROR(ERR::NoGlobalMgr, "RingZZ()");
+    if (GlobalManager::ourGlobalDataPtr == nullptr)  CoCoA_THROW_ERROR1(ERR::NoGlobalMgr);
     return GlobalManager::ourGlobalDataPtr->myRingZZ();
   }
 

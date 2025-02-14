@@ -98,16 +98,15 @@ namespace CoCoA
   {
     CoCoA_ASSERT(IsFreeModule(M));
     for (long i=0; i < len(gens); ++i)
-      if (owner(gens[i]) != M)
-        CoCoA_THROW_ERROR(ERR::MixedModules, "SubmoduleImpl(M, gens)");
+      if (owner(gens[i]) != M)  CoCoA_THROW_ERROR1(ERR::MixedModules);
     myRefCountZero();
   }
 
 
 //   ideal::ideal(const std::vector<RingElem>& gens)
 //   {
-//     if (gens.empty()) CoCoA_THROW_ERROR("Empty list of generators: need ring", "ideal(gens)");
-//     if (!HasUniqueOwner(gens)) CoCoA_THROW_ERROR(ERR::MixedRings, "ideal(gens)");
+//     if (gens.empty()) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+//     if (!HasUniqueOwner(gens)) CoCoA_THROW_ERROR1(ERR::MixedRings);
 //     ideal tmp = owner(gens[0])->myIdealCtor(gens);
 //     myPtr = tmp.myPtr;
 //     myPtr->myRefCountInc();
@@ -117,8 +116,7 @@ namespace CoCoA
   const std::vector<ModuleElem>& SubmoduleImpl::myGBasis(const CpuTimeLimit& CheckForTimeout) const
   {
     CoCoA_ASSERT(IsSparsePolyRing(myRing()));
-    if (!IsField(CoeffRing(myRing())))
-      CoCoA_THROW_ERROR("ERR:NYI coeffs not in a field", "SubmoduleImpl::myGBasis");//???
+    if (!IsField(CoeffRing(myRing())))  CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");
 
     //    if (IhaveMonomialGens()) return myGBasisMonId();
     if (myTidyGensIsValid) return myTidyGensValue;
@@ -133,10 +131,8 @@ namespace CoCoA
   const std::vector<ModuleElem>& SubmoduleImpl::myMinGens(const CpuTimeLimit& CheckForTimeout) const
   {
     if (!myMinGensValue.empty()) return myMinGensValue;
-    if (GradingDim(myRing())==0 || !IsHomog(myGensValue))
-      CoCoA_THROW_ERROR("Input is not homogeneous", "SubmoduleImpl::myMinGens");
-    if (!HasPositiveGrading(myRing()))
-      CoCoA_THROW_ERROR("Require positive grading", "SubmoduleImpl::myMinGens()");
+    if (GradingDim(myRing())==0 || !IsHomog(myGensValue))  CoCoA_THROW_ERROR1(ERR::ReqHomog);
+    if (!HasPositiveGrading(myRing()))  CoCoA_THROW_ERROR1(ERR::ReqPositiveGrading);
     myGBasis(CheckForTimeout);
     return myMinGensValue;
   }
@@ -146,7 +142,7 @@ namespace CoCoA
   {
     //    if (!myTidyGensIsValid)
     if (!IsSparsePolyRing(myRing()))
-      CoCoA_THROW_ERROR(ERR::NYI, "SubmoduleImpl::myTidyGens");
+      CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of module");
     return myGBasis(CheckForTimeout);
   }
 
@@ -207,7 +203,7 @@ namespace CoCoA
   ModuleElem NR(const ModuleElem& f, const vector<ModuleElem>& g)
   {
     if (!IsField(CoeffRing(RingOf(owner(f)))))
-      CoCoA_THROW_ERROR("ERR:NYI coeffs not in a field", "NR");//???
+      CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
     if ( IsZero(f) ) return f;
     ModuleElem F=f;
     reduce(F, g);
@@ -220,8 +216,7 @@ namespace CoCoA
   bool IsElem(const ModuleElem& v, const module& M)
   {
     CoCoA_ASSERT(IsFGModule(M));
-    if (owner(v) != AmbientFreeModule(M))
-      CoCoA_THROW_ERROR(ERR::MixedModules, "IsElem(v, M)");
+    if (owner(v) != AmbientFreeModule(M))  CoCoA_THROW_ERROR1(ERR::MixedModules);
     //    return I->IhaveElem(raw(r));
     //??? for FGmodule only 
     return IsZero(NR(v, TidyGens(M)));
@@ -281,8 +276,8 @@ namespace CoCoA
 
   FGModule submodule(const std::vector<ModuleElem>& gens)
   {
-    if (gens.empty()) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
-    if (!HasUniqueOwner(gens)) CoCoA_THROW_ERROR(ERR::MixedModules, "submodule(gens)");
+    if (gens.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (!HasUniqueOwner(gens))  CoCoA_THROW_ERROR1(ERR::MixedModules);
     return submodule(owner(gens[0]), gens);
   }
 
@@ -324,8 +319,7 @@ namespace CoCoA
     const std::vector<ModuleElem>& e = gens(F);
     const long nrows = NumRows(M);
     const long ncols = NumCols(M);
-    if (len(e) != nrows)
-      CoCoA_THROW_ERROR(ERR::IncompatDims,"SubmoduleCols");
+    if (len(e) != nrows)  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     std::vector<ModuleElem> g(ncols, zero(F));
     for (long i=0; i<nrows; ++i)
       for (long j=0; j<ncols; ++j)
@@ -339,8 +333,7 @@ namespace CoCoA
     const std::vector<ModuleElem>& e = gens(F);
     const long nrows = NumRows(M);
     const long ncols = NumCols(M);
-    if (len(e) != ncols)
-      CoCoA_THROW_ERROR(ERR::IncompatDims,"SubmoduleRows");
+    if (len(e) != ncols)  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     std::vector<ModuleElem> g(nrows, zero(F));
     for (long i=0; i<nrows; ++i)
       for (long j=0; j<ncols; ++j)
@@ -415,18 +408,14 @@ namespace CoCoA
 
   FGModule syz(const FreeModule& F, const std::vector<RingElem>& g)
   {
-    if (g.empty())
-      CoCoA_THROW_ERROR("ERR:empty vector", "syz");
-    if (!IsField(CoeffRing(RingOf(F))))
-      CoCoA_THROW_ERROR("ERR:NYI coeffs not in a field", "syz");//???
-    if (NumCompts(F)!=len(g))
-      CoCoA_THROW_ERROR("wrong number of components in free module", "syz");
+    if (g.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (!IsField(CoeffRing(RingOf(F))))  CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
+    if (NumCompts(F)!=len(g))  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     vector<RingElem> g_non0;
     //-- remove zero gens
     for (long i=0; i<len(g); ++i)
     {
-      if ( (!g_non0.empty()) && owner(g[i])!=owner(g_non0[0]))
-        CoCoA_THROW_ERROR(ERR::MixedRings, "syz");
+      if ( (!g_non0.empty()) && owner(g[i])!=owner(g_non0[0]))  CoCoA_THROW_ERROR1(ERR::MixedRings);
       if (!IsZero(g[i]))
         g_non0.push_back(g[i]);
     }
@@ -451,10 +440,8 @@ namespace CoCoA
 
   FGModule SyzOfGens(const FreeModule& F, const FGModule& N)
   {
-    if (!IsField(CoeffRing(RingOf(F))))
-      CoCoA_THROW_ERROR("ERR:NYI coeffs not in a field", "SyzOfGens");//???
-    if (NumCompts(F)!=len(gens(N)))
-      CoCoA_THROW_ERROR("wrong number of components in free module", "SyzOfGens");
+    if (!IsField(CoeffRing(RingOf(F))))  CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
+    if (NumCompts(F)!=len(gens(N)))  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     const vector<ModuleElem>& g = gens(N);
     vector<ModuleElem> g_non0;
     //-- remove zero gens
@@ -478,12 +465,11 @@ namespace CoCoA
   FGModule SyzOfGens(const ideal& I)
   {
     if (!IsField(CoeffRing(RingOf(I))))
-      CoCoA_THROW_ERROR("ERR:NYI coeffs not in a field", "SyzOfGens");//???
+      CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
     const vector<RingElem>& g = gens(I);
     for (long i=0; i<len(g); ++i)
       if (IsZero(g[i]))
-        CoCoA_THROW_ERROR("Zero generator(s): first arg must be the output free module",
-                    "SyzOfGens");
+        CoCoA_THROW_ERROR2(ERR::BadArg, "with zero generator(s) first arg must be the output free module");
     vector<ModuleElem> syzvec;
     FreeModule F = NewFreeModuleForSyz(gens(I), CoCoA_ERROR_CONTEXT);
     return SyzOfGens(F, I);
@@ -493,12 +479,11 @@ namespace CoCoA
   FGModule SyzOfGens(const FGModule& N)
   {
     if (!IsField(CoeffRing(RingOf(N))))
-      CoCoA_THROW_ERROR("ERR:NYI coeffs not in a field", "SyzOfGens");//???
+      CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
     const vector<ModuleElem>& g = gens(N);
     for (long i=0; i<len(g); ++i)
       if (IsZero(g[i]))
-        CoCoA_THROW_ERROR("Zero generator(s): first arg must be the output free module",
-                    "SyzOfGens");
+        CoCoA_THROW_ERROR2(ERR::BadArg, "with zero generator(s) first arg must be the output free module");
     vector<ModuleElem> syzvec;
     FreeModule F = NewFreeModuleForSyz(gens(N), CoCoA_ERROR_CONTEXT);
     return SyzOfGens(F, N);
@@ -507,8 +492,7 @@ namespace CoCoA
 
   bool IsContained(const module& M, const module& N)
   {
-    if (!IsSparsePolyRing(RingOf(M)))
-      CoCoA_THROW_ERROR(ERR::NYI, "SubmoduleImpl::IsContained");
+    if (!IsSparsePolyRing(RingOf(M)))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
     const FGModule M_fg(M, CoCoA_ERROR_CONTEXT);
     const vector<ModuleElem>& g = gens(M_fg);
     for (long i=0; i < len(g); ++i)
@@ -523,8 +507,7 @@ namespace CoCoA
     const SparsePolyRing P(RingOf(M_fg), CoCoA_ERROR_CONTEXT);
 ////    if (!IsSparsePolyRing(RingOf(M)))
 ////      CoCoA_THROW_ERROR(ERR::NotSparsePolyRing, "IsHomog(submodule)"); 
-    if (GradingDim(P)==0)
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroGradingDim, "IsHomog(submodule)");
+    if (GradingDim(P)==0)  CoCoA_THROW_ERROR1(ERR::ReqNonZeroGradingDim);
     if (IsZero(M_fg))  return true;
     // Now we know I is non-trivial.
     const vector<ModuleElem>& GB = TidyGens(M);
@@ -542,11 +525,9 @@ namespace CoCoA
   {
     const FGModule M_fg(M, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing P(RingOf(M_fg), CoCoA_ERROR_CONTEXT);
-////    if (!IsSparsePolyRing(RingOf(M)))
-////      CoCoA_THROW_ERROR(ERR::NotSparsePolyRing, "LT(submodule)"); 
+//// if (!IsSparsePolyRing(RingOf(M)))  CoCoA_THROW_ERROR1(ERR::NotSparsePolyRing);
 ////    const SparsePolyRing P = RingOf(M); 
-    if (GradingDim(P)==0)
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroGradingDim, "LT(submodule)");
+    if (GradingDim(P)==0)  CoCoA_THROW_ERROR1(ERR::ReqNonZeroGradingDim);
     const vector<ModuleElem>& e = gens(AmbientFreeModule(M));
     const vector<ModuleElem>& GB = TidyGens(M);
     vector<ModuleElem> LTs;
