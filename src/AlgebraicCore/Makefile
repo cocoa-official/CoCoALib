@@ -81,6 +81,18 @@ SRCS=time.C assert.C utils.C  utils-gmp.C  VectorOps.C  ProgressReporter.C  Buil
 # (see below) OBJS depend on $(COCOA_ROOT)/configuration/autoconf.mk
 OBJS=$(SRCS:.C=.o)
 
+# Get current Git revision hash (if possible)
+COCOALIB_GIT_REV=$(shell git rev-parse --short HEAD 2> /dev/null)
+ifneq ($(COCOALIB_GIT_REV),)
+  # Check if the working directory is clean
+  GIT_STATUS=$(shell git status --porcelain 2> /dev/null)
+  ifneq ($(GIT_STATUS),)
+    COCOALIB_GIT_REV+=[modified]
+  endif
+else
+  COCOALIB_GIT_REV=unknown
+endif
+
 # The default target compiles debug_new.C and leak_checker.C as
 # well as all the files listed in SRCS.
 default:
@@ -110,11 +122,17 @@ check-source-files:
 
 
 #######################################################
+# Saves the current Git revision for BuildInfo.C
+.gitrev:
+	@echo "$(COCOALIB_GIT_REV)" > $@
+
+
+#######################################################
 # Special compilation targets with extra CPP symbols.
-BuildInfo.o: BuildInfo.C $(COCOA_ROOT)/include/CoCoA/BuildInfo.H
+BuildInfo.o: BuildInfo.C $(COCOA_ROOT)/include/CoCoA/BuildInfo.H .gitrev
 	@echo "Compiling BuildInfo.o (with special preprocessor flags)"
 	PLATFORM=$$(uname -snr); \
-	$(COMPILE) -c  -DCOCOA_VERSION="\"$(COCOALIB_VERSION)\""  -DCOCOA_CXX="\"$(CXX)\""  -DCOCOA_CXXFLAGS="\"$(CXXFLAGS)\""  -DCOCOA_PLATFORM="\"$(PLATFORM)\""  -o BuildInfo.o BuildInfo.C
+	$(COMPILE) -c  -DCOCOA_VERSION="\"$(COCOALIB_VERSION)\""  -DCOCOA_GIT_REVISION="\"$(COCOALIB_GIT_REV)\""  -DCOCOA_CXX="\"$(CXX)\""  -DCOCOA_CXXFLAGS="\"$(CXXFLAGS)\""  -DCOCOA_PLATFORM="\"$(PLATFORM)\""  -o BuildInfo.o BuildInfo.C
 
 IdealOfPoints.o: IdealOfPoints.C $(COCOA_ROOT)/include/CoCoA/IdealOfPoints.H
 	@echo "Compiling IdealOfPoints --  keep your fingers crossed"
@@ -143,7 +161,7 @@ clean: clean-local clean-subdirs
 	@echo "Cleaned CoCoALib/$(CWD)"
 
 clean-local:
-	@/bin/rm -f  $(OBJS)  a.out  core  "$(DEPEND_FILE).old"  "$(DEPEND_FILE).new"  leak_checker  debug_new.o
+	@/bin/rm -f  $(OBJS)  a.out  core  "$(DEPEND_FILE).old"  "$(DEPEND_FILE).new"  leak_checker  debug_new.o .gitrev
 	@/bin/rm -f  ./*~  ./.*~  ./.\#*
 	@/bin/rm -rf  ./*.dSYM
 

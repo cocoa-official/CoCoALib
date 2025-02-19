@@ -3,6 +3,8 @@
 *.o
 *.dll
 *.exe
+examples/ex-*[^.]
+src/tests/test-*[^.]
 
 # IDE folders
 .idea/
@@ -37,6 +39,7 @@ configuration/last-config-cmd
 include/CoCoA/library.H
 include/CoCoA/PREPROCESSOR_DEFNS.H
 lib/timestamp
+src/AlgebraicCore/.gitrev
 src/AlgebraicCore/leak_checker
 src/CoCoA-5/CoCoAInterpreter
 src/CoCoA-5/check-version-defines
@@ -86,4 +89,3 @@ tramp
 !doc/aux-txt2tags/index*.html
 !doc/CoCoATranslationTable.html
 !src/CoCoA-5/CoCoAManual/aux-files/GUI-extra-files/*.html
-src/tests/test-BigInt2
