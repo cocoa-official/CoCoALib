@@ -3,6 +3,10 @@
 *.o
 *.dll
 *.exe
+*.so
+*.so.*
+examples/ex-*[^.]
+src/tests/test-*[^.]
 
 # IDE folders
 .idea/
@@ -23,7 +27,8 @@ examples/CopyInfo
 *.html
 *.pdf
 
-# Generated files
+# Generated files and folders
+*.part
 .*-hdrs
 .*_srcs
 .mutex
@@ -36,7 +41,8 @@ configuration/ExternalLibs-CoCoA5/
 configuration/last-config-cmd
 include/CoCoA/library.H
 include/CoCoA/PREPROCESSOR_DEFNS.H
-lib/timestamp
+lib/
+src/AlgebraicCore/.gitrev
 src/AlgebraicCore/leak_checker
 src/CoCoA-5/CoCoAInterpreter
 src/CoCoA-5/check-version-defines
@@ -46,6 +52,7 @@ src/CoCoA-5/**/moc_C5.cpp
 src/CoCoA-5/**/moc_predefs.h
 src/CoCoA-5/**/qrc_C5.cpp
 src/CoCoA-5/CoCoAManual/wordlist.txt
+src/CoCoA-5/PrintWordlist
 src/CoCoA-5/QCodeEdit/**/qrc_Edyuk.cpp
 src/CoCoA-5/QCodeEdit/.build/
 src/CoCoA-5/QCodeEdit/Makefile
@@ -54,10 +61,12 @@ src/CoCoA-5/QCodeEdit/ui_*.h
 src/CoCoA-5/tests/*.cerr
 src/CoCoA-5/tests/*.cout
 src/CoCoA-5/tests/*found
-src/CoCoA-5/C5Makefile
+src/CoCoA-5/C5
 src/CoCoA-5/C5.pro
+src/CoCoA-5/C5Makefile
 src/CoCoA-5/ui_*.h
 src/server/all
+src/server/CoCoAServer
 src/tests/*.cerr
 src/tests/*.cout
 src/tests/*found
@@ -86,4 +95,3 @@ tramp
 !doc/aux-txt2tags/index*.html
 !doc/CoCoATranslationTable.html
 !src/CoCoA-5/CoCoAManual/aux-files/GUI-extra-files/*.html
-src/tests/test-BigInt2
