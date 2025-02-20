@@ -123,8 +123,15 @@ check-source-files:
 
 #######################################################
 # Saves the current Git revision for BuildInfo.C
-.gitrev:
-	@echo "$(COCOALIB_GIT_REV)" > $@
+.PHONY: update-git-rev
+update-git-rev: ;
+
+.gitrev: update-git-rev
+	@current_rev="$$(cat $@ 2> /dev/null)"; \
+    if [ "$$current_rev" != "$(COCOALIB_GIT_REV)" ]; then \
+	  echo "Git revision changed --  updating .gitrev"; \
+      echo "$(COCOALIB_GIT_REV)" > $@; \
+    fi
 
 
 #######################################################
