@@ -83,6 +83,9 @@ DECLARE_STD_BUILTIN_FUNCTION(SystemCommand, 1)
     throw RuntimeException("low-level \"std::system\" command unavailable", invocationExpression);
   if (!SystemCommandPermit::IsEnabled())
     throw RuntimeException("SystemCommand not enabled (see CoCoA interpreter launch options)", invocationExpression);
+  static int testCode = std::system("true");
+  if (testCode != 0)
+    throw RuntimeException("low-level \"std::system\" command is non-functional (see CoCoA manual for further info)", invocationExpression);
   intrusive_ptr<STRING> arg = runtimeEnv->evalArgAs<STRING>(ARG(0));
   std::cout << flush; // required according to man page at cppreference.com
   return Value::from(static_cast<long>(std::system(arg->theString.c_str())));
