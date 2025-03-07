@@ -23204,7 +23204,7 @@ C++ run-time environment), so should not be relied upon to provide
 any specific information: <eg/> on some Linux systems the value returned
 is the exit code, on others it is 256 times the process exit code.
 <par/>
-NOTE: On Windows other than CygWin, the underlying <tt>std::system</tt>
+NOTE: On Windows outside of CygWin, the underlying <tt>std::system</tt>
 function simply returns 127 and does not execute the command. In these cases
 you will get an error message stating that the low-level <tt>std::system</tt>
 command is non-functional. This is a limitation of CygWin itself. This
