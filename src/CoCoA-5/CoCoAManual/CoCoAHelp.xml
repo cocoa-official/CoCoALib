@@ -23203,6 +23203,14 @@ The return value of <tt>SystemCommand</tt> depends on the platform (<ie/> the
 C++ run-time environment), so should not be relied upon to provide
 any specific information: <eg/> on some Linux systems the value returned
 is the exit code, on others it is 256 times the process exit code.
+<par/>
+NOTE: On Windows outside of CygWin, the underlying <tt>std::system</tt>
+function simply returns a non-zero value and does not execute the command. In
+these cases you will get an error message stating that the low-level
+<tt>std::system</tt> command is non-functional. This is a limitation of CygWin
+itself. This problem can be solved by installing CygWin and running CoCoA-5 in
+the CygWin environment. This is also not a problem inside WSL using the Linux
+version of CoCoA-5 or on Windows using a UCRT-compiled version of CoCoA-5.
 <example>
 /**/ ExitCode := SystemCommand("echo abc");  --> value of ExitCode is unclear
 abc
