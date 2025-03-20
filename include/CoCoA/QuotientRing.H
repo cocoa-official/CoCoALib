@@ -87,49 +87,34 @@ namespace CoCoA
   //---------------------------------------------------------------------------
 
   inline const QuotientRingBase* QuotientRing::operator->() const
-  {
-    return static_cast<const QuotientRingBase*>(ring::operator->());
-  }
+  { return static_cast<const QuotientRingBase*>(ring::operator->()); }
+
 
   inline const QuotientRingBase* QuotientRingPtr(const ring& R)
-  {
-    return dynamic_cast<const QuotientRingBase*>(R.myRawPtr());
-  }
+  { return dynamic_cast<const QuotientRingBase*>(R.myRawPtr()); }
+
 
   inline bool IsQuotientRing(const ring& R)
-  {
-    return QuotientRingPtr(R) != nullptr;
-  }
-
-
-
+  { return QuotientRingPtr(R) != nullptr; }
 
 
   /////////////////////////////////////////////////////////////////////////////
   // Inline functions (the order is important).
 
   inline const ring& QuotientRingBase::myBaseRing() const
-  {
-    return myBaseRingValue;
-  }
+  { return myBaseRingValue; }
 
 
   inline const ideal& DefiningIdeal(const QuotientRing& RmodI)
-  {
-    return RmodI->myDefiningIdeal;
-  }
+  { return RmodI->myDefiningIdeal; }
 
 
   inline const ring& ReprRing(const QuotientRing& RmodI)
-  {
-    return RmodI->myReprRing;
-  }
+  { return RmodI->myReprRing; }
 
 
   inline const ideal& ReducingIdeal(const QuotientRing& RmodI)
-  {
-    return RmodI->myReducingIdeal;
-  }
+  { return RmodI->myReducingIdeal; }
 
 
 } // end of namespace CoCoA

@@ -162,7 +162,7 @@ namespace CoCoA
   //  RingElem MGHilbertNumQuot(const SparsePolyRing& HSRing, const ideal& I)
   RingElem MGHilbertNumQuot(const ideal& I)
   {
-    //  if (!HasPositiveGrading(RingOf(I))) CoCoA_THROW_ERROR(ERR::NotPositiveGrading, "MGHilbertNumQuot");
+    //  if (!HasPositiveGrading(RingOf(I))) CoCoA_THROW_ERROR1(ERR::ReqPositiveGrading);
     if (!IsHomog(I))  CoCoA_THROW_ERROR1(ERR::ReqHomog);
     const SparsePolyRing RingOfI = RingOf(I);
     const SparsePolyRing QQt(RingQQt(GradingDim(RingOfI)));
@@ -213,8 +213,7 @@ namespace CoCoA
 
   HPSeries HSSimplified(const HPSeries& PSer)
   {
-//     if (!IsStandard(PSer))
-//       CoCoA_THROW_ERROR("HPSeries must be standard");
+//     if (!IsStandard(PSer))  CoCoA_THROW_ERROR2(ERR::BadArg, "HPSeries must be standard");
     //    if IsZero(num(PSer)) return 0/1;
     if (DenFactors(PSer).myMultiplicities().empty()) return PSer;
     long HPDenExp = sum(DenFactors(PSer).myMultiplicities());

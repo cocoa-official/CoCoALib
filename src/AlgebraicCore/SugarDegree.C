@@ -203,7 +203,7 @@ namespace CoCoA
 
     const degree& StdDegBase::myWSugar() const
     {
-      CoCoA_THROW_ERROR("Wrong type for this sugar", "SugarTypes::StdDegBase");
+      CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "Wrong type for this sugar");
       static degree NeverUsed(0); // just to keep the compiler quiet
       return NeverUsed;
     }
@@ -244,7 +244,7 @@ namespace CoCoA
 
     long WDegBase::myStdSugar() const
     {
-      CoCoA_THROW_ERROR("Wrong type for this sugar", "SugarTypes::WDegBase");
+      CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "Wrong type for this sugar");
       return 0;  // just to keep the compiler quiet
     }
 
@@ -333,7 +333,7 @@ namespace CoCoA
       // moreover it uses max instead of top (a>b ? a : b)
       // could it be useful with only one component?
       if (g.myGRingInfo().IsMyGradingPosPlus())
-        CoCoA_THROW_ERROR("TMP: use StdDeg for PosTO", "WDeg1CompTmp::myUpdate");
+        CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "TMP: use StdDeg for PosTO");
       myValue = max(myValue, wdeg(CofactorPP) + sugar(g)->myWSugar());
     }
 
@@ -358,7 +358,7 @@ namespace CoCoA
     void WDegSat::myUpdate(ConstRefPPMonoidElem CofactorPP, const GPoly& g)
     {
       if (g.myGRingInfo().IsMyGradingPosPlus())
-        CoCoA_THROW_ERROR("TMP: use StdDeg for PosTO", "WDeg1CompTmp::myUpdate");
+        CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "TMP: use StdDeg for PosTO");
       myValue = max(myValue, myDeg(CofactorPP) + sugar(g)->myWSugar());
     }
 

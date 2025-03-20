@@ -91,8 +91,7 @@ namespace CoCoA
     // >>>ASSUMES<<< that QB is in increasing term-order!
     void coefficients(vector<RingElem>& coeffs, ConstRefRingElem f, const vector<PPMonoidElem>& QB)
     {
-      if (len(coeffs)!=len(QB))
-        CoCoA_THROW_ERROR("len(coeffs)!=len(QB)","coefficients");
+      if (len(coeffs)!=len(QB))  CoCoA_THROW_ERROR2(ERR::IncompatDims, "len(coeffs)!=len(QB)");
       SparsePolyIter itf=BeginIter(f);
       long i=len(QB)-1;
       for (; i>=0 && !IsEnded(itf); --i)
