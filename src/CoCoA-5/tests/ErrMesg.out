@@ -1,5 +1,5 @@
 toric: check exponents June2018 -- Bug #1190
-exponents too big in binomial
+Exponent is too large: in binomial
 --> [CoCoALib fn] MatKerToBListAndIndices
 
 subst now check indets 1Mar2017

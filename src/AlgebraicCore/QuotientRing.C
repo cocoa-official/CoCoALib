@@ -49,10 +49,10 @@ using std::vector;
 namespace CoCoA
 {
 
-  const QuotientRingBase* QuotientRingPtr(const ring& R, const char* const FnName)
+  const QuotientRingBase* QuotientRingPtr(const ring& R, const ErrorContext& ErrCtx)
   {
     const QuotientRingBase* ptr = QuotientRingPtr(R);
-    if (ptr == nullptr) CoCoA_THROW_ERROR(ERR::NotQuotientRing, FnName);
+    if (ptr == nullptr)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::NotQuotientRing, ErrCtx);
     return ptr;
   }
 
@@ -69,15 +69,11 @@ namespace CoCoA
 
 
   RingHom QuotientRingBase::myQuotientingHomCtor() const
-  {
-    return RingHom(new QuotientingHomImpl(QuotientRing(this)));
-  }
+  { return RingHom(new QuotientingHomImpl(QuotientRing(this))); }
 
 
   RingElem QuotientRingBase::mySymbolValue(const symbol& sym) const
-  {
-    return myQuotientingHomCtor()(myReprRing->mySymbolValue(sym));
-  }
+  { return myQuotientingHomCtor()(myReprRing->mySymbolValue(sym)); }
 
 
   class GeneralQuotientRingImpl: public QuotientRingBase
@@ -232,7 +228,7 @@ namespace CoCoA
 
 
   QuotientRing::QuotientRing(const ring& R):
-      ring(QuotientRingPtr(R, "QuotientRing ctor"))
+      ring(QuotientRingPtr(R, CoCoA_ERROR_CONTEXT))
   {}
 
 
@@ -242,9 +238,7 @@ namespace CoCoA
 
 
   void QuotientingHomImpl::myApply(RingElemRawPtr rawimage, RingElemConstRawPtr rawarg) const
-  {
-    QuotientRingPtr(myCodomain)->myReduction(rawimage, rawarg);
-  }
+  { QuotientRingPtr(myCodomain)->myReduction(rawimage, rawarg); }
 
 
   void QuotientingHomImpl::myOutputSelfDetails(std::ostream& out) const
@@ -252,7 +246,6 @@ namespace CoCoA
     if (!out) return;  // short-cut for bad ostreams
     out << " canonical quotient";
   }
-
 
 
   GeneralQuotientRingImpl::GeneralQuotientRingImpl(const ring& R, const ideal& I):
@@ -326,9 +319,7 @@ namespace CoCoA
 
 
   RingElemRawPtr GeneralQuotientRingImpl::myNew() const
-  {
-    return myReprRing->myNew();
-  }
+  { return myReprRing->myNew(); }
 
 
   RingElemRawPtr GeneralQuotientRingImpl::myNew(const MachineInt& n) const
@@ -348,27 +339,19 @@ namespace CoCoA
 
 
   RingElemRawPtr GeneralQuotientRingImpl::myNew(ConstRawPtr rawCopyMe) const
-  {
-    return myReprRing->myNew(rawCopyMe);
-  }
+  { return myReprRing->myNew(rawCopyMe); }
 
 
   void GeneralQuotientRingImpl::myDelete(RawPtr rawx) const
-  {
-    myReprRing->myDelete(rawx);
-  }
+  { myReprRing->myDelete(rawx); }
 
 
   void GeneralQuotientRingImpl::mySwap(RawPtr rawx, RawPtr rawy) const
-  {
-    myReprRing->mySwap(rawx, rawy);
-  }
+  { myReprRing->mySwap(rawx, rawy); }
 
 
   void GeneralQuotientRingImpl::myAssign(RawPtr rawlhs, ConstRawPtr rawx) const
-  {
-    myReprRing->myAssign(rawlhs, rawx);
-  }
+  { myReprRing->myAssign(rawlhs, rawx); }
 
 
   void GeneralQuotientRingImpl::myAssign(RawPtr rawlhs, const MachineInt& n) const
@@ -386,9 +369,7 @@ namespace CoCoA
 
 
   void GeneralQuotientRingImpl::myAssignZero(RawPtr rawlhs) const
-  {
-    myReprRing->myAssignZero(rawlhs); // assume zero is always reduced
-  }
+  { myReprRing->myAssignZero(rawlhs); }// assume zero is always reduced
 
 
   void GeneralQuotientRingImpl::myRecvTwinFloat(RawPtr rawlhs, ConstRawPtr rawx) const
@@ -566,21 +547,15 @@ namespace CoCoA
 
 
   void GeneralQuotientRingImpl::myOutput_OM(OpenMathOutput& OMOut, ConstRawPtr rawx) const
-  {
-    myReprRing->myOutput_OM(OMOut, rawx);
-  }
+  { myReprRing->myOutput_OM(OMOut, rawx); }
 
 
   bool GeneralQuotientRingImpl::myIsZero(ConstRawPtr rawx) const
-  {
-    return myReprRing->myIsZero(rawx);
-  }
+  { return myReprRing->myIsZero(rawx); }
 
 
   bool GeneralQuotientRingImpl::myIsOne(ConstRawPtr rawx) const
-  {
-    return myReprRing->myIsOne(rawx) || IsOne(myReducingIdeal);
-  }
+  { return myReprRing->myIsOne(rawx) || IsOne(myReducingIdeal); }
 
 
   bool GeneralQuotientRingImpl::myIsMinusOne(ConstRawPtr rawx) const
@@ -593,39 +568,27 @@ namespace CoCoA
 
 
   bool GeneralQuotientRingImpl::myIsInteger(BigInt& N, ConstRawPtr rawx) const
-  {
-    return myReprRing->myIsInteger(N, rawx);
-  }
+  { return myReprRing->myIsInteger(N, rawx); }
 
 
   bool GeneralQuotientRingImpl::myIsRational(BigRat& Q, ConstRawPtr rawx) const
-  {
-    return myReprRing->myIsRational(Q, rawx);
-  }
+  { return myReprRing->myIsRational(Q, rawx); }
 
 
   bool GeneralQuotientRingImpl::myIsDouble(double& d, ConstRawPtr rawx) const
-  {
-    return myReprRing->myIsDouble(d, rawx);
-  }
+  { return myReprRing->myIsDouble(d, rawx); }
 
 
   bool GeneralQuotientRingImpl::myIsEqual(ConstRawPtr rawx, ConstRawPtr rawy) const
-  {
-    return myReprRing->myIsEqual(rawx, rawy);
-  }
+  { return myReprRing->myIsEqual(rawx, rawy); }
 
 
   ideal GeneralQuotientRingImpl::myIdealCtor(const std::vector<RingElem>& gens) const
-  {
-    return ideal(new IdealImpl(QuotientRing(this), gens));
-  }
+  { return ideal(new IdealImpl(QuotientRing(this), gens)); }
 
 
   void GeneralQuotientRingImpl::myReduction(RawPtr rawx) const
-  {
-    myReducingIdeal->myReduceMod(rawx);
-  }
+  { myReducingIdeal->myReduceMod(rawx); }
 
 
   //---------------------------------------------------------------------------
@@ -640,9 +603,7 @@ namespace CoCoA
 
 
   RingHom GeneralQuotientRingImpl::myCompose(const RingHom& phi, const RingHom& theta) const
-  {
-    return myInducedHomCtor(phi(theta(myQuotientingHomCtor())));
-  }
+  { return myInducedHomCtor(phi(theta(myQuotientingHomCtor()))); }
 
 
   bool GeneralQuotientRingImpl::myImageLiesInSubfield(const RingHom& phi) const
@@ -653,9 +614,7 @@ namespace CoCoA
 
 
   void GeneralQuotientRingImpl::myPowerBigExp(RawPtr rawlhs, ConstRawPtr rawx, const BigInt& N) const
-  {
-    myBinaryPower(rawlhs, rawx, N);
-  }
+  { myBinaryPower(rawlhs, rawx, N); }
 
 
   GeneralQuotientRingImpl::InducedHomImpl::InducedHomImpl(const QuotientRing& RmodI, const RingHom& InducingHom):
@@ -664,18 +623,14 @@ namespace CoCoA
 
 
   void GeneralQuotientRingImpl::InducedHomImpl::myApply(RawPtr rawimage, ConstRawPtr rawarg) const
-  {
-    myInducingHom->myApply(rawimage, rawarg);
-  }
+  { myInducingHom->myApply(rawimage, rawarg); }
 
 
   //---------------------------------------------------------------------------
   // Functions to do with GQRIdeals
 
   inline const GeneralQuotientRingImpl::IdealImpl* GeneralQuotientRingImpl::IdealImpl::ourGetPtr(const ideal& I)
-  {
-    return dynamic_cast<const IdealImpl*>(I.myIdealPtr());
-  }
+  { return dynamic_cast<const IdealImpl*>(I.myIdealPtr()); }
 
 
   GeneralQuotientRingImpl::IdealImpl::IdealImpl(const QuotientRing& RmodI, const vector<RingElem>& gens):
@@ -699,9 +654,7 @@ namespace CoCoA
 
 
   GeneralQuotientRingImpl::IdealImpl* GeneralQuotientRingImpl::IdealImpl::myClone() const
-  {
-    return new IdealImpl(*this);
-  }
+  { return new IdealImpl(*this); }
 
 
   // NB the forwarded call to myPreimageIdeal does all the consistency checking
@@ -723,15 +676,11 @@ namespace CoCoA
 
 
   bool GeneralQuotientRingImpl::IdealImpl::IamZero() const
-  {
-    return myPreimageIdeal == ReducingIdeal(myR);
-  }
+  { return myPreimageIdeal == ReducingIdeal(myR); }
 
 
   bool GeneralQuotientRingImpl::IdealImpl::IamOne() const
-  {
-    return IsOne(myPreimageIdeal);
-  }
+  { return IsOne(myPreimageIdeal); }
 
 
   void GeneralQuotientRingImpl::IdealImpl::myTestIsMaximal() const
@@ -777,6 +726,7 @@ namespace CoCoA
 
   void GeneralQuotientRingImpl::IdealImpl::myAdd(const ideal& J)
   {
+    // ANNA: implement clever insert (skip 0s, deal with 1s)
     myGensValue.insert(myGensValue.end(), gens(J).begin(), gens(J).end());
     myPreimageIdeal += ourGetPtr(J)->myPreimageIdeal;
     SetTidyGensFromPreimageIdeal();
@@ -852,8 +802,8 @@ namespace CoCoA
 
   QuotientRing NewQuotientRing(const ring& R, const ideal& I)
   {
-    if (R != RingOf(I)) CoCoA_THROW_ERROR(ERR::IdealNotInRing, "NewQuotientRing");
-    if (IsOne(I)) CoCoA_THROW_ERROR(ERR::BadQuotRing, "NewQuotientRing");
+    if (R != RingOf(I))  CoCoA_THROW_ERROR1(ERR::IdealNotInRing);
+    if (IsOne(I))  CoCoA_THROW_ERROR2(ERR::BadQuotRing, "ideal is <1>");
 //???    if (IsZero(I)) CoCoA_THROW_ERROR(ERR::BadQuotRing, "NewQuotientRing"); ???
     if (!IsZero(I) && IsZZ(R))
     {
@@ -882,33 +832,29 @@ namespace CoCoA
   
 
   QuotientRing NewZZmod(const MachineInt& n)
-  {
-    return NewZZmod(BigInt(n));
-  }
+  { return NewZZmod(BigInt(n)); }
 
 
   QuotientRing NewZZmod(const BigInt& N)
   {
-    if (N == 1 || N == -1) CoCoA_THROW_ERROR(ERR::BadQuotRing, "NewZZmod");
-    if (IsZero(N)) CoCoA_THROW_ERROR(ERR::BadQuotRing, "NewZZmod"); //??? disallow N==0???
+    if (N == 1 || N == -1)  CoCoA_THROW_ERROR1(ERR::BadQuotRing);
+    if (IsZero(N))  CoCoA_THROW_ERROR1(ERR::BadQuotRing); //??? disallow N==0???
     return NewQuotientRing(RingZZ(),
                            ideal(RingElem(RingZZ(), N)));
   }
 
 
   RingHom QuotientingHom(const QuotientRing& RmodI)
-  {
-    return RmodI->myQuotientingHomCtor();
-  }
+  { return RmodI->myQuotientingHomCtor(); }
 
 
   RingHom InducedHom(const QuotientRing& RmodI, const RingHom& phi)
   {
     if (domain(phi) != BaseRing(RmodI))
-      CoCoA_THROW_ERROR(ERR::BadInducingHom, "InducedHom(QuotientRing,hom)");
+      CoCoA_THROW_ERROR2(ERR::BadInducingHom, "InducedHom(QuotientRing,hom)");
 
     if (!IsInKer(DefiningIdeal(RmodI), phi))
-      CoCoA_THROW_ERROR(ERR::BadInducingHomKer, "InducedHom(QuotientRing,hom)");
+      CoCoA_THROW_ERROR2(ERR::BadInducingHomKer, "InducedHom(QuotientRing,hom)");
 
     return RmodI->myInducedHomCtor(phi);
   }
@@ -916,8 +862,7 @@ namespace CoCoA
 
   RingElem CanonicalRepr(ConstRefRingElem r)
   {
-    if (!IsQuotientRing(owner(r)))
-      CoCoA_THROW_ERROR(ERR::NotElemQuotientRing, "CanonicalRepr(r)");
+    if (!IsQuotientRing(owner(r)))  CoCoA_THROW_ERROR1(ERR::NotElemQuotientRing);
     return QuotientRingPtr(owner(r))->myCanonicalRepr(raw(r));
   }
 

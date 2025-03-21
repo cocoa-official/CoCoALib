@@ -130,8 +130,7 @@ namespace CoCoA
     {
       ivec v = b->Vect;
       long n = ivec_len(v);
-      if (n>NumIndets(P))
-        CoCoA_THROW_ERROR("wrong number of indeterminates", "BitermToRingElem");
+      if (n>NumIndets(P))  CoCoA_THROW_ERROR2(ERR::IncompatDims, "ivec_len > NumIndets");
       PPMonoid M = PPM(P);
 //   if ( ToricAlg == EATI )
 
@@ -200,7 +199,7 @@ namespace CoCoA
       for ( long i=0 ; i<n ; ++i )
       {
         if (exps1[i] >= MaxExp || exps2[i] >= MaxExp)
-          CoCoA_THROW_ERROR("exponents too big in binomial", "PPs2Binom");
+          CoCoA_THROW_ERROR2(ERR::ExpTooBig, "in binomial");
         ivec_set_nth(Vect, (unsigned long)i+1, exps1[i]-exps2[i]);
 //       if ( term_degree(t1)!=term_degree(t2) )
 //       {
@@ -225,12 +224,6 @@ namespace CoCoA
       {
         g = GensI[i];
         Bs[++BLLen] = PPs2Binom(LPP(g), LPP(g-monomial(P, LC(g), LPP(g))));
-//       if ( Bs[BLLen]==nullptr )
-//       {
-// 	EraseAndFreeBList(BL);
-// 	math_error = cocoa_error("BAD_PARAMS");
-// 	return nullptr;
-//       }
         BListSetLen(BL, BLLen);
         if ( BitermLtDeg(Bs[BLLen]) > MaxDeg)  MaxDeg = BitermLtDeg(Bs[BLLen]);
       }
@@ -282,9 +275,8 @@ namespace CoCoA
     for (long j=0; j<ncols; ++j)
     {
       if (!IsInteger(tmp_BigInt, M(i,j)))
-        CoCoA_THROW_ERROR(ERR::BadArg, "Toric/MatKerToBListAndIndices");
-      if (!IsConvertible(tmp_int, tmp_BigInt))
-        CoCoA_THROW_ERROR(ERR::BadArg, "Toric/MatKerToBListAndIndices");
+        CoCoA_THROW_ERROR2(ERR::BadArg, "value must be integer");
+      if (!IsConvertible(tmp_int, tmp_BigInt))  CoCoA_THROW_ERROR1(ERR::OutOfRange);
       Msmall[i][j] = tmp_int;
     }
   }
@@ -332,7 +324,7 @@ namespace CoCoA
       else
       {
         if (std::abs(small_basis[i][Index]) >= MaxExp/weights[Index+1])
-          CoCoA_THROW_ERROR("exponents too big in binomial", "MatKerToBListAndIndices");
+          CoCoA_THROW_ERROR2(ERR::ExpTooBig, "in binomial");
         ivec_set_nth(aux_V, Index+1, small_basis[i][Index]*weights[Index+1]);
       }
     B = BitermMake(aux_V,1); // frees aux_V
@@ -361,7 +353,7 @@ namespace CoCoA
         else
         {
           if (std::abs(small_basis[i][Index]) >= MaxExp/weights[Index+1])
-            CoCoA_THROW_ERROR("exponents too big in binomial", "MatKerToBListAndIndices");
+            CoCoA_THROW_ERROR2(ERR::ExpTooBig, "in binomial");
           ivec_set_nth(aux_V, Index+1, small_basis[i][Index]*weights[Index+1]);
         }
       B = BitermMake(aux_V,1); // frees aux_V
