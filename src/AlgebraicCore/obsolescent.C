@@ -125,14 +125,14 @@ namespace CoCoA
   BigInt iroot(const MachineInt& n, const MachineInt& r)
   {
     LogObsolescentFn("iroot", "use \"FloorRoot\"");
-    if (IsNegative(n)) CoCoA_THROW_ERROR("iroot","1st arg must be non-negative");
+    if (IsNegative(n))  CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
     return FloorRoot(n,r);
   }
   
   BigInt iroot(const MachineInt& n, const BigInt& R)
   {
     LogObsolescentFn("iroot", "use \"FloorRoot\"");
-    if (IsNegative(n)) CoCoA_THROW_ERROR("iroot","1st arg must be non-negative");
+    if (IsNegative(n))  CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
     return FloorRoot(n,R);
   }
     

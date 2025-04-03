@@ -106,7 +106,7 @@ namespace CoCoA {
   RingElem LPP_forC5(ConstRefRingElem f)
   {
     ring R = owner(f);
-    if (!IsPolyRing(R)) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "LPP_forC5");
+    if (!IsPolyRing(R))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsSparsePolyRing(R)) return monomial(R, LPP(f));
     return IndetPower(R, 0, deg(f)); // univariate case
   }
@@ -115,11 +115,11 @@ namespace CoCoA {
   RingElem LPP_forC5(const ModuleElem& f)
   {
     const ring R = RingOf(owner(f));
-    if (!IsPolyRing(R)) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "LPP_forC5");
+    if (!IsPolyRing(R))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsSparsePolyRing(R)) return monomial(R, LPP(f));
     //    PolyRing Rx = AsPolyRing(R); // univariate case
     //    return IndetPower(Rx, 0, deg(f));
-    CoCoA_THROW_ERROR(ERR::NYI, "LPP_forC5 univariate module");
+    CoCoA_THROW_ERROR2(ERR::NYI, "LPP_forC5 univariate module");
     return IndetPower(R, 0, 1);
   }
 
@@ -127,7 +127,7 @@ namespace CoCoA {
   RingElem LM_forC5(ConstRefRingElem f)
   {
     ring R = owner(f);
-    if (!IsPolyRing(R)) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "LM_forC5");
+    if (!IsPolyRing(R))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsSparsePolyRing(R)) return monomial(R, LC(f), LPP(f));
     return LC(f)*IndetPower(R, 0, deg(f));
   }
@@ -143,10 +143,10 @@ namespace CoCoA {
   // bool IsCoprime_forC5(ConstRefRingElem f, ConstRefRingElem g)
   // {
   //   if (owner(f) != owner(g))
-  //     CoCoA_THROW_ERROR(ERR::MixedRings, "IsCoprime_forC5");
+  //     CoCoA_THROW_ERROR1(ERR::MixedRings);
   //   if (IsZZ(owner(f))) return IsCoprime(f,g); // integers
   //   if (!IsPolyRing(owner(f)))
-  //     CoCoA_THROW_ERROR("Args must be PP, or elem of ZZ or in poly ring over field", "IsCoprime_forC5");
+  //     CoCoA_THROW_ERROR2(ERR::BadArg, "Args must be PP, or elem of ZZ or in poly ring over field");
   //   if (IsMonomial(f) && IsOne(LC(f)) && IsMonomial(g) && IsOne(LC(g)))
   //     return IsCoprime(LPP(f), LPP(g)); // power products; NB result belongs to ring (owner(f))
 
@@ -204,7 +204,7 @@ namespace CoCoA {
 
     std::vector<RingElem> SupportDense(ConstRefRingElem f)
     {
-      CoCoA_THROW_ERROR("SupportDense is disabled", "SupportDense");
+      CoCoA_THROW_ERROR2(ERR::NYI, "SupportDense is disabled");
       vector<RingElem> v;
       const DenseUPolyRing P = owner(f);
       for (long i=P->myDegPlus1(raw(f))-1; i>=0; --i)
@@ -226,9 +226,9 @@ namespace CoCoA {
   RingElem CoeffOfTerm_forC5(ConstRefRingElem f, ConstRefRingElem t)
   {
     const ring& R = owner(f);
-    if (!IsPolyRing(R)) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "CoeffOfTerm_forC5");
-    if (owner(t) != R)  CoCoA_THROW_ERROR(ERR::MixedRings, "CoeffOfTerm_forC5");
-    if (!IsMonomial(t) || !IsOne(LC(t))) CoCoA_THROW_ERROR(ERR::BadArg, "CoeffOfTerm_forC5: arg 2 should be a term");
+    if (!IsPolyRing(R))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
+    if (owner(t) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (!IsMonomial(t) || !IsOne(LC(t)))  CoCoA_THROW_ERROR2(ERR::BadArg, "arg 2 should be a term");
 
     if (IsSparsePolyRing(R))
       return CoeffOfTermSparse(f, LPP(t));
@@ -239,7 +239,7 @@ namespace CoCoA {
   std::vector<RingElem> coefficients_forC5(ConstRefRingElem f)
   {
     ring R = owner(f);
-    if (!IsPolyRing(R)) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "coefficients_forC5");
+    if (!IsPolyRing(R))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsSparsePolyRing(R))  return CoefficientsSparse(f);
     return CoefficientsDense(f);
   }
@@ -248,7 +248,7 @@ namespace CoCoA {
   std::vector<RingElem> monomials_forC5(ConstRefRingElem f)
   {
     ring R = owner(f);
-    if (!IsPolyRing(R)) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "monomials_forC5");
+    if (!IsPolyRing(R))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsSparsePolyRing(R))  return MonomialsSparse(f);
     return MonomialsDense(f);
   }
@@ -270,10 +270,10 @@ namespace CoCoA {
     if (n == 1 && IsOne(v[0])) return true;
     const ring R = owner(v[0]);
     for (long i=1; i < n; ++i)
-      if (owner(v[i]) != R)  CoCoA_THROW_ERROR(ERR::MixedRings, "IsFactorClosed");
-    if (!IsSparsePolyRing(R))  CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "IsFactorClosed");
+      if (owner(v[i]) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (!IsSparsePolyRing(R))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     for (long i=0; i < n; ++i)
-      if (!IsMonomial(v[i]))  CoCoA_THROW_ERROR(ERR::ReqMonomialGens, "IsFactorClosed");
+      if (!IsMonomial(v[i]))  CoCoA_THROW_ERROR1(ERR::ReqMonomialGens);
     vector<PPMonoidElem> SetPP; SetPP.reserve(n);
     for (long i=0; i < n; ++i)
       SetPP.push_back(LPP(v[i]));
@@ -302,7 +302,7 @@ namespace CoCoA {
   {
     CoCoA_ASSERT(IsPolyRing(R));
     const long d = ConvertTo<long>(D, ErrorInfo(ERR::ArgTooBig, "DensePoly_forC5"));
-    if (d<0)  CoCoA_THROW_ERROR(ERR::ReqNonNegative, "DensePoly_forC5");
+    if (d<0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     if (d==0) return one(R);
     return DensePolyRec(R, NumIndets(R), d);
   }
@@ -327,17 +327,17 @@ namespace CoCoA {
 
   BigInt NextPrime_forC5(const BigInt& N)
   {
-    if (N < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "NextPrime_forC5");
+    if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const ErrorInfo ErrMesg(ERR::ArgTooBig, "NextPrime_forC5");
     const long ans = NextPrime(ConvertTo<long>(N, ErrMesg));
-    if (ans == 0) CoCoA_THROW_ERROR(ERR::ArgTooBig, "NextPrime_forC5 -- see manual for NextProbPrime");
+    if (ans == 0)  CoCoA_THROW_ERROR2(ERR::ArgTooBig, "see manual for NextProbPrime");
     return BigInt(ans);
   }
 
 
   BigInt PrevPrime_forC5(const BigInt& N)
   {
-    if (N < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "PrevPrime_forC5");
+    if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const ErrorInfo ErrMesg(ERR::ArgTooBig, "PrevPrime_forC5");
     const long ans = PrevPrime(ConvertTo<long>(N, ErrMesg));
     return BigInt(ans);
@@ -347,8 +347,7 @@ namespace CoCoA {
   factorization<BigInt> FactorINT_forC5(const BigInt& N)
   {
     // 2024-03-18 CoCoALib does arg checking anyway
-//    if (N == 0)
-//      CoCoA_THROW_ERROR(ERR::ReqNonZero, "FactorINT_forC5");
+//    if (N == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     return factor(N);
   }
 
@@ -356,7 +355,7 @@ namespace CoCoA {
 //  2023-12-22  Commented out since FactorINT automatically times out.
 //   factorization<BigInt> FactorINT_timeout_forC5(const BigInt& N, const BigInt& TimeLimit)
 //   {
-//     if (N == 0)  CoCoA_THROW_ERROR(ERR::ReqNonZero, "FactorINT_timeout_forC5");
+//     if (N == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
 // //???    const ErrorInfo ErrMesg(ERR::ArgTooBig, "FactorINT_TimeOut_forC5");
 //     long secs; if (!IsConvertible(secs, TimeLimit))  CoCoA_THROW_ERROR(ERR::ArgTooBig, "FactorINT_timeout_forC5");
 //     if (secs < 0 || secs > 10000)  CoCoA_THROW_ERROR("Time limit must be between 0 and 10000", "FactorINT_timeout_forC5");
@@ -366,7 +365,7 @@ namespace CoCoA {
 
   factorization<BigInt> FactorINT_TrialDiv_forC5(const BigInt& N, const BigInt& TrialLimit)
   {
-    if (N == 0) CoCoA_THROW_ERROR(ERR::ReqNonZero, "Factor_TrialDiv_forC5");
+    if (N == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     const ErrorInfo ErrMesg(ERR::ArgTooBig, "FactorINT_TrialDiv_forC5");
     return factor_TrialDiv(N, ConvertTo<long>(TrialLimit, ErrMesg));
   }
@@ -374,7 +373,7 @@ namespace CoCoA {
 
   factorization<BigInt> FactorINT_PollardRho_forC5(const BigInt& N, const BigInt& TrialLimit)
   {
-    if (N == 0) CoCoA_THROW_ERROR(ERR::ReqNonZero, "FactorINT_PollardRho_forC5");
+    if (N == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     const ErrorInfo ErrMesg(ERR::ArgTooBig, "FactorINT_PollardRho_forC5");
     return factor_PollardRho(N, ConvertTo<long>(TrialLimit, ErrMesg));
   }
@@ -382,7 +381,7 @@ namespace CoCoA {
 
   std::vector<long> AllFactors_forC5(const BigInt& N)
   {
-    if (N < 0)  CoCoA_THROW_ERROR(ERR::ReqPositive, "AllFactors_forC5");
+    if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     const ErrorInfo ErrMesg(ERR::ArgTooBig, "AllFactors_forC5");
     return AllFactors(ConvertTo<long>(N, ErrMesg));
   }
@@ -480,8 +479,7 @@ namespace CoCoA {
   {
     vector<long> indices(len(v));
     for (long i=0; i<len(v); ++i)
-      if (!IsIndet(indices[i], v[i]))
-        CoCoA_THROW_ERROR(ERR::ReqIndet, "ContentWRT_forC5");
+      if (!IsIndet(indices[i], v[i]))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
     return ContentWRT(f, indices);
   }
 
@@ -490,8 +488,7 @@ namespace CoCoA {
   {
     vector<long> indices(len(v));
     for (long i=0; i<len(v); ++i)
-      if (!IsIndet(indices[i], v[i]))
-        CoCoA_THROW_ERROR(ERR::ReqIndet, "ContentWRT_forC5");
+      if (!IsIndet(indices[i], v[i]))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
     return CoefficientsWRT(f, indices);
   }
 
@@ -508,7 +505,7 @@ namespace CoCoA {
   RingElem HomogCompt_forC5(ConstRefRingElem f, const BigInt& D)
   {
     long d;
-    if (!IsConvertible(d, D)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "HomogCompt");
+    if (!IsConvertible(d, D)) CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return HomogCompt(f,d);
   }
 
@@ -518,8 +515,7 @@ namespace CoCoA {
   RingElem resultant_forC5(ConstRefRingElem f, ConstRefRingElem g, ConstRefRingElem x)
   {
     long x_index; // will be assigned by call to IsIndet
-    if (!IsIndet(x_index, x))
-      CoCoA_THROW_ERROR("3rd arg must be an indet", "resultant");
+    if (!IsIndet(x_index, x))  CoCoA_THROW_ERROR2(ERR::ReqIndet, "arg 3");
     return resultant(f,g, x_index);
   }
 
@@ -528,8 +524,7 @@ namespace CoCoA {
   RingElem discriminant_forC5(ConstRefRingElem f, ConstRefRingElem x)
   {
     long x_index; // will be assigned by call to IsIndet
-    if (!IsIndet(x_index, x))
-      CoCoA_THROW_ERROR("arg 2 must be an indet", "discriminant");
+    if (!IsIndet(x_index, x))  CoCoA_THROW_ERROR2(ERR::ReqIndet, "arg 2");
     return discriminant(f, x_index);
   }
 
@@ -550,7 +545,7 @@ namespace CoCoA {
                  const SparsePolyRing& P, ConstMatrixView OrigPts, ConstMatrixView OrigTolerance)
   {
     std::vector<vector<RingElem> > pts(GetRows(CanonicalHom(RingQQ(), CoeffRing(P))( OrigPts )));
-    if (NumRows(OrigTolerance) != 1) CoCoA_THROW_ERROR(ERR::BadMatrixSize, "ApproxPointsNBM");
+    if (NumRows(OrigTolerance) != 1)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     vector<RingElem> tol(GetRow(OrigTolerance, 0));
     vector<PPMonoidElem> tmpQB0;
     vector<RingElem> BB0;
@@ -567,7 +562,7 @@ namespace CoCoA {
                              const SparsePolyRing& P, ConstMatrixView OrigPts, ConstMatrixView OrigTolerance)
   {
     std::vector<vector<RingElem> > pts(GetRows(CanonicalHom(RingQQ(), CoeffRing(P))( OrigPts )));
-    if (NumRows(OrigTolerance) != 1) CoCoA_THROW_ERROR(ERR::BadMatrixSize, "ApproxPointsSOI");
+    if (NumRows(OrigTolerance) != 1)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     vector<RingElem> tol(GetRow(OrigTolerance, 0));
     vector<PPMonoidElem> tmpQB0;
     vector<RingElem> BB0;
@@ -584,7 +579,7 @@ namespace CoCoA {
   RingElem ClosePassingPoly_forC5(const ring& R, ConstMatrixView OrigPts, ConstMatrixView OrigTolerance)
   {
     std::vector<vector<RingElem> > pts(GetRows(CanonicalHom(RingQQ(), CoeffRing(R))( OrigPts )));
-    if (NumRows(OrigTolerance) != 1) CoCoA_THROW_ERROR(ERR::BadMatrixSize, "AlmostVanishing_forC5");
+    if (NumRows(OrigTolerance) != 1)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     vector<RingElem> tol(GetRow(OrigTolerance, 0));
     vector<RingElem> poly0;
     vector<ApproxPts::PointR> NewPointsVec0;
@@ -602,13 +597,13 @@ namespace CoCoA {
                            ConstMatrixView OrigPts,
                            ConstMatrixView epsilon)
   {
-    if (!IsOrderedDomain(RingOf(OrigPts))) CoCoA_THROW_ERROR(ERR::ReqOrdDom, "PreprocessGridAlgm_forC5");
-    if (RingOf(epsilon) != RingOf(OrigPts)) CoCoA_THROW_ERROR(ERR::MixedRings, "PreprocessGridAlgm_forC5");
+    if (!IsOrderedDomain(RingOf(OrigPts)))  CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
+    if (RingOf(epsilon) != RingOf(OrigPts))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     const long NumPts = NumRows(OrigPts);
     const long dim = NumCols(OrigPts);
-    if (NumCols(epsilon) != dim || NumRows(epsilon) != 1) CoCoA_THROW_ERROR(ERR::BadMatrixSize, "PreprocessGridAlgm_forC5");
+    if (NumCols(epsilon) != dim || NumRows(epsilon) != 1)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     for (long j=0; j < dim; ++j)
-      if (epsilon(0,j) <= 0) CoCoA_THROW_ERROR(ERR::BadArg, "PreprocessGridAlgm epsilon");
+      if (epsilon(0,j) <= 0) CoCoA_THROW_ERROR2(ERR::ReqPositive, "epsilon");
     vector< vector<RingElem> > pts(NumPts, vector<RingElem>(dim));
     for (long i=0; i < NumPts; ++i)
       for (long j=0; j < dim; ++j)
@@ -625,7 +620,7 @@ namespace CoCoA {
       PreprocessPtsSubdiv(NewPts, weights, pts, eps);
     else if (WhichAlgm == "auto")
       PreprocessPts(NewPts, weights, pts, eps);
-    else CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "Unknown preprocessing algm");
+    else CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "Unknown preprocessing algm");
   }
 
 
@@ -633,7 +628,7 @@ namespace CoCoA {
   {
     PPOrdering PPO(ordering(PPM(RingOf(I))));
     if (GradingDim(PPO) ==0)  // aff -- see hp.cpkg5
-      CoCoA_THROW_ERROR(ERR::NYI, "HilbertNumQuot_forC5");
+      CoCoA_THROW_ERROR2(ERR::NYI, "GradingDim(PPO) is 0");
     //    if (GradingDim(PPO) >1)  // multigraded
     if (GradingDim(PPO) ==1)  // standard case
     {
@@ -780,8 +775,7 @@ namespace CoCoA {
   {
     const ErrorInfo ErrMesg(ERR::ArgTooBig, CoCoA_ERROR_CONTEXT);
     const long i = -1 + ConvertTo<long>(I,  ErrMesg);
-    if (len(v) != NumCols(M))
-      CoCoA_THROW_ERROR("Matrix must be rectangular", "SetRow_forC5");
+    if (len(v) != NumCols(M))  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     for (long j=0; j<NumCols(M); ++j)  SetEntry(M, i, j, v[j]);
   }
 
@@ -790,8 +784,7 @@ namespace CoCoA {
   {
     const ErrorInfo ErrMesg(ERR::ArgTooBig, CoCoA_ERROR_CONTEXT);
     const long j = -1 + ConvertTo<long>(J,  ErrMesg);
-    if (len(v) != NumRows(M))
-      CoCoA_THROW_ERROR("Matrix must be rectangular", "SetCol_forC5");
+    if (len(v) != NumRows(M))  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     for (long i=0; i<NumRows(M); ++i)  SetEntry(M, i, j, v[i]);
   }
 
@@ -885,8 +878,7 @@ namespace CoCoA {
   {
     if (!IsFreeModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
     const vector<ModuleElem>& e = gens(M);
-    if (len(e) != len(v))
-      CoCoA_THROW_ERROR("incompatible length", "NewFreeModuleElem");
+    if (len(e) != len(v))  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     ModuleElem res(M);
     for (long i=0; i<len(e); ++i)  res += v[i]*e[i];
     return res;
@@ -957,9 +949,9 @@ namespace CoCoA {
   std::vector<BigInt> LRSDegeneracyOrdersUnchecked_forC5(ConstRefRingElem f, const BigInt& VerifLevel)
   {
     long Vlev;
-    if (VerifLevel < 1) CoCoA_THROW_ERROR("arg2: VerifLevel must be >= 1", "LRSDegeneracyOrdersUnchecked");
+    if (VerifLevel < 1)  CoCoA_THROW_ERROR2(ERR::BadArg, "arg2: VerifLevel must be >= 1");
     if (!IsConvertible(Vlev, VerifLevel))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "LRSDegeneracyOrdersUnchecked (arg2)");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     
 // ALMOST    return VectorLong(LRSDegeneracyOrders(f,VerificationLevel(Vlev)));
     const vector<unsigned long> ords = LRSDegeneracyOrders(f, VerificationLevel(Vlev));
