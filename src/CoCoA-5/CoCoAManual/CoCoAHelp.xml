@@ -4931,11 +4931,11 @@ det(M: <type>MAT</type>): <rtn>RINGELEM</rtn>
 This function returns the determinant of the matrix <tt>M</tt>.
 <example>
 /**/  use R ::= QQ[x];
-/**/  M := mat(R,[[x,x^2], [x,x^3]]);
+/**/  M := mat([[x,x^2], [x,x^3]]);
 /**/  det(M);
 x^4 -x^3
 
-/**/ det(mat(QQ,[[1,2], [0,5]]));
+/**/ det(mat([[1,2], [0,5]]));
 5
 </example>
 </description>
