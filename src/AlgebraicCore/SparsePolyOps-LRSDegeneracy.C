@@ -250,7 +250,7 @@ namespace CoCoA
      */
     std::vector<unsigned long> LRSDegeneracyOrders_modular(RingElem f, unsigned long MULT, VerificationLevel VerifLev, FirstOrAll StopCriterion)
     {
-      const char* const FnName = "LRSDegeneracyOrder_modular";
+      const char* const FnName = "LRSDegeneracyOrders_modular";
       VerboseLog VERBOSE(FnName);
 
       const ErrorContext context = CoCoA_ERROR_CONTEXT;
@@ -317,7 +317,7 @@ namespace CoCoA
           if (k % ListOfOrders[i] == 0)
             R /= CommonFac[i];
         R = gcd(R, fy);
-        if (!IsConstant(R)) 
+        if (!IsConstant(R))
         {
           ListOfOrders.push_back(k);
           CommonFac.push_back(R);
