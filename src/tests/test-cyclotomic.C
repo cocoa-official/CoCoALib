@@ -1,4 +1,4 @@
-//   Copyright (c)  2023  John Abbott,  Anna M. Bigatti
+//   Copyright (c)  2023,2025  John Abbott,  Anna M. Bigatti
 //   Major contributions from Nico Mexis
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
@@ -19,15 +19,21 @@
 
 #include "CoCoA/assert.H"
 #include "CoCoA/BuildInfo.H"
+#include "CoCoA/combinatorics.H"
 #include "CoCoA/error.H"
 #include "CoCoA/GlobalManager.H"
+#include "CoCoA/RingQQ.H"
 #include "CoCoA/RingZZ.H"
 #include "CoCoA/SparsePolyRing.H"
 #include "CoCoA/SparsePolyOps-cyclotomic.H"
 
+#include <algorithm>
+using std::transform;
 #include <iostream>
 using std::cerr;
 using std::endl;
+#include <vector>
+using std::vector;
 
 namespace CoCoA
 {
@@ -56,7 +62,7 @@ namespace CoCoA
 
     RingElem l = RingElem(P, "x^10+x^9-x^7-x^6-x^5-x^4-x^3+x+1");
     CoCoA_ASSERT_ALWAYS(CyclotomicTest(l) == 0);
-    CoCoA_ASSERT_ALWAYS(CyclotomicIndex(l) == 11);  // false positive!
+    // Used to be a false positive!
 
     SparsePolyRing Pxy = NewPolyRing(RingZZ(), symbols("x,y")); // ZZ[x,y];
     RingElem m = RingElem(Pxy, "y^10+x^9-x^7-x^6-x^5-x^4-x^3+x+1");
@@ -91,6 +97,51 @@ namespace CoCoA
     }
   }
 
+  void TestExbugs()
+  {
+    const SparsePolyRing Px = NewPolyRing(RingQQ(), symbols("x"));
+    const RingElem x = indet(Px, 0);
+
+    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndexes(one(Px)).empty());
+    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndexes(2*one(Px)).empty());
+    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndexes(one(Px)/2).empty());
+
+    RingElem NastyFactor1 = one(Px); // large fixed divisor
+    RingElem NastyFactor2 = one(Px); // large fixed divisor & palindromic
+    for (int i=0; i < 50; ++i)
+    {
+      NastyFactor1 *= (x*x-i*i);
+      NastyFactor2 *= (x*x-i*i)*(i*i*x*x-1);
+    }
+
+    for (long i = 6; i < 100; ++i) // deliberately skip 1,2,3,4,5 (because 6 often appears as false positive)
+    {
+      const RingElem f = cyclotomic(i, x);
+      vector<long> CFI = CyclotomicFactorIndexes(f);
+      CoCoA_ASSERT_ALWAYS(len(CFI) == 1 && CFI[0] == i);
+      CFI = CyclotomicFactorIndexes(f*NastyFactor1);
+      CoCoA_ASSERT_ALWAYS(len(CFI) >= 3 && CFI[0] == 1 && CFI[1] == 2 && CFI.back() == i);
+      CFI = CyclotomicFactorIndexes(f*NastyFactor2);
+      CoCoA_ASSERT_ALWAYS(len(CFI) >= 3 && CFI[0] == 1 && CFI[1] == 2 && CFI.back() == i);
+    }
+  }
+
+  void TestAllCombinations()
+  {
+    const SparsePolyRing Px = NewPolyRing(RingZZ(), symbols("x"));
+    const RingElem x = indet(Px, 0);
+
+    for (SubsetIter it(10); !IsEnded(it); ++it)
+    {
+      vector<long> expected(len(*it));
+      std::transform((*it).begin(), (*it).end(), expected.begin(), [](int i){ return i+1;});
+      RingElem f = one(Px);
+      for (int j: expected)  f *= cyclotomic(j,x);
+      const vector<long> indexes = CyclotomicFactorIndexes(f);
+      CoCoA_ASSERT_ALWAYS(indexes == expected);
+    }
+  }
+
 
   void program()
   {
@@ -98,6 +149,8 @@ namespace CoCoA
 
     TestSpecialCases();
     TestUpto499();
+    TestExbugs();
+    TestAllCombinations();
   }
 
 } // end of namespace CoCoA
