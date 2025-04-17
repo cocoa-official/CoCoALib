@@ -35,15 +35,15 @@ namespace CoCoA
   // Below are fns to detect if a poly is cyclo
 
   // If f is (monic) cyclo, returns its index; o/w returns 0
-  unsigned long CyclotomicTest(ConstRefRingElem f);  // 
+  unsigned long CyclotomicTest(ConstRefRingElem f);  //
 
   // If f cyclo, return its index; o/w return some integer
   unsigned long CyclotomicIndex(ConstRefRingElem f);
 
 
-  // Return list of indexes of cyclo factors; may contain some false positives (usu. only 3, 4 and/or 6)
-  std::vector<long> CyclotomicFactorIndexes(RingElem f);
-  std::vector<long> CyclotomicFactorIndexes2(ConstRefRingElem f);
+  // Return list of indices of cyclo factors; may contain some false positives (usu. only 3, 4 and/or 6)
+  std::vector<long> CyclotomicFactorIndices(RingElem f);
+  std::vector<long> CyclotomicFactorIndices2(ConstRefRingElem f);
 
   // Returns a factorization containing all cyclotomic factors of f
   // (non-cyclo factors are discarded; so RemainingFactor is always 1)

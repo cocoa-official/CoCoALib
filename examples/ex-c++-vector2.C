@@ -28,7 +28,7 @@ namespace CoCoA
   // If you want to translate code from CoCoA-5 to C++ (using
   // features from CoCoALib too :-) then a LIST in CoCoA-5
   // should most likely bo converted to a C++ "vector".
-  // But do remember that for vectors INDEXES START AT 0.
+  // But do remember that for vectors INDICES START AT 0.
   // This example gives some guidance.
 
   void program()

@@ -42,11 +42,11 @@ namespace CoCoA
   void ComputeGBasisSelfSatCore(PolyList& outGB, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   void ComputeGBasisRealSolve(PolyList& outGB, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   //  void ComputeSATMixGBasis(PolyList& outGB, const PolyList& inGens);
-  
+
   void ComputeGBasis(VectorList& outGB, VectorList& outMinGens, const VectorList& inGens, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   void ComputeGBasisFrameWork(PolyList&, const PolyList&);
 
-// The second argument is the list of indexes of the
+// The second argument is the list of indices of the
 // indeterminates that will be eliminated
 void ComputeElim(VectorList&,const VectorList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
 void ComputeElim(PolyList&,const PolyList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());

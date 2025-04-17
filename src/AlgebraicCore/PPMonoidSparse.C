@@ -61,7 +61,7 @@ namespace CoCoA
   // where the struct IndexExp is defined immediately below:
   //  it is just a pair of longs being indeterminate index, and exponent
   //  with the rule that the exponent must be positive (surely non-zero).
-  // The entries in a list are ordered so that the indet indexes are
+  // The entries in a list are ordered so that the indet indices are
   // in (strictly) increasing order.
   // IDEA (NYI): include a first IndexExp with index -1 and exp being
   // the total degree (this would be helpful for deg-compat orderings).
@@ -271,13 +271,13 @@ namespace CoCoA
     import(rawpp).clear();
   }
 
-  
+
   void PPMonoidSparseImpl::myAssign(RawPtr rawpp, ConstRawPtr rawpp1) const
   {
     import(rawpp) = import(rawpp1);
   }
 
-  
+
   void PPMonoidSparseImpl::myAssign(RawPtr rawpp, const std::vector<long>& expv) const
   {
     RawPtr rawrhs = myNew(expv);
@@ -285,7 +285,7 @@ namespace CoCoA
     myDelete(rawrhs);
   }
 
-  
+
   void PPMonoidSparseImpl::myMul(RawPtr rawpp, ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
   {
     unique_ptr<value_t> ans;
@@ -412,7 +412,7 @@ namespace CoCoA
     std::swap(import(rawpp), *ans);
   }
 
-  
+
   void PPMonoidSparseImpl::myLcm(RawPtr rawpp, ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
   {
     unique_ptr<value_t> ans;
@@ -700,7 +700,7 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
     E = myExponent(rawpp, indet);
   }
 
-  
+
   void PPMonoidSparseImpl::myExponents(std::vector<long>& expv, ConstRawPtr rawpp) const
   {
     CoCoA_ASSERT(len(expv) == myNumIndets);
@@ -729,7 +729,7 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
     }
   }
 
-  
+
   void PPMonoidSparseImpl::myIndetsIn(std::vector<bool>& v, ConstRawPtr rawpp) const
   {
     CoCoA_ASSERT(len(v) == myNumIndets);
@@ -757,7 +757,7 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
     DivMaskImpl->myAssignFromExpv(dm, &expv[0], myNumIndets);
   }
 
-  
+
   void PPMonoidSparseImpl::myOutputSelf(std::ostream& out) const
   {
     if (!out) return;  // short-cut for bad ostreams
@@ -776,14 +776,14 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
   {
   // Sanity check on the indet names given.
     const long nvars = NumIndets(ord);
-  
+
     if (len(IndetNames) != nvars)
       CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPPMonoidSparse(IndetNames,ord)");
     if (!AreDistinct(IndetNames))
       CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidSparse(IndetNames,ord)");
     if (!AreArityConsistent(IndetNames))
       CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidSparse(IndetNames,ord)");
-  
+
     return PPMonoid(new PPMonoidSparseImpl(IndetNames, ord));
   }
 
