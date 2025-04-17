@@ -570,8 +570,7 @@ namespace CoCoA
 
   const FractionField& RingQQ()
   {
-    if (GlobalManager::ourGlobalDataPtr == 0)
-      CoCoA_THROW_ERROR(ERR::NoGlobalMgr, "RingQQ()");
+    if (!IsInitialized())  CoCoA_THROW_ERROR1(ERR::NoGlobalMgr);
     return GlobalManager::ourGlobalDataPtr->myRingQQ();
   }
 
