@@ -42,7 +42,7 @@ namespace CoCoA
 
 
   // Return list of indexes of cyclo factors; may contain some false positives (usu. only 3, 4 and/or 6)
-  std::vector<long> CyclotomicFactorIndexes(ConstRefRingElem f);
+  std::vector<long> CyclotomicFactorIndexes(RingElem f);
   std::vector<long> CyclotomicFactorIndexes2(ConstRefRingElem f);
 
   // Returns a factorization containing all cyclotomic factors of f
