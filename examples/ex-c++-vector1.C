@@ -29,7 +29,7 @@ namespace CoCoA
   // If you want to translate code from CoCoA-5 to C++ (using
   // features from CoCoALib too :-) then a LIST in CoCoA-5
   // should most likely be converted to a C++ "vector".
-  // But do remember that for vectors INDEXES START AT 0.
+  // But do remember that for vectors INDICES START AT 0.
   // This example gives some guidance; see also ex-c++-vector2.C
 
   void program()
@@ -42,7 +42,7 @@ namespace CoCoA
 
     // Use function len to count how many values are in a vector
     const long n = len(v);  // number of entries in v
-    
+
     // >>> VECTOR INDICES START AT 0 AND GO TO n-1 <<<
     for (long i=0; i < n; ++i)
     {

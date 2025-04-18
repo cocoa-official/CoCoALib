@@ -80,8 +80,8 @@ ring ringForList(const intrusive_ptr<const LIST> list) {
     return RingQQ();
   return RingZZ();
 }
- 
- 
+
+
 vector<RingElem> toRingElemList(const intrusive_ptr<const LIST> list, const intrusive_ptr<const Expression> exp, const ring &ring) {
   const LIST::ContainerType::size_type size = list->size();
   vector<RingElem> result;
@@ -108,7 +108,7 @@ vector<RingElem> RuntimeEnvironment::evalArgAsListOfRingElem(const ring &R, cons
 
 
 vector<RingElem> RuntimeEnvironment::evalArgAsListOfRingElem(const Argument &arg)
-{  
+{
 	const intrusive_ptr<const LIST> list = this->evalArgAs<LIST>(arg);
 	return toRingElemList(list, arg.exp, ringForList(list));
 }
@@ -119,14 +119,14 @@ vector<RingElem> RuntimeEnvironment::SpecializeToListOfRingElem(const boost::int
 
 
 vector<RingElem> RuntimeEnvironment::evalRVAsListOfRingElem(const ring &R, const boost::intrusive_ptr<const RightValue> RV, const Argument &arg)
-{  
+{
 	const intrusive_ptr<const LIST> list = boost::dynamic_pointer_cast<const LIST>(RV);
 	return toRingElemList(list, arg.exp, R);
 }
 
 
 vector<RingElem> RuntimeEnvironment::evalRVAsListOfRingElem(const boost::intrusive_ptr<const RightValue> RV, const Argument &arg)
-{  
+{
 	const intrusive_ptr<const LIST> list = boost::dynamic_pointer_cast<const LIST>(RV);
 	return toRingElemList(list, arg.exp, ringForList(list));
 }
@@ -139,7 +139,7 @@ vector<symbol> RuntimeEnvironment::evalArgAsListOfSymbols(const Argument &arg)
   switch (which)
   {
   case 1: return symbols(RefTo<string>(v));
-  case 2: 
+  case 2:
   {
     vector<symbol> syms;
     intrusive_ptr<LIST> l = this->evalArgAs<LIST>(arg);
@@ -166,7 +166,7 @@ vector<symbol> RuntimeEnvironment::evalArgAsListOfSymbols(const Argument &arg)
         LIST::ContainerType::size_type NumIndices = inds->size();
         for (unsigned long j=0; j<NumIndices; ++j)
         {
-          if (boost::dynamic_pointer_cast<INT>(inds->getValue(j)) == nullptr) 
+          if (boost::dynamic_pointer_cast<INT>(inds->getValue(j)) == nullptr)
             throw RuntimeException("Indices must be integers", arg.exp);
 
           if (IsConvertible(tmp, (boost::dynamic_pointer_cast<INT>(inds->getValue(j)))->theBigInt))
@@ -2395,7 +2395,7 @@ void VariableName::checkAssignable(RuntimeEnvironment* /*runtimeEnv*/) const
         {
 		assert(f==this->runtimeEnvironment->getTopLevelFrame());
 		index = this->runtimeEnvironment->slotFor(this->expId->identifier);
-		if (index < 0) return; 
+		if (index < 0) return;
 	}
 	VariableSlot *vs = &(f->varSlots[index]);
 	CheckProtection(vs, this->expId, this->runtimeEnvironment, "set");
@@ -3331,7 +3331,7 @@ void RuntimeEnvironment::collectSimilarlyNamedIdentifiers(const string &id, int 
    r->setFieldNoCheck("DenFactors", Value::from(DenFactors(s)));
    return r;
  }
- 
+
  boost::intrusive_ptr<LIST> Value::from(const degree &x)
  { return Value::from(DegreeToVec(x)); }
 
@@ -3546,7 +3546,7 @@ intrusive_ptr<Value> IsInExpression::implEval(RuntimeEnvironment *runtimeEnv) co
   }
   // Not a recognised container type, so give error
   throw WrongTypeException(
-    LIST::type->name + " or " + STRING::type->name + " or " + 
+    LIST::type->name + " or " + STRING::type->name + " or " +
     IDEAL::type->name + " or " + MODULE::type->name,
     container->getType()->name,
     this->rightExp);
@@ -3844,7 +3844,7 @@ intrusive_ptr<Value> IndexedAccessExpression::implEval(RuntimeEnvironment *runti
 	const CharPointer targetExpBegin = this->targetExp->getBegin();
 	CharPointer targetExpEnd = this->targetExp->getEnd();
         // 2020-11-04 Loop below is a little complicated so that it can give helpful err mesgs (redmine 1527)
-        for (const intrusive_ptr<Expression>& indexExp: this->indexes) // added reference to avoid compiler warning
+        for (const intrusive_ptr<Expression>& indexExp: this->indices) // added reference to avoid compiler warning
         {
           const CharPointer indexExpBegin = indexExp->getBegin();
           const CharPointer indexExpEnd = indexExp->getEnd();
@@ -4072,15 +4072,15 @@ intrusive_ptr<RING> RingDefinition::eval(InterpreterNS::RuntimeEnvironment *runt
                               throw RuntimeException("The upper bound is smaller than the lower bound", p.first->getBegin(), p.second->getEnd());
                             ranges.push_back(make_pair(l1, l2));
                           }
-                          vector<long> indexes;
+                          vector<long> indices;
                           for (vector<pair<long, long> >::size_type a=0; a<ranges.size(); ++a)
-                            indexes.push_back(ranges[a].first);
+                          indices.push_back(ranges[a].first);
                           for (;;) {
-                            symbols.push_back(symbol(ind->identifier->identifier, indexes));
-                            int incIndex = indexes.size()-1;
+                            symbols.push_back(symbol(ind->identifier->identifier, indices));
+                            int incIndex = indices.size()-1;
                             while (incIndex>=0)
-                              if ( ++indexes[incIndex]>ranges[incIndex].second ) {
-                                indexes[incIndex] = ranges[incIndex].first;
+                              if ( ++indices[incIndex]>ranges[incIndex].second ) {
+                                indices[incIndex] = ranges[incIndex].first;
                                 --incIndex;
                               } else
                                 break;
@@ -4410,7 +4410,7 @@ void PackageStatement::implExecute(RuntimeEnvironment *runtimeEnv) {
 		assert(tlFrame->varSlots[tlIndex].value);
 		intrusive_ptr<PackageValue> oldPkg = intrusive_ptr_cast<PackageValue>(tlFrame->varSlots[tlIndex].value);
 		runtimeEnv->interpreter->reportWarning("Package "+this->name+" has been redefined", this->beginSourcePosition, this->tokName.getEnd());
-		for (int index: oldPkg->ownedTopLevelIndexes)
+		for (int index: oldPkg->ownedTopLevelIndices)
                 {
                   assert(index>=0 && static_cast<vector<VariableSlot>::size_type >(index)<tlFrame->varSlots.size());
                   VariableSlot &vs = tlFrame->varSlots[index];
@@ -4436,11 +4436,11 @@ void PackageStatement::implExecute(RuntimeEnvironment *runtimeEnv) {
             const string identifier = this->name+"."+idExp->identifier;
             memberVars.push_back(make_pair(identifier, assignment));
             const int index = runtimeEnv->setTopLevelVar(identifier, VoidValue::theInstance, VariableSlot::VSF_None);
-            newPackage->ownedTopLevelIndexes.push_back(index);
+            newPackage->ownedTopLevelIndices.push_back(index);
           } else if (const intrusive_ptr<const DefineStatement> define = dynamic_pointer_cast<const DefineStatement>(statement)) {
             define->funDecl->accept(&rpnv);
             const int index = runtimeEnv->setTopLevelVar(this->name+"."+define->name, new UserDefinedFunction(runtimeEnv, define->funDecl), VariableSlot::VSF_SystemProtected);
-            newPackage->ownedTopLevelIndexes.push_back(index);
+            newPackage->ownedTopLevelIndices.push_back(index);
             tlFrame->varSlots[index].setProtectionReason(protectionReason);
           } else
             assert(false);
@@ -4464,7 +4464,7 @@ void PackageStatement::implExecute(RuntimeEnvironment *runtimeEnv) {
           const int indexFullyQualified = runtimeEnv->slotFor(this->name+"."+name);
           assert(indexFullyQualified>=0);
           index = runtimeEnv->setTopLevelVar(name, VoidValue::theInstance, VariableSlot::VSF_Package);
-          newPackage->ownedTopLevelIndexes.push_back(index);
+          newPackage->ownedTopLevelIndices.push_back(index);
           intrusive_ptr<Identifier> id(new Identifier(tokName));
           id->varData.depth = StaticEnv::TOP_LEVEL;
           id->varData.index = indexFullyQualified;

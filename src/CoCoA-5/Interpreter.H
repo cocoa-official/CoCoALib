@@ -525,7 +525,7 @@ public:
 	explicit LIST(const ContainerType::size_type reserveSize) { this->container.reserve(reserveSize); }
 	ContainerType::size_type checkIndex(const boost::intrusive_ptr<const RightValue> v, const boost::intrusive_ptr<const AST::Expression> originalExp) const;
   ContainerType::size_type checkIndexOrEnd(const boost::intrusive_ptr<const RightValue> v, const boost::intrusive_ptr<const AST::Expression> originalExp) const;
-  
+
 	boost::intrusive_ptr<TYPE> getType() const;
 	boost::intrusive_ptr<Value> indexedByBigInt(boost::intrusive_ptr<INT> index, const LexerNS::CharPointer &targetExpBegin, const LexerNS::CharPointer &targetExpEnd, const LexerNS::CharPointer &indexExpBegin, const LexerNS::CharPointer &indexExpEnd);
 	bool canBeIndexedByBigInt() { return true; }
@@ -825,7 +825,7 @@ private:
 class PackageValue : public ImmutableRightValue {
 	friend void AST::PackageStatement::implExecute(InterpreterNS::RuntimeEnvironment *);
 	PackageValue(const boost::intrusive_ptr<const AST::PackageStatement> pkgDecl);
-	std::vector<int> ownedTopLevelIndexes;
+	std::vector<int> ownedTopLevelIndices;
 public:
 	const boost::intrusive_ptr<const AST::PackageStatement> pkgDecl;
 	static boost::intrusive_ptr<TYPE> type;
@@ -971,7 +971,7 @@ template <typename T> const typename CoCoALibType<T>::type& theValue(boost::intr
   template <> inline const module& theValue<MODULE>(boost::intrusive_ptr<MODULE> x) { return x->theModule; }
   template <> inline const module& theValue<const MODULE>(boost::intrusive_ptr<const MODULE> x) { return x->theModule; }
   template <> inline const ModuleElem& theValue<MODULEELEM>(boost::intrusive_ptr<MODULEELEM> x) { return x->theModuleElem; }
-  template <> inline const ModuleElem& theValue<const MODULEELEM>(boost::intrusive_ptr<const MODULEELEM> x) { return x->theModuleElem; }  
+  template <> inline const ModuleElem& theValue<const MODULEELEM>(boost::intrusive_ptr<const MODULEELEM> x) { return x->theModuleElem; }
 
 
 class RuntimeEnvironment {
@@ -1013,7 +1013,7 @@ public:
 	template <typename T> boost::intrusive_ptr<T> evalArgAs(const AST::Argument &arg);
 	template <typename T> std::vector<typename CoCoALibType<T>::type > evalArgAsListOf(const AST::Argument &arg);
 	template <typename T> std::vector<typename CoCoALibType<T>::type > evalAllArgsAsListOf(const boost::intrusive_ptr<const AST::InvocationExpression> invocationExpression);
-  std::vector<RingElem> evalArgAsListOfRingElem(const AST::Argument &arg); 
+  std::vector<RingElem> evalArgAsListOfRingElem(const AST::Argument &arg);
   std::vector<RingElem> evalRVAsListOfRingElem(const boost::intrusive_ptr<const RightValue> RV, const AST::Argument &arg); // arg only for indicating errors
   std::vector<RingElem> evalRVAsListOfRingElem(const ring& R, const boost::intrusive_ptr<const RightValue> RV, const AST::Argument &arg); // arg only for indicating errors
   std::vector<RingElem> evalArgAsListOfRingElem(const ring& R, const AST::Argument &arg);
@@ -1209,7 +1209,7 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5> boost
 }
 
   template <typename T1, typename T2, typename T3,
-            typename T4, typename T5, typename T6> 
+            typename T4, typename T5, typename T6>
   boost::intrusive_ptr<RightValue> RuntimeEnvironment::evalArgAsT1orT2orT3orT4orT5orT6(const AST::Argument &arg, int &which) {
 	const boost::intrusive_ptr<RightValue> v = this->evalArgAs<RightValue>(arg);
 	if (const boost::intrusive_ptr<T1> x = boost::dynamic_pointer_cast<T1>(v)) {
@@ -1243,7 +1243,7 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5> boost
 }
 
   template <typename T1, typename T2, typename T3,
-            typename T4, typename T5, typename T6, typename T7> 
+            typename T4, typename T5, typename T6, typename T7>
   boost::intrusive_ptr<RightValue> RuntimeEnvironment::evalArgAsT1orT2orT3orT4orT5orT6orT7(const AST::Argument &arg, int &which) {
 	const boost::intrusive_ptr<RightValue> v = this->evalArgAs<RightValue>(arg);
 	if (const boost::intrusive_ptr<T1> x = boost::dynamic_pointer_cast<T1>(v)) {

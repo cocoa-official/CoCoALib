@@ -12,7 +12,7 @@ const string ShortDescription =
 
 const string LongDescription =
   "This example illustrates use of the iterators for subsets and for tuples.  \n"
-  "The iterators actually work on \"indexes\" in the range 0 to n-1.          \n";
+  "The iterators actually work on \"indices\" in the range 0 to n-1.          \n";
 //----------------------------------------------------------------------
 
 namespace CoCoA
@@ -67,7 +67,7 @@ namespace CoCoA
       ++counter;
     }
     cout << "There are " << counter << " distinct 3-tuples of elements from {0,1,...,7}." << endl;
-    
+
   }
 
 } // end of namespace CoCoA

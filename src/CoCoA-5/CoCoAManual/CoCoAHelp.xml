@@ -210,9 +210,9 @@ R/I      R: <type>RING</type>, I: <type>IDEAL</type>  returns <rtn>RING</rtn>
 <par/>
 <tt>I : J</tt>   equivalent to <tt>colon(I, J)</tt>
 <par/>
-<tt>L[N]</tt>    access <tt>N</tt>-th entry of list <tt>L</tt> (indexes start from 1)
+<tt>L[N]</tt>    access <tt>N</tt>-th entry of list <tt>L</tt> (indices start from 1)
 <par/>
-<tt>S[N]</tt>    access <tt>N</tt>-th char of string <tt>L</tt> (indexes start from 1)
+<tt>S[N]</tt>    access <tt>N</tt>-th char of string <tt>L</tt> (indices start from 1)
 <par/>
 <tt>M[i,j]</tt>  access entry <tt>i,j</tt> in matrix <tt>M</tt>
 <par/>
@@ -909,7 +909,7 @@ ArrBettiNumbers(A: <type>LIST</type>): <rtn>LIST</rtn>
 This function returns the list <tt>[b_0,b_1,...,b_l]</tt> of the Betti numbers
 from the list <tt>A</tt> of hyperplanes in the arrangement.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ ArrBettiNumbers(A);
 [1,  3,  2]
@@ -932,7 +932,7 @@ ArrBoolean(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 This function constructs the boolean arrangement in the first <tt>k</tt>
 variables of the polynomial ring <tt>S</tt>.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrBoolean(S, 3);
 [x,  y,  z]
 </example>
@@ -953,7 +953,7 @@ ArrBraid(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the braid arrangement in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrBraid(S, 3);
 [x -y,  x -z,  y -z]
 </example>
@@ -974,7 +974,7 @@ ArrCatalanA(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the Catalan arrangement of type A in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrCatalanA(S, 2);
 [x -y,  x -y -1,  x -y +1]
 </example>
@@ -995,7 +995,7 @@ ArrCatalanB(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the Catalan arrangement of type B in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrCatalanB(S, 2);
 [x,  y,  x -y,  x +y,  x -1,  y -1,  x -y -1,  x +y -1,  x +1,  y +1,  x -y +1,  x +y +1]
 </example>
@@ -1013,7 +1013,7 @@ ArrCatalanD(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the Catalan arrangement of type D in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrCatalanD(S, 2);
 [x -y,  x +y,  x -y -1,  x +y -1,  x -y +1,  x +y +1]
 </example>
@@ -1034,14 +1034,14 @@ ArrCharPoly(A: <type>LIST</type>): <rtn>RINGELEM</rtn>
 <description>
 This function returns the characteristic polynomial from the list A of hyperplanes in the arrangement in the variable t.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ ArrCharPoly(A);
 t^2 -3*t +2
 /**/ RingOf(ArrCharPoly(A));
 RingWithID(4, "QQ[t]")
 
-/**/ use ZZ/(5)[x,y];	
+/**/ use ZZ/(5)[x,y];
 /**/ A := [x, x-y, y];
 /**/ ArrCharPoly(A);
 t^2 -3*t +2
@@ -1069,7 +1069,7 @@ This function returns the list of hyperplanes of the cone of the list
 <tt>A</tt> of hyperplanes of an arrangement with respect to the
 indeterminate <tt>t</tt>.
 <example>
-/**/ use QQ[x,y,t];	
+/**/ use QQ[x,y,t];
 /**/ A := [x, x-1, y];
 /**/ ArrCone(A, t);
 [x,  x -t,  y,  t]
@@ -1123,9 +1123,9 @@ ArrDerModule(Q: <type>RINGELEM</type>): <rtn>MAT</rtn>
 <description>
 This function returns the matrix whose columns are a set of generators of the module of logarithmic derivations of an arrangement of hyperplanes described by its defining equation Q.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
-/**/ Q_A := product(A);	
+/**/ Q_A := product(A);
 /**/ ArrDerModule(Q_A);
 matrix( /*RingWithID(70, "QQ[x,y]")*/
  [[x,  0],
@@ -1137,7 +1137,7 @@ matrix( /*RingWithID(70, "QQ[x,y]")*/
 matrix( /*RingWithID(78, "QQ[x,y,z]")*/
  [[x,  0,  0,  0],
   [y,  y^2 +(-3/2)*y*z,  0,  x*y +y*z],
-  [z,  0,  x*y +(-3/2)*x*z +y*z +(-3/2)*z^2,  x*z +z^2]])	
+  [z,  0,  x*y +(-3/2)*x*z +y*z +(-3/2)*z^2,  x*z +z^2]])
 </example>
 </description>
 <seealso>
@@ -1158,12 +1158,12 @@ ArrExponents(Q: <type>RINGELEM</type>): <rtn>LIST</rtn>
 <description>
 This function returns the list of exponents of a free arrangement of hyperplanes from its defining equation Q.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y]; -- free
-/**/ Q_A := product(A);	
+/**/ Q_A := product(A);
 /**/ ArrExponents(Q_A);
 [1,  2]
-	
+
 /**/ use QQ[x,y,z];
 /**/ A := [x, x+z, y, 2*y-3*z]; -- not free
 /**/ IsArrFree(product(A)); --> false
@@ -1189,7 +1189,7 @@ ArrFlats(A: <type>LIST</type>): <rtn>LIST</rtn>
 This function returns the list of flats from the list <tt>A</tt> of hyperplanes
 in the arrangement.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ ArrFlats(A);
 [[ideal(0)],  [ideal(x),  ideal(x -y),  ideal(y)],  [ideal(x,  y)]]
@@ -1213,11 +1213,11 @@ ArrGraphical(S: <type>RING</type>, edgesG: <type>LIST</type>): <rtn>LIST</rtn>
 This function constructs the graphical arrangement with respect to the
 list of edges edgesG of the graph G in the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrGraphical(S, [[1,2],[1,3]]);
 [x -y,  x -z]
 
-/**/ use S::=QQ[x[1..3]];	
+/**/ use S::=QQ[x[1..3]];
 /**/ ArrGraphical(S, [[1,2],[1,3]]);
 [x[1] -x[2],  x[1] -x[3]]
 </example>
@@ -1239,7 +1239,7 @@ ArrLattice(A: <type>LIST</type>): <rtn>LIST</rtn> of <rtn>LIST</rtn>
 This function returns the list of relations of the lattice from the
 list A of hyperplanes in the arrangement.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ ArrLattice(A);
 [[1,  2],  [1,  3],  [1,  4],  [2,  5],  [3,  5],  [4,  5]]
@@ -1263,7 +1263,7 @@ ArrPoincarePoly(A: <type>LIST</type>): <rtn>RINGELEM</rtn>
 This function returns the Poincare polynomial from the list A of
 hyperplanes in the arrangement in the variable t.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ ArrPoincarePoly(A);
 2*t^2 +3*t +1
@@ -1288,7 +1288,7 @@ ArrRestriction(A: <type>LIST</type>, H: <type>RINGELEM</type>): <rtn>LIST</rtn>
 This function returns the list of hyperplanes in the variables
 [y[1],..,y[n]] obtained by restricting to the hyperplane H of the list A of hyperplanes of an arrangement.
 <example>
-/**/ use QQ[x,y,z];	
+/**/ use QQ[x,y,z];
 /**/ A := [x, x-z, y-z, z];
 /**/ ArrRestriction(A, y-z);
 [y[1],  y[1] -y[2],  y[2]]
@@ -1311,7 +1311,7 @@ ArrShiA(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the Shi arrangement of type A in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrShiA(S, 3);
 [x -y,  x -z,  y -z,  x -y -1,  x -z -1,  y -z -1]
 </example>
@@ -1329,7 +1329,7 @@ ArrShiB(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the Shi arrangement of type B in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrShiB(S, 2);
 [x,  y,  x -y,  x +y,  x -1,  y -1,  x -y -1,  x +y -1]
 </example>
@@ -1339,7 +1339,7 @@ This function constructs the Shi arrangement of type B in the first k variables 
 <keys>
   <key>author: palezzato, torielli</key>
 </keys>
-</command>	
+</command>
 <!-- ===  COMMAND  ========================================== -->
 <command>
   <title>ArrShiCatalanA</title>
@@ -1350,7 +1350,7 @@ ArrShiCatalanA(S: <type>RING</type>, k: <type>INT</type>, L: <type>LIST</type>):
 <description>
 This function constructs the Shi-Catalan arrangement of type A in the first k variables of the polynomial ring S with multiplicities L[1] and L[2].
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ L:=[-1,2];
 /**/ ArrShiCatalanA(S, 3, L);
 [x -y,  x -z,  y -z,  x -y -1,  x -z -1,  y -z -1,  x -y +1,  x -y +2,  x -z +1,  x -z +2,  y -z +1,  y -z +2]
@@ -1373,7 +1373,7 @@ ArrShiCatalanB(S: <type>RING</type>, k: <type>INT</type>, L: <type>LIST</type>):
 This function constructs the Shi-Catalan arrangement of type B in the first k variables of the polynomial ring S with multiplicities L[1] and L[2].
 <example>
 /**/ use S::=QQ[x,y,z];
-/**/ L:=[-1,2];	
+/**/ L:=[-1,2];
 /**/ ArrShiCatalanB(S, 2, L);
 [x,  y,  x -y,  x +y,  x -1,  y -1,  x -y -1,  x +y -1,  x +1,  x +2,  y +1,  y +2,  x -y +1,  x -y +2,  x +y +1,  x +y +2]
 </example>
@@ -1391,7 +1391,7 @@ ArrShiCatalanD(S: <type>RING</type>, k: <type>INT</type>, L: <type>LIST</type>):
 <description>
 This function constructs the Shi-Catalan arrangement of type D in the first k variables of the polynomial ring S with multiplicities L[1] and L[2].
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ L:=[-1,2];
 /**/ ArrShiCatalanD(S, 2, L);
 [x -y,  x +y,  x -y -1,  x +y -1,  x -y +1,  x -y +2,  x +y +1,  x +y +2]
@@ -1413,7 +1413,7 @@ ArrShiD(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the Shi arrangement of type D in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrShiD(S, 2);
 [x -y,  x +y,  x -y -1,  x +y -1]
 </example>
@@ -1423,7 +1423,7 @@ This function constructs the Shi arrangement of type D in the first k variables 
 <keys>
   <key>author: palezzato, torielli</key>
 </keys>
-</command>	
+</command>
 <!-- ===  COMMAND  ========================================== -->
 <command>
   <title>ArrSignedGraphical</title>
@@ -1437,11 +1437,11 @@ to the list of positive edges <tt>PositiveEdgesG</tt>, of negative edges
 <tt>NegativeEdgesG</tt> and of loops <tt>loopsG</tt> of the signed graph <tt>G</tt>
 in the polynomial ring <tt>S</tt>.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrSignedGraphical(S, [[1,2],[1,3]],[[2,3]],[1,3]);
 [x -y,  x -z,  y +z,  x,  z]
 
-/**/ use S::=QQ[x[1..3]];	
+/**/ use S::=QQ[x[1..3]];
 /**/ ArrSignedGraphical(S, [[1,2],[1,3]],[[2,3]],[1,3]);
 [x[1] -x[2],  x[1] -x[3],  x[2] +x[3],  x[1],  x[3]]
 </example>
@@ -1486,7 +1486,7 @@ This function returns the Tutte polynomial from the list A of
 hyperplanes in the arrangement in the ring QQ[t[1],t[2]].
 <!--  in the variables t[1] and t[2] -->
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ ArrTuttePoly(A);
 t[1]^2 +t[1] +t[2]
@@ -1510,7 +1510,7 @@ ArrTypeB(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the reflection arrangement of type B in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrTypeB(S, 3);
 [x,  y,  z,  x -y,  x +y,  x -z,  x +z,  y -z,  y +z]
 </example>
@@ -1520,7 +1520,7 @@ This function constructs the reflection arrangement of type B in the first k var
 <keys>
   <key>author: palezzato, torielli</key>
 </keys>
-</command>	
+</command>
 <!-- ===  COMMAND  ========================================== -->
 <command>
   <title>ArrTypeD</title>
@@ -1531,7 +1531,7 @@ ArrTypeD(S: <type>RING</type>, k: <type>INT</type>): <rtn>LIST</rtn>
 <description>
 This function constructs the reflection arrangement of type D in the first k variables of the polynomial ring S.
 <example>
-/**/ use S::=QQ[x,y,z];	
+/**/ use S::=QQ[x,y,z];
 /**/ ArrTypeD(S, 3);
 [x -y,  x +y,  x -z,  x +z,  y -z,  y +z]
 </example>
@@ -1552,7 +1552,7 @@ ArtinianOrlikTeraoIdeal(A: <type>LIST</type>): <rtn>IDEAL</rtn>
 <description>
 This function returns the artinian Orlik-Terao ideal of the list A of hyperplanes of an arrangement.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, y, x-y];
 /**/ ArtinianOrlikTeraoIdeal(A);
 ideal(y[1]*y[2] +y[1]*y[3] -y[2]*y[3],  y[1]^2,  y[2]^2,  y[3]^2)
@@ -4329,20 +4329,20 @@ z^2 + 1
 </description>
 <seealso>
   <see>CyclotomicIndex, CyclotomicTest</see>
-  <see>CyclotomicFactorIndexes</see>
+  <see>CyclotomicFactorIndices</see>
 </seealso>
 </command>
 <!-- ===  COMMAND  =============================================== -->
 <command>
-  <title>CyclotomicFactorIndexes</title>
-  <short_description>find indexes of cyclotomic factors of a polynomial</short_description>
+  <title>CyclotomicFactorIndices</title>
+  <short_description>find indices of cyclotomic factors of a polynomial</short_description>
 <syntax>
-CyclotomicFactorIndexes(f: <type>RINGELEM</type>): <rtn>LIST</rtn> of <rtn>INT</rtn>
+CyclotomicFactorIndices(f: <type>RINGELEM</type>): <rtn>LIST</rtn> of <rtn>INT</rtn>
 CyclotomicFactors_BeukersSmyth(f: <type>RINGELEM</type>): <rtn>RECORD</rtn>
 CyclotomicFactors(f: <type>RINGELEM</type>): <rtn>RECORD</rtn>
 </syntax>
 <description>
-The function <tt>CyclotomicFactorIndexes</tt> computes a list of indexes of the
+The function <tt>CyclotomicFactorIndices</tt> computes a list of indices of the
 cyclotomic factors of the univariate polynomial <tt>f</tt>; it may contain some
 false positives (typically 3, 4 and/or 6).
 <par/>
@@ -4350,11 +4350,11 @@ The function <tt>CyclotomicFactors_BeukersSmyth</tt> produces a factorization of
 the product of all cyclotomic factors in <tt>f</tt>; these factors are coprime.
 <par/>
 The function <tt>CyclotomicFactors</tt> computes the cyclotomic factors of the
-univariate polynomial <tt>f</tt>; it can be slower than <tt>CyclotomicFactorIndexes</tt>.
+univariate polynomial <tt>f</tt>; it can be slower than <tt>CyclotomicFactorIndices</tt>.
 <example>
 /**/  use QQ[z];
 /**/  f := (z^2+1)^2 * (z^4+z^2+1);
-/**/  CyclotomicFactorIndexes(f);
+/**/  CyclotomicFactorIndices(f);
 [3, 4, 6]
 /**/  CyclotomicFactors(f);
 record[RemainingFactor:=1, factors := [z^2+z+1, z^2-z+1, z^2+1], multiplicities := [1, 1, 2]]
@@ -4367,6 +4367,9 @@ record[RemainingFactor:=1, factors := [z^4+z^2+1, z^2+1], multiplicities := [1, 
   <see>CyclotomicIndex, CyclotomicTest</see>
   <see>factor</see>
 </seealso>
+<keys>
+  <key>CyclotomicFactorIndexes</key>
+</keys>
 </command>
 <!-- ===  COMMAND  =============================================== -->
 <command>
@@ -4395,7 +4398,7 @@ value even if the input polynomial is not cyclotomic.
 </description>
 <seealso>
   <see>cyclotomic</see>
-  <see>CyclotomicFactorIndexes</see>
+  <see>CyclotomicFactorIndices</see>
 </seealso>
 <keys>
   <key>IsCyclotomic</key>
@@ -6889,7 +6892,7 @@ of <tt>L</tt> in turn.  After each assignment the command sequence
 <par/>
 NOTE: the variable <tt>X</tt> contains a <em>copy of the value</em> in the list;
 changing <tt>X</tt> will not change the list <tt>L</tt>; instead you must
-iterate over indexes into the list.
+iterate over indices into the list.
 <example>
 /**/  foreach N in 1..10 do  -- recall that 1..10 gives the list [1,2,...,10].
 /**/    print N^2, " ";
@@ -7648,7 +7651,7 @@ GensJacobian(Q: <type>RINGELEM</type>): <rtn>LIST</rtn>
 <description>
 This function returns the list of generators of the Jacobian ideal of a polynomial Q.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ Q := x^3+2*x*y+3;
 /**/ GensJacobian(Q);
 [3*x^2 +2*y,  2*x,  x^3 +2*x*y +3]
@@ -8083,7 +8086,7 @@ GensJacobian(Q: <type>RINGELEM</type>): <rtn>IDEAL</rtn>
 <description>
 This function returns the generic initial ideal of the Jacobian ideal of a polynomial Q.
 <example>
-/**/ use QQ[x,y,z];	
+/**/ use QQ[x,y,z];
 /**/ Q := x^3;
 /**/ GinJacobian(Q);
 ideal(x^2)
@@ -10667,7 +10670,7 @@ IsArrCentral(A: <type>LIST</type>): <rtn>BOOL</rtn>
 <description>
 This function tests whether the arrangement is central from the list A of hyperplanes.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ IsArrCentral(A);
 true
@@ -10690,7 +10693,7 @@ IsArrFree(Q: <type>RINGELEM</type>): <rtn>BOOL</rtn>
 <description>
 This function tests whether the arrangement A is free from its defining equation Q.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ Q_A := product(A);
 /**/ IsArrFree(Q_A);
@@ -11645,12 +11648,12 @@ IsMultiArrFree(MultiA: <type>LIST</type>): <rtn>BOOL</rtn>
 <description>
 This function tests whether the multiarrangement MultiA is free.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ MultiA := [[x,1], [x-y,3], [y,2]];
 /**/ IsMultiArrFree(MultiA);
 true
 
-/**/ use QQ[x,y,z];	
+/**/ use QQ[x,y,z];
 /**/ MultiA := [[x,1], [x-y,3], [z,2], [x+y-z,3]];
 /**/ IsMultiArrFree(MultiA);
 false
@@ -14927,12 +14930,12 @@ MultiArrDerModule(MultiA: <type>LIST</type>): <rtn>MAT</rtn>
 This function returns the matrix whose columns are a set of generators
 of the module of logarithmic derivations of a multiarrangement of hyperplanes.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ MultiA := [[x,1], [x-y,3], [y,2]];
 /**/ MultiArrDerModule(MultiA);
 matrix( /*RingWithID(2200, "QQ[x,y]")*/
  [[x*y^2, x^3 -3*x^2*y],
-  [x*y^2, -3*x*y^2 +y^3]])	
+  [x*y^2, -3*x*y^2 +y^3]])
 </example>
 </description>
 <seealso>
@@ -14950,7 +14953,7 @@ MultiArrExponents(MultiA: <type>LIST</type>): <rtn>LIST</rtn>
 <description>
 This function returns the list of exponents of a free multiarrangement of hyperplanes MultiA.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ MultiA := [[x,1], [x-y,3], [y,2]]; -- free
 /**/ MultiArrExponents(MultiA);
 [3,  3]
@@ -14977,7 +14980,7 @@ MultiArrRestrictionZiegler(A: <type>LIST</type>, H: <type>RINGELEM</type>): <rtn
 This function returns the Ziegler multirestriction of the arrangement of
 hyperplanes A with respect to its hyperplane H in the variables [y[1],..,y[n]].
 <example>
-/**/ use QQ[x,y,z];	
+/**/ use QQ[x,y,z];
 /**/ A := [x, x-z, y-z, z];
 /**/ MultiArrRestrictionZiegler(A, z);
 [[y[1],  2],  [y[2],  1]]
@@ -15377,7 +15380,7 @@ NewPolyRing(CoeffRing: <type>RING</type>, IndetNames: <type>STRING</type>/<type>
 </syntax>
 <description>
 This function is similar to <ttref>NewPolyRing</ttref>.
-It returns a polynomial ring with the given matrix of weights <tt>W</tt> 
+It returns a polynomial ring with the given matrix of weights <tt>W</tt>
 (with <ttref>GradingDim</ttref> equal to <tt>NumRows(W)</tt>).
 <par/>
 Currently (CoCoA-5.4.2) only non-negative entries are allowed in <tt>W</tt>
@@ -16275,7 +16278,7 @@ NumBChambers(A: <type>LIST</type>): <rtn>INT</rtn>
 <description>
 This function returns the number of bounded chambers from the list A of hyperplanes in the arrangement.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ NumBChambers(A);
 0
@@ -16295,7 +16298,7 @@ NumChambers(A: <type>LIST</type>): <rtn>INT</rtn>
 <description>
 This function returns the number of chambers from the list A of hyperplanes in the arrangement.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, x-y, y];
 /**/ NumChambers(A);
 6
@@ -16944,7 +16947,7 @@ OrlikTeraoIdeal(A: <type>LIST</type>): <rtn>IDEAL</rtn>
 <description>
 This function returns the Orlik-Terao ideal of the list A of hyperplanes of an arrangement.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, y, x-y];
 /**/ OrlikTeraoIdeal(A);
 ideal(y[1]*y[2] +y[1]*y[3] -y[2]*y[3])
@@ -21758,7 +21761,7 @@ SolomonTeraoIdeal(A: <type>LIST</type>, f: <type>RINGELEM</type>): <rtn>IDEAL</r
 <description>
 This function returns the Solomon-Terao ideal of the list A of hyperplanes of an arrangement respect to a polynomial f.
 <example>
-/**/ use QQ[x,y];	
+/**/ use QQ[x,y];
 /**/ A := [x, y, x-y];
 /**/ f := x^2+y^2;
 /**/ SolomonTeraoIdeal(A, f);
@@ -21991,7 +21994,7 @@ CoCoA UI.
 It is almost equivalent to copying the region into a temporary file, and
 then reading that file with the <tt>source</tt> command.
 <par/>
-Line and char indexes start from 1; the region identified starts at the
+Line and char indices start from 1; the region identified starts at the
 <tt>from</tt> line/character position and stops immediately before the <tt>to</tt>
 line/character position.
 </description>
@@ -22692,7 +22695,7 @@ matrix(QQ,
 /**/  FirstCols(M,2);
 matrix(QQ,
  [[1, 2],
-  [4, 5]]) 
+  [4, 5]])
 </example>
 </description>
 <seealso>
@@ -26659,7 +26662,7 @@ HelloWorld!
 11
 /**/ "Abc" &lt; str;    --> lexicographical comparison
 true
-/**/ str[1];         --> character indexing, indexes start from 1
+/**/ str[1];         --> character indexing, indices start from 1
 H
 </example>
 
@@ -26723,7 +26726,7 @@ objects of a single type.
 In particular, a list may contain other lists.  The empty list is <tt>[]</tt>.
 We use square brackets to index into a list.  If <tt>L</tt> is a non-empty
 list and <tt>N</tt> is an integer (between 1 and <tt>len(L)</tt>), then <tt>L[N]</tt> is
-the <tt>N</tt>-th component of <tt>L</tt>; indexes start from 1.
+the <tt>N</tt>-th component of <tt>L</tt>; indices start from 1.
 <par/>
 If <tt>L</tt> contains sublists, we can write <tt>L[N_1, N_2,...,N_s]</tt> as
 shorthand for <tt>L[N_1][N_2]...[N_s]</tt> (see the example below).

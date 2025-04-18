@@ -174,7 +174,7 @@ namespace CoCoA
     CoCoA_ASSERT_ALWAYS(RBg > 288); // should be greater than about 288.01
   }
 
-  
+
   void redmine1322()
   {
     PolyRing QQx = NewPolyRing(RingQQ(), symbols("x"));
@@ -182,7 +182,7 @@ namespace CoCoA
     const auto RGB = GBasis(I);
   }
 
-  
+
   void redmine1379()
   {
     PolyRing P = NewPolyRing(RingQQ(), symbols("x,y,z"));
@@ -399,7 +399,7 @@ namespace CoCoA
     CoCoA_ASSERT_ALWAYS(!IsInRadical(x,I));
     v.push_back(x*x);
     I = ideal(QQx, v);
-    CoCoA_ASSERT_ALWAYS(!IsInRadical(x,I));    
+    CoCoA_ASSERT_ALWAYS(!IsInRadical(x,I));
   }
 
   void redmine1690()
@@ -506,7 +506,7 @@ namespace CoCoA
     RingElem c3 = cyclotomic(3,x);
     RingElem c4 = cyclotomic(4,x);
     RingElem c6 = cyclotomic(6,x);
-    vector<long> L = CyclotomicFactorIndexes(c3*c4*c6);
+    vector<long> L = CyclotomicFactorIndices(c3*c4*c6);
 
     CoCoA_ASSERT_ALWAYS(L[0] == 3);
     CoCoA_ASSERT_ALWAYS(L[1] == 4);

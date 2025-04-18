@@ -148,7 +148,7 @@ namespace CoCoA
      */
 
     // Input: D is the degree (assumed >= 2)
-    // Return list of all indexes k s.t. cyclo(k) could divide LRS test resultant
+    // Return list of all indices k s.t. cyclo(k) could divide LRS test resultant
     std::vector<unsigned long> GetKToTryList(const unsigned long D/*, const unsigned long Kbound*/)
     {
       CoCoA_ASSERT(D > 1);
@@ -317,7 +317,7 @@ namespace CoCoA
           if (k % ListOfOrders[i] == 0)
             R /= CommonFac[i];
         R = gcd(R, fy);
-        if (!IsConstant(R)) 
+        if (!IsConstant(R))
         {
           ListOfOrders.push_back(k);
           CommonFac.push_back(R);
