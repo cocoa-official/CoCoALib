@@ -57,7 +57,7 @@ namespace CoCoA
       return (ch == '_') || isalnum(ch);
     }
 
-  } // end of anonymous namespace 
+  } // end of anonymous namespace
 
 
   symbol NewSymbol()
@@ -191,7 +191,7 @@ namespace CoCoA
     }
     if (in.eof() || in.peek() != '[')
     {
-      // symbol without indexes/subscripts
+      // symbol without indices/subscripts
       in.clear();
       swap(myHead, head);
       mySubscripts.clear();
@@ -207,7 +207,7 @@ namespace CoCoA
       if (!in) { CoCoA_THROW_ERROR("Invalid symbol index", FnName); }
       subscripts.push_back(subscript);
       if (in.peek() == ']') break;
-      if (!in || in.peek() != ',') { CoCoA_THROW_ERROR("Symbol index list not closed, or contains unexpected char", FnName); } 
+      if (!in || in.peek() != ',') { CoCoA_THROW_ERROR("Symbol index list not closed, or contains unexpected char", FnName); }
       in.ignore(); // ignore the comma
     }
     in.ignore(); // ignore the final ']'
@@ -369,9 +369,9 @@ namespace CoCoA
     // {
     //   CoCoA_THROW_ERROR(ERR::NYI, "ReadSymbolRange");
     // }
-    
+
   } // end of namespace anonymous
-  
+
 
   std::vector<symbol> symbols(const std::string& str)
   {

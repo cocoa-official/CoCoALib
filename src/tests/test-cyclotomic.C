@@ -102,9 +102,9 @@ namespace CoCoA
     const SparsePolyRing Px = NewPolyRing(RingQQ(), symbols("x"));
     const RingElem x = indet(Px, 0);
 
-    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndexes(one(Px)).empty());
-    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndexes(2*one(Px)).empty());
-    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndexes(one(Px)/2).empty());
+    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndices(one(Px)).empty());
+    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndices(2*one(Px)).empty());
+    CoCoA_ASSERT_ALWAYS(CyclotomicFactorIndices(one(Px)/2).empty());
 
     RingElem NastyFactor1 = one(Px); // large fixed divisor
     RingElem NastyFactor2 = one(Px); // large fixed divisor & palindromic
@@ -117,11 +117,11 @@ namespace CoCoA
     for (long i = 6; i < 100; ++i) // deliberately skip 1,2,3,4,5 (because 6 often appears as false positive)
     {
       const RingElem f = cyclotomic(i, x);
-      vector<long> CFI = CyclotomicFactorIndexes(f);
+      vector<long> CFI = CyclotomicFactorIndices(f);
       CoCoA_ASSERT_ALWAYS(len(CFI) == 1 && CFI[0] == i);
-      CFI = CyclotomicFactorIndexes(f*NastyFactor1);
+      CFI = CyclotomicFactorIndices(f*NastyFactor1);
       CoCoA_ASSERT_ALWAYS(len(CFI) >= 3 && CFI[0] == 1 && CFI[1] == 2 && CFI.back() == i);
-      CFI = CyclotomicFactorIndexes(f*NastyFactor2);
+      CFI = CyclotomicFactorIndices(f*NastyFactor2);
       CoCoA_ASSERT_ALWAYS(len(CFI) >= 3 && CFI[0] == 1 && CFI[1] == 2 && CFI.back() == i);
     }
   }
@@ -137,8 +137,8 @@ namespace CoCoA
       std::transform((*it).begin(), (*it).end(), expected.begin(), [](int i){ return i+1;});
       RingElem f = one(Px);
       for (int j: expected)  f *= cyclotomic(j,x);
-      const vector<long> indexes = CyclotomicFactorIndexes(f);
-      CoCoA_ASSERT_ALWAYS(indexes == expected);
+      const vector<long> indices = CyclotomicFactorIndices(f);
+      CoCoA_ASSERT_ALWAYS(indices == expected);
     }
   }
 

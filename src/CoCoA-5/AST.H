@@ -643,16 +643,16 @@ class IndexedAccessExpression : public Expression {
 public:
 	DECLARE_ACCEPT_METHOD
 	const boost::intrusive_ptr<Expression> targetExp;
-	const std::vector<boost::intrusive_ptr<Expression> > indexes;
+	const std::vector<boost::intrusive_ptr<Expression> > indices;
 	std::ostream &dumpAsString(std::ostream &out) const;
 	bool isLeftValue() const;
-	IndexedAccessExpression(const boost::intrusive_ptr<Expression> targetExp, const std::vector<boost::intrusive_ptr<Expression> > &indexes, const LexerNS::CharPointer &closedBracketPosition) :
+	IndexedAccessExpression(const boost::intrusive_ptr<Expression> targetExp, const std::vector<boost::intrusive_ptr<Expression> > &indices, const LexerNS::CharPointer &closedBracketPosition) :
 		Expression(targetExp->getBegin(), closedBracketPosition),
 		targetExp(targetExp),
-		indexes(indexes)
+		indices(indices)
 	{
 		assert(targetExp);
-		assert(indexes.size()>0);
+		assert(indices.size()>0);
 	}
 	boost::intrusive_ptr<InterpreterNS::Value> implEval(InterpreterNS::RuntimeEnvironment *) const;
 };

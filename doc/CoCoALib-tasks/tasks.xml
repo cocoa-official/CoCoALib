@@ -86,7 +86,7 @@ Time est.: 1 week.
 <task>  <title>CanonicalPolyHom for polynomial rings</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2011-05</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -109,7 +109,7 @@ Time estimate: 1-3 weeks.
 <task>  <title>ChangeCoeffHom</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2009-11</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -155,7 +155,7 @@ Time est.: 1 week
 <task>  <title>Clean up DistrMPoly etc.</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2009-09</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -218,13 +218,13 @@ code can be deleted, and either delete it or reactivate it.  Time est.: 1-2 days
 <task>  <title>Clean up ReductionCog inheritance</title>
   <high-priority>true</high-priority>
   <authors>Bigatti</authors>
-  <status>waiting</status>  
+  <status>waiting</status>
   <stage>1</stage>
   <lastnews-date>2009-08</lastnews-date>
   <compl-date>0000-00-00</compl-date>
   <description>
 ReductionCog concrete classes are based on Poly or Geobucket.
-Make two Abstract classes to avoid repeated code. 
+Make two Abstract classes to avoid repeated code.
   </description>
 </task>
 
@@ -232,7 +232,7 @@ Make two Abstract classes to avoid repeated code.
 <task>  <title>CoCoA5 arguments</title>
   <high-priority>true</high-priority>
   <authors>Abbott + Bigatti</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>3ab</stage>
   <lastnews-date>2011-05</lastnews-date>
   <compl-date>2016-12</compl-date>
@@ -246,7 +246,7 @@ decide if arguments should be swapped.
 <task>  <title>CoCoA5 automatic CanonicalHom</title>
   <high-priority>true</high-priority>
   <authors>Abbott + Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2011-05</lastnews-date>
   <compl-date>0000-00</compl-date>
@@ -254,7 +254,7 @@ decide if arguments should be swapped.
 Investigate with a suitably large class of example which Mixed Ring
       Arithmetics should be allowed in CoCoA-5 (e.g. f/LC(f)).
 A good rule could be that only "cheap" (or single-step?) automatic
-      conversion are 
+      conversion are
       allowed (i.e. not PolyAlgebraHom) to avoid hidden expensive
       mapping, for example, when multiplying objects in a big
       for-loop.  Moreover the ring of the result must be the ring of
@@ -477,7 +477,7 @@ examples.  Time est.: 2 weeks.
 <task>  <title>Examples for <code>convert</code> and <code>IsInteger</code> and <code>IsRational</code></title>
   <high-priority>true</high-priority>
   <authors>Abbott</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2007-05</lastnews-date>
   <compl-date></compl-date>
@@ -513,7 +513,7 @@ Time est.: 2 weeks.
 <task>  <title>GBEmbeddings for ideal/module operations</title>
   <high-priority>true</high-priority>
   <authors>Bigatti+Caboara</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>1</stage>
   <lastnews-date>2010-06</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -556,7 +556,7 @@ In some ideal/module operations embeddings are done and undone
 <task>  <title>HTML</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>1</stage>
   <lastnews-date>2011-09</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -600,7 +600,7 @@ Time est.:  ???
 <task>  <title>Hilbert: optimized use of PPWithMask</title>
   <high-priority>true</high-priority>
   <authors>Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2009-01</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -616,7 +616,7 @@ Time est.: 4+ weeks.
 <task>  <title>Hilbert: reorganization and cleaning</title>
   <high-priority>true</high-priority>
   <authors>Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2011-05</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -630,7 +630,7 @@ Time est.: 1+ weeks.
 <task>  <title>Homogeneous lists</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>1</stage>
   <lastnews-date>2010-06</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -653,7 +653,7 @@ A bit like PPVectors....
 <task>  <title>Improve CanonicalHom</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>2</stage>
   <lastnews-date>2011-04</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -702,7 +702,7 @@ Time est.: 2-3 weeks
 <task>  <title>Inheritance-ready GReductor/Do_GBasis</title>
   <high-priority>true</high-priority>
   <authors>Caboara</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>1</stage>
   <lastnews-date>2010-06</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -971,7 +971,7 @@ Time est.: 2 weeks.
 <task>  <title>PartialRingHom</title>
   <high-priority>true</high-priority>
   <authors>Abbott + Bigatti</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>1</stage>
   <lastnews-date>2011-09</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -996,7 +996,7 @@ Time estimate: 1-2 weeks.
 <task>  <title>Permutation iterator</title>
   <high-priority>true</high-priority>
   <authors>Abbott</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>2</stage>
   <lastnews-date>2010-03</lastnews-date>
   <compl-date></compl-date>
@@ -1018,7 +1018,7 @@ Time est: 2-3 days.
 <task>  <title>Positive gradings</title>
   <high-priority>true</high-priority>
   <authors>Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>1</stage>
   <lastnews-date>2010-05</lastnews-date>
   <compl-date></compl-date>
@@ -1034,7 +1034,7 @@ Time est: ???
 <task>  <title>Power of matrices and ideals</title>
   <high-priority>true</high-priority>
   <authors>Abbott + Bigatti</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>2</stage>
   <lastnews-date>2010-05</lastnews-date>
   <compl-date></compl-date>
@@ -1048,7 +1048,7 @@ Time est: 2-3 days.
 <task>  <title>PowerProduct type</title>
   <high-priority>true</high-priority>
   <authors>Abbott + Bigatti</authors>
-  <status>active</status>  
+  <status>active</status>
   <stage>2</stage>
   <lastnews-date>2011-10</lastnews-date>
   <compl-date></compl-date>
@@ -1233,12 +1233,12 @@ CoCoA-4.  Time est.: 1-2 weeks.
 <task>  <title>RingElemVector (same ring, ref counted)</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>waiting</status>  
+  <status>waiting</status>
   <stage>2abc</stage>
   <lastnews-date>2011-01</lastnews-date>
   <compl-date>0000-00-00</compl-date>
   <description>
-As a useful particular case of Homogeneous lists 
+As a useful particular case of Homogeneous lists
 <a href="#Descr:HomogList">(task)</a>
 We have a prototype in RingElemVector:
 reference counted (copy on write) vector of RingElems in the same
@@ -1254,7 +1254,7 @@ It can be used for generators and gbases of ideals (in order to avoid copies)
 <task>  <title>Self-saturating (and cleanup for GB code)</title>
   <high-priority>true</high-priority>
   <authors>Bigatti+Caboara+Abbott</authors>
-  <status>waiting</status>  
+  <status>waiting</status>
   <stage>2c</stage>
   <lastnews-date>2009-11</lastnews-date>
   <compl-date>0000-00-00</compl-date>
@@ -1266,7 +1266,7 @@ Input polynomials will be homogenized with <code>h</code>;
 then every power of <code>h</code> which is a factor of a polynomials in the
 running computation may be cancelled out.
 This might be a mathematically clean way to interpret sugar (for GradingDim 1).
-Theory is all set.  Clean implementation waits for 
+Theory is all set.  Clean implementation waits for
 task <a href="#TblReduce">sugar</a>
 and <a href="#TblGReductor">GReductor/Do_GBasis</a>
   </description>
@@ -1359,7 +1359,7 @@ Time est.: almost 1 month.
 <task>  <title>Tuples iterator</title>
   <high-priority>true</high-priority>
   <authors>Abbott+Bigatti</authors>
-  <status>inactive</status>  
+  <status>inactive</status>
   <stage>2</stage>
   <lastnews-date>2011-02</lastnews-date>
   <compl-date></compl-date>
@@ -1604,7 +1604,7 @@ time in format yyyymmdd, hhmmss.
 <compl-date>2011-05-17</compl-date>
 <description>
 The HTML version of the task table was too tedious to update.
-The conversion into XML (with C++ code to create the HTML pages) 
+The conversion into XML (with C++ code to create the HTML pages)
 should encourage us to update it more frequently making the whole lot
 more meaningful.
 </description>
@@ -1795,7 +1795,7 @@ of random ZZs.
 </task>
 
 <!-- ===  COMPLETED TASK  ===================================== -->
-<task>  <title>New version 0.9937</title> 
+<task>  <title>New version 0.9937</title>
 <authors>Abbott</authors>
 <compl-date>2010-03-22</compl-date>
 <description>
@@ -1863,7 +1863,7 @@ Similarly for principal ideals.
 <compl-date>2010-03-11</compl-date>
 <description>
 Automatic generation of examples/index.html with description of examples.
-(also to be loaded on cocoalib web page 
+(also to be loaded on cocoalib web page
 <a href="../examples/index.html">examples/index.html</a>)
 </description>
 </task>
@@ -2074,7 +2074,7 @@ rows of weights (with i &lt= GradingDim)
 We used to have
 <tt>ideal(ring), ideal(ring, RingElem), ideal(ring, vector<RingElem>)</tt>.
 Now we have other nice constructors
-<tt>ideal(RingElem), ideal(vector<RingElem>)</tt> 
+<tt>ideal(RingElem), ideal(vector<RingElem>)</tt>
 the last returns en error when vector is empty.
 <tt>ideal(RingElem, RingElem), ...</tt>
 up to 4 RingElems
@@ -2205,7 +2205,7 @@ Proper polishing will take some time.
 <authors>Abbott+Bigatti</authors>
 <compl-date>2009-02-13</compl-date>
 <description>
-The example <span class=file>ex-matrix1.C</span> 
+The example <span class=file>ex-matrix1.C</span>
 has been reorganized and extended with examples
 for <span class=class>(Const)MatrixView</span>
 </description>
@@ -2279,7 +2279,7 @@ Now using <code>MachineInteger</code> type whenever a machine integer value is
 used in place of <code>RingElem</code>.  This avoids nasty surprises when C++
 silently converts signed values into unsigned (or <i>vice versa</i>).
 New version <span class=version>0.9925</span> to signal this
-wide-ranging change. 
+wide-ranging change.
 </description>
 </task>
 
@@ -2290,7 +2290,7 @@ wide-ranging change.
 <description>
 version <span class=version>0.9924</span>.
 
-Changed all Makefiles for compatibility with Solaris make 
+Changed all Makefiles for compatibility with Solaris make
 which has no <code>-C</code> option:
 <code>make -C dir blah</code> now is <code>(cd dir; make blah)</code>
 [Thanks to Paul Whitener for testing on Solaris]
@@ -2302,7 +2302,7 @@ which has no <code>-C</code> option:
 <authors>Abbott</authors>
 <compl-date>2008-12-11</compl-date>
 <description>
-Now using <code>MachineInteger</code> type in ctors to specify the values of symbol indexes
+Now using <code>MachineInteger</code> type in ctors to specify the values of symbol indices
 (but we check that the values fit into a <code>long</code>).  Corrected two bugs in
 SymbolRange (an undetected overflow and an off-by-1 error).
 This improvement needed the update to <code>MachineInteger</code> values.
@@ -2409,11 +2409,11 @@ added <span class=func>NBM</span>)
 <compl-date>2008-09-22</compl-date>
 <description>
 version <span class=version>0.9918</span>.
-<ul>                                                              
+<ul>
 <li>moved code for monomial ideals into <span class=file>TmpPPVector</span>
-<li>added code <span class=file>TmpMayerVietorisTree</span> for   
+<li>added code <span class=file>TmpMayerVietorisTree</span> for
   irreducible decomposition of monomial ideals (E. Saenz de Cabezon)
-<li>added stable order ideal algorithm (<span class=func>SOI</span>) 
+<li>added stable order ideal algorithm (<span class=func>SOI</span>)
 <li>fixed multivariate <span class=func>GCD</span>, same as CoCoA-4.7.4
 <li>exponent overflow (and underflow) should now be detected when
   CoCoA_DEBUG is set.
@@ -2478,7 +2478,7 @@ A very well hidden bug has been fixed in
 This depends on the creation of RingElems (0, 1, x) before the
 completion of the constructor.... so, just remember this:
 <span class=func>myRefCountZero();</span> must be the last line, and
-RingElems and RingHoms must be just before it. 
+RingElems and RingHoms must be just before it.
 </description>
 </task>
 
@@ -2767,7 +2767,7 @@ Release CoCoALib-0.9801 (with revised server, and some minor bug fixes).
 
 <!-- ===  COMPLETED TASK  ===================================== -->
 <task>  <title>Integrate Gin5 and preprocessing into C4.7</title>
-the C4.7 manual.  
+the C4.7 manual.
 <authors>Bigatti, Abbott</authors>
 <compl-date>2007-04-04</compl-date>
 <description>

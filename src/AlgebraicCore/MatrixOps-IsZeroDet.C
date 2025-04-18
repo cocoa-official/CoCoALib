@@ -68,7 +68,7 @@ namespace CoCoA
     for (long i=0; i < n; ++i) row[i] = i; // easier to read than std::generate(..., lambda)
     sort(row.begin(), row.end(), // sort by decreasing ZeroCount!
          [/*const*/ &ZeroCount](long i1, long i2) { return ZeroCount[i1] > ZeroCount[i2]; });
-    
+
     if (ZeroCount[row[0]] == n) return true; // there is a zero row
 
     // Look for largest index which could corr to zero-block:
@@ -77,7 +77,7 @@ namespace CoCoA
       if (i+ZeroCount[row[i]] >= n)
         MaxCheckIndex = i+1;
     if (MaxCheckIndex == 0) return false;
-    
+
 
     vector<BOOL> NZ(n); // at start of each iter below, NZ[k] is non-zero iff we have seen a non-zero in the k-th col
     // Iterate through rows in order dictated by array row
@@ -97,7 +97,7 @@ namespace CoCoA
 
 
     // More efficient but harder to comprehend!!!  [not tested??]
-    // Vector col contains col indexes which we must check
+    // Vector col contains col indices which we must check
     vector<long> col(n);
     for (long i=0; i < n; ++i)  // easier to read than std::generate(..., lambda)
       col[i] = i;

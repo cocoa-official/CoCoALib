@@ -43,9 +43,9 @@ namespace CoCoA
 
     // WARN i<j
     GPair(const GPoly& p);// special ctor for input polys
-    GPair(const GPoly& p,  const GPoly& q);// usual ctor	
-    //    GPair(const GPoly* p,  const GPoly* q);// usualctor	
-    ~GPair(){};	
+    GPair(const GPoly& p,  const GPoly& q);// usual ctor
+    //    GPair(const GPoly* p,  const GPoly* q);// usualctor
+    ~GPair(){};
 
     void myComplete(void); ///< fills to the GPair the field myOrdPoly and myWDeg (=deg(myOrdPoly))
     bool operator<(const GPair& gp) const;  ///< based on (w/std)deg + IsInputPoly + PPOrdering
@@ -71,7 +71,7 @@ namespace CoCoA
     friend const degree& wdeg(const GPair& GP);
     //    friend long StdDeg(const GPair& GP);
     friend const SugarDegree& sugar(const GPair& GP);
-    friend std::ostream& operator<<(std::ostream&, const GPair&);// the indexes are printed ++
+    friend std::ostream& operator<<(std::ostream&, const GPair&);// the indices are printed ++
     friend const ring& CoeffRing(const GPair& P);
     friend const SparsePolyRing& owner(const GPair& P);
     friend const GRingInfo& GetGRingInfo(const GPair& P);

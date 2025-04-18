@@ -23,7 +23,7 @@ element of the codomain (//i.e.// a power product).
 Here is a list of the (pseudo-)ctors for ``PPMonoidHom``
 - ``IdentityHom(PPM)`` the identity
 - ``GeneralHom(PPM, images)`` where ``images`` is a ``vector`` of ``PPMonoidElem`` whose //i//-th entry is the image of the //i//-th indet in ``PPM``
-- ``RestrictionHom(PPM, IndetIndexes)`` where ``IndetIndexes`` is a vector of indices of the indets which map to themselves, the others map to 1.
+- ``RestrictionHom(PPM, IndetIndices)`` where ``IndetIndices`` is a vector of indices of the indets which map to themselves, the others map to 1.
 
 
 The ``PPMonoidHom`` object may be applied to a value by using normal

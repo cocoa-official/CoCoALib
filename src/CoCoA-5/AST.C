@@ -576,7 +576,7 @@ void DumpAsTreeVisitor::visit(FieldAccessExpression &fieldAccessExpression) {
 
 ostream &IndexedAccessExpression::dumpAsString(ostream &out) const {
 	out << targetExp << "[";
-	outputCommaSeparatedExpList(out, indexes);
+	outputCommaSeparatedExpList(out, indices);
 	return out << "]";
 }
 
@@ -584,7 +584,7 @@ void DumpAsTreeVisitor::visit(IndexedAccessExpression &indexedAccessExpression) 
 	this->indent();
 	out << "[]\n";
 	this->dumpIndented(indexedAccessExpression.targetExp);
-	for (intrusive_ptr<Expression> e: indexedAccessExpression.indexes)
+	for (intrusive_ptr<Expression> e: indexedAccessExpression.indices)
 		this->dumpIndented(e);
 }
 
@@ -1185,7 +1185,7 @@ void ParsedObjectVisitor::visit(InvocationExpression &invocationExp) {
 
 void ParsedObjectVisitor::visit(IndexedAccessExpression &indexedAccessExpression) {
 	indexedAccessExpression.targetExp->accept(this);
-	for (intrusive_ptr<Expression> e: indexedAccessExpression.indexes)
+	for (intrusive_ptr<Expression> e: indexedAccessExpression.indices)
 		e->accept(this);
 }
 
