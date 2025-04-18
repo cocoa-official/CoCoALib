@@ -97,35 +97,79 @@ namespace CoCoA
 
 namespace
 {
-  // ??? appropriate use of inheritance here?  this is getting pretty hugly
+  // ??? appropriate use of inheritance here?  this is getting pretty ugly
+
+  // SPECIAL CASE: when all PPs map to just PPs
+  void ApplySPRCodomain_(RingElem& image, ConstRefRingElem arg, const RingHom CoeffHom, const vector<RingElem>& IndetImages)
+  {
+    // NOTE: CoeffHom maps into S (and **not** into CoeffRing(S))
+    const SparsePolyRing S = owner(image);
+    const PPMonoid PPMS = PPM(S);
+    geobucket gbk(S);
+
+
+    const long NumInd = len(IndetImages);
+    vector<PPMonoidElem> IndetImage; IndetImage.reserve(NumInd); for (int i=0; i < NumInd; ++i) IndetImage.push_back(LPP(IndetImages[i]));
+    vector<long> expv(NumInd); // workspace for exponents in loop below
+    for (SparsePolyIter it=BeginIter(arg); !IsEnded(it); ++it)
+    {
+      const RingElem CoeffImageAsPoly = CoeffHom(coeff(it));
+      if (IsZero(CoeffImageAsPoly))  continue; // efficiency hack????
+      const RingElem CoeffImage = LC(CoeffImageAsPoly);
+      PPMonoidElem SummandPP = one(PPMS);
+      exponents(expv, PP(it));
+      for (long ind=0; ind < NumInd; ++ind)
+      {
+        if (expv[ind] == 0) continue;
+        if (/*IsPPMonoidOv(myCodomain) && */IsMatrixOrdering(ordering(PPM(S))))
+          if (expv[ind] >= 32749)  // BUG BUG: nasty hack to avoid exp overflow!!!
+            CoCoA_THROW_ERROR(ERR::ExpTooBig, "ApplySPRCodomain");
+        SummandPP *= power(IndetImage[ind], expv[ind]);
+      }
+      RingElem ImageTerm = monomial(S, CoeffImage, SummandPP);
+      gbk.myAddClear(ImageTerm, 1);
+    }
+    AddClear(image, gbk);
+  }
 
   // assume image==0
   void ApplySPRCodomain(RingElem& image, ConstRefRingElem arg, const RingHom CoeffHom, const vector<RingElem>& IndetImages)
   {
+    if (true)
+    {
+      // Check for case where all indet images are just PPs
+      bool SimpleCase = true;
+      for (const auto& f: IndetImages)
+        if (!IsMonomial(f) || !IsOne(LC(f)))  { SimpleCase = false; break; }
+      if (SimpleCase)
+        return ApplySPRCodomain_(image, arg, CoeffHom, IndetImages);
+    }
     const SparsePolyRing S = owner(image);
     geobucket gbk(S);
 
     const long NumInd = len(IndetImages);
+    vector<long> expv(NumInd); // workspace for exponents in loop below
     for (SparsePolyIter i=BeginIter(arg); !IsEnded(i); ++i)
     {
       RingElem SummandImage = CoeffHom(coeff(i));
       CoCoA_ASSERT(owner(SummandImage) == S);
       if (IsZero(SummandImage)) continue; // efficiency hack????
-      ConstRefPPMonoidElem t(PP(i));
+      exponents(expv, PP(i));
       for (long ind=0; ind < NumInd; ++ind)
       {
-        const long d = exponent(t, ind); // ??? should we compute exponents?
-        if (d == 0) continue;
+        if (expv[ind] == 0) continue;
         if (/*IsPPMonoidOv(myCodomain) && */IsMatrixOrdering(ordering(PPM(S))))
-          if (d >= 32749)  // BUG BUG: nasty hack to avoid exp overflow!!!
+          if (expv[ind] >= 32749)  // BUG BUG: nasty hack to avoid exp overflow!!!
             CoCoA_THROW_ERROR(ERR::ExpTooBig, "ApplySPRCodomain");
-        SummandImage *= power(IndetImages[ind], d);
+        SummandImage *= power(IndetImages[ind], expv[ind]);
       }
-      //        SparsePolyRingPtr(S)->myAddClear(raw(ans), raw(SummandImage));
       gbk.myAddClear(SummandImage, NumTerms(SummandImage));
     }
     AddClear(image, gbk);
   }
+
+
+
 
 
   void ApplyGeneral(RingElem& image, ConstRefRingElem arg, const RingHom CoeffHom, const vector<RingElem>& IndetImages)

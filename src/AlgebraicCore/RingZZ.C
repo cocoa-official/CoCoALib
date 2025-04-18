@@ -626,9 +626,13 @@ namespace CoCoA
       myGensValue(gens),
       myTidyGensValue()
   {
-    RingElem g(ZZ);
-    for (long i=0; i < len(gens); ++i) // break out if g=1???
-      g = gcd(g, gens[i]);
+    if (gens.empty())  return;
+    RingElem g(abs(gens[0]));
+    for (long i=1; i < len(gens); ++i)
+    {
+      if (IsOne(g))  break;
+      if (!IsZero(gens[i]))  g = gcd(g, gens[i]);
+    }
     if (IsZero(g)) return;
     myTidyGensValue.push_back(g);
   }
@@ -801,7 +805,7 @@ namespace CoCoA
 
   const ring& RingZZ()
   {
-    if (GlobalManager::ourGlobalDataPtr == nullptr)  CoCoA_THROW_ERROR1(ERR::NoGlobalMgr);
+    if (!IsInitialized())  CoCoA_THROW_ERROR1(ERR::NoGlobalMgr);
     return GlobalManager::ourGlobalDataPtr->myRingZZ();
   }
 

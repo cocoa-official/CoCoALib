@@ -1,4 +1,3 @@
-
 //   Copyright (c)  2022-2023  John Abbott and Anna M. Bigatti
 //   Code developed from original CoCoA-3 code by Fabio Rossi (1999)
 //   Major contributions from Nico Mexis (2022-2023)
@@ -501,7 +500,7 @@ namespace CoCoA
 
 
   // This is a "naughty/ugly" function: it does several things at once
-  //  (a) checks cyclo by matching against "prefixes" (& only this is not DoFullCheck)
+  //  (a) checks cyclo by matching against "prefixes" (& do only this if !DoFullCheck)
   //  (b) checks that f is univariate, palindromic, below height bound H
   //  (c) checks for special cases...
   // Input poly f
@@ -511,7 +510,6 @@ namespace CoCoA
   //  (c) special case: f(x) = g(x^r) for some r > 1
   unsigned long CyclotomicTest(ConstRefRingElem f, bool DoFullCheck)
   {
-    const char* const FnName = "CyclotomicTest";
     constexpr unsigned long DefinitelyNotCyclo = 0;  // "impossible" index
     if (IsConstant(f))  return DefinitelyNotCyclo;
     if (!IsOne(LC(f)))  return DefinitelyNotCyclo;
@@ -530,7 +528,7 @@ namespace CoCoA
     if (IsOdd(degf))  return DefinitelyNotCyclo;
     const PPMonoidElem x = radical(LPP(f));
     if (deg(x) != 1)
-      CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     if (IsOne(PP(it)))
     {
       // Poly is of form x^k+nzconst
@@ -542,7 +540,7 @@ namespace CoCoA
     
     const long r = degf - deg(PP(it));
     if (r <= 0) // cannot be univariate
-      CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     if (degf%r != 0)  return DefinitelyNotCyclo; // not of form g(x^r)
     if (!IsOne(coeff(it)) && !IsMinusOne(coeff(it)))  return DefinitelyNotCyclo; 
     const long mu = (IsOne(coeff(it)))? -1 : 1; // minus 2nd coeff
@@ -558,7 +556,6 @@ namespace CoCoA
     if (radr != 1)
     { auto it = std::remove_if(cand.begin(), cand.end(), NotMultOfRadr);  cand.erase(it, cand.end()); }
     if (cand.empty())  return DefinitelyNotCyclo;
-    if (!DoFullCheck && len(cand) == 1)  return r*cand[0];
     const vector<int>& CycloCoeffHeightTbl = CyclotomicCoeffHeightTable();
     vector<long> CandHeightBound;
     long H=0;  // overall height bound -- 0 means "to be computed"
@@ -572,7 +569,7 @@ namespace CoCoA
       const long d = deg(PP(it));
       if (d < degf/2)  break;
       if (radical(PP(it)) != x)
-        CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+        CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
       const long dr = (degf-d)/r;
       if (degf-d != r*dr)  return DefinitelyNotCyclo;
       long c;
@@ -583,24 +580,29 @@ namespace CoCoA
         if (std::abs(c) > H)  { return DefinitelyNotCyclo; } }
       C[dr] = c;
       ++it;
+      if (IsEnded(it))  return DefinitelyNotCyclo;
+      const long deg_next = deg(PP(it));
+      if (deg_next%r != 0)  return DefinitelyNotCyclo;
       // OR MAYBE:   if (dr < thresh) continue;
-      if (dr >= thresh)
+      if ((degf-deg_next)/r >= thresh) //(dr >= thresh)
       {
+        // Coeffs in C are correct up to index dr_next, and dr_next >= thresh:
+        const long dr_next = (deg_next < degf/2) ? degf/(2*r) : (degf-deg_next)/r-1;
         vector<long> NewCand;
         for (long k: cand)
         {
           const factorization<long> facs = factor(k);
-          const vector<unsigned long> prefix = CycloPrefix(facs.myFactors(), dr);
+          const vector<unsigned long> prefix = CycloPrefix(facs.myFactors(), dr_next);
           bool eq = true;
-          for (int i=prev; i <= dr; ++i)
+          for (int i=prev; i <= dr_next; ++i)
             if (prefix[i] != static_cast<unsigned long>(C[i]))  { eq = false; break; }
           if (eq)  NewCand.push_back(k);
         }
         if (NewCand.empty())  return DefinitelyNotCyclo;
         if (len(cand) != len(NewCand)) { swap(cand, NewCand); H = 0/*force recomputation*/; }
-        if (!DoFullCheck && len(cand) == 1)  return r*cand[0];
-        prev = dr+1;
-        do {thresh *= 4;} while (thresh <= 2*dr);
+        if (!DoFullCheck && len(cand) == 1 && dr_next > 31)  return r*cand[0]; // might be false positive!
+        prev = dr_next+1;
+        do {thresh *= 4;} while (thresh <= 2*dr_next);
         thresh = std::min(thresh, degr/2);
       }
     }
@@ -614,7 +616,7 @@ namespace CoCoA
       const long d = deg(PP(it));
       if (d != r*PredictedDegr)  return DefinitelyNotCyclo;
       if (d > 0 && radical(PP(it)) != x)  // because not univariate
-        CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+        CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
 //      if (coeff(it) != C[PredictedDegr])  return DefinitelyNotCyclo;  // SLOWER THAN CODE BELOW
       long c;
       if (!IsConvertible(c,coeff(it)) || c != C[PredictedDegr])  return DefinitelyNotCyclo;
@@ -861,11 +863,18 @@ namespace CoCoA
   {
     // Evaluation points such that low deg cyclos have a "large" prime factor
 
-    static SmallRat LastCheck[/*SizeLastCheck*/] = {{18,  17},  {21,  4}, {25,  7}, {25,  24}, {26,  5}, {26,  21}, {27,  13}, {31,  4}, {31,  10}, {31,  21}, {32,  3}, {33,  14}, {33,  20}, {34,  21}, {35,  8}, {35,  9}, {35,  18}, {35,  26}, {35,  31}, {35,  34}, {36,  13}, {36,  29}, {37,  2}, {37,  14}, {37,  15}, {37,  33}, {37,  35}, {38,  25}, {39,  10}, {39,  29}, {39,  32}, {39,  38}};
+///    static SmallRat LastCheck[/*SizeLastCheck*/] = {{18,  17},  {21,  4}, {25,  7}, {25,  24}, {26,  5}, {26,  21}, {27,  13}, {31,  4}, {31,  10}, {31,  21}, {32,  3}, {33,  14}, {33,  20}, {34,  21}, {35,  8}, {35,  9}, {35,  18}, {35,  26}, {35,  31}, {35,  34}, {36,  13}, {36,  29}, {37,  2}, {37,  14}, {37,  15}, {37,  33}, {37,  35}, {38,  25}, {39,  10}, {39,  29}, {39,  32}, {39,  38}};
+///    static SmallRat LastCheck[/*SizeLastCheck*/] = {{36, 29},  {39, 10},  {39, 35},  {40, 37},  {42, 5},  {45, 38},  {48, 43},  {49, 6},  {52, 45},  {55, 6},  {57, 8},  {61, 54},  {67, 52},  {70, 39},  {71, 6},  {72, 7},  {84, 19},  {88, 3},  {90, 1},  {96, 5},  {98, 3}};
+
+//    static SmallRat LastCheck[/*SizeLastCheck*/] = {{111, 91},  {117, 98},  {117, 107},  {126, 121},  {129, 119},  {133, 18},  {133, 130},  {138, 5},  {144, 11},  {145, 142},  {147, 145},  {150, 7},  {159, 16},  {161, 159},  {165, 158},  {165, 164},  {169, 6},  {174, 161},  {175, 163},  {175, 172},  {183, 167},  {185, 18},  {187, 177},  {199, 24},  {200, 3}}; // cyclos 3,4,6 all have a large prime factor
+    static SmallRat LastCheck[/*SizeLastCheck*/] = {{117, 98},  {133, 18},  {133, 130},  {140, 123},  {147, 145},  {160, 141},  {161, 159},  {169, 6},  {175, 163},  {189, 169},  {210, 67},  {214, 39},  {217, 48},  {237, 62},  {241, 196},  {245, 209},  {252, 23}}; // cyclos 3,4,5,6 all have a large prime factor
+
     constexpr int SizeLastCheck = sizeof(LastCheck)/sizeof(SmallRat);
 
     // Assume f is non-constant with integer coeffs (ideally squarefree, content=1, and f palindromic)
     VerboseLog VERBOSE("FindCycloFactor");
+    const bool palindromic = IsPalindromic(f);
+
     const RingElem& X = indet(owner(f), UnivariateIndetIndex(f));
     const ring ZZx = NewPolyRing(RingZZ(), symbols("x")); // used only to evaluate a cyclo poly
     const RingElem& x = indet(ZZx,0);                     //
@@ -878,11 +887,13 @@ namespace CoCoA
     while (true)
     {
       BigInt Valf = EvalAt(f, EvalPtNumer, EvalPtDenom);
-      if (IsZero(Valf))  // while (IsZero(Valf)) {...}   if input is not square-free
+      while (IsZero(Valf))  // if (IsZero(Valf)) {...}   if input is square-free
       {
         f /= EvalPtDenom*X - EvalPtNumer; // exact division!    MAYBE DIVIDE BY EvalPtDenom*EvalPtNumer*(X*X+1) - X*(power(EvalPtNumer,2)+power(EvalPtDenom,2)); ???
         Valf = EvalAt(f, EvalPtNumer, EvalPtDenom);
       }
+      if (!palindromic)  // if input is not palindromic...
+        Valf = gcd(Valf, EvalAt(f, EvalPtDenom, EvalPtNumer));
       ++NumEvalPts;
       VERBOSE(80) << "Chosen EvalPt=" << EvalPtNumer << "/" << EvalPtDenom << std::endl;
       BigInt Valf_reduced = CoprimeFactor(Valf, EvalPtNumer*(EvalPtNumer*EvalPtNumer-EvalPtDenom*EvalPtDenom)); // BUG?????  to avoid overflow need EvalPt^3 < MaxLong (or MaxULong)
@@ -944,43 +955,57 @@ namespace CoCoA
 
 
   // NOTE: this produces an UNVERIFIED list of candidate indexes (but false positives are "rare")
-  std::vector<long> CyclotomicFactorIndexes(ConstRefRingElem f)
+  std::vector<long> CyclotomicFactorIndexes(RingElem f)
   {
     const char* const FnName = "CyclotomicFactorIndexes";
     if (IsZero(f))  CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
+    vector<long> IndexList; // will contain result
+    if (IsConstant(f))  return IndexList; // must be before call to UnivariateIndetIndex
     const long x_index = UnivariateIndetIndex(f);
     if (x_index < 0)  CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
     VerboseLog VERBOSE(FnName);
-    VERBOSE(80) << "Computing PalindromicFactor" << std::endl;
+    VERBOSE(80) << "Minor preprocessing" << std::endl;
     // TODO: if ConstCoeff == 0 then divide by power of x
-    // TODO: If f(1)=0 && sign(LC) <> sign(ConstCoeff) then g := PalindromicFactor(f*(x-1))
-    const RingElem g = PalindromicFactor(f);
-    if (IsConstant(g))  return vector<long>();
-    const RingElem& x = indet(owner(g), x_index);
-    vector<long> IndexList; // will contain result
-    VERBOSE(80) << "Computing SqFreeFactor" << std::endl;
-    const vector<RingElem> SqFrFacs = SqFreeFactor(g).myFactors(); /// BUG??? either in ZZ[x] or must apply prim!
-    vector<long> h_indexes;  // used repeatedly inside loop
-    for (RingElem h: SqFrFacs)
+    f = prim(f);
+    RingElem revf = reverse(f); // may have lower degree than f
+    f = (deg(revf) < 100) ? gcd(f,revf) : revf;
+    if (IsConstant(f))  return IndexList;
+    const bool palindromic = (deg(f) <= deg(revf) || IsPalindromic(f));
+    const RingElem& x = indet(owner(f), x_index);
+    // It is convenient to deal with Phi_1 and Phi_2 separately
+    if (IsZero(EvalAt(f,1)))   { f /= x-1; IndexList.push_back(1); }
+    if (IsZero(EvalAt(f,-1)))  { f /= x+1; IndexList.push_back(2); }
+    if (deg(f) <= 1)  return IndexList;
+    VERBOSE(80) << "Checking if it is cyclotomic" << std::endl;
+    const long k = CyclotomicTest(f);
+    if (k != 0)  { IndexList.push_back(k);  return IndexList; }
+    
+    // Possibly reduce max poss deg of any prod of cyclo factors:
+    BigInt G; // init zero
+    BigInt Gnew;
+    long deg_drop1 = 0; // will be set in 1st loop below
+    long deg_drop2 = 0; // will be set in 2nd loop below
+    for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
     {
-      const long k = CyclotomicTest(h);
-      if (k != 0)  { IndexList.push_back(k); continue; }
-      // It is convenient to deal with Phi_1 and Phi_2 separately
-      if (!IsConstant(gcd(h,x-1)))  { h /= x-1; IndexList.push_back(1); }
-      if (!IsConstant(gcd(h,x+1)))  { h /= x+1; IndexList.push_back(2); }
-      if (deg(h) <= 1)  continue;
-      h = prim(h); // now coeffs are integers -- unfortunately SqFreeFactor makes the factors monic in QQ[x]
-      BigInt G; // init zero
-      long d = 0; // will be set in the loop below
-      for (SparsePolyIter it=BeginIter(h); !IsEnded(it); ++it)
-      {
-        G = gcd(G, ConvertTo<BigInt>(coeff(it)));
-        if (IsOne(G))  { d = deg(PP(it));  break; }
-      }
-      if (2*d == deg(h))  continue;
-      h_indexes = FindCycloFactor(CycloIndexesUptoDeg(2*d-deg(h)), h); // recall that coeffs of h are integer!
-      IndexList.insert(IndexList.end(), h_indexes.begin(), h_indexes.end()); // concat
+      Gnew = gcd(G, ConvertTo<BigInt>(coeff(it)));
+      if (IsOne(Gnew))  { deg_drop1 = deg(f) - deg(PP(it));  break; }
+      swap(G, Gnew); // equiv G = Gnew;
     }
+    if (palindromic)  { deg_drop2 = deg_drop1; }
+    else
+    {
+      for (SparsePolyIter it=BeginIter(revf); !IsEnded(it); ++it)
+      {
+        Gnew = gcd(G, ConvertTo<BigInt>(coeff(it)));
+        if (IsOne(Gnew))  { deg_drop2 = deg(revf) - deg(PP(it));  break; }
+        swap(G, Gnew); // equiv G = Gnew;
+      }
+    }
+    VERBOSE(80) << "Degree drop is " << deg_drop1+deg_drop2 << std::endl;
+    if (deg(f) - deg_drop1 - deg_drop2 < 2)  return IndexList;
+
+    vector<long> indexes = FindCycloFactor(CycloIndexesUptoDeg(deg(f)-deg_drop1-deg_drop2), f); // recall that coeffs of f are integer!
+    IndexList.insert(IndexList.end(), indexes.begin(), indexes.end()); // concat
     sort(IndexList.begin(), IndexList.end());
     return IndexList;
   }

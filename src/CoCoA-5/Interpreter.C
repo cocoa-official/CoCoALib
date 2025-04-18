@@ -3059,7 +3059,7 @@ int Interpreter::run() {
               lexer->startingTopLevelStatement();
               Token t = lexer->getToken(parser->getStatus());
               if (t.getType()==TT_EOF)
-              { cout<<"\n[EOF]\nCoCoA-5 quitting..."<<endl; return EXIT_SUCCESS; }
+              { cout<<"\n[EOF]\nCoCoA-5 quitting... (cleaning up)"<<endl; return EXIT_SUCCESS; }
               lexer->ungetToken(t);
               s = parser->parseTopLevelStatement();
               if (!s || this->errorReporter->getErrorCount())
@@ -3067,7 +3067,7 @@ int Interpreter::run() {
             } catch (const UnexpectedTokenException &ete) {
               lexer->reportError(ete.reason, ete.found.getBegin(), ete.found.getEnd(), false);
               if (ete.found.getType()==TT_EOF)
-              { cout<<"\n[ERROR]\nCoCoA-5 quitting..."<<endl; return EXIT_FAILURE; }
+              { cout<<"\n[ERROR]\nCoCoA-5 quitting... (cleaning up)"<<endl; return EXIT_FAILURE; }
               if (ete.needsRecovery)
                 parser->tryToRecover(ete.from);
               continue;
@@ -3107,7 +3107,7 @@ int Interpreter::run() {
 #ifdef C5IDE
               this->status = IS_ENDED;
 #endif // #ifdef C5IDE
-              cout<<"\nCoCoA-5 quitting..."<<endl;
+              cout<<"\nCoCoA-5 quitting... (cleaning up)"<<endl;
               return EXIT_SUCCESS;
             } catch (const InterruptException& intr) {
               this->errorReporter->reportInterrupt(intr);

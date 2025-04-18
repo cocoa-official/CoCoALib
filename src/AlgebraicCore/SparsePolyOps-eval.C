@@ -56,6 +56,8 @@ namespace CoCoA
     // --------------------------------------------
     // Evaluation of f in ZZ[x] at integer point
 
+    // Qn:  Separate fns for eval at 1 and -1?
+
     // "binary" method for evaluation of poly in ZZ[x] at integer pt x=a
     BigInt EvalAt_bin(std::vector<BigInt> C, BigInt a)
     {
@@ -64,6 +66,7 @@ namespace CoCoA
       {
         if (IsOdd(len(C)))  C.push_back(BigInt(0));
         const long n = len(C);
+        // HINT: allocate workspace for the product & use mpz_add, mpz_mul
         for (long i=0; i < n/2; ++i)
           C[i] = C[2*i]+a*C[2*i+1];  // maybe use mpz_add_mul  ??? worth it ???
         C.resize(n/2);
@@ -83,6 +86,7 @@ namespace CoCoA
     {
       if (IsZero(b))  CoCoA_THROW_ERROR(ERR::DivByZero, "EvalUPoly/EvalAt");
       if (IsOne(b))  return EvalAt_bin(C, a);
+      // HINT: allocate workspace for the products & use mpz_add, mpz_mul
       BigInt ExcessFactor(1);
       while (len(C) > 1)
       {
@@ -137,27 +141,20 @@ namespace CoCoA
     return out;
   }
 
-  // Eval f(n)   ASSUMES f is univariate with integer coeffs
+  // Eval f(n)  for f in ZZ[x]
   BigInt EvalAt(ConstRefRingElem f, long n)
   {
+    if (n == 0 || IsConstant(f))
+      return ConvertTo<BigInt>(ConstantCoeff(f));
     return EvalUPoly(f)(n);
-    // vector<BigInt> C(1+deg(f));
-    // for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
-    // {
-    //   C[deg(PP(it))] = ConvertTo<BigInt>(coeff(it));
-    // }
-    // return EvalAt_bin(C, BigInt(n));
   }
 
+  // Eval f(n)  for f in ZZ[x]
   BigInt EvalAt(ConstRefRingElem f, const BigInt& n)
   {
+    if (IsZero(n) || IsConstant(f))
+      return ConvertTo<BigInt>(ConstantCoeff(f));
     return EvalUPoly(f)(n);
-    // vector<BigInt> C(1+deg(f));
-    // for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
-    // {
-    //   C[deg(PP(it))] = ConvertTo<BigInt>(coeff(it));
-    // }
-    // return EvalAt_bin(C, n);
   }
 
 
@@ -165,30 +162,20 @@ namespace CoCoA
   // !!RETURNS JUST THE NUMERATOR!!
   BigInt EvalAt(ConstRefRingElem f, long n, long d)
   {
+    if (n == 0 || IsConstant(f))
+      return ConvertTo<BigInt>(ConstantCoeff(f));
     if (d == 1)  return EvalUPoly(f)(n);
     return EvalUPoly(f)(n,d);
-
-    // vector<BigInt> C(1+deg(f));
-    // for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
-    // {
-    //   C[deg(PP(it))] = ConvertTo<BigInt>(coeff(it));
-    // }
-    // return EvalAt_bin(C, BigInt(n), BigInt(d));
   }
 
-  // evaluation of poly in ZZ[x] at rational pt x=n/d
+  // Evaluation of poly in ZZ[x] at rational pt x=n/d
   // RETURNS NUMERATOR!!
   BigInt EvalAt(ConstRefRingElem f, const BigInt& n, const BigInt& d)
   {
-    if (d == 1)  return EvalUPoly(f)(n);
+    if (IsZero(n) || IsConstant(f))
+      return ConvertTo<BigInt>(ConstantCoeff(f));
+    if (IsOne(d))  return EvalUPoly(f)(n);
     return EvalUPoly(f)(n,d);
-    // if (d == 1) return EvalAt(f, n);
-    // vector<BigInt> C(1+deg(f));
-    // for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
-    // {
-    //   C[deg(PP(it))] = ConvertTo<BigInt>(coeff(it));
-    // }
-    // return EvalAt_bin(C, n, d);
   }
 
 

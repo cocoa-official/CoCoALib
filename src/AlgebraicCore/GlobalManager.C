@@ -112,7 +112,7 @@ namespace CoCoA
 
   GlobalManager* GlobalManager::ptr(const ErrorContext& ErrCtx)
   {
-    if (GlobalManager::ourGlobalDataPtr == nullptr)
+    if (!IsInitialized())
       CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::NoGlobalMgr, ErrCtx);
     return GlobalManager::ourGlobalDataPtr;
   }
@@ -120,7 +120,7 @@ namespace CoCoA
 
   GlobalManager::GMPMemMgr::GMPMemMgr(GlobalSettings::GMPAllocatorType choice, std::size_t SliceSize)
   {
-    if (choice == GlobalSettings::GMPAllocatorType::SystemDefault) return;
+    if (choice == GlobalSettings::GMPAllocatorType::SystemDefault)  return;
 
     myPoolPtr.reset(new MemPool(SliceSize, "Global GMP MemPool")); // must do this first to be exception safe
     GlobalManager::GMPPoolPtr = myPoolPtr.get();
@@ -132,7 +132,7 @@ namespace CoCoA
 
   GlobalManager::GMPMemMgr::~GMPMemMgr()
   {
-    if (myPoolPtr.get() == nullptr) return;
+    if (myPoolPtr.get() == nullptr)  return;
 
     mp_set_memory_functions(myPrevAlloc, myPrevRealloc, myPrevFree);
     GlobalManager::GMPSliceSize = 0;
@@ -257,7 +257,7 @@ namespace CoCoA
   {
 // !!!***NOT THREAD SAFE***!!!  Must make next 3 lines atomic.
     // Complain if a GlobalManager object has already been created
-    if (ourGlobalDataPtr != nullptr)
+    if (IsInitialized())
       CoCoA_THROW_ERROR(ERR::GlobalManager2, "GlobalManager ctor");
     ourAllowObsolescentFnsFlag = (settings.myObsolescentFnPolicy == GlobalSettings::ObsolescentFnPolicy::allow);
 #ifdef CoCoA_WITH_GFAN
