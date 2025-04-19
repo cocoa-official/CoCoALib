@@ -99,14 +99,13 @@ namespace
 {
   // ??? appropriate use of inheritance here?  this is getting pretty ugly
 
-  // SPECIAL CASE: when all PPs map to just PPs
+  // SPECIAL CASE: when all PPs map to just PPs **AND** coeffs map to coeffs!!
   void ApplySPRCodomain_(RingElem& image, ConstRefRingElem arg, const RingHom CoeffHom, const vector<RingElem>& IndetImages)
   {
     // NOTE: CoeffHom maps into S (and **not** into CoeffRing(S))
     const SparsePolyRing S = owner(image);
     const PPMonoid PPMS = PPM(S);
     geobucket gbk(S);
-
 
     const long NumInd = len(IndetImages);
     vector<PPMonoidElem> IndetImage; IndetImage.reserve(NumInd); for (int i=0; i < NumInd; ++i) IndetImage.push_back(LPP(IndetImages[i]));
@@ -135,7 +134,8 @@ namespace
   // assume image==0
   void ApplySPRCodomain(RingElem& image, ConstRefRingElem arg, const RingHom CoeffHom, const vector<RingElem>& IndetImages)
   {
-    if (true)
+    const ring& R = CoeffRing(owner(arg));
+    if (IsZZ(R) || IsQQ(R) || IsFiniteField(R)) // WORKAROUND/BUG: should really test whether coeffs are mapped to coeffs
     {
       // Check for case where all indet images are just PPs
       bool SimpleCase = true;

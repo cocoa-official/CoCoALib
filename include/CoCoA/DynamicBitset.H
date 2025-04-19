@@ -148,14 +148,14 @@ namespace CoCoA
 
 ///////////// inline facet functions ///////////////////////////////////////////
 
-//   // Returns the list of the indexes of the vertices in the facet
+//   // Returns the list of the indices of the vertices in the facet
 //   std::list<unsigned int> DynamicBitset::myVertices() const
-//   {					
-//     std::list<unsigned int> l;		
+//   {
+//     std::list<unsigned int> l;
 //     for (unsigned int i=0; i!=mySize(); ++i)
-//       if (myTest(i))  l.push_back(i);			
-//     return l;				
-//   }//DynamicBitset::myVertices()			
+//       if (myTest(i))  l.push_back(i);
+//     return l;
+//   }//DynamicBitset::myVertices()
 
 
 //   bool lesser(const bool& b1, const bool& b2)
@@ -207,7 +207,7 @@ namespace CoCoA
     for ( ; itr!=rhs.myVec.end(); ++itr, ++it)  *it &= *itr;
     return *this;
   }
-  
+
 
   DynamicBitset& DynamicBitset::operator|=(const DynamicBitset& rhs)
   {

@@ -116,7 +116,7 @@ Let ``sym``, ``sym1``, and ``sym2`` be objects of type ``symbol``
 **Note:** I have used ``MachineInt`` as the type for fn args containing
 index values because it is //safer//, and I believe that the run-time
 penalty is unimportant.  This is a considered exception to the guideline
-which says to use ``long`` for indexes.
+which says to use ``long`` for indices.
 
 I have decided **not** to allow //big integers// as subscripts because I don't
 see when it could ever be genuinely useful.

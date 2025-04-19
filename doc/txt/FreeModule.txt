@@ -30,8 +30,8 @@ For normal use there are only a few functions of interest:
 :  ``CanonicalBasis(M)``
     returns a read-only ``vector`` whose entry with index ``k``
     contains the ``k``-th unit vector (all coords 0 except ``k``-th;
-    recall that indexes start from 0).
-    
+    recall that indices start from 0).
+
 
 :  ``NewFreeModule(R, NumCompts, shifts)``
     creates an object of type FGModule representing the free module of

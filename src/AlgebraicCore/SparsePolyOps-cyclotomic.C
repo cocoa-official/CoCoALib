@@ -217,19 +217,19 @@ namespace CoCoA
 //      static vector<int> tbl{1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 3, 3, 3, 3, 4, 4, 5, 4, 4, 4, 5, 5, 6, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 9, 9, 7, 8, 8, 10, 13, 12, 10, 12, 9, 11, 15, 13, 13, 14, 15, 13, 16, 15, 15, 14, 16, 24, 17, 21, 21, 16, 22, 28, 26, 23, 28, 26, 25, 35, 34, 33, 28, 34, 36, 37, 49, 43, 33, 44, 48, 49, 55, 53, 53, 48, 60, 70, 66, 65, 70, 65, 68, 91, 86, 78, 87, 86, 86, 109, 110, 98, 104, 108, 116, 124, 136, 136, 118, 132, 153, 147, 162, 174, 150, 156, 187, 191, 196, 201, 194, 198, 213, 237, 248, 229, 243, 254, 251, 294, 301, 291, 301, 316, 330, 337, 368, 375, 384, 393, 425, 434, 444, 476, 495, 501, 534, 554, 575, 585, 633, 648, 659, 697, 727, 762, 770, 826, 839, 870, 927, 939, 980, 1023, 1058, 1106, 1135, 1195, 1222, 1270, 1345, 1364, 1420, 1475, 1551, 1576, 1648, 1723, 1765, 1833, 1917, 1975, 2025, 2128, 2205, 2277, 2354, 2449, 2533, 2609, 2716, 2822, 2887, 3033, 3118, 3214, 3352, 3463, 3577, 3684, 3852, 3959, 4091, 4249, 4403, 4515, 4695, 4879, 5013, 5166, 5384, 5557, 5711, 5931, 6140, 6313, 6547, 6783, 6968, 7215, 7444, 7729, 7927, 8230, 8499, 8735, 9068, 9350, 9640, 9940, 10311, 10611, 10917, 11333, 11691, 12006, 12442, 12831, 13240, 13619, 14106, 14539, 14933, 15478, 15967, 16423, 16934, 17520, 18004, 18586, 19166, 19754, 20342, 20998, 21669, 22265, 22980, 23711, 24386, 25136, 25935, 26681, 27474, 28348, 29239, 29988, 30974, 31939, 32821, 33802, 34849, 35870, 36885, 38040, 39161, 40280, 41450, 42768, 43926, 45192, 46604, 47899, 49276, 50765, 52212, 53706, 55264, 56912, 58451, 60136, 61982, 63636, 65476, 67336, 69337, 71177, 73261, 75421, 77388, 79611, 81943, 84198, 86479, 88977, 91506, 93969, 96621, 99375, 102015, 104883, 107807, 110812, 113731, 116995, 120213, 123396, 126862, 130352, 133832, 137440, 141346, 145032, 148957, 153094, 157208, 161350, 165736, 170297, 174767, 179350, 184367, 189151, 194125, 199442, 204712, 210066, 215629, 221503, 227152, 233159, 239373, 245635, 251993, 258727, 265467, 272263, 279482, 286802, 294149, 301692, 309723, 317641, 325697, 334313, 342879, 351490, 360736, 369949, 379351, 388924, 399069, 409187, 419345, 430271, 441119, 452211, 463627, 475516, 487284, 499526, 512291, 524978, 538047, 551691, 565467, 579416, 593915, 608802, 623715, 639190, 655254, 671227, 687736, 704833, 722346, 739702, 758069, 776794, 795529, 815042, 835084, 855346, 875912, 897527, 919313, 941351, 964230, 987691, 1011324, 1035647, 1060738, 1086214, 1111981, 1139041, 1166215, 1193792, 1222525, 1251751, 1281321, 1311707, 1343183, 1374747, 1407242, 1440661, 1474827, 1509149, 1544916, 1581526, 1618225, 1656179, 1695286, 1734764, 1775063, 1816717, 1859164, 1902034, 1946402, 1991886, 2037459, 2084865, 2133122, 2182387, 2232360, 2284047, 2336720, 2389897, 2445029, 2501160, 2557987, 2616386, 2676613, 2737215, 2799275, 2863350, 2928336, 2994302, 3062371, 3131806, 3202293, 3274266, 3348628, 3423647, 3500224, 3579361, 3659521, 3741172, 3824800, 3910779, 3997378, 4086497, 4177827, 4270325, 4364969, 4462138, 4560960, 4661336, 4764549, 4870016, 4976809, 5086277, 5198639, 5312379, 5428620, 5547998, 5669559, 5792537, 5919572, 6048904, 6180016, 6314331, 6451990, 6591777, 6734099, 6880555, 7029151, 7180596, 7335548, 7494178, 7654735, 7819038, 7987714, 8158545, 8332878, 8511885, 8693506, 8878694, 9068287, 9261752, 9458090, 9658820, 9864874, 10073174, 10286286, 10504265, 10726457, 10951921, 11183197, 11419241, 11658441, 11903358, 12153908, 12408233, 12667296, 12933110, 13203358, 13478069, 13759405, 14046293, 14337627, 14635630, 14939674, 15249367, 15564087, 15887182, 16215398, 16548944, 16890901, 17238932, 17592887, 17954180, 18323771, 18698613, 19081147, 19472467, 19870489, 20275020, 20689118, 21111202, 21539918, 21977359, 22424867, 22879065, 23341933, 23815498, 24296999, 24786837, 25287266, 25798069, 26315933, 26845537, 27385533, 27934826, 28494300, 29065902, 29647613, 30238885, 30843564, 31459281, 32084985, 32723423, 33375450, 34037643, 34712117, 35401525, 36102674, 36815222, 37544138, 38285512, 39039548, 39808414, 40593184, 41390912, 42202360, 43032131, 43875571, 44733722, 45609136, 46501548, 47407781, 48332455, 49275586, 50233637, 51209627, 52205803, 53218943, 54249394, 55300736, 56371639, 57459683, 58569272, 59700850, 60849879, 62021011, 63214983, 64430526, 65664955, 66925458, 68209042, 69512466, 70841932, 72196640, 73573572, 74975144, 76405173, 77859037, 79337725, 80845117, 82380574, 83940465, 85529872, 87149621, 88796266, 90471567, 92180778, 93917689, 95684436, 97485841, 99318840, 101182135, 103079538, 105013981, 106978275, 108978894, 111017058, 113090028, 115197382, 117345431, 119531909, 121752840, 124015115, 126320150, 128661962, 131044841, 133473237, 135942371, 138452614, 141010013, 143613043, 146256668, 148950464, 151691862, 154479303, 157314064, 160202182, 163139008, 166123741, 169164825, 172258011, 175401528, 178601623, 181860409, 185170345, 188538373, 191968832, 195455707, 198999885, 202609804, 206281142, 210012687, 213809344, 217675255, 221602541, 225596648, 229665200, 233799176, 238002237, 242279736, 246632470, 251053432, 255553048, 260131885, 264784053, 269515832, 274332266, 279227482, 284202775, 289267184, 294417097, 299649689, 304973052, 310389923, 315892862, 321488906, 327183894, 332972515, 338852949, 344840325, 350926331, 357109231, 363399451, 369797500, 376298953, 382906955, 389632406, 396465824, 403410376, 410475327, 417658877, 424955348, 432376454, 439925092, 447593278, 455387678, 463318079, 471375012, 479562708, 487891027, 496356256, 504955762, 513700002, 522594052, 531625490, 540807781, 550145213, 559634207, 569273280, 579077070, 589042114, 599162068, 609452787, 619915935, 630542474, 641341995, 652325455, 663483188, 674818298, 686343654, 698057289, 709953136, 722047614, 734340136, 746827701, 759514418, 772415624, 785520383, 798830568, 812364948, 826115567, 840081563, 854275788, 868704223, 883354993, 898243016, 913376660, 928748327, 944360399, 960231307, 976356018, 992729896, 1009369098, 1026280778, 1043452831, 1060898413, 1078630767, 1096639281, 1114929271, 1133516627, 1152402460, 1171574401, 1191059041, 1210855439, 1230957553, 1251377843, 1272127778, 1293201452, 1314600753, 1336347039, 1358435589, 1380861992, 1403646456, 1426796564, 1450298798, 1474170462, 1498426087, 1523056079, 1548063636, 1573475540, 1599281087, 1625481551, 1652096091, 1679132681, 1706581303, 1734453900, 1762774705, 1791526948, 1820721145, 1850376366, 1880494106, 1911066421, 1942119404, 1973660510, 2005677481, 2038189422, 2071215942, 2104743966, 2138782604, 2173356586, 2208462633, 2244098661, 2280288462, 2317043119, 2354347491, 2392227481, 2430697903, 2469753457, 2509394662, 2549657544, 2591776280, 2638859718, 2686767003, 2735512622, 2785109612, 2835572150, 2886916559, 2939154049, 2992304101, 3046379312, 3101394489, 3157368382, 3214314131, 3272249082, 3331191327, 3391154353, 3452157970, 3514218830, 3577353722, 3641582150, 3706921226, 3773388432, 3841005078, 3909789193, 3979758493, 4050935817, 4123338326, 4196988118, 4271905516, 4348110945, 4425625930, 4504473234, 4584672936, 4666249343, 4749224187, 4833620167, 4919461259, 5006772958, 5095575512, 5185897557, 5277761714, 5371193275, 5466221231, 5562866803, 5661159913, 5761127462, 5862795576, 5966192555, 6071348757, 6178288470, 6287045682, 6397647790, 6510124309, 6624508040, 6740827957, 6859116008, 6979407790, 7101729658, 7226119165, 7352609762, 7481233156, 7612027191, 7745024551, 7880261728, 8017775831, 8157603970, 8299781531, 8444349539, 8591344032, 8740805696, 8892775513, 9047291277, 9204395314, 9364131129, 9526538189, 9691662422, 9859545604, 10030232379, 10203768784, 10380201948, 10559573835, 10741936359, 10927335890, 11115819575, 11307441081, 11502245790, 11700287269, 11901618476, 12106288801, 12314354530, 12525870093, 12740885971, 12959465157, 13181659717, 13407527625, 13637129315, 13870523446, 14107768700, 14348931413, 14594066787, 14843242863, 15096524137, 15353971519, 15615656396, 15881642451, 16151997998, 16426794165, 16706100821, 16989987410, 17278529374, 17571796964, 17869867308, 18172816465, 18480719655, 18793654490, 19111704711, 19434945061, 19763461388, 20097335722, 20436650194, 20781493763, 21131952207, 21488111319, 21850063877, 22217898864, 22591707549, 22971588230, 23357630341, 23749931570, 24148594093, 24553711592, 24965388342, 25383727867, 25808827250, 26240802067, 26679752478, 27125788226, 27579021974, 28039563714, 28507526546, 28983030370, 29466185791, 29957115645, 30455941475, 30962781835, 31477765659, 32001016258, 32532659582, 33072831591, 33621660953, 34179278767, 34745826645, 35321437086, 35906253977, 36500417687, 37104072809, 37717362928, 38340442814, 38973456404, 39616560551, 40269910405, 40933659594, 41607973273, 42293011810, 42988936567, 43695919518, 44414126897, 45143730656, 45884910118, 46637835225, 47402688872, 48179657390, 48968919455, 49770665819, 50585090475, 51412377408, 52252734311, 53106353128, 53973435992, 54854192944, 55748826468};
       return tbl;
     }
-    
+
 
 
 
     // --------------------------------------------
     // Compute cyclo prefix using the Moebius inverted product
     // We implement ad hoc truncated power-series (as vector<long>)
-  
+
     // !!! SUGGESTION !!!
     // Make this into a template fn: replace "unsigned long" by T;
     // change only type decl of cyclo, and return type.
     // Then we can instantiate with unsigned int types or BigInt!
-      
+
     // Dmax > 0 means Compute the first Dmax+1 coeffs of the cyclotomic poly (in a std::vector)
     // Dmax == 0 implies use half the degree;
     // Dmax < 0 means compute the abs(Dmax)+1 prefix of RECIPROCAL of the requested cyclo
@@ -300,9 +300,9 @@ namespace CoCoA
         for (long i=1; i <= UPB; i += 2)
           cyclo[i] = -cyclo[i];
       }
-      return cyclo;    
+      return cyclo;
     }
-  
+
 
 
 
@@ -422,7 +422,7 @@ namespace CoCoA
 
 
   // Calls CycloPrefix then builds the actual poly.
-  // TODO make a version which uses CRT to allow larger indexes?
+  // TODO make a version which uses CRT to allow larger indices?
   RingElem cyclotomic(long n, ConstRefRingElem x)
   {
     if (n < 1)
@@ -505,7 +505,7 @@ namespace CoCoA
   //  (c) checks for special cases...
   // Input poly f
   // Output:
-  //  (a) if input is "obviously not cyclo" return  0 
+  //  (a) if input is "obviously not cyclo" return  0
   //  (b) special case: index is p^k or 2*p^k
   //  (c) special case: f(x) = g(x^r) for some r > 1
   unsigned long CyclotomicTest(ConstRefRingElem f, bool DoFullCheck)
@@ -537,16 +537,16 @@ namespace CoCoA
       else
         return DefinitelyNotCyclo;
     }
-    
+
     const long r = degf - deg(PP(it));
     if (r <= 0) // cannot be univariate
       CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     if (degf%r != 0)  return DefinitelyNotCyclo; // not of form g(x^r)
-    if (!IsOne(coeff(it)) && !IsMinusOne(coeff(it)))  return DefinitelyNotCyclo; 
+    if (!IsOne(coeff(it)) && !IsMinusOne(coeff(it)))  return DefinitelyNotCyclo;
     const long mu = (IsOne(coeff(it)))? -1 : 1; // minus 2nd coeff
     const long radr = radical(r);
     const long degr = degf/r; // "reduced degree"
-    // Obtain list of candidate indexes to try: in 3 stages
+    // Obtain list of candidate indices to try: in 3 stages
     // InvTotient (sqfr preimages), with correct MoebiusFn value, & must be mult of r
     vector<long> cand = InvTotient(degr, InvTotientMode::SqFreePreimages);
     const auto WrongMu = [mu](long n){ return (MoebiusFn(n) != mu); };
@@ -775,12 +775,12 @@ namespace CoCoA
 
 
 
-    
+
 // 2023-12-09 JAA: commented out this old version which took as input an "evaluator"
-// //  CandidateCycloIndexes is a list of integers >= 2 being indexes of
-// //  possible cyclotomic factors -- see also CycloIndexesUptoDeg (below).
-// //  Deliberately skips indexes 1 and 2
-//     std::vector<long> FindCycloFactor(vector<long> CandidateCycloIndexes, std::function<BigInt /**/(long n, long d)> EvalF)
+// //  CandidateCycloIndices is a list of integers >= 2 being indices of
+// //  possible cyclotomic factors -- see also CycloIndicesUptoDeg (below).
+// //  Deliberately skips indices 1 and 2
+//     std::vector<long> FindCycloFactor(vector<long> CandidateCycloIndices, std::function<BigInt /**/(long n, long d)> EvalF)
 //     {
 //       // Assume f is non-constant with integer coeffs (ideally squarefree, content=1, and f palindromic)
 //       VerboseLog VERBOSE("FindCycloFactor");
@@ -789,7 +789,7 @@ namespace CoCoA
 //       const RingElem& x = indet(ZZx,0);                    //
 
 
-//       VERBOSE(80) <<"NUM INIT Candidates: " << len(CandidateCycloIndexes) << std::endl;
+//       VERBOSE(80) <<"NUM INIT Candidates: " << len(CandidateCycloIndices) << std::endl;
 //       int TargetNumEvalPts = 2;
 //       long EvalPtNumer = 2;  long EvalPtDenom = 1;
 //       int NumEvalPts = 0;
@@ -803,7 +803,7 @@ namespace CoCoA
 //           BigInt Valf_reduced = CoprimeFactor(Valf, EvalPtNumer*(EvalPtNumer*EvalPtNumer-EvalPtDenom*EvalPtDenom)); // BUG?????  to avoid overflow need EvalPt^3 < MaxLong (or MaxULong)
 
 //           vector<long> ReducedCandidateList;
-//           for (long k:  CandidateCycloIndexes)
+//           for (long k:  CandidateCycloIndices)
 //           {
 //             if (k < 3)  continue; // skip 1 & 2, if present
 //             if (EvalPtNumer == 2 && EvalPtDenom == 1 && k == 6 && Valf%3 == 0)
@@ -817,19 +817,19 @@ namespace CoCoA
 //               ReducedCandidateList.push_back(k);
 //             if (IsOne(Valf_reduced))  break;
 //           }
-//           if (len(ReducedCandidateList) < len(CandidateCycloIndexes))
+//           if (len(ReducedCandidateList) < len(CandidateCycloIndices))
 //           {
-//             TargetNumEvalPts = NumEvalPts+3; // if no indexes removed in 3 consecutive iters, we accept the list as "probably correct" (i.e. only very few false positives)
-//             swap(CandidateCycloIndexes, ReducedCandidateList); // really assignment
-//             VERBOSE(80)<<"CandidateCycloIndexes="<<CandidateCycloIndexes<<std::endl;
-//             if (CandidateCycloIndexes.empty()) break;
+//             TargetNumEvalPts = NumEvalPts+3; // if no indices removed in 3 consecutive iters, we accept the list as "probably correct" (i.e. only very few false positives)
+//             swap(CandidateCycloIndices, ReducedCandidateList); // really assignment
+//             VERBOSE(80)<<"CandidateCycloIndices="<<CandidateCycloIndices<<std::endl;
+//             if (CandidateCycloIndices.empty()) break;
 //           }
 //         }
 //         // advance to next EvalPt
 //         const long skip = RandomLong(1, 50); for (long i=0; i < skip; ++i)  GotoNextEvalPt(EvalPtNumer, EvalPtDenom);
 //       }
 //       VERBOSE(80)<<"Returning"<<std::endl;
-//       return CandidateCycloIndexes;
+//       return CandidateCycloIndices;
 //     }
 
   namespace // anonymous -- auxiliaries for FindCycloFactor
@@ -854,12 +854,12 @@ namespace CoCoA
 
   } // end of namespace anonymous
 
-    
-    //  CandidateCycloIndexes is a list of integers >= 2 being indexes of
-    //  possible cyclotomic factors -- see also CycloIndexesUptoDeg (below).
-    //  Deliberately skips indexes 1 and 2
+
+    //  CandidateCycloIndices is a list of integers >= 2 being indices of
+    //  possible cyclotomic factors -- see also CycloIndicesUptoDeg (below).
+    //  Deliberately skips indices 1 and 2
   // ASSUMES f is square-free
-  std::vector<long> FindCycloFactor(vector<long> CandidateCycloIndexes, RingElem f)
+  std::vector<long> FindCycloFactor(vector<long> CandidateCycloIndices, RingElem f)
   {
     // Evaluation points such that low deg cyclos have a "large" prime factor
 
@@ -880,7 +880,7 @@ namespace CoCoA
     const RingElem& x = indet(ZZx,0);                     //
 
 
-    VERBOSE(80) <<"NUM INIT Candidates: " << len(CandidateCycloIndexes) << std::endl;
+    VERBOSE(80) <<"NUM INIT Candidates: " << len(CandidateCycloIndices) << std::endl;
     long EvalPtNumer = 2;  long EvalPtDenom = 1; /// always have: EvalPtNumer > EvalPtDenom & gcd = 1; also need EvalPtNumer^3 < MAX_LONG
     int NumEvalPts = 0;
     bool LastIter = false;
@@ -899,20 +899,20 @@ namespace CoCoA
       BigInt Valf_reduced = CoprimeFactor(Valf, EvalPtNumer*(EvalPtNumer*EvalPtNumer-EvalPtDenom*EvalPtDenom)); // BUG?????  to avoid overflow need EvalPt^3 < MaxLong (or MaxULong)
 
       vector<long> ReducedCandidateList;
-      for (long k:  CandidateCycloIndexes)
+      for (long k:  CandidateCycloIndices)
       {
         if (k < 3)  continue; // skip 1 & 2, if present
         if (k > 6 && IsOne(Valf_reduced))   break;
         if (EvalPtNumer == 2 && EvalPtDenom == 1 && k == 6 && Valf%3 == 0)
         { ReducedCandidateList.push_back(k); continue; } // exception in Zsygmondi's Thm
         const BigInt g = gcd(Valf_reduced,  power(EvalPtNumer,k) - power(EvalPtDenom,k));
-        if (IsOne(g))  continue; 
+        if (IsOne(g))  continue;
         Valf_reduced = CoprimeFactor(Valf_reduced, g);
         if (IsDivisible(Valf, EvalAt(cyclotomic(k,x),EvalPtNumer,EvalPtDenom)))
           ReducedCandidateList.push_back(k);
       }
       if (LastIter)  return ReducedCandidateList;
-      if (len(ReducedCandidateList) == len(CandidateCycloIndexes))
+      if (len(ReducedCandidateList) == len(CandidateCycloIndices))
       {
         // Do one last check with an eval pt chosen so that Phi(3), Phi(4) & Phi(6) have "large" prime factors
         LastIter = true;
@@ -922,9 +922,9 @@ namespace CoCoA
         continue;
       }
       // We filtered out at least one index...
-      swap(CandidateCycloIndexes, ReducedCandidateList); // really assignment
-      VERBOSE(80) << "CandidateCycloIndexes=" << CandidateCycloIndexes << std::endl;
-      if (CandidateCycloIndexes.empty())  return CandidateCycloIndexes;
+      swap(CandidateCycloIndices, ReducedCandidateList); // really assignment
+      VERBOSE(80) << "CandidateCycloIndices=" << CandidateCycloIndices << std::endl;
+      if (CandidateCycloIndices.empty())  return CandidateCycloIndices;
       // advance to next EvalPt
       const long skip = RandomLong(1, 50); for (long i=0; i < skip; ++i)  GotoNextEvalPt(EvalPtNumer, EvalPtDenom);
     }
@@ -932,32 +932,32 @@ namespace CoCoA
 
 
 
-  namespace // anonymous -- auxiliaries for CyclotomicFactorIndexes
+  namespace // anonymous -- auxiliaries for CyclotomicFactorIndices
   {
 
     // List of all k>2 such that EulerTotient(k) <= d
-    // EQUIV list of all indexes k>2 such that deg(cyclo(k)) <= d
-    std::vector<long> CycloIndexesUptoDeg(long d)
+    // EQUIV list of all indices k>2 such that deg(cyclo(k)) <= d
+    std::vector<long> CycloIndicesUptoDeg(long d)
     {
-      vector<long> CandidateIndexes;
+      vector<long> CandidateIndices;
       const long UPB = InvTotientBoundUpto_ulong(d);
       for (long k=3; k <= UPB; ++k)
       {
         if (IsOdd(k) && k > UPB/2)  continue;
         const long phi = EulerTotient(k);
         if (phi <= d)
-          CandidateIndexes.push_back(k);
+          CandidateIndices.push_back(k);
       }
-      return CandidateIndexes;
+      return CandidateIndices;
     }
 
   } // end of namespace anonymous
 
 
-  // NOTE: this produces an UNVERIFIED list of candidate indexes (but false positives are "rare")
-  std::vector<long> CyclotomicFactorIndexes(RingElem f)
+  // NOTE: this produces an UNVERIFIED list of candidate indices (but false positives are "rare")
+  std::vector<long> CyclotomicFactorIndices(RingElem f)
   {
-    const char* const FnName = "CyclotomicFactorIndexes";
+    const char* const FnName = "CyclotomicFactorIndices";
     if (IsZero(f))  CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
     vector<long> IndexList; // will contain result
     if (IsConstant(f))  return IndexList; // must be before call to UnivariateIndetIndex
@@ -979,7 +979,7 @@ namespace CoCoA
     VERBOSE(80) << "Checking if it is cyclotomic" << std::endl;
     const long k = CyclotomicTest(f);
     if (k != 0)  { IndexList.push_back(k);  return IndexList; }
-    
+
     // Possibly reduce max poss deg of any prod of cyclo factors:
     BigInt G; // init zero
     BigInt Gnew;
@@ -1004,8 +1004,8 @@ namespace CoCoA
     VERBOSE(80) << "Degree drop is " << deg_drop1+deg_drop2 << std::endl;
     if (deg(f) - deg_drop1 - deg_drop2 < 2)  return IndexList;
 
-    vector<long> indexes = FindCycloFactor(CycloIndexesUptoDeg(deg(f)-deg_drop1-deg_drop2), f); // recall that coeffs of f are integer!
-    IndexList.insert(IndexList.end(), indexes.begin(), indexes.end()); // concat
+    vector<long> indices = FindCycloFactor(CycloIndicesUptoDeg(deg(f)-deg_drop1-deg_drop2), f); // recall that coeffs of f are integer!
+    IndexList.insert(IndexList.end(), indices.begin(), indices.end()); // concat
     sort(IndexList.begin(), IndexList.end());
     return IndexList;
   }
@@ -1026,9 +1026,9 @@ namespace CoCoA
     {
       VERBOSE(85) << "LOOP("<<i<<"): doing " << LPP(F[i]) << " + ..." << std::endl;
       // ???MAYBE??? long k = CyclotomicIndex(F[i]); if (k != 0) { ans.myAppend(F[i], m[i]); continue; }
-      const vector<long> CandidateIndexes = CyclotomicFactorIndexes(F[i]);
-      // MAY GIVE FALSE POSITIVE { long sum = 0; for (long k: CandidateIndexes) sum += EulerTotient(k); if (sum == deg(F[i])) { ...???... }}
-      for (long k: CandidateIndexes)
+      const vector<long> CandidateIndices = CyclotomicFactorIndices(F[i]);
+      // MAY GIVE FALSE POSITIVE { long sum = 0; for (long k: CandidateIndices) sum += EulerTotient(k); if (sum == deg(F[i])) { ...???... }}
+      for (long k: CandidateIndices)
       {
         const RingElem phi_k = cyclotomic(k,x);
         if (!IsDivisible(F[i], phi_k)) continue;
@@ -1039,7 +1039,7 @@ namespace CoCoA
   }
 
 
-  
+
   // -------------------------------------------------------
   // CyclotomicIndex
 
@@ -1065,7 +1065,7 @@ namespace CoCoA
       }
       return ret;
     }
-    
+
   } // end of namespace anonymous
 
 
