@@ -1,4 +1,4 @@
-//   Copyright (c)  2022  John Abbott and Anna M. Bigatti
+//   Copyright (c)  2022,2025  John Abbott and Anna M. Bigatti
 //   Original author:  Nico Mexis  (2022)
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
@@ -19,6 +19,7 @@
 
 #include "CoCoA/SparsePolyOps-LRSDegeneracy.H"
 #include "CoCoA/CanonicalHom.H"
+#include "CoCoA/DUPFp.H"
 #include "CoCoA/factor.H"
 #include "CoCoA/factorization.H"
 #include "CoCoA/interrupt.H"
@@ -31,6 +32,8 @@
 #include "CoCoA/ring.H"
 #include "CoCoA/RingQQ.H"
 #include "CoCoA/RingZZ.H"
+#include "CoCoA/SmallFpImpl.H"
+#include "CoCoA/SparsePolyIter.H"
 #include "CoCoA/SparsePolyOps-cyclotomic.H"
 #include "CoCoA/SparsePolyOps-Graeffe.H"
 #include "CoCoA/SparsePolyOps-resultant.H"
@@ -77,6 +80,18 @@ namespace CoCoA
     }
 
 
+    // simple impl -- not (yet) efficient
+    RingElem ScaleX(ConstRefRingElem f, ConstRefRingElem zeta)
+    {
+      CoCoA_ASSERT(IsSparsePolyRing(owner(f)));
+      RingElem g = zero(owner(f));
+      for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
+      {
+        PushBack(g, power(zeta,deg(PP(it)))*coeff(it), PP(it));
+      }
+      return g;
+    }
+
     /**
      * Used in modular approach to decide whether
      * the n-th power Graeffe transform of f needs
@@ -90,9 +105,6 @@ namespace CoCoA
       const char* const FnName = "IsLRSDegenerateOrder_ModularCheck";
       VerboseLog VERBOSE(FnName);
 
-      const ring &Px = owner(f);
-      const ring &P = CoeffRing(Px);
-      const long nvars = NumIndets(Px);
       const unsigned long degf = deg(f); // **ASSUME**  8*degf^2 fits into long
       const BigInt LCf = ConvertTo<BigInt>(LC(f));
 
@@ -113,27 +125,43 @@ namespace CoCoA
 
         if (IsZero(p)) // upper prime bound has been reached
           break;
-///        VERBOSE(90) << "Prime is " << p << std::endl;
 
-        // zeta will be a primitive root of unity in F_p
-        const QuotientRing Fp = NewZZmod(p);
-        const SparsePolyRing Fpx = NewPolyRing(Fp, X);
-        const RingElem& x = indet(Fpx,0);
-        const std::vector<RingElem> images(nvars, x);
-        const RingElem f_p = PolyRingHom(Px, Fpx, CanonicalHom(P, Fp), images)(f);
-        const unsigned long zeta = PowerMod(PrimitiveRoot(p), (p-1)/n, p);
+        // Next commented-out block was orig code, but call to the scaling
+        // PolyAlgebraHom was too costly
+//         // zeta will be a primitive root of unity in F_p
+//         const ring& Px = owner(f);
+//         const ring& P = CoeffRing(Px);
+//         const QuotientRing Fp = NewZZmod(p);
+//         const SparsePolyRing Fpx = NewPolyRing(Fp, X);
+//         const RingElem& x = indet(Fpx,0);
+//         const std::vector<RingElem> images(NumIndets(Px), x);
+//         const RingElem f_p = PolyRingHom(Px, Fpx, CanonicalHom(P, Fp), images)(f);
+//         const unsigned long zeta = PowerMod(PrimitiveRoot(p), (p-1)/n, p);
 
-        for (unsigned long k = 1; k <= gcdBound; ++k)
-        {
-          CheckForInterrupt(FnName);
-          if (!IsCoprime(n, k)) continue;
-          if (IsConstant(gcd(f_p, PolyAlgebraHom(Fpx, Fpx, {PowerMod(zeta, k, p) * x})(f_p)))) // MOST COSTLY STEP (according to valgrind/callgrind)
+//         for (unsigned long k = 1; k <= gcdBound; ++k)
+//         {
+//           CheckForInterrupt(FnName);
+//           if (!IsCoprime(n, k)) continue;
+// //          if (IsConstant(gcd(f_p, PolyAlgebraHom(Fpx, Fpx, {PowerMod(zeta, k, p) * x})(f_p)))) // MOST COSTLY STEP (according to valgrind/callgrind)
+//           if (IsConstant(gcd(f_p, ScaleX(f_p, RingElem(Fp,PowerMod(zeta, k, p))))))
+//           {
+//             return false;
+//           }
+//         }
+
+          // Equiv to commented-out block, but faster (using DUPFp)
+          const SmallFpImpl ModP(p);
+          const DUPFp f_p = ConvertToDUPFp(ModP, f);
+          const unsigned long zeta = PowerMod(PrimitiveRoot(p), (p-1)/n, p);
+          for (unsigned long k = 1; k <= gcdBound; ++k)
           {
-            return false;
+            CheckForInterrupt(FnName);
+            if (!IsCoprime(n, k)) continue;
+            const DUPFp g_p = ScaleX(f_p, ModP.myReduce(PowerMod(zeta, k, p)));
+            if (IsConstant(gcd(f_p, g_p)))  return false;
           }
+          ++primeSeq;
         }
-        ++primeSeq;
-      }
 
       return true;
     }
@@ -307,7 +335,6 @@ namespace CoCoA
       {
 //CONJECTURE//if(EulerTotient(k)>degf)continue;
         CheckForInterrupt("LRSDegeneracyOrder_modular");
-///        VERBOSE(100) << "Checking k = " << k << std::endl;
         if (!IsLRSDegenerateOrder_ModularCheck(f, k, 3/*VerifLev*/))  continue;
         VERBOSE(90) << "Candidate " << k << " passed modular check" << std::endl;
         if (!IsGuaranteed(VerifLev))  { ListOfOrders.push_back(k); continue; }
