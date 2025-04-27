@@ -1,4 +1,4 @@
-//  Copyright (c)  2015   John Abbott,  Anna M. Bigatti
+//  Copyright (c)  2015,2025   John Abbott,  Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -42,7 +42,7 @@ namespace CoCoA
   { myCoeffs.reserve(maxdeg+1); }
 
 
-  //inline void swap(DUPFp& a, DUPFp& b) { std::swap(a.myCoeffs, b.myCoeffs); }
+  //inline void swap(DUPFp& a, DUPFp& b) { CoCoA_ASSERT(a.myArith == b.myArith); std::swap(a.myCoeffs, b.myCoeffs); }
 
 
   void AssignZero(DUPFp& f)
@@ -61,6 +61,12 @@ namespace CoCoA
   bool IsZero(const DUPFp& f)
   {
     return f.myCoeffs.empty();
+  }
+
+
+  bool IsConstant(const DUPFp& f)
+  {
+    return (deg(f) <= 0);
   }
 
 
@@ -525,6 +531,23 @@ return f*f;
       R[i] = ModP.myNormalize(rem[i]);
     FixDeg(r); // necessary?
   }
+
+
+  DUPFp ScaleX(const DUPFp& f, SmallFpImpl::value c)
+  {
+    CoCoA_ASSERT(!IsZero(c));
+    const long degf = deg(f);
+    const SmallFpImpl& ModP = f.myArith;
+    DUPFp ans(f);
+    SmallFpImpl::value cpwr = c;
+    for (long i=1; i <= degf; ++i)
+    {
+      ans.myCoeffs[i] = ModP.myMul(f.myCoeffs[i], cpwr); // myMul checks for 0
+      cpwr = ModP.myMul(cpwr, c);
+    }
+    return ans;
+  }
+
 
 
   DUPFp deriv(const DUPFp& f)

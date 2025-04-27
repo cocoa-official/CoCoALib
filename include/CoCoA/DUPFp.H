@@ -1,7 +1,7 @@
 #ifndef CoCoA_DUPFp_H
 #define CoCoA_DUPFp_H
 
-//   Copyright (c)  2012  John Abbott,  Anna M. Bigatti
+//   Copyright (c)  2012,2025  John Abbott,  Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -33,7 +33,7 @@ namespace CoCoA
   {
   public:
     DUPFp(long maxdeg, const SmallFpImpl& arith);//: myArith(arith) { myCoeffs.reserve(maxdeg); }
-    DUPFp(const DUPFp&) = default; // to avoid compiler warning (g++ v.9)
+    DUPFp(const DUPFp&) = default;
     DUPFp& operator=(const DUPFp& rhs);
   public: // data members
     const SmallFpImpl& myArith;
@@ -43,6 +43,7 @@ namespace CoCoA
   void AssignZero(DUPFp& f);
   void AssignOne(DUPFp& f);
   bool IsZero(const DUPFp& f);
+  bool IsConstant(const DUPFp& f);
   long deg(const DUPFp& f); // deg(0) = -1
   void FixDeg(DUPFp& f);
   SmallFpImpl::value LC(const DUPFp& f);
@@ -64,6 +65,7 @@ namespace CoCoA
   DUPFp operator%(const DUPFp& num, const DUPFp& den);
   void ShiftAdd(DUPFp& f, const DUPFp& g, SmallFpImpl::value c, long exp);
   void QuoRem(DUPFp& q, DUPFp& r, const DUPFp& num, const DUPFp& den);
+  DUPFp ScaleX(const DUPFp& f, SmallFpImpl::value c);
 
   DUPFp power(const DUPFp& base, long exp);
   DUPFp deriv(const DUPFp& f);
