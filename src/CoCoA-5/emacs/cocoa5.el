@@ -1350,7 +1350,7 @@ Customization:
 ;;-------------------------------------------------------------->
 
 ;;;###autoload
-(defun cocoa5-mode ()
+(define-derived-mode cocoa5-mode ()
   "Major mode for editing a cocoa5 file that sends input to CoCoA.
 Editing mode with \\[cocoa5-send-line] sending the current line as input.
 
@@ -2156,7 +2156,7 @@ automatically when this function is called.
 
 ;; Font lock support
   (make-local-variable 'font-lock-defaults)
-  (setq font-lock-defaults '(cocoa5-font-lock-keywords nil nil))
+  (font-lock-add-keywords nil cocoa5-font-lock-keywords)
 ;; Imenu support
   (make-local-variable 'imenu-generic-expression)
   (setq imenu-generic-expression cocoa5-imenu-generic-expression)

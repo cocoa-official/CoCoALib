@@ -278,7 +278,7 @@ namespace CoCoA
      */
     std::vector<unsigned long> LRSDegeneracyOrders_modular(RingElem f, unsigned long MULT, VerificationLevel VerifLev, FirstOrAll StopCriterion)
     {
-      const char* const FnName = "LRSDegeneracyOrder_modular";
+      const char* const FnName = "LRSDegeneracyOrders_modular";
       VerboseLog VERBOSE(FnName);
 
       const ErrorContext context = CoCoA_ERROR_CONTEXT;
