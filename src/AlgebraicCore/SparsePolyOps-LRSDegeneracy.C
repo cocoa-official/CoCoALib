@@ -63,7 +63,7 @@ namespace CoCoA
       if (!IsZero(characteristic(Px)))
         CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqChar0, OrigContext);
       if (IsConstant(f))
-        CoCoA_THROW_ERROR_WITH_CONTEXT2("Polynomial must be non-constant", OrigContext);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2("Poly must be non-constant", OrigContext);
       const long IndetIndex = UnivariateIndetIndex(f);
       if (IndetIndex < 0)
         CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqUnivariate, OrigContext);
@@ -310,7 +310,7 @@ namespace CoCoA
 
       const long degf = deg(f);
       if (degf > std::numeric_limits<long>::max()/degf)  // I'd be amazed if this ever happens!
-        CoCoA_THROW_ERROR("Deg too big", "LRSDegeneracyOrder_modular");
+        CoCoA_THROW_ERROR2(ERR::ArgTooBig, "Deg too big");
       /*const*/ std::vector<unsigned long> KToTry_init = GetKToTryList(degf/*, Kbound*/);
       // lines below would be neater with std::erase_if (in C++ 20)
       std::vector<unsigned long> KToTry;

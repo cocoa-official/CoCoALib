@@ -73,7 +73,7 @@ namespace CoCoA
   {
     const ring& P = owner(f);
     if (!IsPolyRing(P))
-      CoCoA_THROW_ERROR2(ERR::ReqPolyRing, "args 1 & 2 must be in a poly ring");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (owner(g) != P)
       CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (x < 0 || x >= NumIndets(P))
@@ -167,7 +167,7 @@ namespace CoCoA
     if (!IsPolyRing(P))
       CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsConstant(f))
-      CoCoA_THROW_ERROR2(ERR::BadArg, "non-constant polynomial required");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "Poly must be non-constant");
     const long x = UnivariateIndetIndex(f);
     if (x < 0)
       CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
@@ -180,7 +180,7 @@ namespace CoCoA
     if (!IsPolyRing(P))
       CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (IsConstant(f))
-      CoCoA_THROW_ERROR2(ERR::BadArg, "non-constant polynomial required");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "Poly must be non-constant");
     if (x < 0 || x >= NumIndets(P))
       CoCoA_THROW_ERROR1(ERR::BadIndex);
 
