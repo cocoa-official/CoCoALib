@@ -80,9 +80,10 @@ int main()
   mpz_t A; mpz_init_set_ui(A,1);
   mpz_t B; mpz_init_set_ui(B,1);
   mpz_add(A, A, B);
-  if (mpz_cmp_ui(A, 2) != 0)
-    return 1;
-  return 0;
+  const bool good = (mpz_cmp_ui(A, 2) == 0);
+  mpz_clear(B);
+  mpz_clear(A);
+  return (good?0:1);
 }
 EOF
 
