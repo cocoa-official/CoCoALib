@@ -174,10 +174,11 @@ namespace CoCoA
       myNext(),
       mySliceWords(SliceBytes/WordSize),
       myNumSlices(NumSlices),
-      myBegin(static_cast<slice_t*>(::operator new(NumSlices*SliceBytes))),
+      myBegin(static_cast<slice_t*>(std::malloc(NumSlices*SliceBytes))),
       myEnd(myBegin + NumSlices*mySliceWords),
       myFreeCounter(0)
   {
+    if (myBegin == nullptr)  throw std::bad_alloc(); //?? CoCoA_THROW_ERROR
     CoCoA_ASSERT(SliceBytes%WordSize == 0);
     // First word in each slice must point to the start of the next slice.  Last ptr is 0.
 
@@ -196,7 +197,7 @@ namespace CoCoA
 
 
   loaf::~loaf()
-  { ::delete myBegin; }
+  { std::free(myBegin); } // myBegin is pointer to raw memory
 
 
   void loaf::myAppend(loaf* NewLoaf)
