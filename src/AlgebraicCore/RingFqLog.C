@@ -411,14 +411,14 @@ namespace CoCoA
   }
 
 
-  bool RingFqLogImpl::myIsPrintAtom(ConstRawPtr rawx) const
+  bool RingFqLogImpl::myIsPrintAtom(ConstRawPtr /*rawx*/) const
   {
     return false; ///??? NYI probably OK if image of an int?
 //    return myImpl.myExport(import(rawx)) >= 0;
   }
 
 
-  bool RingFqLogImpl::myIsPrintedWithMinus(ConstRawPtr rawx) const
+  bool RingFqLogImpl::myIsPrintedWithMinus(ConstRawPtr /*rawx*/) const
   {
     return false; ///??? BUG BUG BUG  NYI  STOPGAP impl
 //    return myImpl.myExport(import(rawx)) < 0;
@@ -433,8 +433,9 @@ namespace CoCoA
   }
 
 
-  void RingFqLogImpl::myOutputSelf_OM(OpenMathOutput& OMOut) const
+  void RingFqLogImpl::myOutputSelf_OM(OpenMathOutput& /*OMOut*/) const
   {
+    // ERROR NYI
     // OMOut->mySendApplyStart();
     // OMOut << OpenMathSymbol("setname2", "GFp");
     // OMOut << myModulus;
@@ -442,7 +443,7 @@ namespace CoCoA
   }
 
 
-  void RingFqLogImpl::myOutput_OM(OpenMathOutput& OMOut, ConstRawPtr rawx) const
+  void RingFqLogImpl::myOutput_OM(OpenMathOutput& OMOut, ConstRawPtr /*rawx*/) const
   {
     CoCoA_THROW_ERROR(ERR::NYI, "RingFqLogImpl::myOutput");
     OMOut << 0; //???myImpl.myExport(import(rawx));

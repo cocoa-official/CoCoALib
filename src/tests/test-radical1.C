@@ -52,7 +52,7 @@ namespace CoCoA
     if (IsZeroDim(in))
     {
       t0 = CpuTime();
-      bool IsRad = IsRadical_tmp(in);
+      /*[[maybe_unused]]*/ const bool IsRad = IsRadical_tmp(in); // attribute needs C++17
       VERBOSE(20) << "Time for IsRadical: " << CpuTime()-t0 << "s " << endl;
     }
     t0 = CpuTime();

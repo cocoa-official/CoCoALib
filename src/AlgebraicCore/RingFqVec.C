@@ -421,14 +421,14 @@ namespace CoCoA
   }
 
 
-  bool RingFqVecImpl::myIsPrintAtom(ConstRawPtr rawx) const
+  bool RingFqVecImpl::myIsPrintAtom(ConstRawPtr /*rawx*/) const
   {
     return false; ///??? BUG BUG BUG ???probably OK if image of an int?
 //    return myImpl.myExport(import(rawx)) >= 0;
   }
 
 
-  bool RingFqVecImpl::myIsPrintedWithMinus(ConstRawPtr rawx) const
+  bool RingFqVecImpl::myIsPrintedWithMinus(ConstRawPtr /*rawx*/) const
   {
     return false; ///??? BUG BUG BUG   STOPGAP impl, see comment in isprintatom
 //    return myImpl.myExport(import(rawx)) < 0;
@@ -443,8 +443,9 @@ namespace CoCoA
   }
 
 
-  void RingFqVecImpl::myOutputSelf_OM(OpenMathOutput& OMOut) const
+  void RingFqVecImpl::myOutputSelf_OM(OpenMathOutput& /*OMOut*/) const
   {
+    // ERROR NYI
     // OMOut->mySendApplyStart();
     // OMOut << OpenMathSymbol("setname2", "GFp");
     // OMOut << myModulus;
@@ -452,7 +453,7 @@ namespace CoCoA
   }
 
 
-  void RingFqVecImpl::myOutput_OM(OpenMathOutput& OMOut, ConstRawPtr rawx) const
+  void RingFqVecImpl::myOutput_OM(OpenMathOutput& OMOut, ConstRawPtr /*rawx*/) const
   {
     CoCoA_THROW_ERROR(ERR::NYI, "RingFqVecImpl::myOutput");
     OMOut << 0; //???myImpl.myExport(import(rawx));
