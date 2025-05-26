@@ -94,34 +94,33 @@ namespace CoCoA
     constexpr ToType ToMax = std::numeric_limits<ToType>::max();
     constexpr ToType ToMin = std::numeric_limits<ToType>::min();
 
-    if /*constexpr*/ (BothUnsigned)  // need C++17
+    if /*constexpr*/ (BothUnsigned)  // need C++17 for constexpr
     {
        using widen = std::conditional_t<(sizeof(FromType) > sizeof(ToType)), FromType, ToType>;
        if (val > widen(ToMax))  CoCoA_THROW_ERROR1(ERR::BadConvert);
        return ToType(val);
 
     }
-    if /*constexpr*/ (BothSigned)  // need C++17
+    if /*constexpr*/ (BothSigned)  // need C++17 for constexpr
     {
         using widen = std::conditional_t<(sizeof(FromType) > sizeof(ToType)), FromType, ToType>;
         if (val > widen(ToMax) || val < widen(ToMin))
           CoCoA_THROW_ERROR1(ERR::BadConvert);
         return ToType(val);
     }
-    if /*constexpr*/ (FromSigned && !ToSigned) // need C++17
+    if /*constexpr*/ (FromSigned && !ToSigned) // need C++17 for constexpr
     {
-//      using widen = std::make_unsigned_t<std::conditional_t<(sizeof(FromType) > sizeof(ToType)), FromType, ToType>>;
       if (val < 0 || std::make_unsigned_t<FromType>(val) > ToMax)
         CoCoA_THROW_ERROR1(ERR::BadConvert);
       return ToType(val);
     }
-    // [[remaining case]] if constexpr (!FromSigned && ToSigned)
+    if /*constexpr*/ (!FromSigned && ToSigned) // need C++17 for constexpr
     {
-//      using widen = std::make_unsigned_t<std::conditional_t<(sizeof(FromType) > sizeof(ToType)), FromType, ToType>>;
       if (val > std::make_unsigned_t<ToType>(ToMax))
         CoCoA_THROW_ERROR1(ERR::BadConvert);
       return ToType(val);
     }
+    // Never get here
   }
 
   template<typename ToType>
