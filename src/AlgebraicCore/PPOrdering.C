@@ -426,28 +426,28 @@ namespace CoCoA
   //------------------------------------------------------------------
   // Common ordering pseudo-ctors
   
-  long CheckIsPositive(const MachineInt& n, const char* const FnName)
+  long CheckIsPositive(const MachineInt& n, const ErrorContext& context)
   {
     if (IsNegative(n) || IsZero(n) || !IsSignedLong(n))
-      CoCoA_THROW_ERROR1(ERR::ReqPositive);
+      CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqPositive, context);
     return AsSignedLong(n);
   }
 
 
   PPOrdering LexCtor::operator()(const MachineInt& NumIndets) const
-  { return PPOrdering(new PPOrd::LexImpl(CheckIsPositive(NumIndets, "lex ordering"))); }
+  { return PPOrdering(new PPOrd::LexImpl(CheckIsPositive(NumIndets, CoCoA_ERROR_CONTEXT))); }
 
 
   PPOrdering XelCtor::operator()(const MachineInt& NumIndets) const
-  { return PPOrdering(new PPOrd::XelImpl(CheckIsPositive(NumIndets, "xel ordering"))); }
+  { return PPOrdering(new PPOrd::XelImpl(CheckIsPositive(NumIndets, CoCoA_ERROR_CONTEXT))); }
 
 
   PPOrdering StdDegLexCtor::operator()(const MachineInt& NumIndets) const
-  { return PPOrdering(new PPOrd::StdDegLexImpl(CheckIsPositive(NumIndets, "DegLex ordering"))); }
+  { return PPOrdering(new PPOrd::StdDegLexImpl(CheckIsPositive(NumIndets, CoCoA_ERROR_CONTEXT))); }
 
 
   PPOrdering StdDegRevLexCtor::operator()(const MachineInt& NumIndets) const
-  { return PPOrdering(new PPOrd::StdDegRevLexImpl(CheckIsPositive(NumIndets, "DegRevLex ordering"))); }
+  { return PPOrdering(new PPOrd::StdDegRevLexImpl(CheckIsPositive(NumIndets, CoCoA_ERROR_CONTEXT))); }
 
 
 

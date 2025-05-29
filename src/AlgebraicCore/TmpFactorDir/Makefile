@@ -16,7 +16,7 @@ SRCS=primes.c DUPFF.c FF.c FindPrimRoot.c DUPFFsqfrd.c DUPFFderiv.c \
      DUPZfactor.c DUPZfactors.c DUPZfactor_prime.c DUPZfactor_refine_fds.c\
      DUPZfactor_info.c DUPZfactor_bound.c DUPZfactor_combine.c \
      mpz_cra_ui.c mpz_cmp_abs.c mpz_log.c logi.c \
-     jalloc.c add_logs.c jaaerror.c debug_malloc.c \
+     jalloc.c add_logs.c jaaerror.c \
      DUPZfactor_liftq.c mpz_lift_recip.c mpq_to_FFelem.c
 
 OBJS=$(SRCS:.c=.o)

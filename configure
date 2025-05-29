@@ -482,6 +482,12 @@ fi
 CXXFLAGS="$CXXFLAGS  $CXXFLAGS_OPT"
 
 #--------------------------------------------
+# 2025-05-23 (g++) disable -Wdangling-reference because it reports too many false positives
+if [ "$CXX_TYPE" = "gnu" ]
+then
+   CXXFLAGS="$CXXFLAGS  -Wno-dangling-reference"
+fi
+#--------------------------------------------
 # Workaround "bug" in clang on MacOS ("Darwin")
 
 ISYSTEM=isystem
