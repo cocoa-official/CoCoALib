@@ -1872,7 +1872,7 @@ intrusive_ptr<Expression> Parser::parseMultiplicativeExpression() {
         this->ungetToken(AfterOp);
 		exps.push_back(this->parseUnaryExpression());
         if (SignAfterOp)
-          this->reportWarning("Using + or - right after * or / or : is ugly; please use brackets", exps.back()->getBegin(), exps.back()->getEnd(), WS_LOW);
+          this->reportWarning("Please use brackets when \"+\" or \"-\" comes right after \"*\", \"/\" or \":\"", exps.back()->getBegin(), exps.back()->getEnd(), WS_LOW);
 
 	}
 longBreak:
