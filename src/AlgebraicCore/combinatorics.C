@@ -28,6 +28,8 @@
 using std::sort;
 #include <limits>
 using std::numeric_limits;
+#include <set>
+using std::set;
 //#include <vector>
 using std::vector;
 
@@ -105,24 +107,70 @@ namespace CoCoA
   }
 
 
-  // Adapted from Wikipedia entry "Reservoir sorting"
+  namespace // anonymous
+  {
+    // This version is slow when r is not small, but requires
+    // little memory when r is small and n is large
+    std::vector<long> RandomSubsetIndices_slow(long n, long r)
+    {
+      std::set<long> S;
+      long size = 0;
+      while (size < r)
+      {
+        const long val = RandomLong(0,n-1);
+        if (S.find(val) != S.end())  continue;
+        ++size;
+        S.insert(val);
+      }
+      std::vector<long> elems; elems.reserve(r);
+      for (const auto& val: S)
+        elems.push_back(val);
+      return elems; // seems to be sorted
+    }
+
+  } // end of namespace anonymous
+
+
   std::vector<long> RandomSubsetIndices(const MachineInt& n, const MachineInt& r)
   {
-    if (IsNegative(n) || IsNegative(r)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomSubsetIndices");
+    if (IsNegative(n))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const long N = AsSignedLong(n);
-    const long R = AsSignedLong(r);
-    if (R > N) CoCoA_THROW_ERROR(ERR::BadArg, "RandomSubsetIndices");
-    vector<long> ans(R);
-    for (long i=0; i < R; ++i)
-      ans[i] = i;
-    for (long k=R; k < N; ++k)
+    long R = AsSignedLong(r);
+    if (R < 0 || R > N)  CoCoA_THROW_ERROR1(ERR::OutOfRange);
+    if (R < N/512)  return RandomSubsetIndices_slow(N,R); // more memory efficient
+    const bool invert = (R > N/2);
+    if (invert)  R = N-R;
+    std::vector<bool> member(N);
+    long size = 0;
+    while (size < R)
     {
-      const long i = RandomLong(0,k); // both extremes included
-      if (i < R) ans[i] = k;
+      const long val = RandomLong(0,N-1);
+      if (member[val])  continue;
+      ++size;
+      member[val] = true;
     }
-    sort(ans.begin(), ans.end());
-    return ans;
+    std::vector<long> elems; elems.reserve(invert?N-R:R);
+    for (long i=0; i < N; ++i)
+      if (invert^member[i])
+        elems.push_back(i);
+    return elems;
   }
+  // {
+  //   if (IsNegative(n) || IsNegative(r)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomSubsetIndices");
+  //   const long N = AsSignedLong(n);
+  //   const long R = AsSignedLong(r);
+  //   if (R > N) CoCoA_THROW_ERROR(ERR::BadArg, "RandomSubsetIndices");
+  //   vector<long> ans(R);
+  //   for (long i=0; i < R; ++i)
+  //     ans[i] = i;
+  //   for (long k=R; k < N; ++k)
+  //   {
+  //     const long i = RandomLong(0,k); // both extremes included
+  //     if (i < R) ans[i] = k;
+  //   }
+  //   sort(ans.begin(), ans.end());
+  //   return ans;
+  // }
 
 
   std::vector<long> RandomTupleIndices(const MachineInt& n, const MachineInt& r)
