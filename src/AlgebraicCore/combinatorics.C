@@ -137,7 +137,8 @@ namespace CoCoA
     const long N = AsSignedLong(n);
     long R = AsSignedLong(r);
     if (R < 0 || R > N)  CoCoA_THROW_ERROR1(ERR::OutOfRange);
-    if (R < N/512)  return RandomSubsetIndices_slow(N,R); // more memory efficient
+    if (R <= 2+ N/512)
+      return RandomSubsetIndices_slow(N,R); // more memory efficient
     const bool invert = (R > N/2);
     if (invert)  R = N-R;
     std::vector<bool> member(N);
