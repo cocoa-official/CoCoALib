@@ -1,4 +1,4 @@
-//   Copyright (c)  2015  John Abbott and Anna M. Bigatti
+//   Copyright (c)  2015,2025  John Abbott and Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -110,7 +110,9 @@ namespace CoCoA
   namespace // anonymous
   {
     // This version is slow when r is not small, but requires
-    // little memory when r is small and n is large
+    // little memory when r is small and n is large.
+    // It could also easily be adapted to make "small" random
+    // subsets of BigInt values.
     std::vector<long> RandomSubsetIndices_slow(long n, long r)
     {
       std::set<long> S;
@@ -137,8 +139,9 @@ namespace CoCoA
     const long N = AsSignedLong(n);
     long R = AsSignedLong(r);
     if (R < 0 || R > N)  CoCoA_THROW_ERROR1(ERR::OutOfRange);
-    if (R <= 2+ N/512)
+    if (R <= 2+ N/512) // reducing 512 makes the program require less RAM (but also rather more time)
       return RandomSubsetIndices_slow(N,R); // more memory efficient
+    std::vector<long> elems; elems.reserve(R); // do this early to trigger std::bad_alloc quickly if the answer is too large
     const bool invert = (R > N/2);
     if (invert)  R = N-R;
     std::vector<bool> member(N);
@@ -150,28 +153,11 @@ namespace CoCoA
       ++size;
       member[val] = true;
     }
-    std::vector<long> elems; elems.reserve(invert?N-R:R);
     for (long i=0; i < N; ++i)
       if (invert^member[i])
         elems.push_back(i);
     return elems;
   }
-  // {
-  //   if (IsNegative(n) || IsNegative(r)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomSubsetIndices");
-  //   const long N = AsSignedLong(n);
-  //   const long R = AsSignedLong(r);
-  //   if (R > N) CoCoA_THROW_ERROR(ERR::BadArg, "RandomSubsetIndices");
-  //   vector<long> ans(R);
-  //   for (long i=0; i < R; ++i)
-  //     ans[i] = i;
-  //   for (long k=R; k < N; ++k)
-  //   {
-  //     const long i = RandomLong(0,k); // both extremes included
-  //     if (i < R) ans[i] = k;
-  //   }
-  //   sort(ans.begin(), ans.end());
-  //   return ans;
-  // }
 
 
   std::vector<long> RandomTupleIndices(const MachineInt& n, const MachineInt& r)
