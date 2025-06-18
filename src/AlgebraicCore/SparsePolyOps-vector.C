@@ -97,6 +97,7 @@ namespace CoCoA
 
 
   // (by Anna M Bigatti inspired by proof of termination)
+  // it does not seem to work well: sometimes a little faster, sometimes a lot slower
   std::vector<RingElem> interreduced_LT(std::vector<RingElem> v)
   {
     if (v.empty())  { return v; } // ??? or error???
@@ -114,7 +115,8 @@ namespace CoCoA
     long count = 0;
     while (true)
     {
-      VERBOSE(90) << "round " << ++count << std::endl; // NB *always* incrs count!
+      ++count
+      VERBOSE(90) << "round " << count << std::endl;
       if (VerbosityLevel()>=99) std::cout << "L: " << v << std::endl;
       sort(v.begin(), v.end(), CompareLPPs);
       vector<RingElem> ans;
