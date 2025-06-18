@@ -5343,16 +5343,14 @@ the eigenvectors expressed in terms of a root of the minimal polynomial
 /**/  use R ::= QQ[x];
 /**/  M := mat([[1,2,3],[4,5,6],[7,8,9]]);
 /**/  eigenvectors(M, x);
-[record[MinPoly := x, eigenspace := matrix(QQ,
- [[-1],
-  [2],
-  [-1]])],
-record[MinPoly := x^2 -15*x -18,
-eigenspace := [[1,  (1/8)*x +1/4,  (1/4)*x -1/2]]]
+[record[MinPoly := x,
+        eigenspace :=  [[-1], [2], [-1]]],
+ record[MinPoly := x^2 -15*x -18,
+        eigenspace := [[1,  (1/8)*x +1/4,  (1/4)*x -1/2]]]
 ]
 
 /**/  M := mat([[0,2,0,0],[1,0,0,0],[0,0,0,2],[0,0,1,0]]);
-  eigenvectors(M, x); -- two irrational eigenvalues, each with eigenspace of dimension 2
+/**/  eigenvectors(M, x); -- two irrational eigenvalues, each with dim 2 eigenspace
 [record[MinPoly := x^2 -2, eigenspace := [[1, (1/2)*x, 0, 0], [0, 0, 1, (1/2)*x]]]]
 </example>
 </description>

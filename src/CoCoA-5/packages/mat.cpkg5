@@ -463,7 +463,7 @@ Define eigenvectors(M, lambda)
   For i:=1 To len(facs.factors) Do
     f := facs.factors[i];
     If deg(f) = 1 And characteristic(Rx) = 0 Then
-      append(ref Ans, Record[MinPoly:=f, eigenspace:=$.RationalEigenSpace(M, f)]);
+      append(ref Ans, Record[MinPoly:=f, eigenspace:=GetCols($.RationalEigenSpace(M, f))]);
     Else
       IrredFactor := phi(f);
       I0 := ideal(IrredFactor) + ideal([MV[k,1] - l*v[k] | k In 1..D]);
