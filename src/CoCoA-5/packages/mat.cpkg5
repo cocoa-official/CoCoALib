@@ -444,6 +444,9 @@ Define eigenvectors(M, lambda)
   EndIf;
   Rx := RingOf(lambda);
   CRing := CoeffRing(Rx);
+  if RingOf(M) <> CRing or not(IsField(CRing)) then
+    ERROR("eigenvectors: matrix must be over a field, and indeterminate over same field");
+  endif
   // Compute basis for nullspace of M-lambda*I in alg extn gen by each factor.
   Ans := [];
   D := NumRows(M);
@@ -463,7 +466,7 @@ Define eigenvectors(M, lambda)
   For i:=1 To len(facs.factors) Do
     f := facs.factors[i];
     If deg(f) = 1 And characteristic(Rx) = 0 Then
-      append(ref Ans, Record[MinPoly:=f, eigenspace:=$.RationalEigenSpace(M, f)]);
+      append(ref Ans, Record[MinPoly:=f, eigenspace:=GetCols($.RationalEigenSpace(M, f))]);
     Else
       IrredFactor := phi(f);
       I0 := ideal(IrredFactor) + ideal([MV[k,1] - l*v[k] | k In 1..D]);
