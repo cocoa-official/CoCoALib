@@ -444,6 +444,9 @@ Define eigenvectors(M, lambda)
   EndIf;
   Rx := RingOf(lambda);
   CRing := CoeffRing(Rx);
+  if RingOf(M) <> CRing or not(IsField(CRing)) then
+    ERROR("eigenvectors: matrix must be over a field, and indeterminate over same field");
+  endif
   // Compute basis for nullspace of M-lambda*I in alg extn gen by each factor.
   Ans := [];
   D := NumRows(M);

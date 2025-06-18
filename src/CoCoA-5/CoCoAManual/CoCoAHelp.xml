@@ -5331,7 +5331,8 @@ irreducible factors of <ttref>CharPoly</ttref> of <tt>M</tt> as polynomials in <
 eigenvectors(M: <type>MAT</type>, X: <type>RINGELEM</type>): <rtn>LIST</rtn> of <rtn>RECORD</rtn>
 </syntax>
 <description>
-<tt>M</tt> must be a matrix of numbers, and <tt>X</tt> an indeterminate.
+<tt>M</tt> must be a matrix of numbers (in a field), and <tt>X</tt> an
+indeterminate from a polynomial ring over the same field.
 <par/>
 This function determines the eigenvalues of <tt>M</tt>, and for each eigenvalue
 gives a basis of the corresponding eigenspace -- note that the basis is
