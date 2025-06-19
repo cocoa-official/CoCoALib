@@ -115,7 +115,7 @@ namespace CoCoA
     long count = 0;
     while (true)
     {
-      ++count
+      ++count;
       VERBOSE(90) << "round " << count << std::endl;
       if (VerbosityLevel()>=99) std::cout << "L: " << v << std::endl;
       sort(v.begin(), v.end(), CompareLPPs);
