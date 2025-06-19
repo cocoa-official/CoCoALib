@@ -652,6 +652,14 @@ DECLARE_STD_BUILTIN_FUNCTION(interreduced, 1)
 END_STD_BUILTIN_FUNCTION
 
 
+DECLARE_STD_BUILTIN_FUNCTION(interreduced_LT, 1)
+{ // AMB
+  const vector<RingElem> v = runtimeEnv->evalArgAsListOfRingElem(ARG(0));
+  return Value::from(interreduced_LT(v));
+}
+END_STD_BUILTIN_FUNCTION
+
+
 DECLARE_STD_BUILTIN_FUNCTION(RingElem, 2) {
   intrusive_ptr<const RING> R(runtimeEnv->evalArgAs<RING>(ARG(0)));
   int which;
@@ -1509,6 +1517,14 @@ DECLARE_STD_BUILTIN_FUNCTION(NR, 2) { // AMB
   intrusive_ptr<RINGELEM> f = runtimeEnv->evalArgAs<RINGELEM>(ARG(0));
   vector<RingElem> v = runtimeEnv->evalArgAsListOf<RINGELEM>(ARG(1));
   return Value::from(NR(f->theRingElem,v));
+}
+END_STD_BUILTIN_FUNCTION
+
+
+DECLARE_STD_BUILTIN_FUNCTION(NR_LT, 2) { // AMB
+  intrusive_ptr<RINGELEM> f = runtimeEnv->evalArgAs<RINGELEM>(ARG(0));
+  vector<RingElem> v = runtimeEnv->evalArgAsListOf<RINGELEM>(ARG(1));
+  return Value::from(NR_LT(f->theRingElem,v));
 }
 END_STD_BUILTIN_FUNCTION
 

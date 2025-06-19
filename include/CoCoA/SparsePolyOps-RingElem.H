@@ -131,8 +131,10 @@ namespace CoCoA
   std::vector<long> IndetsIn(const std::vector<RingElem>& L);  // indices of indets appearing in elems of (non-empty) L
 
   std::vector<RingElem> interreduced(std::vector<RingElem> v);
+  std::vector<RingElem> interreduced_LT(std::vector<RingElem> v);
   // NOT DEFINED!!  void interreduce(std::vector<RingElem>& v);
   RingElem NR(ConstRefRingElem f, const std::vector<RingElem>& v); ///< Normal Remainder (remainder of the Groebner Division Algorithm).  If v is a GBasis it gives the Normal Form.
+  RingElem NR_LT(ConstRefRingElem f, const std::vector<RingElem>& v); ///< Normal Remainder, reduces only LT (remainder of the Groebner Division Algorithm).
   std::vector<RingElem> TmpDivAlg(ConstRefRingElem f, const std::vector<RingElem>& v);
   // the remainder is in result[len(v)]   (this interface might change)
 

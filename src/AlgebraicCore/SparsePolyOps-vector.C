@@ -71,6 +71,7 @@ namespace CoCoA
     {
       VERBOSE(90) << "round " << ++count << std::endl; // NB *always* incrs count!
       sort(v.begin(), v.end(), CompareLPPs);
+      if (VerbosityLevel()>=99) std::cout << "L: " << v << std::endl;
       vector<RingElem> ans;
       RingElem rem;
       bool NewLPPfound = false;
@@ -78,6 +79,53 @@ namespace CoCoA
       {
         CheckForInterrupt("interreduced");
         rem = NR(f, ans);
+        if (IsZero(rem))  { continue; }
+        const bool LPP_changed = (LPP(rem) != LPP(f));
+        if (LPP_changed)
+        {
+          // Tidy up the new poly (redmine 1642)  ??? Worth it ???
+          if (CaseFp)  { rem = monic(rem); }  // Anna: should this be done only before return?
+          else if (CaseQQ)   { rem = prim(rem);}
+        }
+        ans.push_back(rem);
+        NewLPPfound = (NewLPPfound || LPP_changed);
+      }
+      if (!NewLPPfound)  { return ans; }
+      swap(v, ans); // quicker than: v = ans;
+    }
+  }
+
+
+  // (by Anna M Bigatti inspired by proof of termination)
+  // it does not seem to work well: sometimes a little faster, sometimes a lot slower
+  std::vector<RingElem> interreduced_LT(std::vector<RingElem> v)
+  {
+    if (v.empty())  { return v; } // ??? or error???
+    if (!HasUniqueOwner(v))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    VerboseLog VERBOSE("interreduced_LT");
+    //delete possible zeros in v
+    const ring& P = owner(v[0]);
+    const ring& k = CoeffRing(P);
+    const bool CaseFp = IsFiniteField(k);
+    const bool CaseQQ = IsQQ(k);
+    v.erase(std::remove(v.begin(), v.end(), zero(P)), v.end());
+
+    // this local fn is used in call to sort
+    const auto CompareLPPs = [](const RingElem& f, const RingElem& g) { return LPP(f)<LPP(g); };
+    long count = 0;
+    while (true)
+    {
+      ++count;
+      VERBOSE(90) << "round " << count << std::endl;
+      if (VerbosityLevel()>=99) std::cout << "L: " << v << std::endl;
+      sort(v.begin(), v.end(), CompareLPPs);
+      vector<RingElem> ans;
+      RingElem rem;
+      bool NewLPPfound = false;
+      for (const auto& f: v)
+      {
+        CheckForInterrupt("interreduced_LT");
+        rem = NR_LT(f, ans);
         if (IsZero(rem))  { continue; }
         const bool LPP_changed = (LPP(rem) != LPP(f));
         if (LPP_changed)
@@ -193,6 +241,23 @@ namespace CoCoA
     ReductionCog F = NewRedCogGeobucketField(owner(ans));
     F->myAssignReset(ans);
     reduce(F, v);
+    F->myRelease(ans);
+    return ans;
+  }
+
+  RingElem NR_LT(ConstRefRingElem f, const std::vector<RingElem>& v)
+  {
+    const ring& P = owner(f);
+    if (!IsPolyRing(P) )  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
+    if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
+    if (!HasUniqueOwner(v) || (!v.empty() && owner(v.front()) != P))
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if ( IsZero(f) ) return f;
+    if ( v.empty() ) return f;
+    RingElem ans(f);
+    ReductionCog F = NewRedCogGeobucketField(owner(ans));
+    F->myAssignReset(ans);
+    ReduceActiveLM(F, v);
     F->myRelease(ans);
     return ans;
   }
