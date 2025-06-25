@@ -5335,23 +5335,24 @@ eigenvectors(M: <type>MAT</type>, X: <type>RINGELEM</type>): <rtn>LIST</rtn> of 
 indeterminate from a polynomial ring over the same field.
 <par/>
 This function determines the eigenvalues of <tt>M</tt>, and for each eigenvalue
-gives a basis of the corresponding eigenspace -- note that the basis is
-probably not orthogonal.  For irrational eigenvalues, the minimal
-polynomial of the eigenvalue is given (as a polynomial in <tt>X</tt>), along with
-the eigenvectors expressed in terms of a root of the minimal polynomial
-(represented as <tt>X</tt>).
+gives a basis of the corresponding eigenspace -- note that the bases are
+probably not orthogonal.  For each rational eigenvalue, the basis is a
+list of vectors with coordinates in the field of <tt>M</tt>.  For irrational
+eigenvalues, the minimal polynomial of the eigenvalue is given (as a
+polynomial in <tt>X</tt>), along with the eigenvectors expressed in terms of a
+root of the minimal polynomial (represented as <tt>X</tt>).
 <example>
 /**/  use R ::= QQ[x];
 /**/  M := mat([[1,2,3],[4,5,6],[7,8,9]]);
-/**/  eigenvectors(M, x);
+/**/  eigenvectors(M, x);  -- 1 rational and 2 irrational eigenvalues
 [record[MinPoly := x,
-        eigenspace :=  [[-1], [2], [-1]]],
+        eigenspace :=  [[-1, 2, -1]],
  record[MinPoly := x^2 -15*x -18,
         eigenspace := [[1,  (1/8)*x +1/4,  (1/4)*x -1/2]]]
 ]
 
 /**/  M := mat([[0,2,0,0],[1,0,0,0],[0,0,0,2],[0,0,1,0]]);
-/**/  eigenvectors(M, x); -- two irrational eigenvalues, each with dim 2 eigenspace
+/**/  eigenvectors(M, x);  -- 2 irrational eigenvalues, each with dim 2 eigenspace
 [record[MinPoly := x^2 -2, eigenspace := [[1, (1/2)*x, 0, 0], [0, 0, 1, (1/2)*x]]]]
 </example>
 </description>
