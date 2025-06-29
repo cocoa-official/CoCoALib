@@ -36,9 +36,12 @@ namespace CoCoA
        ... up to the end-of-comment marker --> */
 
     // Some BASIC TYPES in C++
-    // Note: = denotes initialization or assignment; == is equality test.
-    int a = 1;  // an integer value (of limited range)
-    long b = 2; // an integer value (of greater range)
+    // Note: (initialization, assignment, equality test)
+    // (1) <type> <var-name> = <value>;  // create new variable with initial value
+    // (2) <var-name> = <value>;         // assign new value to existing variable
+    // (3) expr1 == expr2                // test whether expr1 and expr are equal
+    int a = 1;  // an integer variable (of limited range)
+    long b = 2; // an integer variable (of greater range)
     string str = "a succession of characters"; // string is part of STL
     double pi = 3.14159; // a floating-point value
     bool flag = true; // boolean value: either "true" or "false"

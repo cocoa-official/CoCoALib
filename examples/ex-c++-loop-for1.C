@@ -9,13 +9,14 @@ using namespace std;
 //----------------------------------------------------------------------
 const string ShortDescription =
   "This is an example showing some basic \"for\" loops in C++. \n"
-  "It also shows \"continue\" and \"break\" inside a loop.     \n";
+  "It also shows \"continue\" and \"break\" inside a loop.     \n"
+  "See also ex-c++-loop-for2.C for iterating over a container. \n";
 
 const string LongDescription =
   "This is an example showing some basic \"for\" loops in C++.    \n"
   "It also shows \"continue\" and \"break\" inside a loop.        \n"
-  "We restrict to simple integer \"for\" loops.  See also examples\n"
-  "for vectors and iterators.                                     \n";
+  "We restrict to simple integer \"for\" loops.  See also example \n"
+  "ex-c++-loop-for2.C for iterating over a container.             \n";
 //----------------------------------------------------------------------
 
 namespace CoCoA
@@ -34,26 +35,31 @@ namespace CoCoA
     GlobalManager CoCoAFoundations;
     cout << ShortDescription << endl;
 
-    // Print out the numbers from 1 to 10
-    // Read "++i" as "increment i".
-    for (int i=1; i <= 10; ++i)
-    {
-      cout << i << "  ";
-    }
+    // Print the numbers from 1 to 10
+    for (int i=1; i <= 10; ++i)    // Read "++i" as "increment i".
+    {  cout << i << "  ";  }
     cout << endl;
 
-    // For DECREMENTING use "--i".  Print numbers 10 down to 1.
-    for (int i=10; i >= 1; --i)
-    {
-      cout << i << "  ";
-    }
+    // Print the numbers 10 down to 1.
+    for (int i=10; i >= 1; --i)    // Read "--i" as "decrement i".
+    {  cout << i << "  ";  }
     cout << endl;
+
+    // We can also use this syntax with ITERATOR-LIKE OBJECTS:
+    // e.g. CoCoALib has a PrimeSeq object which "produces" small prime
+    // values via the prefix "*" operator:
+    for (PrimeSeq PS; *PS <= 20; ++PS)
+      cout << *PS << "  ";
+    cout << endl;
+
+
+    // ---- CONTINUE and BREAK commands ----
 
     // "CONTINUE" command: skips to next iteration
     // Loop below prints: 1  2  3  8  9  10
     for (int i=1; i <= 10; ++i)
     {
-      if (i > 3 && i < 8) continue;
+      if (i > 3 && i < 8)  continue;
       cout << i << "  ";
     }
     cout << endl;
@@ -62,7 +68,7 @@ namespace CoCoA
     // Loop below prints: 1  2  3
     for (int i=1; i <= 10; ++i)
     {
-      if (i > 3) break;
+      if (i > 3)  break;
       cout << i << "  ";
     }
     cout << endl;

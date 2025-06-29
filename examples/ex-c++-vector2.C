@@ -8,16 +8,18 @@ using namespace std;
 
 //----------------------------------------------------------------------
 const string ShortDescription =
+  "C++ vectors behave much like LISTs in CoCoA-5, but faster.\n"
   "This is an example showing how to translate CoCoA-5 list  \n"
-  "functions APPEND, FIRST & LAST into C++.                  \n";
+  "functions APPEND, CONCAT, FIRST & LAST into C++.          \n";
 
 const string LongDescription =
-  "This is an example showing how to translate CoCoA-5 list  \n"
-  "functions APPEND, FIRST & LAST into C++.  APPEND translates\n"
-  "nicely into push_back. Also first(L) and last(L) have nice\n"
-  "translations; BUT first(L,k) and last(L,k) do not have    \n"
-  "efficient translations -- there are usually better, but   \n"
-  "different techniques in C++.                              \n";
+  "C++ vectors behave much like LISTs in CoCoA-5, but faster. \n"
+  "This is an example showing how to translate CoCoA-5 list   \n"
+  "functions APPEND, CONCAT FIRST & LAST into C++.            \n"
+  "APPEND translates nicely into push_back. Also FIRST(L) and \n"
+  "and LAST(L) have simple translations.  However FIRST(L,k)  \n"
+  "and LAST(L,k) do not have such simple translations; instead\n"
+  "there are usually better, but different techniques in C++. \n";
 //----------------------------------------------------------------------
 
 namespace CoCoA
@@ -28,7 +30,7 @@ namespace CoCoA
   // If you want to translate code from CoCoA-5 to C++ (using
   // features from CoCoALib too :-) then a LIST in CoCoA-5
   // should most likely bo converted to a C++ "vector".
-  // But do remember that for vectors INDICES START AT 0.
+  // But do remember that for C++ vectors ***INDICES START AT 0***.
   // This example gives some guidance.
 
   void program()
@@ -51,27 +53,33 @@ namespace CoCoA
     std::vector<long> L = {3,4,5};
     cout << "L is " << L << endl;
 
+    // Translate APPEND into the member function push_back:
     // append(ref L, 6);
     L.push_back(6);
     cout << "After push_back  L is  " << L << endl;
 
+    // Translate FIRST into the member function front:
     // first(L);
     cout << "L.front() is  " << L.front() << endl;
 
+    // Translate LAST into the member function back
     // last(L);
     cout << "L.back() is  " << L.back() << endl;
 
+    // This will become easier when CoCoALib jumps to C++20 standard.
     // first(L,2);  <-- This is a bit fiddly.
     cout << "first(L,2) gives  " << vector<long>(L.begin(), L.begin()+2) << endl;
 
+    // This will become easier when CoCoALib jumps to C++20 standard.
     // last(L,3);  <-- This is even more fiddly.
     const long n = len(L);
     cout << "last(L,3) gives  " << vector<long>(L.begin()+(n-3), L.end()) << endl;
 
-    // CONCAT is trickier in C++
+    // Translating CONCAT into C++ is cumbersome (but also faster).
     // This example modifies L by putting new elements at the end
     const std::vector<long> L2 = {6,7,8,9};
-    L.insert( L.end(),  L2.begin(),  L2.end() );  // L := concat(L,L2);
+    // L := concat(L,L2);  becomes the line below
+    L.insert( L.end(),  L2.begin(),  L2.end() );
     cout << "Concatenated with \"L.insert\"  modifies L  --> " << L << endl;
     // L2 remains unchanged.
   }
