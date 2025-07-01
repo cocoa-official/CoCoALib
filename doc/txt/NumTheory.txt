@@ -1,5 +1,5 @@
       NumTheory
-      Copyright (c)  2009,2012-2013,2016-2018,2021,2022  John Abbott,  Anna M. Bigatti
+      Copyright (c)  2009,2012-2013,2016-2018,2021,2022,2025  John Abbott,  Anna M. Bigatti
       GNU Free Documentation License, Version 1.2
 %!includeconf: ../aux-txt2tags/config.t2t
       TeXTitle{NumTheory}{John Abbott}
@@ -70,8 +70,8 @@ to be prime).
 - ``IsProbPrime(n)`` tests the positive number ``n`` for primality (fairly fast for large numbers, but in very rare cases may falsely declare a number to be prime).  Gives error if ``n <= 0``.
 - ``IsProbPrime(n,iters)`` tests the positive number ``n`` for primality; performs ``iters`` iterations of the Miller-Rabin test (default value is 25).  Gives error if ``n <= 0``.
 - ``NextPrime(n)`` and ``PrevPrime(n)`` compute next or previous positive prime (fitting into a machine ``long``).  ``NextPrime`` returns 0 if no next "small" prime exists; ``PrevPrime`` throws ``OutOfRange`` if arg is less than 3.  Both throw ``BadArg`` if ``n < 0``.
-- ``RandomSmallPrime(N)`` -- generate a (uniform) random prime **from 5 up to ``N``;** error if ``N < 5`` or ``N >= 2^31``.  Result is of type ``SmallPrime`` (essentially a ``long``).
-- ``RandomNBitPrime(N)`` -- generate a (uniform) random prime in range ``2^(N-1)`` to ``2^N``; error if ``N < 10`` or ``N >= 31``.  Result is of type ``SmallPrime`` (essentially a ``long``).
+- ``RandomSmallPrime(N)`` -- generate a (uniform) random prime **from 5 up to ``N``;** error if ``N < 5`` or ``N >= 2^63-8`` (or ``2^31-8`` on 32-bit platforms).  Result is of type ``SmallPrime`` (essentially a ``long``).
+- ``RandomNBitPrime(N)`` -- generate a (uniform) random prime in range ``2^(N-1)`` to ``2^N``; error if ``N < 10`` or ``N >= 63`` (upper limit is ``31`` on 32-bit platform).  Result is of type ``SmallPrime`` (essentially a ``long``).
 - ``NextProbPrime(N)`` and ``PrevProbPrime(N)`` compute next or previous positive probable prime (uses ``IsProbPrime``).  ``PrevProbPrime`` throws ``OutOfRange`` error if ``0 <= N < 3``.  Both throw ``BadArg`` error if ``N < 0``.
 - ``NextProbPrime(N,iters)`` and ``PrevProbPrime(N,iters)`` compute next or previous positive probable prime (uses ``IsProbPrime`` with second arg ``iters``).  ``PrevProbPrime`` throws ``OutOfRange`` error if ``0 <= N < 3``.  Both throw ``BadArg`` error if ``N < 0``.
 
