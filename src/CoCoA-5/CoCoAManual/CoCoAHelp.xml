@@ -18990,7 +18990,8 @@ RandomNBitPrime(N: <type>INT</type>): <rtn>INT</rtn>
 </syntax>
 <description>
 This function returns a random prime in the range <tt>2^(N-1)</tt> and <tt>2^N</tt>.
-The distribution is uniform.  <tt>N</tt> must be between 10 and <tt>31</tt>.
+The distribution is uniform.  <tt>N</tt> must be between 10 and <tt>63</tt>; the
+upper limit is <tt>31</tt> on a 32-bit platform.
 <example>
 /**/ RandomNBitPrime(10);
 991
@@ -19038,7 +19039,8 @@ RandomSmallPrime(N: <type>INT</type>): <rtn>INT</rtn>
 </syntax>
 <description>
 This function returns a random prime in the range 5 to <tt>N</tt> (incl.).
-The distribution is uniform.  <tt>N</tt> must be between 5 and <tt>2^31-1</tt>.
+The distribution is uniform.  <tt>N</tt> must be between 5 and <tt>2^63-9</tt>;
+the upper limit is <tt>2^31-9</tt> on a 32-bit platform.
 <example>
 /**/ RandomSmallPrime(99);
 43
