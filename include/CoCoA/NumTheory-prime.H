@@ -40,6 +40,9 @@ namespace CoCoA
   class FastFinitePrimeSeq; // fwd decl -- defined below
   class NoSmallFactorSeq;   // fwd decl -- defined below
 
+  // --------------------------------------------
+  // Class SmallPrime & related enum
+
   // SmallPrime: value is either 0 or a positive prime which fits into a long
   enum class SmallPrimeFlag { ArgIsPrime }; // used only by SmallPrime ctor
   constexpr SmallPrimeFlag ArgIsPrime = SmallPrimeFlag::ArgIsPrime; // safely inject into namespace CoCoA

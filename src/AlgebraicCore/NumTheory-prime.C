@@ -1,4 +1,4 @@
-//   Copyright (c)  1999,2009-2011,2018  John Abbott and Anna M. Bigatti
+//   Copyright (c)  1999,2009-2011,2018,2025  John Abbott and Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -23,7 +23,6 @@
 #include "CoCoA/error.H"
 #include "CoCoA/interrupt.H"
 #include "CoCoA/random.H"
-/////?????#include "CoCoA/SignalWatcher.H"
 #ifdef CoCoA_DEBUG
 #include "CoCoA/NumTheory-gcd.H"
 #endif
@@ -251,7 +250,8 @@ namespace CoCoA
       // Caller has already checked for small prime facs
       CoCoA_ASSERT(n > MaxSquarableInteger<unsigned long>());
       // Since StrongPseudoPrime_SLOW is slow, we filter out a few more small primes...
-      if (n%41 == 0 || n%43 == 0 || n%47 == 0 || n%53 == 0 || n%59 == 0 || n%61 == 0) return false;
+      if (n%41 == 0 || n%43 == 0 || n%47 == 0 || n%53 == 0 || n%59 == 0 || n%61 == 0)
+        return false;
 
       if (n < 4294967295UL) // ALWAYS TRUE if unsigned long has 32 bits
       {
@@ -285,7 +285,8 @@ namespace CoCoA
             n == 457453568161UL ||
             n == 528929554561UL ||
             n == 546348519181UL ||
-            n == 602248359169UL) return false;
+            n == 602248359169UL)
+          return false;
 
         return StrongPseudoPrime_SLOW(2, n) &&
           StrongPseudoPrime_SLOW(3, n) &&
@@ -336,9 +337,9 @@ namespace CoCoA
     // Maybe slow for those large N where N-1 is hard to factorize.
     bool LucasTest(const BigInt& N)
     {
-      if (N <= 0) CoCoA_THROW_ERROR(ERR::ReqPositive, "LucasTest(N)");
-      if (N == 1) return false;
-      if (N == 2) return true;
+      if (N <= 0)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
+      if (N == 1)  return false;
+      if (N == 2)  return true;
       const factorization<BigInt> facpows = factor(N-1);
       const vector<BigInt>& primes = facpows.myFactors();
       const int NumPrimes = len(primes); // overflow possible???
@@ -346,14 +347,14 @@ namespace CoCoA
       const int Amax = static_cast<int>(floor(2*log(N)*log(N))); // experimentally checked up to 10^9: a better bound is 2.62*log(N)*log(log(N)) for N > 3
       for (int a=2; a <= Amax; ++a)
       {
-        if (a==4 || a==8 || a==9 || a==16) continue; // skip some pure powers
+        if (a==4 || a==8 || a==9 || a==16)  continue; // skip some pure powers
         BigInt pwr;
         for (int i=0; i < NumPrimes; ++i)
         {
           pwr = PowerMod(a, (N-1)/primes[i], N);
-          if (pwr == 1) break;
+          if (pwr == 1)  break;
         }
-        if (pwr != 1) return true;
+        if (pwr != 1)  return true;
       }
       return false;
     }
@@ -365,13 +366,13 @@ namespace CoCoA
       myVal(p)
   {
     if (p < 1 || !IsPrime(p))
-      CoCoA_THROW_ERROR(ERR::BadArg, "SmallPrime ctor");
+      CoCoA_THROW_ERROR1(ERR::BadArg);
   }
 
 
   std::ostream& operator<<(std::ostream& out, SmallPrime p)
   {
-    if (!out) return out;  // short-cut for bad ostreams
+    if (!out)  return out;  // short-cut for bad ostreams
     return out << long(p);
   }
 
@@ -381,8 +382,8 @@ namespace CoCoA
   
   std::vector<bool> eratosthenes(const MachineInt& n)
   {
-    if (IsNegative(n) || IsZero(n)) CoCoA_THROW_ERROR(ERR::ReqPositive, "eratosthenes");
-    if (!IsSignedLong(n)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "eratosthenes");
+    if (IsNegative(n) || IsZero(n))  CoCoA_THROW_ERROR1(ERR::ReqPositive);
+    if (!IsSignedLong(n))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     const long N = AsSignedLong(n)/2;
     vector<bool> sieve(N+1,true);
     sieve[0] = false; // 1 is not prime
@@ -394,19 +395,17 @@ namespace CoCoA
       for (long j=(p*p)/2; j <= N; j+=p) // (p*p)/2 int div; j+=p cannot overflow!
         sieve[j] = false;
     }
-    return sieve; // wasteful copy
+    return sieve;
   }
 
 
   vector<bool> EratosthenesRange(const MachineInt& LWB, const MachineInt& UPB)
   {
-    if (IsNegative(LWB) || IsNegative(UPB)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "EratosthenesRange");
-    if (!IsSignedLong(LWB) || !IsSignedLong(UPB)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "EratosthenesRange");
-    long lwb = AsSignedLong(LWB);
-    long upb = AsSignedLong(UPB);
-    if (upb <= lwb) CoCoA_THROW_ERROR(ERR::BadArg, "EratosthenesRange");
-    if (IsEven(lwb)) ++lwb;
-    if (IsEven(upb)) ++upb;
+    if (IsNegative(LWB) || IsNegative(UPB))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (!IsSignedLong(LWB) || !IsSignedLong(UPB))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
+    const long lwb = 1 | AsSignedLong(LWB); // round up to odd
+    const long upb = 1 | AsSignedLong(UPB); // round up to odd
+    if (upb <= lwb)  CoCoA_THROW_ERROR2(ERR::BadArg, "Empty range");
     const long width = 1+(upb-lwb)/2; // exact division
     vector<bool> sieve(width, true); // slot k corr to integer lwb+2*k
     PrimeSeq PS;
@@ -414,10 +413,10 @@ namespace CoCoA
     while (!IsEnded(++PS))
     {
       const long p = CurrPrime(PS);
-      if (p > upb/p) break;
+      if (p > upb/p)  break;
 
       long k = (lwb-1)/p;
-      if (k < p) k = p;
+      if (k < p)  k = p;
       else k += (IsEven(k))?1:2;
       long index = (p*k-lwb)/2; // index of first odd num greater than LWB div by p
       while (index < width)
@@ -453,7 +452,7 @@ namespace CoCoA
   // BUG!  THIS NEEDS TO BE THREADSAFE
   long PrimeSeqForCRT::InitTbl()
   {
-    if (!ourPrimeDiffTbl.empty()) return ourLastPrimeInTbl; // BUG not properly threadsafe!
+    if (!ourPrimeDiffTbl.empty())  return ourLastPrimeInTbl; // BUG not properly threadsafe!
 
     const vector<bool> sieve = EratosthenesRange(ourTblStart, ourTblStart+ourSieveRange);
     // IMPORTANT: we can use unsigned char because up to 2^32 the largest
@@ -462,7 +461,7 @@ namespace CoCoA
     const long n = len(sieve);
     long LastVal = 0;
     for (int i=0; i < n; ++i)
-      if (sieve[i]) { DiffTbl.push_back(i-LastVal); LastVal = i; }
+      if (sieve[i])  { DiffTbl.push_back(i-LastVal); LastVal = i; }
 
     ourLastPrimeInTbl = ourTblStart + 2*LastVal;
     swap(ourPrimeDiffTbl, DiffTbl);
@@ -473,23 +472,25 @@ namespace CoCoA
 
   SmallPrime PrimeSeqForCRT::operator*() const
   {
-    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeqForCRT::op*");
+    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     return SmallPrime(myCurrPrime, ArgIsPrime);
   }
 
 
   PrimeSeqForCRT& PrimeSeqForCRT::operator++()
   {
-    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeqForCRT::op++");
+    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     ++myIndex;
-    if (myIndex >= ourTblSize) myCurrPrime = NextPrime(myNearlyPrimeSeq);
-    else myCurrPrime += 2*ourPrimeDiffTbl[myIndex];
+    if (myIndex >= ourTblSize)
+      myCurrPrime = NextPrime(myNearlyPrimeSeq);
+    else
+      myCurrPrime += 2*ourPrimeDiffTbl[myIndex];
     return *this;
   }
 
   PrimeSeqForCRT PrimeSeqForCRT::operator++(int)
   {
-    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeqForCRT::op++");
+    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     PrimeSeqForCRT copy(*this);
     operator++();
     return copy;
@@ -498,8 +499,8 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const PrimeSeqForCRT& PSeq)
   {
-    if (!out) return out;  // short-cut for bad ostreams
-//    if (IamEnded) return out << "PrimeSeqForCRT(ENDED)";
+    if (!out)  return out;  // short-cut for bad ostreams
+//    if (IamEnded)  return out << "PrimeSeqForCRT(ENDED)";
     out << "PrimeSeqForCRT(curr=" << *PSeq << ")";
     return out;
   }
@@ -524,7 +525,7 @@ namespace CoCoA
   // BUG!  THIS NEEDS TO BE THREADSAFE (or called by GlobalManager)
   void FastFinitePrimeSeq::InitTbl()
   {
-    if (!ourPrimeDiffTbl.empty()) return;
+    if (!ourPrimeDiffTbl.empty())  return;
     // Fill ourPrimeTbl: first make sieve, then fill ourPrimeTbl
     const vector<bool> sieve = eratosthenes(ourSieveSize);
 
@@ -534,7 +535,7 @@ namespace CoCoA
     for (int i=2; i < n; ++i)
       if (sieve[i])
       {
-        PrimeDiffTbl.push_back(i-LastVal);// i-LastVal < 256, so narrowing is safe!
+        PrimeDiffTbl.push_back(i-LastVal); // i-LastVal < 256, so narrowing is safe!
         LastVal = i;
       }
 
@@ -554,7 +555,7 @@ namespace CoCoA
   FastFinitePrimeSeq& FastFinitePrimeSeq::operator++()
   {
     CoCoA_ASSERT(!IamEnded());
-//    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeq::op++");
+//    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     if (myCurrPrime == 2)
      myCurrPrime = 3;
     else
@@ -579,8 +580,8 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const FastFinitePrimeSeq& seq)
   {
-    if (!out) return out;  // short-cut for bad ostreams
-    if (IsEnded(seq)) return out << "FastFinitePrimeSeq(ENDED)";
+    if (!out)  return out;  // short-cut for bad ostreams
+    if (IsEnded(seq))  return out << "FastFinitePrimeSeq(ENDED)";
     out << "FastFinitePrimeSeq(curr=" << *seq << ")";
     return out;
   }
@@ -595,15 +596,16 @@ namespace CoCoA
   
   SmallPrime PrimeSeq::operator*() const
   {
-//    if (!IsEnded(myPrimeSeq16)) return CurrPrime(myPrimeSeq16);
+//    if (!IsEnded(myPrimeSeq16))  return CurrPrime(myPrimeSeq16);
     return SmallPrime(*myMostlyPrimeSeq, ArgIsPrime);
   }
 
   PrimeSeq& PrimeSeq::operator++()
   {
-//    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeq::op++");
+//    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     ++myMostlyPrimeSeq;
-    if (myMostlyPrimeSeq.IamUsingPrimeTbl()) return *this;
+    if (myMostlyPrimeSeq.IamUsingPrimeTbl())
+      return *this;
     while (!IsPrime(*myMostlyPrimeSeq))
       ++myMostlyPrimeSeq;
     return *this;
@@ -611,7 +613,7 @@ namespace CoCoA
 
   PrimeSeq PrimeSeq::operator++(int)
   {
-//    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeq::op++");
+//    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     PrimeSeq copy(*this);
     operator++();
     return copy;
@@ -620,8 +622,8 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const PrimeSeq& PSeq)
   {
-    if (!out) return out;  // short-cut for bad ostreams
-//    if (IsEnded(PSeq)) return out << "PrimeSeq(ENDED)";
+    if (!out)  return out;  // short-cut for bad ostreams
+//    if (IsEnded(PSeq))  return out << "PrimeSeq(ENDED)";
     out << "PrimeSeq(curr=" << *PSeq << ")";
     return out;
   }
@@ -631,59 +633,64 @@ namespace CoCoA
   //------------------------------------------------------------------
   // NoSmallFactorSeq
 
-  // Check that n >= 0 and return next number which is not div by 2,3,5,7
-  long CheckCtorArg(const MachineInt& n)
+  namespace // anonymous
   {
-    if (IsNegative(n) || !IsSignedLong(n))  CoCoA_THROW_ERROR(ERR::BadArg, "NoSmallFactorSeq ctor arg");
-    long N = AsSignedLong(n);
-    if (N > numeric_limits<long>::max() - 10) CoCoA_THROW_ERROR(ERR::ArgTooBig, "NoSmallFactorSeq ctor arg");
-    static const unsigned char skip[30] = {1,0,5,4,3,2,1,0,3,2,1,0,1,0,3,2,1,0,1,0,3,2,1,0,5,4,3,2,1,0};
-    N += skip[N%30];
-    if (N%7 == 0) { ++N; N += skip[N%30]; }
-    CoCoA_ASSERT(gcd(N,210)==1);
-    return N;
-  }
-
-  unsigned char CalcIndex30(unsigned char mod30)
-  {
-    switch (mod30)
+    // Check that n >= 0 and return next number which is not div by 2,3,5,7
+    long CheckCtorArg_NoSmallFactorSeq(const MachineInt& n)
     {
-    case 1: return 0;
-    case 7: return 1;
-    case 11: return 2;
-    case 13: return 3;
-    case 17: return 4;
-    case 19: return 5;
-    case 23: return 6;
-    case 29: return 7;
+      if (IsNegative(n) || !IsSignedLong(n))  CoCoA_THROW_ERROR1(ERR::BadArg);
+      long N = AsSignedLong(n);
+      if (N > numeric_limits<long>::max() - 10)  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
+      static const unsigned char skip[30] = {1,0,5,4,3,2,1,0,3,2,1,0,1,0,3,2,1,0,1,0,3,2,1,0,5,4,3,2,1,0};
+      N += skip[N%30];
+      if (N%7 == 0)  { ++N; N += skip[N%30]; }
+      CoCoA_ASSERT(gcd(N,210)==1);
+      return N;
     }
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "CalcIndex");
-    return 0; // just to keep compiler quiet
-  }
 
-  unsigned char CalcIndex210(unsigned char mod210)
-  {
-    // COULD REPLACE THIS TABLE BY ONE HALF THE SIZE (since tbl is symmetric)
-    // 99 below means this entry should never be used.
-    static unsigned char IndexTbl[210] =
-      {99, 0, 99, 99, 99, 99, 99, 99, 99, 99, 99, 1, 99, 2, 99, 99, 99, 3, 99, 4, 99,
-       99, 99, 5, 99, 99, 99, 99, 99, 6, 99, 7, 99, 99, 99, 99, 99, 8, 99, 99, 99, 9,
-       99, 10, 99, 99, 99, 11, 99, 99, 99, 99, 99, 12, 99, 99, 99, 99, 99, 13, 99, 14, 99,
-       99, 99, 99, 99, 15, 99, 99, 99, 16, 99, 17, 99, 99, 99, 99, 99, 18, 99, 99, 99, 19,
-       99, 99, 99, 99, 99, 20, 99, 99, 99, 99, 99, 99, 99, 21, 99, 99, 99, 22, 99, 23, 99,
-       99, 99, 24, 99, 25, 99, 99, 99, 26, 99, 99, 99, 99, 99, 99, 99, 27, 99, 99, 99, 99,
-       99, 28, 99, 99, 99, 29, 99, 99, 99, 99, 99, 30, 99, 31, 99, 99, 99, 32, 99, 99, 99,
-       99, 99, 33, 99, 34, 99, 99, 99, 99, 99, 35, 99, 99, 99, 99, 99, 36, 99, 99, 99, 37,
-       99, 38, 99, 99, 99, 39, 99, 99, 99, 99, 99, 40, 99, 41, 99, 99, 99, 99, 99, 42, 99,
-       99, 99, 43, 99, 44, 99, 99, 99, 45, 99, 46, 99, 99, 99, 99, 99, 99, 99, 99, 99, 47};
+    // Apparently unused -- supplanted by CalcIndex210
+    // unsigned char CalcIndex30(unsigned char mod30)
+    // {
+    //   switch (mod30)
+    //   {
+    //   case 1: return 0;
+    //   case 7: return 1;
+    //   case 11: return 2;
+    //   case 13: return 3;
+    //   case 17: return 4;
+    //   case 19: return 5;
+    //   case 23: return 6;
+    //   case 29: return 7;
+    //   }
+    //   CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
+    //   return 0; // just to keep compiler quiet
+    // }
 
-    CoCoA_ASSERT(/*mod210 >= 0 &&*/ mod210 < 210 && IndexTbl[mod210] != 99);
-    return IndexTbl[mod210]; // just to keep compiler quiet
-  }
+    unsigned char CalcIndex210(unsigned char mod210)
+    {
+      // COULD REPLACE THIS TABLE BY ONE HALF THE SIZE (since tbl is symmetric)
+      // 99 below means this entry should never be used.
+      static unsigned char IndexTbl[210] =
+        {99, 0, 99, 99, 99, 99, 99, 99, 99, 99, 99, 1, 99, 2, 99, 99, 99, 3, 99, 4, 99,
+         99, 99, 5, 99, 99, 99, 99, 99, 6, 99, 7, 99, 99, 99, 99, 99, 8, 99, 99, 99, 9,
+         99, 10, 99, 99, 99, 11, 99, 99, 99, 99, 99, 12, 99, 99, 99, 99, 99, 13, 99, 14, 99,
+         99, 99, 99, 99, 15, 99, 99, 99, 16, 99, 17, 99, 99, 99, 99, 99, 18, 99, 99, 99, 19,
+         99, 99, 99, 99, 99, 20, 99, 99, 99, 99, 99, 99, 99, 21, 99, 99, 99, 22, 99, 23, 99,
+         99, 99, 24, 99, 25, 99, 99, 99, 26, 99, 99, 99, 99, 99, 99, 99, 27, 99, 99, 99, 99,
+         99, 28, 99, 99, 99, 29, 99, 99, 99, 99, 99, 30, 99, 31, 99, 99, 99, 32, 99, 99, 99,
+         99, 99, 33, 99, 34, 99, 99, 99, 99, 99, 35, 99, 99, 99, 99, 99, 36, 99, 99, 99, 37,
+         99, 38, 99, 99, 99, 39, 99, 99, 99, 99, 99, 40, 99, 41, 99, 99, 99, 99, 99, 42, 99,
+         99, 99, 43, 99, 44, 99, 99, 99, 45, 99, 46, 99, 99, 99, 99, 99, 99, 99, 99, 99, 47};
 
+      CoCoA_ASSERT(/*mod210 >= 0 &&*/ mod210 < 210 && IndexTbl[mod210] != 99);
+      return IndexTbl[mod210];
+    }
+
+  } // end of namespace anonymous
+  
 
   NoSmallFactorSeq::NoSmallFactorSeq(const MachineInt& StartVal):
-      myCurrVal(CheckCtorArg(StartVal)),
+      myCurrVal(CheckCtorArg_NoSmallFactorSeq(StartVal)),
       myIndex(CalcIndex210(myCurrVal%210)),
       myValMod11(myCurrVal%11),
       myValMod13(myCurrVal%13),
@@ -697,15 +704,15 @@ namespace CoCoA
 
   long NoSmallFactorSeq::operator*() const
   {
-//    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeq::op*");
+//    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     return myCurrVal;
   }
 
 
   NoSmallFactorSeq& NoSmallFactorSeq::operator++()
   {
-//    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeq::op++");
-    static const unsigned char skip[48] = {10,  2,  4,  2,  4,  6,  2,  6,  4,  2,  4,  6,  6,  2,  6,  4,  2,  6,  4,  6,  8,  4,  2,  4,  2,  4,  8,  6,  4,  6,  2,  4,  6,  2,  6,  6,  4,  2,  4,  6,  2,  6,  4,  2,  4,  2,  10,2};
+//    if (IamEnded())  CoCoA_THROW_ERROR(ERR::IterEnded);
+    static const unsigned char skip[48] = {10,  2,  4,  2,  4,  6,  2,  6,  4,  2,  4,  6,  6,  2,  6,  4,  2,  6,  4,  6,  8,  4,  2,  4,  2,  4,  8,  6,  4,  6,  2,  4,  6,  2,  6,  6,  4,  2,  4,  6,  2,  6,  4,  2,  4,  2,  10,  2};
     do
     {
       const unsigned char delta = skip[myIndex];
@@ -723,7 +730,7 @@ namespace CoCoA
 
   NoSmallFactorSeq NoSmallFactorSeq::operator++(int)
   {
-//    if (IamEnded()) CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeq::op++");
+//    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::IterEnded);
     NoSmallFactorSeq copy(*this);
     operator++();
     return copy;
@@ -734,7 +741,7 @@ namespace CoCoA
 //   void NoSmallFactorSeq::myStartFrom(long n)
 //   {
 //       CoCoA_ASSERT(IsCoprime(n,30));
-//       myCurrVal = CheckCtorArg(n);
+//       myCurrVal = CheckCtorArg_NoSmallFactorSeq(n);
 //       myIndex = CalcIndex(n);
 // //      myValMod7 = myCurrVal%7;
 //       myValMod11 = myCurrVal%11;
@@ -752,10 +759,11 @@ namespace CoCoA
     return SmallPrime(*seq, ArgIsPrime);
   }
 
+
   std::ostream& operator<<(std::ostream& out, const NoSmallFactorSeq& seq)
   {
-    if (!out) return out;  // short-cut for bad ostreams
-//    if (IsEnded(seq)) return out << "NoSmallFactorSeq(ENDED)";
+    if (!out)  return out;  // short-cut for bad ostreams
+//    if (IsEnded(seq))  return out << "NoSmallFactorSeq(ENDED)";
     out << "NoSmallFactorSeq(curr=" << *seq << ")";
     return out;
   }
@@ -770,13 +778,20 @@ namespace CoCoA
     
 
   long FastMostlyPrimeSeq::operator*() const
-  { if (!IsEnded(myPrimeSeq)) return *myPrimeSeq; else return *myMostlyPrimeSeq; }
+  {
+    if (!IsEnded(myPrimeSeq))
+      return *myPrimeSeq;
+    else
+      return *myMostlyPrimeSeq;
+  }
 
 
   FastMostlyPrimeSeq& FastMostlyPrimeSeq::operator++()
   {
-    if (!IsEnded(myPrimeSeq)) ++myPrimeSeq;
-    else ++myMostlyPrimeSeq;
+    if (!IsEnded(myPrimeSeq))
+      ++myPrimeSeq;
+    else
+      ++myMostlyPrimeSeq;
     return *this;
   }
 
@@ -790,13 +805,11 @@ namespace CoCoA
 
   //------------------------------------------------------------------
 
-  // This definition is for 64-bit machines, but remains valid for 32-bitters
-  // ASSUMES n < 2^32  (automatically true on 32-bitters).
-  // I do not recall the reference for this definition (H.Cohen's book?); verified independently (2018-03-09).
+  // Depends on MaxSquarableInteger which is platform dependent.
   bool IsPrime(const MachineInt& mi)
   {
     if (IsZero(mi) || IsNegative(mi))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "IsPrime(n)");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
 
     const unsigned long n = AsUnsignedLong(mi);
     if (n <= 37)  return IsSmallPrime37(n);
@@ -814,37 +827,37 @@ namespace CoCoA
   // HINT: should also make a version of StrongPseudoPrime64 for BigInt?!?
   bool IsPrime(const BigInt& N)
   {
-    if (N <= 0) CoCoA_THROW_ERROR(ERR::ReqPositive, "IsPrime(N)");
+    if (N <= 0)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     unsigned long n; // since we know N > 0
     if (IsConvertible(n, N))
       return IsPrime(n);
 
-    CoCoA_ASSERT(N > numeric_limits<unsigned long>::max());
-    if (!IsProbPrime(N)) return false;
-    return LucasTest(N);
+    // [?pointless?] CoCoA_ASSERT(N > numeric_limits<unsigned long>::max());
+    if (!IsProbPrime(N))  return false;
+    return LucasTest(N);  // ???WHY???  why not just return true ?
   }
 
 
   // "Probable prime" test.
   // According to GMP documentation uses Miller-Rabin (after a few trial divisions).
-  bool IsProbPrime(const MachineInt& n) { return IsProbPrime(n, ProbPrimeIters); }
+  bool IsProbPrime(const MachineInt& n)  { return IsProbPrime(n, ProbPrimeIters); }
   bool IsProbPrime(const MachineInt& n, const MachineInt& NumIters)
   {
     if (IsZero(n) || IsNegative(n))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "IsProbPrime(n,NumIters):  1st arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "1st arg");
     if (IsZero(NumIters) || IsNegative(NumIters))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "IsProbPrime(n,NumIters):  2nd arg");
-    // Just call the slow version -- at least will guarantee coherent behaviour
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
+    // Just call the slow version -- at least it will guarantee coherent behaviour
     return IsProbPrime(BigInt(n), NumIters);
   }
 
-  bool IsProbPrime(const BigInt& N) { return IsProbPrime(N, ProbPrimeIters); }
+  bool IsProbPrime(const BigInt& N)  { return IsProbPrime(N, ProbPrimeIters); }
   bool IsProbPrime(const BigInt& N, const MachineInt& NumIters)
   {
     if (N <= 0)
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "IsProbPrime(N,NumIters): 1st arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "1st arg");
     if (IsZero(NumIters) || IsNegative(NumIters))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "IsProbPrime(N,NumIters): 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
     return mpz_probab_prime_p(mpzref(abs(N)), AsUnsignedLong(NumIters));
   }
 
@@ -852,26 +865,26 @@ namespace CoCoA
 
   SmallPrime NextPrime(const MachineInt& mi)
   {
-    if (IsNegative(mi)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "NextPrime(n)");
-    if (!IsSignedLong(mi)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "NextPrime(n)");
+    if (IsNegative(mi))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (!IsSignedLong(mi))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     long n = AsSignedLong(mi);
 
     // Special cases if n < 5
-    if (n < 2) return SmallPrime(2, ArgIsPrime);
-    if (n == 2) return SmallPrime(3, ArgIsPrime);
-    if (n < 5) return SmallPrime(5, ArgIsPrime);
+    if (n < 2)   return SmallPrime(2, ArgIsPrime);
+    if (n == 2)  return SmallPrime(3, ArgIsPrime);
+    if (n < 5)   return SmallPrime(5, ArgIsPrime);
 
     const long MaxLong = std::numeric_limits<long>::max();
     int n30 = n%30;
     while (true)
     {
       const int delta = skip[n30];
-      if (n > MaxLong - delta) break; // break if n+delta would overflow
+      if (n > MaxLong - delta)  break; // break if n+delta would overflow
       n += delta;
       n30 += delta;
-      if (n30 >= 30) n30 -= 30;
-      if (n <= 37) { if (IsSmallPrime37(n)) return SmallPrime(n, ArgIsPrime); }
-      else if (IsPrime(n)) return SmallPrime(n, ArgIsPrime);
+      if (n30 >= 30)  n30 -= 30;
+      if (n <= 37)  { if (IsSmallPrime37(n))  return SmallPrime(n, ArgIsPrime); }
+      else if (IsPrime(n))  return SmallPrime(n, ArgIsPrime);
     }
     // Reach here only if "overflow" has occurred.
     return SmallPrime(0, ArgIsPrime); // to signify "overflow"
@@ -880,15 +893,15 @@ namespace CoCoA
 
   SmallPrime PrevPrime(const MachineInt& mi)
   {
-    if (IsNegative(mi)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "PrevPrime(n)");
-    if (!IsSignedLong(mi)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "PrevPrime(n)");
+    if (IsNegative(mi))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (!IsSignedLong(mi))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     long n = AsSignedLong(mi);
 
     // Special cases if n < 8
-    if (n < 3) CoCoA_THROW_ERROR(ERR::OutOfRange, "PrevPrime(n): no previous prime");
-    if (n == 3) return SmallPrime(2, ArgIsPrime);
-    if (n < 6) return SmallPrime(3, ArgIsPrime);
-    if (n < 8) return SmallPrime(5, ArgIsPrime);
+    if (n < 3)  CoCoA_THROW_ERROR2(ERR::OutOfRange, "no previous prime");
+    if (n == 3)  return SmallPrime(2, ArgIsPrime);
+    if (n < 6)   return SmallPrime(3, ArgIsPrime);
+    if (n < 8)   return SmallPrime(5, ArgIsPrime);
 
     int n30 = n%30;
     do
@@ -896,13 +909,13 @@ namespace CoCoA
       const int delta = fall[n30];
       n -= delta;
       n30 -= delta;
-      if (n30 < 0) n30 += 30;
+      if (n30 < 0)  n30 += 30;
     } while (!IsPrime(n));
     return SmallPrime(n, ArgIsPrime);
   }
 
 
-
+  // ------------------------------------------------------------------
   // Uniform random distribution on primes from 5 to MAX (incl).
   // Primes 2 and 3 are excluded!!
 
@@ -915,13 +928,13 @@ namespace CoCoA
   SmallPrime RandomSmallPrime(const MachineInt& MAX)
   {
     static const unsigned char shift30[8] = {1, 7, 11, 13, 17, 19, 23, 29};
-    if (IsNegative(MAX) || !IsSignedLong(MAX)) CoCoA_THROW_ERROR(ERR::BadArg, "RandomSmallPrime");
+    if (IsNegative(MAX) || !IsSignedLong(MAX))  CoCoA_THROW_ERROR1(ERR::OutOfRange);
     const long UPB = AsSignedLong(MAX);
-    if (UPB < 5) CoCoA_THROW_ERROR(ERR::BadArg, "RandomSmallPrime");
+    if (UPB < 5)  CoCoA_THROW_ERROR1(ERR::OutOfRange);
     
-    // Arbitrarily impose limit  MAX <= 2^31-1
-    if (numeric_limits<long>::radix == 2 && numeric_limits<long>::digits > 32 && UPB > 2147483647L)
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "RandomSmallPrime");
+    // For simplicity impose limit  MAX < largest multiple of 30 below max long
+    if (UPB >= 30*(numeric_limits<long>::max()/30))
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
 
     // Divide interval into blocks of width 30; in each block consider only those numbers
     // not divisible by 2,3,5.  Handle the block from 0..29 specially.
@@ -929,10 +942,10 @@ namespace CoCoA
     while (true)
     {
       const long candidate = 30*RandomLong(0, UPBOver30) + shift30[RandomLong(0,7)];
-      if (candidate > UPB) continue;
+      if (candidate > UPB)  continue;
       if (candidate > 30)
       {
-        if (IsPrime(candidate)) return SmallPrime(candidate, ArgIsPrime);
+        if (IsPrime(candidate))  return SmallPrime(candidate, ArgIsPrime);
         continue;
       }
       // Special Case: candidate < 30
@@ -945,12 +958,13 @@ namespace CoCoA
 
   SmallPrime RandomNBitPrime(const MachineInt& N)
   {
+    constexpr int MaxWidth = numeric_limits<unsigned long>::digits -1; // 63 or 31
     static const unsigned char shift30[8] = {1, 7, 11, 13, 17, 19, 23, 29};
     if (IsNegative(N) || !IsSignedLong(N))
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomNBitPrime: arg must be between 10 and 31");
+      CoCoA_THROW_ERROR2(ERR::OutOfRange, "arg must be between 10 and 63");
     const long n = AsSignedLong(N);
-    if (n < 10 || n > 31)
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomNBitPrime: arg must be between 10 and 31");
+    if (n < 10 || n > MaxWidth)
+      CoCoA_THROW_ERROR2(ERR::OutOfRange, "arg must be between 10 and 63");
     
     const long pwr2 = 1L << (n-1);
     // Divide interval into blocks of width 30; in each block consider only those numbers
@@ -961,24 +975,24 @@ namespace CoCoA
     {
       const long candidate = shift + 30*RandomLong(0, nblocks) + shift30[RandomLong(0,7)]; // BUG??? OVERFLOW??? use ulong???
       if (candidate < pwr2 || candidate/2 > pwr2)  continue; // really necessary?
-      if (IsPrime(candidate)) return SmallPrime(candidate, ArgIsPrime);
+      if (IsPrime(candidate))
+        return SmallPrime(candidate, ArgIsPrime);
     }
   }
 
 
-  BigInt NextProbPrime(const BigInt& N) { return NextProbPrime(N, ProbPrimeIters); }
+  BigInt NextProbPrime(const BigInt& N)  { return NextProbPrime(N, ProbPrimeIters); }
   BigInt NextProbPrime(BigInt N, const MachineInt& NumIters)
   {
     if (N < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "NextProbPrime(N,NumIters): 1st arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
     if (IsZero(NumIters) || IsNegative(NumIters))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "NextProbPrime(N,NumIters): 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
 
     // if N is small use NextPrime
-    if (N < 2147483647L) // magic num is largest prime below 2^31, sure to fit into a long
+    if (N < numeric_limits<long>::max()-25) // magic number, such that next prime fits into long (valid for 32 & 64 bits)
       return BigInt(NextPrime(ConvertTo<long>(N)));
 
-/////?????    SignalWatcher MonitorSIGINT(SIGINT);
     int N30 = N%30;
     do
     {
@@ -986,24 +1000,23 @@ namespace CoCoA
       const int delta = skip[N30];
       N += delta;
       N30 += delta;
-      if (N30 >= 30) N30 -= 30;
+      if (N30 >= 30)  N30 -= 30;
     } while (!IsProbPrime(N, NumIters));
     return N;
   }
 
-  BigInt PrevProbPrime(const BigInt& N) { return PrevProbPrime(N, ProbPrimeIters); }
+  BigInt PrevProbPrime(const BigInt& N)  { return PrevProbPrime(N, ProbPrimeIters); }
   BigInt PrevProbPrime(BigInt N, const MachineInt& NumIters)
   {
     if (N < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "PrevProbPrime(N,NumIters): 1st arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
     if (IsZero(NumIters) || IsNegative(NumIters))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "PrevProbPrime(N,NumIters): 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
 
     // if N is small use PrevPrime
-    if (N <= 2147483647L)
+    if (N <= numeric_limits<long>::max())
       return BigInt(PrevPrime(ConvertTo<long>(N)));
 
-/////?????    SignalWatcher MonitorSIGINT(SIGINT);
     int N30 = N%30;
     do
     {
@@ -1011,7 +1024,7 @@ namespace CoCoA
       const int delta = fall[N30];
       N -= delta;
       N30 -= delta;
-      if (N30 < 0) N30 += 30;
+      if (N30 < 0)  N30 += 30;
     } while (!IsProbPrime(N, NumIters));
     return N;
   }
@@ -1024,9 +1037,9 @@ namespace CoCoA
   // 2023-12-10 Not sure how accurate the estimate is.
   long EstNumPrimesUpto(long n)
   {
-    if (n < 2)  CoCoA_THROW_ERROR("arg must be >= 2", "EstNumPrimesUpto");
+    if (n < 2)  CoCoA_THROW_ERROR2(ERR::BadArg, "arg must be >= 2");
     static const long tbl[23] = {0,0,1,2,2,3,3,4,4,4,4,5,5,6,6,6,6,7,7,8,8,8,8};
-    if (n < 23) return tbl[n];
+    if (n < 23)  return tbl[n];
     return static_cast<long>(1+std::floor(1.0121*n/(std::log(n)-1)));
   }
 
