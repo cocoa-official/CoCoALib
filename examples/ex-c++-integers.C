@@ -27,22 +27,19 @@ const string LongDescription =
 namespace CoCoA
 {
 
-  // C++ offers many different integral types.  When working
-  // with CoCoALib we recommend using just "long".
-  // The type "char" is good for characters in strings.
-  // We recommend avoiding values of "unsigned" integral types;
-  // unfortunately several C++ functions return such values.
-  // C++ does "automatic promotion" of integral values
-  // [this is both good and bad].
+  // GENERAL COMMENT:
+  //   C++ offers many different integral types.  When working
+  //   with CoCoALib we recommend using just "long"
+  //   (this is actually shorthand for "signed long int")
+  //   The type "char" is good for characters in strings.
+  //   C++ does "automatic promotion" of integral values
+  //   [this is both good and bad].
 
 
   void program()
   {
     GlobalManager CoCoAFoundations;
     cout << ShortDescription << endl;
-
-    // We recommend using just the integral type "long";
-    // this is actually an abbreviation for "signed long int".
 
     // Integer constants such as 3 or -99 are known as "literals"
     // (you may see this name in a compiler message).
@@ -51,15 +48,15 @@ namespace CoCoA
     // allowed but looks confusingly similar to the digit "1".
     // IMPORTANT: do not write any leading zeroes: 033 is not 33.
 
-    long SAFE_NEGATIVE = -2147483647L; // OK on all binary computers
-    long SAFE_POSITIVE =  2147483647L; // OK on all binary computers
+    const long SAFE_NEGATIVE = -2147483647L; // OK on all binary computers
+    const long SAFE_POSITIVE =  2147483647L; // OK on all binary computers
     cout << "All values between " << SAFE_NEGATIVE
          << " and " << SAFE_POSITIVE << " are OK" << endl;
 
     // Integers outside the range above may not work on some
     // computers.  The actual permitted range can be found like this:
-    long MOST_NEGATIVE = numeric_limits<long>::min();
-    long MOST_POSITIVE = numeric_limits<long>::max();
+    const long MOST_NEGATIVE = numeric_limits<long>::min();
+    const long MOST_POSITIVE = numeric_limits<long>::max();
     if (MOST_NEGATIVE < SAFE_NEGATIVE  ||  MOST_POSITIVE > SAFE_POSITIVE)
       cout << "Actual range of representable values is wider." << endl << endl;
 
@@ -70,7 +67,7 @@ namespace CoCoA
     // What are longs useful for?
     // (*) size of a container (e.g. vector or string)
     // (*) index into a container
-    // (*) loops over elements in a container
+    // (*) loops indexing over elements in a container
     // (*) representing values from a limited range (e.g. years)
 
     // Arithmetic with longs:
@@ -88,19 +85,23 @@ namespace CoCoA
     // sum will overflow if the result is greater than MOST_POSITIVE
 
 
-    // --------------------------------------------
-    // This next part is a bit trickier.
-    // We want to compute the sum directly by using the formula:
+    // ------------------------
+    // *** !!! ADVANCED !!! ***
+    // ------------------------
+    //
+    // The rest of this example is significantly trickier.
+    // We want to compute the sum directly by using the "theoretical" formula:
     //   sum(1..n)  =  (1/2)*n*(n+1)
-    long bad_formula    = (1/2)*n*(n+1); // Always zero: 1/2 uses integer division!!
-    long better_formula = (n*(n+1))/2;   // n*(n+1)/2 is same by assoc rules.
+    // We ignore overflow here; that will be discussed further below.
+    long bad_formula    = (1/2)*n*(n+1); // Always zero: 1/2 uses integer division!
+    long better_formula = (n*(n+1))/2;   // n*(n+1)/2  is same by C++ assoc rules.
     long best_formula   = (n%2 == 0) ? ((n+1)*(n/2)) : (n*((n+1)/2));
 
-    cout << "bad_formula gives "    << bad_formula << endl;
-    cout << "better_formula gives " << better_formula << endl;
-    cout << "best_formula gives "   << best_formula   << endl;
+    cout << "bad_formula gives "       << bad_formula << endl;
+    cout << "better_formula gives "    << better_formula << endl;
+    cout << "best_formula gives "      << best_formula   << endl;
 
-    // Before reading on: why did I call them as I did?
+    // ***BEFORE READING ON***:  Why did I call them as I did?
 
     // bad_formula:  while CoCoALib has the ability to compute
     //     with rational values (via BigRat), a "rational constant",
@@ -111,7 +112,7 @@ namespace CoCoA
     //      to multiply first, then divide; the problem is that
     //      the multiplication may overflow even if the answer
     //      is small enough to fit into a long.
-    //      C++ associativity rules mean that n*(n+1)/2 is interpreted
+    //      NOTE: C++ associativity rules mean that n*(n+1)/2 is interpreted
     //      the same as (n*(n+1))/2; I prefer to use brackets to be explicit.
 
     // best_formula:  "best" but not "most readable"!
@@ -122,19 +123,19 @@ namespace CoCoA
 
     // !!CAUTION!!  C++ associativity rules dictate how operators bind,
     //              but order of evaluation of the arguments is
-    //              "in parallel".  Be careful if args have side-effects:
-    //              maybe your clever expression works...
-    //              ...today
-    //              ...on your current computer
+    //              "in parallel".  Be careful if args have side-effects!
+    //              Maybe your clever expression works...
+    //              ...today,
+    //              ...on your current computer,
     //              ...with your current compiler.
     //              But it may give different results with a different
     //              computer/compiler.   Make sure you write unambiguous
     //              portable code!
 
     
-    // -----------------------------------------------------------
-    // WARNING: UGLY PART BELOW (how to anticipate/avoid overflow)
-    // -----------------------------------------------------------
+    // -----------------------------------------------------------------
+    // WARNING: HARD, UGLY PART BELOW (how to anticipate/avoid overflow)
+    // -----------------------------------------------------------------
     // Take a deep breath...
     // [AIM: convince you to use BigInt for general integer computations]
     
@@ -165,7 +166,7 @@ namespace CoCoA
     {
       // Case n is odd, n > 0
       const long halfn1 = (n+1)/2; // (n+1) cannot overflow, division is exact, halfn1 > 0.
-      if (MOST_POSITIVE/n >= halfn1) // division OK because n non-zero (but halfn1 may be zero)
+      if (MOST_POSITIVE/n >= halfn1) // division OK because n non-zero
         safest = halfn1*n; // no overflow in product.
       else
         cerr << "!!! Overflow would occur !!!" << endl;
@@ -176,8 +177,8 @@ namespace CoCoA
 
     // NOTE: in this specific instance (n*(n+1))/2 is monotonic increasing, so
     // we could just have checked whether n is greater than the largest value
-    // which works (but how do you determine this value?).  The aim here was to
-    // exhibit a general technique.
+    // which works (BUT but how do you determine this value?).  The aim here
+    // was to exhibit a general technique.
 
 
     // ----------------------
@@ -187,7 +188,8 @@ namespace CoCoA
     //   and to use BigInts for general integer arithmetic (they're slow but safe).
     //   Avoid mixing "signed" and "unsigned" values in a single formula.
 
-    // Exercise: write 4 fns for safe addition, subtraction, multiplication & division
+    // Tricky exercise:
+    //     write 4 fns for safe addition, subtraction, multiplication & division
     //     of longs which avoid overflow (and print a message if overflow would occur).
 
     // For masochists:

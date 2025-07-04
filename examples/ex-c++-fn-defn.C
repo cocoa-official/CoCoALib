@@ -16,39 +16,40 @@ const string LongDescription =
   "This is an example showing some basic function definitions in C++. \n"
   "The command `return' ends computation in the function/procedure;   \n"
   "in a function it also says which value to return to the caller.    \n"
-  "C++ barely distinguishes between \"functions\" (which return a     \n"
-  "value) and \"procedures\" (which return no value).                 \n";
+  "C++ barely distinguishes between \"functions\" (which return a       \n"
+  "value) and \"procedures\" (which return \"void\", meaning no value).   \n";
 //----------------------------------------------------------------------
 
 namespace CoCoA
 {
 
-  // function definition syntax:
+  // Simplified C++ function definition syntax:
   //
-  // <rtn-type>   <fn-name>(<arg-type> <arg-name>)
+  // <rtn-type>   <fn-name>(<arg1-type> <arg1-name>, <arg2-type> <arg2-name> ,...)
   // {
   //   <commands>
   // }
 
 
-  // a simple FUNCTION:
+  // A simple FUNCTION with 1 argument:
   long square(long n)
   {
-    return n*n;
+    return n*n; // WARNING: see discussion of overflow in ex-c++-integers.C
   }
 
 
-  // a slightly longer function (with 2 args)
+  // A slightly longer FUNCTION (with 2 args)
   bool IsInDisc100(long x, long y)
   {
-    if (x < -100 || x > 100 || y < -100 || y > 100) return false;
-    long SqDist = square(x) + square(y);
+    if (x < -100 || x > 100 || y < -100 || y > 100)  { return false; }
+    const long SqDist = square(x) + square(y);
     return (SqDist <= square(100));
   }
+  // Question: is the "if (...) {...}" useful/necessary?
 
 
-  // a PROCEDURE has return type "void"
-  // Here first two params are REFERENCES:
+  // A PROCEDURE has return type "void"
+  // Here the first two arguments are REFERENCES:
   // this procedure will change their values.  See the call below!
   void QuotientAndRemainder(long& quot, long& rem, long a, long b)
   {
@@ -61,10 +62,11 @@ namespace CoCoA
   {
     GlobalManager CoCoAFoundations;
     cout << ShortDescription << endl;
+    cout << boolalpha; // so that bools print out as true/false
 
     // Call "square"
-    long a = 7;
-    long b = 3;
+    const long a = 7;
+    const long b = 3;
     cout << "square of " << a+b << " is " << square(a+b) << endl;
 
     // Call "QuotientAndRemainder"

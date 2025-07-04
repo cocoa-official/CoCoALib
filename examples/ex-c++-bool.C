@@ -30,29 +30,30 @@ namespace CoCoA
     bool flag1 = true;  // boolean value: either "true" or "false"
     bool flag2 = false; // boolean value: either "true" or "false"
     
-    long a = 1;
-    long b = 2;
+    const long a = 1;
+    const long b = 2;
     // Careful!  TEST EQUALITY with DOUBLE EQUALS!
     // operator == tests whether a is equal to b
     cout << "Are a and b equal?  " <<  (a == b)  << endl;
 
     // assignment of booleans
-    flag1 = (a == b);
+    flag1 = (a == b);  // brackets here are recommended style
 
     // NOT operator (prefix exclamation mark)
     // AND operator (infix  &&)
     flag2 = !(a<0 && b>0);
 
     cout << "flag1 = " << flag1 << "   and   flag2 = " << flag2 << endl;
-    // This command makes bools print out as "true" or "false"
+
+    // The command below makes bools print out as "true" or "false"
     // (by default they are printed as 1 and 0 respectively).
     cout << boolalpha;
-    cout << "  After \"boolalpha\" are printed in this way:" << endl;
+    cout << "After \"boolalpha\" booleans are printed in this way:" << endl;
     cout << "flag1 = " << flag1 << "   and flag2 = " << flag2 << endl;
 
     // SMART AND operator -- check LHS first, check RHS only if necessary
-    if (a > 2 && b > 99)  cout << "MISTAKE!" << endl;
-    // The first condition is false, so the computer will
+    if (a > 2 && b > 99)  { cout << "Should not be printed!" << endl; }
+    // In this case the first condition is false, so the computer will
     // not check the second condition (as there is no need).
 
 

@@ -23,8 +23,8 @@ namespace CoCoA
     GlobalManager CoCoAFoundations;
     cout << ShortDescription << endl;
 
-    long a = 3;
-    long b = 4;
+    const long a = 3;
+    const long b = 4;
 
     // Most arithmetic operations work "as expected"
     cout << a << "+" << b << " = " << a+b << endl; // sum

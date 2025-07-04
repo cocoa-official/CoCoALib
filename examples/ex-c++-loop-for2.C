@@ -8,20 +8,20 @@ using namespace std;
 
 //----------------------------------------------------------------------
 const string ShortDescription =
-  "This is an example showing the new style \"for\" loop in C++.   \n"
-  "See ex-c++-loop-for1.C for \"continue\" and \"break\" commands. \n";
+  "This example shows the container iterator \"for\" loop in C++.     \n"
+  "See also ex-c++-loop-for1.C for \"continue\" and \"break\" commands. \n";
 
 const string LongDescription =
-  "This is an example showing the new style \"for\" loop in C++.   \n"
-  "See ex-c++-loop-for1.C for \"continue\" and \"break\" commands. \n"
-  "We show how to state whether the elements are copied.           \n";
+  "This example shows the container iterator \"for\" loop in C++.     \n"
+  "See also ex-c++-loop-for1.C for \"continue\" and \"break\" commands. \n"
+  "We show how to state whether the elements are copied.            \n";
 
 //----------------------------------------------------------------------
 
 namespace CoCoA
 {
 
-  // SYNTAX of new "for" loop:
+  // SYNTAX of container-iterator "for" loop:
   //
   // for  ( <entry-type> <var-name>  :  <list/vector> )
   // {
@@ -34,11 +34,11 @@ namespace CoCoA
     GlobalManager CoCoAFoundations;
     cout << ShortDescription << endl;
 
-    vector<int> v{3,1,4,1,5,9,2,6,5};
+    vector<int> DigitsOfPi{3,1,4,1,5,9,2,6,5};
 
-    // Print out the elements of v:
-    // [NB each element of v is copied into digit]
-    for (int digit: v)
+    // Print out the elements of DigitsOfPi:
+    // [here each element of DigitsOfPi is copied into digit]
+    for (int digit: DigitsOfPi)
     {
       cout << digit << "  ";
     }
@@ -46,15 +46,15 @@ namespace CoCoA
 
     // Reduce each digit by 1:
     // In C++ "&" means reference to a value
-    for (int& digit: v)
+    for (int& digit: DigitsOfPi)
     {
       --digit;
     }
     cout << endl;
 
-    // Print out the elements of v:
+    // Print out the elements of DigitsOfPi:
     // [without copying them]
-    for (const int& digit: v)
+    for (const int& digit: DigitsOfPi)
     {
       cout << digit << "  ";
     }
