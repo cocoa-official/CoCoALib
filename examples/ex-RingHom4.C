@@ -18,7 +18,7 @@ namespace CoCoA
   RingElem EvalAtZero(RingElem f) //--> the constant term
   {
     if (!IsSparsePolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "ImplicitDirectLPP");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     for (SparsePolyIter it= BeginIter(f); !IsEnded(it); ++it)
       if (IsOne(PP(it))) return coeff(it);
     return zero(CoeffRing(owner(f)));

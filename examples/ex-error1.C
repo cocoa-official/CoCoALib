@@ -13,12 +13,13 @@ const string ShortDescription =
 const string LongDescription =
   "CoCoALib uses C++ exceptions to inform the user that a problem has occurred.    \n"
   "This simple example illustrates the CoCoALib convention for reporting an error: \n"
-  "call the macro CoCoA_THROW_ERROR which both constructs the \"ErrorInfo\" value  \n"
-  "and throws it.  It also shows how to catch these CoCoALib exceptions, which are \n"
-  "always objects of type \"ErrorInfo\".  The most useful part of a CoCoALib       \n"
-  "exception is its error code: after catching a CoCoALib exception we can check   \n"
-  "whether its code is one we expected (and can deal with).  The full list of      \n"
-  "possible error codes can be found in the header file CoCoA/error.H.             \n";
+  "call the macro CoCoA_THROW_ERROR1 or CoCoA_THROW_ERROR2 both of which construct \n"
+  "the \"ErrorInfo\" object and throw it.  It also shows how to catch these        \n"
+  "CoCoALib exceptions, which are always objects of type \"ErrorInfo\".            \n"
+  "The most useful part of a CoCoALib exception is its error code: after catching  \n"
+  "a CoCoALib exception we can check whether its code is one we expected (and      \n"
+  "can deal with).  The full list of possible error codes can be found in the      \n"
+  "header file CoCoA/error.H.             \n";
 
 //----------------------------------------------------------------------
 
@@ -38,12 +39,12 @@ void program()
   // be thrown, we put it inside a try...catch construct.
   try   ///// ??? a better example ???
   {
-    BigInt infinity = one/zero; // Of course, this will fail.
+    const BigInt infinity = one/zero; // Of course, this will fail.
     cout << "THIS SHOULD NEVER BE EXECUTED" << endl;
   }
   catch (const CoCoA::ErrorInfo& err)
   {
-    if (err != ERR::DivByZero) throw; // rethrow if error was not DivByZero
+    if (err != ERR::DivByZero)  throw; // rethrow if error was not DivByZero
     // Now we handle the expected error; in this case we'll simply print it out.
     cout << "Caught and handled this object: " << err << endl << endl;
   }
@@ -51,14 +52,13 @@ void program()
   //------------------------------------------------------------------
   // Part 2
 
-  // We use the macro CoCoA_THROW_ERROR to signal a CoCoALib error: we must
-  // specify the error code (see CoCoA/error.H) and the function reporting
-  // the problem.
-  // We put the call to CoCoA_THROW_ERROR in a try...catch construct so that we can simply
+  // We use the macro CoCoA_THROW_ERROR1 to signal a CoCoALib error: we must
+  // specify the error code (see CoCoA/error.H).
+  // We put the call to CoCoA_THROW_ERROR1 in a try...catch construct so that we can simply
   // discard the exception (otherwise it would seem as though an error really did occur).
   try
   {
-    CoCoA_THROW_ERROR(ERR::DivByZero, "program");
+    CoCoA_THROW_ERROR1(ERR::DivByZero);
   }
   catch (const CoCoA::ErrorInfo&) { } // Simply discard the exception
 

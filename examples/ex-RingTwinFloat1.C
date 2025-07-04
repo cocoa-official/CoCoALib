@@ -23,8 +23,9 @@ namespace CoCoA
   RingElem SquareRoot(RingElem x)
   {
     if (!IsRingTwinFloat(owner(x)))
-      CoCoA_THROW_ERROR("Argument must be element of RingTwinFloat", "SquareRoot(RingElem)");
-    if (x < 0) CoCoA_THROW_ERROR("Squareroot of negative number", "SquareRoot(RingElem)");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "Argument must be element of RingTwinFloat");
+    if (x < 0)
+      CoCoA_THROW_ERROR2(ERR::BadArg, "Squareroot of negative number");
     if (IsZero(x)) return x;
     ring RR = owner(x);
     RingElem approx(RR);
@@ -137,7 +138,7 @@ namespace CoCoA
     catch (const RingTwinFloat::InsufficientPrecision&)
     {
       if (SumsAreEqual) // SumsAreEqual should be false -- give error if not.
-        CoCoA_THROW_ERROR("Values are equal but failed to compute difference", "ex-RingTwinFloat1");
+        CoCoA_THROW_ERROR1("Values are equal but failed to compute difference");
       cout << "The two values are different, but more precision is needed to compute" << endl
            << "the difference with the required accuracy (i.e. " << PrecisionBits(RR) << " bits)." << endl;
     }

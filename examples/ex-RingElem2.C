@@ -22,7 +22,7 @@ namespace CoCoA
   {
     const ring& R = owner(a);
     if (owner(b) != R)
-      CoCoA_THROW_ERROR("RingElems should belong to same ring", "TestRing");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
 
     cout << endl << " --RingElemArith(a,b)-- ";
     cout << "a = " << a << ";  b = " << b << endl;
@@ -43,7 +43,7 @@ namespace CoCoA
   {
     const ring& R = owner(a);
     if (owner(b) != R)
-      CoCoA_THROW_ERROR("RingElems should belong to same ring", "TestRing");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
 
     if (!IsOrderedDomain(R))
     { cout << "Ring is not ordered, so comparisons not possible." << endl; return; }
@@ -64,7 +64,7 @@ namespace CoCoA
   void RingElemTests(const RingElem& a, const RingElem& b)
   {
     const ring& R = owner(a);
-    if (owner(b) != R) CoCoA_THROW_ERROR("RingElems should belong to same ring", "TestRing");
+    if (owner(b) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
     const RingElem one(R, 1);
 
     cout << " --RingElemTests(a,b)-- ";
@@ -94,7 +94,7 @@ namespace CoCoA
   void RingElemSpecial(RingElem a, const RingElem& b)
   {
     const ring& R = owner(a);
-    if (owner(b) != R) CoCoA_THROW_ERROR("RingElems should belong to same ring", "TestRing");
+    if (owner(b) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
     const RingElem one(R, 1);
 
     cout << " --RingElemSpecial(a,b)-- ";

@@ -61,7 +61,7 @@ namespace CoCoA
         cout << "A bit precision of " << BitPrec << " was not sufficient." << endl;
       }
     }
-    CoCoA_THROW_ERROR("Required too much precision... giving up!", "MullerLoop");
+    CoCoA_THROW_ERROR1("Required too much precision... giving up!");
     return zero(RingZZ()); // Never executed; just to keep compiler quiet.
   }
 
@@ -79,7 +79,9 @@ namespace CoCoA
     }
     catch (const CoCoA::ErrorInfo& err)
     {
-      if (message(err) != "Required too much precision... giving up!") throw;
+      const string& FullMesg = message(err);
+      const size_t end = FullMesg.size();
+      if (FullMesg.substr(end-41, end) != "Required too much precision... giving up!")  throw;
       cout << endl
            << "As expected we caught this error: " << message(err) << endl;
     }

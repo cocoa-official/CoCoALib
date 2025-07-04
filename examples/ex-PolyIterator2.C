@@ -61,7 +61,7 @@ namespace CoCoA
       const degree diff = H - wdeg(PP(iter));
       for (long j=0; j < D; ++j)
         if (!IsConvertible(expv[h[j]], diff[j]))
-          CoCoA_THROW_ERROR("Exponent too big", "MultiHomog(ans,f,h)");
+          CoCoA_THROW_ERROR2(ERR::ArgTooBig, "Exponent too big");
       RingElem HomogTerm = monomial(P, coeff(iter), PP(iter)*PPMonoidElem(PPM(P),expv));
       ans.myAddClear(HomogTerm, 1);
     }
@@ -84,20 +84,20 @@ namespace CoCoA
   RingElem MultiHomog(ConstRefRingElem f, const vector<RingElem>& h)
   {
     if (!IsSparsePolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqSparsePolyRing, "homog(f,h)");
+      CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
     const SparsePolyRing P = owner(f);
 
     const long k = GradingDim(P);
     vector<long> indices(k);
     if (len(h) != k)
-      CoCoA_THROW_ERROR(ERR::BadArraySize, "homog(f,h)");
+      CoCoA_THROW_ERROR1(ERR::BadArraySize);
     for (long i=0; i < k; ++i)
     {
       if (owner(h[i]) != P)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "homog(f,h)");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
       long index;
       if (!IsIndet(index, h[i]))
-        CoCoA_THROW_ERROR(ERR::ReqIndet, "homog(f,h)");
+        CoCoA_THROW_ERROR1(ERR::ReqIndet);
 
       indices[k] = index;
     }

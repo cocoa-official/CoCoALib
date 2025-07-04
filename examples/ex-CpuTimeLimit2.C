@@ -9,8 +9,8 @@ using namespace std;
 //----------------------------------------------------------------------
 const string ShortDescription =
   "This example shows how to use a CpuTimeLimit object to limit the   \n"
-  "CPU time used in a section of code, and what myReset   \n"
-  "does.  Compare this example with ex-CpuTimeLimit1.C.";
+  "CPU time used in a section of code, and what myReset does.         \n"
+  "Compare this example with ex-CpuTimeLimit1.C.";
 
 const string LongDescription =
   "This example shows how to use a CpuTimeLimit object to limit the   \n"
@@ -22,12 +22,6 @@ const string LongDescription =
 
 namespace CoCoA
 {
-
-  void AnotherLongComputation()
-  {
-    if (FloorLog2(factorial(5867281)) != 123456790)
-      CoCoA_THROW_ERROR("Wrong answer!", "AnotherLongComputation");
-  }
 
   void program()
   {
@@ -44,7 +38,7 @@ namespace CoCoA
     for (int k=1; k < 4000; ++k)
     {
       CheckForTimeout("Loop 1");
-      if (IsPrime(k)) ++CountPrimes;
+      if (IsPrime(k))  ++CountPrimes;
     }
     cout << "Loop 1: CountPrimes=" << CountPrimes << endl;
 
@@ -54,7 +48,7 @@ namespace CoCoA
     for (int k=1; k < 4000; ++k)
     {
       CheckForTimeout("Loop 2");
-      if (IsProbPrime((power(6,k)-1)/5)) ++CountPrimes;
+      if (IsProbPrime((power(6,k)-1)/5))  ++CountPrimes;
     }
     cout << "Loop 2: CountPrimes=" << CountPrimes << endl;
   }
