@@ -1,0 +1,78 @@
+SetVerbosityLevel(99);
+SetVerbosityLevel(90);
+SetVerbosityLevel(00);
+
+use ZZ/(101)[x,y,z], lex;
+//use ZZ/(101)[x,y,z];
+-- L := [x^33*y^3 +x^33*y^2 +y +x,
+--       3*x^33*y^2 +x^33*y -x^13*y -2*x^11*y +y^2 +x,
+--       x^33*y -x^13*y -2*x^11*y +y^2];
+
+L := [x^33*y^3 +x^33*y^2 +y +x,
+      2*x^33*y^2 +x^33*y -x^13*y -2*x^11*y +y^2 +x,
+      x^33*y -x^13*y -2*x^11*y +y^2];
+
+L := [x^33 +x^20,
+      y^17*(x^10 -2*x^8*y^2 -x^9 +x^7*y^2 -x^8 +x^6*y^2 +2*x^7 -x^6),
+      x^33 +x^15*y^15 +x^15,
+      y^10*x^22 +x^20 +x^6,
+      x^14*y^16 +x^25 -x^20,
+      x^33 +x^16*z^14 +x^25,
+      x^43 +3*x^14*z^16 +x^25,
+      x^35 +x^33 +y^30 +x^15,
+      x^32 +x^31 +x^30 -x^3,
+      y^40 +y^20];
+
+-- L := [x^36 +y^3*x^10 +y^6,
+--       x^34 +x^10*y^10 +x^14,
+--       x^30 +y^26 +x^14*y^20 +x^10*y^20,
+--       x^30 +x^25*y^10 -x^3,
+--       x^19 +y^40 +y^20];
+
+-- L := [x^36 +y^3*x^10 +y^6,
+--       x^20 +x^15*z +x^14*y^10,
+--       x^34 +x^10*y^10 +x^14,
+--       x^30 +y^26 +x^14*y^20 +x^10*y^20,
+--       x^30 +x^25*y^10 -x^3,
+--       x^19 +y^40 +y^20];
+
+-- L := [x^36 +y^3*x^10 +y^6,
+--       x^30 +x^22 +y^10,
+--       x^34 +x^10*y^10 +x^14,
+--       x^30 +y^26 +x^14*y^20 +x^10*y^20,
+--       x^19 +y^40 +y^20];
+
+-- L := [x^36 +y^3*x^10 +y^6,
+--       x^20 +x^15*z +x^4*y^6,
+--       x^30 +x^22 +y^10,
+--       x^34 +x^10*y^10 +x^14,
+--       x^30 +y^26 +x^14*y^20 +x^10*y^20,
+-- //      x^30 +x^25*y^10 -x^3,
+--       x^19 +y^40 +y^20];
+
+-- L := [x^23 +y^3*x^8 +y^2,
+--       x^30 +x^22 +y^2,
+--       x^24 +x^10*y^10 +x^14,
+--       x^30 +y^21 +x^14*y^10 +x^10*y^20,
+--       x^30 +x^15*y^10 -x^3,
+--       x^19 +y^40 +y^20];
+
+-- L := [x^23 +y^3*x^8 +y^2,
+--       x^30 +x^22 +y^2,
+--       x^24 +x^10*y^10 +x^14,
+--       x^30 +y^20 +x^14*y^10 +x^10*y^17,
+--       x^30 +x^22*y^10 -x^3,
+--       x^19 +y^40 +y^20];
+
+SetVerbosityLevel(90);
+SetVerbosityLevel(0);
+L := [
+      sum([x^i | i in 1..1000]),
+      sum([random(1,5)*x^i | i in 1..1000])
+      ];
+
+t0 := CpuTime(); IL := interreduced(L); println "--int'ed: ", TimeFrom(t0);
+t0 := CpuTime(); IL2 := interreduced_LT(L); println "--int'ed LT: ", TimeFrom(t0);
+t0 := CpuTime(); IL := interreduced(L); println "--int'ed: ", TimeFrom(t0);
+t0 := CpuTime(); IL2 := interreduced_LT(L); println "--int'ed LT: ", TimeFrom(t0);
+IL = IL2;
