@@ -45,9 +45,9 @@ namespace CoCoA
     long dim;
     cin >> dim;
     if ( !cin )
-      CoCoA_THROW_ERROR("Input must be a positive integer", "main program in ex-ApproxPts1");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "Input must be a positive integer");
     if (dim < 1 || dim > 1000000)
-      CoCoA_THROW_ERROR("Ridiculous input dimension", "main program in ex-ApproxPts1");
+      CoCoA_THROW_ERROR2(ERR::OutOfRange, "Ridiculous input dimension");
   
     ring QQ = RingQQ();
     vector<double> InputEps(dim);
@@ -63,7 +63,7 @@ namespace CoCoA
     long NumPts;
     cin >> NumPts;
     if (NumPts < 1 || NumPts > 1000000)
-      CoCoA_THROW_ERROR("Ridiculous number of points", "main program in ex-ApproxPts1");
+      CoCoA_THROW_ERROR2(ERR::OutOfRange, "Ridiculous number of points");
 
     vector<ApproxPts::PointR> OrigPts;  OrigPts.reserve(NumPts);
     cout << "Insert the coordinates of the points " << endl;
@@ -73,7 +73,7 @@ namespace CoCoA
       for (long j=0; j < dim; ++j)
       {
         cin >> InputPt[j];
-        if (!cin) { CoCoA_THROW_ERROR("bad input", "main program in ex-ApproxPts1"); }
+        if (!cin) { CoCoA_THROW_ERROR1(ERR::InputFail); }
       }
       OrigPts.push_back(ConvertToVectorRingElem(QQ, InputPt));
     }

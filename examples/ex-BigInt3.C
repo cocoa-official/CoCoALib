@@ -31,7 +31,8 @@ namespace CoCoA
     cout << "Enter the number of bits the prime should have: ";
     long nbits;
     cin >> nbits;
-    if (!cin) CoCoA_THROW_ERROR(ERR::InputFail, "ex-BigInt3: input was not a (small) integer");
+    if (!cin || nbits < 0 || nbits > 999999)
+      CoCoA_THROW_ERROR2(ERR::InputFail, "ex-BigInt3: input was not a (small, positive) integer");
     if (nbits < 2)
     {
       cout << "There are no primes with fewer than 2 bits." << endl;

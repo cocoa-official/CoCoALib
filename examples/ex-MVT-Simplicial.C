@@ -89,24 +89,24 @@ namespace CoCoA
     IamEmpty = true;
     PPMonoid PPMI = PPM(RingOf(I));
     const std::vector<RingElem>& gensI = gens(I);
-    //    if(deg(product(gensI))<NumIndets(RingOf(I))) CoCoA_THROW_ERROR("the ideal has not full support","MVTSquareFree Simplicial"); 
+    //    if(deg(product(gensI))<NumIndets(RingOf(I))) CoCoA_THROW_ERROR1("the ideal must have full support"); 
     //      else
     PPVectorSqFr J;
     J.reserve(len(gensI));
     for (long i=0; i<len(gensI); ++i)
 	  {
 	    // ANNA: should be a CoCoA_ASSERT
-	    if (!IsMonomial(gensI[i])) CoCoA_THROW_ERROR("is not monomial","MVTSquareFree");
-	    if (!IsOne(LC(gensI[i]))) CoCoA_THROW_ERROR("coeff is not 1","MVTSquareFree");
-	    //if (deg(LPP(gensI[i]))>2) CoCoA_THROW_ERROR("deg>2","MVTSquareFree");
-	    if (!IsSqFree(LPP(gensI[i]))) CoCoA_THROW_ERROR("not squarefree","MVTSquareFree");
+	    if (!IsMonomial(gensI[i]))  CoCoA_THROW_ERROR1(ERR::ReqMonomialGens);
+	    if (!IsOne(LC(gensI[i])))  CoCoA_THROW_ERROR1("coeff is not 1");
+	    //if (deg(LPP(gensI[i])) > 2) CoCoA_THROW_ERROR1("Require deg<=2");
+	    if (!IsSqFree(LPP(gensI[i])))  CoCoA_THROW_ERROR1("require squarefree");
 	    J.push_back(DynamicBitset(LPP(gensI[i])));
 	  }
     InterreduceSort(J);
     //cout<<"The ideal: "<<J<<endl;
     DynamicBitset AccumulatingPivot(NumIndets(PPMI));
     if(!hasFullSupport(J, AccumulatingPivot))
-      CoCoA_THROW_ERROR("the ideal has not full support","MVTSquareFree Simplicial"); 
+      CoCoA_THROW_ERROR1("the ideal must have full support"); 
     BigInt pos(1);
     if (len(gens(I))==1) myInsertGens(J, 0, pos);
     myComputeRec(J, AccumulatingPivot, 0, pos);
@@ -252,7 +252,7 @@ namespace CoCoA
 
   void tilde(PPVectorSqFr& g, DynamicBitset& AccPivot, PPVectorSqFr& I)
   {
-    if (!g.empty()) CoCoA_THROW_ERROR("g: not empty", "tilde");
+    if (!g.empty())  CoCoA_THROW_ERROR1("g must be empty");
     g.reserve(len(I));
     DynamicBitset pivot = I.back();
     I.pop_back();
@@ -454,9 +454,9 @@ namespace CoCoA
     J.reserve(len(gensI));
     for (long i=0; i<len(gensI); ++i)
     {
-      if (!IsMonomial(gensI[i])) CoCoA_THROW_ERROR("is not monomial","MVTSquareFree");
-      if (!IsOne(LC(gensI[i]))) CoCoA_THROW_ERROR("coeff is not 1","MVTSquareFree");
-      if (!IsSqFree(LPP(gensI[i]))) CoCoA_THROW_ERROR("not squarefree","MVTSquareFree");
+      if (!IsMonomial(gensI[i]))  CoCoA_THROW_ERROR1(ERR::ReqMonomialGens);
+      if (!IsOne(LC(gensI[i])))  CoCoA_THROW_ERROR1("coeff is not 1");
+      if (!IsSqFree(LPP(gensI[i])))  CoCoA_THROW_ERROR1("require squarefree");
       J.push_back(DynamicBitset(LPP(gensI[i])));
     }
     InterreduceSort(J);

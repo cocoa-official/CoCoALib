@@ -37,7 +37,7 @@ namespace CoCoA
       ZZsum += i;
     }
     if (ZZsum.myTotal() != power(2,10000))
-      CoCoA_THROW_ERROR("ZZsum is wrong", "ex-SumBigRat");
+      CoCoA_THROW_ERROR2(ERR::AssertFail, "ZZsum is wrong");
 
     // Sum the reciprocals of the first few primes
     SumBigRat SUM;

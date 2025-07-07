@@ -44,7 +44,7 @@ namespace CoCoA
 
     // Since we already know the answer, we can check it is correct.
     if (CombinedResidue(crt) != N)
-      CoCoA_THROW_ERROR("Wrong answer", "CoCoA::Program");
+      CoCoA_THROW_ERROR2(ERR::AssertFail, "Combined residue is wrong");
   }
 
 } // end of namespace CoCoA

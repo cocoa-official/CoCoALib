@@ -76,10 +76,10 @@ namespace CoCoA
     {
       // ANNA: should be a CoCoA_ASSERT
       VERBOSE(9) << gensI[i] << endl;
-      if (!IsMonomial(gensI[i])) CoCoA_THROW_ERROR("is not monomial","MVTSquareFree");
-      if (!IsOne(LC(gensI[i]))) CoCoA_THROW_ERROR("coeff is not 1","MVTSquareFree");
-      if (deg(LPP(gensI[i]))>2) CoCoA_THROW_ERROR("deg>2","MVTSquareFree");
-      if (!IsSqFree(LPP(gensI[i]))) CoCoA_THROW_ERROR("not squarefree","MVTSquareFree");
+      if (!IsMonomial(gensI[i]))  CoCoA_THROW_ERROR1(ERR::ReqMonomialGens);
+      if (!IsOne(LC(gensI[i])))  CoCoA_THROW_ERROR1("coeff is not 1");
+      if (deg(LPP(gensI[i])) > 2)  CoCoA_THROW_ERROR1("require deg<=2");
+      if (!IsSqFree(LPP(gensI[i])))  CoCoA_THROW_ERROR1("require squarefree");
       J.push_back(DynamicBitset(LPP(gensI[i])));
     }
     InterreduceSort(J);
@@ -116,7 +116,7 @@ namespace CoCoA
     {
       for (long i=len(bettis);  i<len(myDimVec); ++i)
         if ((myDimVec[i]).size() != 0)
-          CoCoA_THROW_ERROR("impossible Betti number","myComputeBetti");
+          CoCoA_THROW_ERROR2(ERR::BadArg, "impossible Betti number");
       for (long i=0; i<len(bettis); ++i)   bettis[i] = (myDimVec[i]).size();
     }
     else // len(bettis) >= len(myDimVec)
@@ -297,18 +297,18 @@ namespace CoCoA
 
     void tilde(PPVectorSqFr& Prime_g, PPVectorSqFr& Edge_g, DynamicBitset& AccPivot, PPVectorSqFr& I)
     {
-      if (!Prime_g.empty()) CoCoA_THROW_ERROR("Prime_g: not empty", "tilde");
-      if (!Edge_g.empty())  CoCoA_THROW_ERROR("Edge_g: not empty", "tilde");
+      if (!Prime_g.empty())  CoCoA_THROW_ERROR1("Prime_g: not empty");
+      if (!Edge_g.empty())  CoCoA_THROW_ERROR1("Edge_g: not empty");
       Prime_g.reserve(len(AccPivot));
       Edge_g.reserve(len(I));
       DynamicBitset pivot = I.back();
       I.pop_back();
-      if (DEBUG) cout << "tilde: pivot = " << pivot << endl;
+      if (DEBUG)  cout << "tilde: pivot = " << pivot << endl;
       AccPivot |= pivot;
       //      if (len(I) <= 20)  tilde1(Prime_g, Edge_g, I, pivot);  else
       tilde2(Prime_g, Edge_g, I, pivot);
-      if (DEBUG) cout << "tilde: Prime_g = " << Prime_g << endl;
-      if (DEBUG) cout << "tilde: Edge_g  = " << Edge_g << endl;
+      if (DEBUG)  cout << "tilde: Prime_g = " << Prime_g << endl;
+      if (DEBUG)  cout << "tilde: Edge_g  = " << Edge_g << endl;
     }
   
 

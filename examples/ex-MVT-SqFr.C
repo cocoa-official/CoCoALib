@@ -72,10 +72,10 @@ namespace CoCoA
     for (long i=0; i<len(gensI); ++i)
     {
       // ANNA: should be a CoCoA_ASSERT
-      if (!IsMonomial(gensI[i])) CoCoA_THROW_ERROR("is not monomial","MVTSquareFree");
-      if (!IsOne(LC(gensI[i]))) CoCoA_THROW_ERROR("coeff is not 1","MVTSquareFree");
-      if (!deg(LPP(gensI[i]))>2) CoCoA_THROW_ERROR("deg>2","MVTSquareFree");
-      if (!IsRadical(LPP(gensI[i]))) CoCoA_THROW_ERROR("not squarefree","MVTSquareFree");
+      if (!IsMonomial(gensI[i]))  CoCoA_THROW_ERROR1(ERR::ReqMonomialGens);
+      if (!IsOne(LC(gensI[i])))  CoCoA_THROW_ERROR1("coeff is not 1");
+      if (!deg(LPP(gensI[i]))>2)  CoCoA_THROW_ERROR1("require deg<=2");
+      if (!IsRadical(LPP(gensI[i])))  CoCoA_THROW_ERROR1("require squarefree");
       J.push_back(DynamicBitset(LPP(gensI[i])));
     }
     InterreduceSort(J);
@@ -213,17 +213,17 @@ namespace CoCoA
 
     void tilde(PPVectorSqFr& g, DynamicBitset& AccPivot, PPVectorSqFr& I)
     {
-      if (!g.empty()) CoCoA_THROW_ERROR("g: not empty", "tilde");
+      if (!g.empty())  CoCoA_THROW_ERROR1("g must be empty");
       g.reserve(len(I));
       DynamicBitset pivot = I.back();
       I.pop_back();
-      if (DEBUG) cout << "tilde: pivot = " << pivot << endl;
+      if (DEBUG)  cout << "tilde: pivot = " << pivot << endl;
       AccPivot |= pivot;
       if (len(I) > 20)
         tilde2(g, I, pivot);
       else
         tilde1(g, I, pivot);
-      if (DEBUG) cout << "tilde: g = " << g << endl;
+      if (DEBUG)  cout << "tilde: g = " << g << endl;
     }
   
 
