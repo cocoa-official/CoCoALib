@@ -35,15 +35,17 @@ namespace CoCoA
 
     // These 2 are duplicates of fns in SparsePolyOps-RingElem.C
     
-    inline void CheckCompatible(ConstRefRingElem x, ConstRefRingElem y, const char* const FnName)
+    inline void CheckCompatible(ConstRefRingElem x, ConstRefRingElem y, const ErrorContext& FnName)
     {
-      if (owner(x) != owner(y))  CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+      if (owner(x) != owner(y))
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedRings, FnName);
     }
 
 
-    inline void CheckElemSparsePolyRing(ConstRefRingElem f, const char* const FnName)
+    inline void CheckElemSparsePolyRing(ConstRefRingElem f, const ErrorContext& FnName)
     {
-      if (!IsSparsePolyRing(owner(f))) CoCoA_THROW_ERROR(ERR::ReqElemSparsePolyRing, FnName);
+      if (!IsSparsePolyRing(owner(f)))
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqElemSparsePolyRing, FnName);
     }
 
   } // end of namespace anonymous
@@ -51,7 +53,7 @@ namespace CoCoA
 
   degree wdeg(ConstRefRingElem f)
   {
-    CheckElemSparsePolyRing(f, "wdeg(f)");
+    CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
     if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     return wdeg(LPP(f)); // yes! see [KR] introduction Sec.4.3
   }
@@ -59,8 +61,8 @@ namespace CoCoA
 
   int CmpWDeg(ConstRefRingElem f1, ConstRefRingElem f2)
   {
-    CheckCompatible(f1, f2, "CmpWDeg(f1,f2)");
-    CheckElemSparsePolyRing(f1, "CmpWDeg(f1,f2)");
+    CheckCompatible(f1, f2, CoCoA_ERROR_CONTEXT);
+    CheckElemSparsePolyRing(f1, CoCoA_ERROR_CONTEXT);
     if (IsZero(f1) || IsZero(f2))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     // Now we know that both f1 and f2 are non-zero
     //    return SparsePolyRingPtr(owner(f1))->myCmpWDeg(raw(f1), raw(f2));
@@ -70,8 +72,8 @@ namespace CoCoA
 
   int CmpWDegPartial(ConstRefRingElem f1, ConstRefRingElem f2, long i)  // assumes 0 <= i
   {
-    CheckCompatible(f1, f2, "CmpWDegPartial(f1,f2,i)");
-    CheckElemSparsePolyRing(f1, "CmpWDegPartial(f1,f2,i)");
+    CheckCompatible(f1, f2, CoCoA_ERROR_CONTEXT);
+    CheckElemSparsePolyRing(f1, CoCoA_ERROR_CONTEXT);
     if (IsZero(f1) || IsZero(f2))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     // Now we know that both f1 and f2 are non-zero
     //    return SparsePolyRingPtr(owner(f1))->myCmpWDeg(raw(f1), raw(f2));
@@ -81,7 +83,7 @@ namespace CoCoA
 
   bool IsHomog(ConstRefRingElem f)
   {
-    CheckElemSparsePolyRing(f, "IsHomog(f)");
+    CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
     if (GradingDim(owner(f))==0)  CoCoA_THROW_ERROR1(ERR::ReqNonZeroGradingDim);
     return SparsePolyRingPtr(owner(f))->myIsHomog(raw(f));
   }
@@ -89,15 +91,14 @@ namespace CoCoA
 
   bool IsHomogPartial(ConstRefRingElem f, long n)  // assumes n >= 0
   {
-    CheckElemSparsePolyRing(f, "IsHomogPartial(f,n)");
+    CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
     return SparsePolyRingPtr(owner(f))->myIsHomogPartial(raw(f), n);
   }
 
 
   RingElem homog(ConstRefRingElem f, ConstRefRingElem h)
   {
-    const char* const FnName = "homog(RingElem, RingElem)";
-    CheckCompatible(f, h, FnName);
+    CheckCompatible(f, h, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing P = owner(f);
     if ( GradingDim(P)!=1 )  CoCoA_THROW_ERROR2(ERR::BadArg, "GrDim must be 1");
     if ( !IsIndet(h) )  CoCoA_THROW_ERROR2(ERR::ReqIndet, "arg 2");

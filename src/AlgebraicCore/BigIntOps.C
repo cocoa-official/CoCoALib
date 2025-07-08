@@ -136,10 +136,6 @@ namespace CoCoA
   BigInt operator*(const BigInt& N1, const BigInt& N2)
   {
     BigInt ans;
-    // if (!mpz_mul_check(mpzref(ans), mpzref(N1), mpzref(N2)))
-    // {
-    //   CoCoA_THROW_ERROR(ERR::ArgTooBig, "overflow in big integer multiplication");
-    // }
     mpz_mul(mpzref(ans), mpzref(N1), mpzref(N2));
     return ans;
   }
@@ -168,7 +164,7 @@ namespace CoCoA
   BigInt operator/(const BigInt& N1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigInt / BigInt");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     BigInt ans;
     mpz_tdiv_q(mpzref(ans), mpzref(N1), mpzref(N2));
     return ans;
@@ -177,7 +173,7 @@ namespace CoCoA
   BigInt operator/(const BigInt& N1, const MachineInt& n2)
   {
     if (IsZero(n2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigInt / MachineInt");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     BigInt ans;
     mpz_tdiv_q_ui(mpzref(ans), mpzref(N1), uabs(n2));
     if (IsNegative(n2))
@@ -190,7 +186,7 @@ namespace CoCoA
   BigInt operator/(const MachineInt& n1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "MachineInt / BigInt");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     BigInt ans(n1);
     ans /= N2;
     return ans;
@@ -200,7 +196,7 @@ namespace CoCoA
   BigInt operator%(const BigInt& N1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "BigInt % BigInt");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
     BigInt ans;
     mpz_tdiv_r(mpzref(ans), mpzref(N1), mpzref(N2));
     return ans;
@@ -215,9 +211,9 @@ namespace CoCoA
   long operator%(const BigInt& N1, const MachineInt& n2)
   {
     if (IsZero(n2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigInt % MachineInt");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!IsSignedLong(n2))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "BigInt % MachineInt");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     const long ans = mpz_tdiv_ui(mpzref(N1), uabs(n2)); // abs value of remainder
     if (N1 < 0)
       return -ans; // CAREFUL: read GMP doc for mpz_tdiv_ui
@@ -228,7 +224,7 @@ namespace CoCoA
   BigInt operator%(const MachineInt& n1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "MachineInt % BigInt");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     return BigInt(n1)%N2;
   }
 
@@ -236,7 +232,7 @@ namespace CoCoA
   BigInt LeastNNegRemainder(const BigInt& N1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "LeastNNegRemainder(BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
     BigInt ans;
     mpz_mod(mpzref(ans), mpzref(N1), mpzref(N2));
     return ans;
@@ -244,7 +240,7 @@ namespace CoCoA
 
   long LeastNNegRemainder(const BigInt& N1, const MachineInt& n2)
   {
-    if (IsZero(n2) || !IsSignedLong(n2)) CoCoA_THROW_ERROR(ERR::BadModulus, "LeastNNegRemainder");
+    if (IsZero(n2) || !IsSignedLong(n2))  CoCoA_THROW_ERROR1(ERR::BadModulus);
     return mpz_fdiv_ui(mpzref(N1), uabs(n2)); // harmless silent conversion to long
   }
 
@@ -256,7 +252,7 @@ namespace CoCoA
 
   long LeastNNegRemainder(const MachineInt& n1, const MachineInt& n2)
   {
-    if (IsZero(n2) || !IsSignedLong(n2)) CoCoA_THROW_ERROR(ERR::BadModulus, "LeastNNegRemainder");
+    if (IsZero(n2) || !IsSignedLong(n2))  CoCoA_THROW_ERROR1(ERR::BadModulus);
     const unsigned long N2 = uabs(n2);
     const unsigned long ans = uabs(n1)%N2;
     if (ans != 0 && IsNegative(n1)) return N2-ans; // harmless silent conversion to long
@@ -267,7 +263,7 @@ namespace CoCoA
   BigInt SymmRemainder(const BigInt& N1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "SymmRemainder(BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
     BigInt ans;
     mpz_tdiv_r(mpzref(ans), mpzref(N1), mpzref(N2));
     BigInt HalfN2; mpz_tdiv_q_2exp(mpzref(HalfN2), mpzref(N2), 1); mpz_abs(mpzref(HalfN2), mpzref(HalfN2));
@@ -280,7 +276,7 @@ namespace CoCoA
 
   long SymmRemainder(const BigInt& N1, const MachineInt& n2)
   {
-    if (IsZero(n2) || !IsSignedLong(n2)) CoCoA_THROW_ERROR(ERR::BadModulus, "SymmRemainder");
+    if (IsZero(n2) || !IsSignedLong(n2))  CoCoA_THROW_ERROR1(ERR::BadModulus);
     const unsigned long N2 = uabs(n2);
     unsigned long ans = mpz_fdiv_ui(mpzref(N1), N2);
     if (ans > N2/2) return -IntegerCast<long>(N2-ans); // cannot overflow (on a binary computer)
@@ -296,7 +292,7 @@ namespace CoCoA
 
   long SymmRemainder(const MachineInt& n1, const MachineInt& n2)
   {
-    if (IsZero(n2) || !IsSignedLong(n2)) CoCoA_THROW_ERROR(ERR::BadModulus, "SymmRemainder");
+    if (IsZero(n2) || !IsSignedLong(n2))  CoCoA_THROW_ERROR1(ERR::BadModulus);
     const unsigned long N2 = uabs(n2);
     unsigned long ans = uabs(n1)%N2;
     if (IsNegative(n1)) ans = N2-ans;
@@ -314,12 +310,12 @@ namespace CoCoA
       if (IsZero(base) || IsOne(base) || IsMinusOne(base)) return;
       if (IsZero(exponent) || IsOne(exponent)) return;
       if (exponent > OVERFLOW_BITS)
-        CoCoA_THROW_ERROR(ERR::ExpTooBig, "power");
+        CoCoA_THROW_ERROR1(ERR::ExpTooBig);
       const long BitsBase = FloorLog2(base);
       if (BitsBase < (OVERFLOW_BITS/static_cast<long>(exponent))/2) return; // since exponent <= OVERFLOW_BITS, static_cast is safe
       const double LogBase = LogAbs(base);
       if (LogBase*exponent > OVERFLOW_BITS)      // values are "double"
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "power");
+        CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     }
     
   }
@@ -327,13 +323,13 @@ namespace CoCoA
   BigInt power(const BigInt& base, const BigInt& exponent, BigIntPowerOverflowCheck OverFlowCheck /*default: ENABLED*/)
   {
     if (exponent < 0)
-      CoCoA_THROW_ERROR(ERR::NegExp, "power(BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::NegExp);
     // trivial cases
     if (IsZero(exponent)) return BigInt(1);
     if (IsZero(base) || IsOne(base) || IsOne(exponent)) return base;
-    if (IsMinusOne(base)) { if (IsEven(exponent)) return BigInt(1); else return BigInt(-1); }
+    if (IsMinusOne(base))  { if (IsEven(exponent)) return BigInt(1); else return BigInt(-1); }
     unsigned long exp; if (!IsConvertible(exp, exponent))
-      CoCoA_THROW_ERROR(ERR::ExpTooBig, "power(BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     if (OverFlowCheck == BigIntPowerOverflowCheck::ENABLED)  power_OverflowCheck(base, exp);
     BigInt ans;
     mpz_pow_ui(mpzref(ans), mpzref(base), exp);
@@ -343,7 +339,7 @@ namespace CoCoA
   BigInt power(const BigInt& base, const MachineInt& exponent, BigIntPowerOverflowCheck OverFlowCheck /*default: ENABLED*/)
   {
     if (IsNegative(exponent))
-      CoCoA_THROW_ERROR(ERR::NegExp, "power(BigInt, MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::NegExp);
     const unsigned long exp = AsUnsignedLong(exponent);
     // trivial cases
     if (exp == 0) return BigInt(1); // Recall that 0^0 is 1
@@ -357,15 +353,14 @@ namespace CoCoA
 
   BigInt power(const MachineInt& base, const BigInt& exponent, BigIntPowerOverflowCheck OverFlowCheck /*default: ENABLED*/)
   {
-    const char* const FnName = "power(MachineInt, BigInt)";
     if (exponent < 0)
-      CoCoA_THROW_ERROR(ERR::NegExp, FnName);
+      CoCoA_THROW_ERROR1(ERR::NegExp);
     // trivial cases
     if (IsZero(exponent)) return BigInt(1);
     if (IsZero(base) || IsOne(base) || IsOne(exponent)) return BigInt(base);
     if (IsMinusOne(base)) { if (IsEven(exponent)) return BigInt(1); else return BigInt(-1); }
     unsigned long exp; if (!IsConvertible(exp, exponent))
-      CoCoA_THROW_ERROR(ERR::ExpTooBig, "power(BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     if (OverFlowCheck == BigIntPowerOverflowCheck::ENABLED)  power_OverflowCheck(BigInt(base), exp);
     const bool NegateResult = (IsNegative(base) && IsOdd(exp));
     const unsigned long B = uabs(base);
@@ -378,9 +373,8 @@ namespace CoCoA
 
   BigInt power(const MachineInt& base, const MachineInt& exponent, BigIntPowerOverflowCheck OverFlowCheck /*default: ENABLED*/)
   {
-    const char* const FnName = "power(MachineInt, MachineInt)";
     if (IsNegative(exponent))
-      CoCoA_THROW_ERROR(ERR::NegExp, FnName);
+      CoCoA_THROW_ERROR1(ERR::NegExp);
     const unsigned long exp = AsUnsignedLong(exponent);
     // trivial cases
     if (exp == 0) return BigInt(1);
@@ -400,14 +394,14 @@ namespace CoCoA
 
   long SmallPower(const MachineInt& base, const MachineInt& exponent)
   {
-    if (IsNegative(exponent)) CoCoA_THROW_ERROR(ERR::NegExp, "SmallPower");
-    if (!IsSignedLong(base)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "SmallPower: 1st arg");
-    if (IsZero(exponent)) return 1; // Order is important for  0^0
-    if (IsZero(base)) return 0;     // ...
+    if (IsNegative(exponent))  CoCoA_THROW_ERROR1(ERR::NegExp);
+    if (!IsSignedLong(base))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
+    if (IsZero(exponent))  return 1; // Order is important for  0^0
+    if (IsZero(base))  return 0;     // ...
     long b = AsSignedLong(base);
-    if (b == 1) return 1;
+    if (b == 1)  return 1;
     unsigned long e = AsUnsignedLong(exponent);
-    if (b == -1) return (IsEven(e)?1:-1);
+    if (b == -1)  return (IsEven(e)?1:-1);
     const bool negative = (IsOdd(e) && IsNegative(base));
     long ans = 1;
     while (e != 1)
@@ -516,14 +510,14 @@ namespace CoCoA
   void div(BigInt& lhs, const BigInt& N1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "div(BigInt, BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpz_tdiv_q(mpzref(lhs), mpzref(N1), mpzref(N2));
   }
 
   void div(BigInt& lhs, const BigInt& N1, const MachineInt& n2)
   {
     if (IsZero(n2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "div(BigInt, BigInt, MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpz_tdiv_q_ui(mpzref(lhs), mpzref(N1), uabs(n2));
     if (IsNegative(n2))
       negate(lhs);
@@ -533,7 +527,7 @@ namespace CoCoA
   void div(BigInt& lhs, const MachineInt& n1, const BigInt& N2)
   {
     if (N2 == 0)
-      CoCoA_THROW_ERROR(ERR::DivByZero, "div(BigInt, MachineInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     div(lhs, BigInt(n1), N2);
   }
 
@@ -541,14 +535,14 @@ namespace CoCoA
   void mod(BigInt& lhs, const BigInt& N1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "mod(BigInt, BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
     mpz_tdiv_r(mpzref(lhs), mpzref(N1), mpzref(N2));
   }
 
   void mod(BigInt& lhs, const BigInt& N1, const MachineInt& n2)
   {
     if (IsZero(n2))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "mod(BigInt, BigInt, MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
     mpz_tdiv_r_ui(mpzref(lhs), mpzref(N1), uabs(n2));
   }
 
@@ -556,7 +550,7 @@ namespace CoCoA
   void mod(BigInt& lhs, const MachineInt& n1, const BigInt& N2)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "mod(BigInt, MachineInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
     mod(lhs, BigInt(n1), N2);
   }
 
@@ -564,14 +558,14 @@ namespace CoCoA
   void quorem(BigInt& quo, BigInt& rem, const BigInt& num, const BigInt& den)
   {
     if (IsZero(den))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "quorem(BigInt, BigInt, BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpz_tdiv_qr(mpzref(quo), mpzref(rem), mpzref(num), mpzref(den));
   }
 
   void quorem(BigInt& quo, BigInt& rem, const BigInt& num, const MachineInt& den)
   {
     if (IsZero(den))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "quorem(BigInt, BigInt, BigInt, MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (IsNegative(den))
     {
       mpz_tdiv_qr_ui(mpzref(quo), mpzref(rem), mpzref(num), uabs(den));
@@ -585,7 +579,7 @@ namespace CoCoA
   void quorem(BigInt& quo, BigInt& rem, const MachineInt& num, const BigInt& den)
   {
     if (IsZero(den))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "quorem(BigInt, BigInt, MachineInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     quorem(quo, rem, BigInt(num), den);
   }
 
@@ -634,26 +628,26 @@ namespace CoCoA
 
   bool IsDivisible(const MachineInt& N, const MachineInt& D) // is N divisibile by D?
   {
-    if (IsZero(D)) CoCoA_THROW_ERROR(ERR::DivByZero, "IsDivisible");
+    if (IsZero(D))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     return uabs(N)%uabs(D) == 0;
   }
 
   bool IsDivisible(const MachineInt& N, const BigInt& D) // is N divisibile by D?
   {
-    if (IsZero(D)) CoCoA_THROW_ERROR(ERR::DivByZero, "IsDivisible");
+    if (IsZero(D))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     // Simple rather than fast...
     return IsDivisible(BigInt(N), D);
   }
 
   bool IsDivisible(const BigInt& N, const MachineInt& D) // is N divisibile by D?
   {
-    if (IsZero(D)) CoCoA_THROW_ERROR(ERR::DivByZero, "IsDivisible");
+    if (IsZero(D))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     return mpz_divisible_ui_p(mpzref(N), uabs(D));
   }
 
   bool IsDivisible(const BigInt& N, const BigInt& D) // is N divisibile by D?
   {
-    if (IsZero(D)) CoCoA_THROW_ERROR(ERR::DivByZero, "IsDivisible");
+    if (IsZero(D))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     return mpz_divisible_p(mpzref(N), mpzref(D));
   }
 
@@ -834,13 +828,13 @@ namespace CoCoA
 
   long MultiplicityOf2(const BigInt& N)
   {
-    if (IsZero(N)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "MultiplicityOf2");
+    if (IsZero(N))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     return mpz_scan1(mpzref(N), 0);
   }
 
   long MultiplicityOf2(const MachineInt& n)
   {
-    if (IsZero(n)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "MultiplicityOf2");
+    if (IsZero(n))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     unsigned long val = uabs(n);
 /////    unsigned long long val = ull_abs(n);
     int i=0;
@@ -852,7 +846,7 @@ namespace CoCoA
   double log(const BigInt& N)
   {
     if (sign(N) <= 0)
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "log(BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
 // Next 2 lines useful???  Extra code for no benefit?
 ///    if (exponent(N) < numeric_limits<double>::max_exponent)
 ///      return std::log(ConvertTo<double>(N));
@@ -866,8 +860,8 @@ namespace CoCoA
   double LogAbs(const BigInt& N)
   {
     const int s = sign(N);
-    if (s == 0) CoCoA_THROW_ERROR(ERR::ReqNonZero, "LogAbs(BigInt)");
-    if (s > 0) return log(N);
+    if (s == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
+    if (s > 0)  return log(N);
     return log(-N);
   }
 
@@ -903,14 +897,14 @@ namespace CoCoA
   long FloorLog2(const MachineInt& n)
   {
     if (IsZero(n))
-      CoCoA_THROW_ERROR(ERR::ReqNonZero, "FloorLog2");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     return topbit(uabs(n));
   }
 
   long FloorLog2(const BigInt& N) /*noexcept*/
   {
     if (IsZero(N))
-      CoCoA_THROW_ERROR(ERR::ReqNonZero, "FloorLog2");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     const size_t sz = mpz_sizeinbase(mpzref(N),2)-1;
     // CHECK FOR OVERFLOW  - only necessary if long is 32-bit (M$ users deserve what they get?)
     // if (sz > static_cast<size_t>(numeric_limits<long>::max()))
@@ -939,8 +933,8 @@ namespace CoCoA
 
   long FloorLogBase(const BigInt& N, const BigInt& base)
   {
-    if (base < 2) CoCoA_THROW_ERROR(ERR::BadArg, "FloorLogBase: base must be at least 2");
-    if (IsZero(N)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "FloorLogBase");
+    if (base < 2)  CoCoA_THROW_ERROR2(ERR::BadArg, "base must be at least 2");
+    if (IsZero(N))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     if (IsOne(abs(N))) return 0;
     if (base == 2) return FloorLog2(N);
     const double ApproxLog = LogAbs(N)/log(base);
@@ -1020,7 +1014,7 @@ namespace CoCoA
       /// SLUG BUG SLUG should just check n directly!!!
       const double log_est = LogFactorial(n)/std::log(2.0);
       if (log_est < OVERFLOW_BITS) return; // OVERFLOW_BITS defn in config.H
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "factorial");
+      CoCoA_THROW_ERROR2(ERR::ArgTooBig, "factorial");
     }
     
   }
@@ -1028,10 +1022,10 @@ namespace CoCoA
   BigInt factorial(const BigInt& N)
   {
     if (N < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "factorial(BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     long n;
     if (!IsConvertible(n, N))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "factorial(BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return factorial(n);
     // factorial_OverflowCheck(n);
     // BigInt ans;
@@ -1043,7 +1037,7 @@ namespace CoCoA
   BigInt factorial(const MachineInt& n)
   {
     if (IsNegative(n))
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "factorial(MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
 
     factorial_OverflowCheck(AsSignedLong(n));
     BigInt ans;
@@ -1058,7 +1052,7 @@ double LogFactorial(const MachineInt& N)
 {
   using std::log;
   using std::atan;
-  if (IsNegative(N)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "LogFactorial");
+  if (IsNegative(N))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
   const long n = AsSignedLong(N);
   const static double LogSqrtPi = log(4*atan(1.0))/2;
   if (n > 23)
@@ -1071,12 +1065,12 @@ double LogFactorial(const MachineInt& N)
 
 double LogFactorial(const BigInt& N)
 {
-  if (N < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "LogFactorial");
+  if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
   double n;
-  if (!IsConvertible(n, N)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "LogFactorial");
+  if (!IsConvertible(n, N))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
   {
     long SmallN;
-    if (IsConvertible(SmallN, N)) return LogFactorial(SmallN);
+    if (IsConvertible(SmallN, N))  return LogFactorial(SmallN);
   }
   using std::log;
   using std::atan;
@@ -1089,10 +1083,10 @@ double LogFactorial(const BigInt& N)
   BigInt primorial(const BigInt& N)
   {
     if (N < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "primorial(BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     unsigned long n;
     if (!IsConvertible(n, N))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "primorial(BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
 //    return factorial(n);
     BigInt ans;
     mpz_primorial_ui(mpzref(ans), n);
@@ -1103,7 +1097,7 @@ double LogFactorial(const BigInt& N)
   BigInt primorial(const MachineInt& n)
   {
     if (IsNegative(n))
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "factorial(MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     BigInt ans;
     mpz_primorial_ui(mpzref(ans), AsUnsignedLong(n));
     return ans;
@@ -1123,14 +1117,14 @@ namespace // anonymous
     double log_den1 = LogFactorial(r);
     double log_den2 = LogFactorial(N-r);
     if (log_num - (log_den1+log_den2) < OVERFLOW_BITS) return;
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, "binomial");
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, "binomial");
   }
   
 } // end of namespace anonymous
 
   BigInt binomial(const BigInt& N, const BigInt& R)
   {
-    if (R < 0 || CmpAbs(R,N) > 0) return BigInt(0);
+    if (R < 0 || CmpAbs(R,N) > 0)  return BigInt(0);
 //    if (R < 0)
 //      CoCoA_THROW_ERROR(ERR::BadArg, "binomial(BigInt,BigInt): 2nd arg must be non-neg");
     if (N < 0)
@@ -1146,7 +1140,7 @@ namespace // anonymous
     const bool RIsSmall = (2*R < N);
     if ((RIsSmall && !IsConvertible(r, R)) ||
         (!RIsSmall && !IsConvertible(r, N-R)))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "binomial(BigInt, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
 
     binomial_OverflowCheck(N,r);
     BigInt ans;
@@ -1159,7 +1153,7 @@ namespace // anonymous
   {
     if (R < 0 || CmpAbs(R,n) > 0) return BigInt(0);
 //    if (R < 0)
-//      CoCoA_THROW_ERROR(ERR::BadArg, "binomial(MachineInt,BigInt): 2nd arg must be non-neg");
+//      CoCoA_THROW_ERROR2(ERR::BadArg, "2nd arg must be non-neg");
     return binomial(BigInt(n), R);
   }
 
@@ -1168,7 +1162,7 @@ namespace // anonymous
   {
     if (IsNegative(r) || CmpAbs(r,N) > 0) return BigInt(0);
 //    if (IsNegative(r))
-//      CoCoA_THROW_ERROR(ERR::BadArg, "binomial(BigInt,MachineInt): 2nd arg must be non-neg");
+//      CoCoA_THROW_ERROR2(ERR::BadArg, "2nd arg must be non-neg");
     binomial_OverflowCheck(abs(N),AsSignedLong(r));
     BigInt ans;
     mpz_bin_ui(mpzref(ans), mpzref(N), AsUnsignedLong(r));
@@ -1180,7 +1174,7 @@ namespace // anonymous
   {
     if (IsNegative(r) || uabs(r) > uabs(n)) return BigInt(0);
 //    if (IsNegative(r))
-//      CoCoA_THROW_ERROR(ERR::BadArg, "binomial(MachineInt,MachineInt): 2nd arg must be non-neg");
+//      CoCoA_THROW_ERROR2(ERR::BadArg, "2nd arg must be non-neg");
 
     if (uabs(n) > 1000000) binomial_OverflowCheck(BigInt(uabs(n)),AsSignedLong(r));
     BigInt ans;
@@ -1196,7 +1190,7 @@ namespace // anonymous
   {
     long n;
     if (!IsConvertible(n, N))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "fibonacci(BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return fibonacci(n);
   }
 
@@ -1217,7 +1211,7 @@ namespace // anonymous
   BigInt RoundDiv(const BigInt& num, const BigInt& den)
   {
     if (IsZero(den))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "RoundDiv(BigInt,BigInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     BigInt q,r;
     quorem(q, r, num, den);
     if (CmpAbs(2*r,den) >= 0) // ROUND AWAY FROM ZERO
@@ -1229,14 +1223,14 @@ namespace // anonymous
   BigInt RoundDiv(const BigInt& num, const MachineInt& den)
   {
     if (IsZero(den))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "RoundDiv(BigInt,MachInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     return RoundDiv(num, BigInt(den));
   }
 
   BigInt RoundDiv(const MachineInt& num, const BigInt& den)
   {
     if (IsZero(den))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "RoundDiv(MachInt,BigInt)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     return RoundDiv(BigInt(num), den);
   }
 
@@ -1244,7 +1238,7 @@ namespace // anonymous
   long RoundDiv(const MachineInt& n, const MachineInt& d)
   {
     if (IsZero(d))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "RoundDiv(n,d)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (IsZero(n)) return 0;
     // Henceforth n and d are both non-zero.
     const long s = sign(n)*sign(d);
@@ -1266,21 +1260,21 @@ namespace // anonymous
   BigInt FloorRoot(const MachineInt& n, const BigInt& R)
   {
     if (IsNegative(n))
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "FloorRoot: 1st arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
     if (R < 1)
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "FloorRoot: 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
     unsigned long r;
     if (!IsConvertible(r, R))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "FloorRoot: 2nd arg"); // could just return 1???
+      CoCoA_THROW_ERROR2(ERR::ArgTooBig, "2nd arg"); // could just return 1???
     return FloorRoot(BigInt(n), r);
   }
 
   BigInt FloorRoot(const BigInt& N, const MachineInt& r)
   {
     if (N < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "FloorRoot: 1st arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
     if (IsNegative(r) || IsZero(r))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "FloorRoot: 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
     BigInt ans;
     mpz_root(mpzref(ans), mpzref(N), AsUnsignedLong(r));
     return ans;
@@ -1289,12 +1283,12 @@ namespace // anonymous
   BigInt FloorRoot(const BigInt& N, const BigInt& R)
   {
     if (N < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "FloorRoot: 1st arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
     if (R < 1)
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "FloorRoot: 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
     unsigned long r;
     if (!IsConvertible(r, R))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "FloorRoot: 2nd arg"); // could just return 1???
+      CoCoA_THROW_ERROR2(ERR::ArgTooBig, "2nd arg"); // could just return 1???
     return FloorRoot(N, r);
   }
 
@@ -1304,7 +1298,7 @@ namespace // anonymous
     BigInt root;
     const bool IsExact = IsExactFloorRoot(root, BigInt(n), r);
     if (!IsConvertible(ans, root))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "IsExactFloorRoot");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return IsExact;
   }
 
@@ -1316,14 +1310,14 @@ namespace // anonymous
   bool IsExactFloorRoot(long& ans, const MachineInt& n, const BigInt& R)
   {
 //    if (IsNegative(n))
-//      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "IsExactFloorRoot: 1st arg must be non-negative");
+//      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     unsigned long r;
     if (!IsConvertible(r, R))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "IsExactFloorRoot: root index must be >=1 & fit into a ulong");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     BigInt root;
     const bool IsExact = IsExactFloorRoot(root, BigInt(n), r);
     if (!IsConvertible(ans, root))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "IsExactFloorRoot");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return IsExact;
   }
 
@@ -1331,16 +1325,16 @@ namespace // anonymous
   {
     unsigned long r;
     if (!IsConvertible(r, R))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "IsExactFloorRoot: root index must be >=1 & fit into a ulong");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return IsExactFloorRoot(ans, BigInt(n), r);
   }
 
   bool IsExactFloorRoot(BigInt& ans, const BigInt& N, const MachineInt& r)
   {
     if (N < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "IsExactFloorRoot: 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "2nd arg");
     if (IsNegative(r) || IsZero(r))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "IsExactFloorRoot: 3rd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqPositive, "3rd arg");
 //    if (N < 0 && IsEven(AsUnsignedLong(r)))
 //      CoCoA_THROW_ERROR(ERR::BadArg, "IsExactFloorRoot: even root of negative number");
     const bool IsExact = mpz_root(mpzref(ans), mpzref(N), AsUnsignedLong(r));
@@ -1351,14 +1345,14 @@ namespace // anonymous
   {
     unsigned long r;
     if (!IsConvertible(r, R))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "IsExactFloorRoot: root index must be >=1 & fit into a ulong");
+      CoCoA_THROW_ERROR2(ERR::ArgTooBig, "3rd arg");
     return IsExactFloorRoot(ans, N, r);
   }
 
 
   long FloorSqrt(const MachineInt& n)
   {
-    if (IsNegative(n)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "FloorSqrt(n)");
+    if (IsNegative(n))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     return ConvertTo<long>(FloorSqrt(BigInt(n))); // conversion will succeed.
     // long ans;
     // IsConvertible(ans, FloorSqrt(BigInt(n))); // conversion will succeed.
@@ -1367,7 +1361,7 @@ namespace // anonymous
 
   BigInt FloorSqrt(const BigInt& N)
   {
-    if (N < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "FloorSqrt(N)");
+    if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     BigInt ans;
     mpz_sqrt(mpzref(ans), mpzref(N));
     return ans;

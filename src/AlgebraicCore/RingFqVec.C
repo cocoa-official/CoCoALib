@@ -332,7 +332,7 @@ namespace CoCoA
 
   void RingFqVecImpl::myRecvTwinFloat(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingFqVecImpl::myRecvTwinFloat");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
   }
 
 
@@ -455,7 +455,7 @@ namespace CoCoA
 
   void RingFqVecImpl::myOutput_OM(OpenMathOutput& OMOut, ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingFqVecImpl::myOutput");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     OMOut << 0; //???myImpl.myExport(import(rawx));
   }
 
@@ -531,7 +531,11 @@ namespace CoCoA
   }
 
 
-  RingElem RingFqVecImpl::mySymbolValue(const symbol& /*sym*/) const {CoCoA_THROW_ERROR("This ring has no symbols", "RingFqVecImpl::mySymbolValue"); return myZero();}
+  RingElem RingFqVecImpl::mySymbolValue(const symbol& /*sym*/) const
+  {
+    CoCoA_THROW_ERROR1("This ring has no symbols");
+    return myZero();  // just to keep compiler quiet
+  }
 
 
   ideal RingFqVecImpl::myIdealCtor(const std::vector<RingElem>& gens) const
@@ -606,8 +610,9 @@ namespace CoCoA
 
     ring NewRingFqVec(const MachineInt& p, const MachineInt& d)
     {
-      if (IsNegative(p) || !IsPrime(p)) CoCoA_THROW_ERROR(ERR::BadSmallFpChar, "NewRingFq");
-      if (IsNegative(d) || AsSignedLong(d) < 2) CoCoA_THROW_ERROR(ERR::BadArg, "NewRingFq");
+      if (IsNegative(p) || !IsPrime(p))  CoCoA_THROW_ERROR1(ERR::BadSmallFpChar);
+      if (IsNegative(d) || AsSignedLong(d) < 2)
+        CoCoA_THROW_ERROR2(ERR::BadArg, "deg must be at least 2");
       const long P = AsSignedLong(p);
       const long deg = AsSignedLong(d);
       ring Fpx = NewPolyRing(NewRingFp(P), NewSymbols(1));

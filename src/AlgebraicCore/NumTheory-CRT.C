@@ -42,13 +42,15 @@ namespace CoCoA
 
   void CRTMill::myAddInfo(const MachineInt& res, const MachineInt& mod, CoprimeFlag check)
   {
-    if (IsNegative(mod) ) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "CRTMill::myAddInfo");
-    if (!IsSignedLong(mod) || !IsSignedLong(res)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "CRTMill::myAddInfo");
+    if (IsNegative(mod))  CoCoA_THROW_ERROR1(ERR::BadModulus);
+    if (!IsSignedLong(mod) || !IsSignedLong(res))
+      CoCoA_THROW_ERROR(ERR::ArgTooBig, "CRTMill::myAddInfo");
     const long m = AsSignedLong(mod);
-    if (check == CheckCoprimality && gcd(m,myM) != 1) CoCoA_THROW_ERROR("new modulus not coprime", "CRTMill::myAddInfo");
+    if (check == CheckCoprimality && gcd(m,myM) != 1)
+      CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");
     CoCoA_ASSERT(IsCoprime(m,myM));
     long r = uabs(res)%m;
-    if (r != 0 && IsNegative(res)) r = m-r;
+    if (r != 0 && IsNegative(res))  r = m-r;
     const long a = myR%m;
     long k;
     if (m <= MaxSquarableInteger<long>())
@@ -62,10 +64,11 @@ namespace CoCoA
   void CRTMill::myAddInfo(const BigInt& r, const BigInt& m, CoprimeFlag check)
   {
 //???JAA    CoCoA_ASSERT(m > 1);
-    if (IsOne(m)) return; //???JAA
-    if (IsOne(m)) { if (!IsOne(myM)) CoCoA_THROW_ERROR(ERR::BadModulus, "CRTMill::myAddInfo"); return; }
+    if (IsOne(m))  return; //???JAA
+    if (IsOne(m))  { if (!IsOne(myM))  CoCoA_THROW_ERROR1(ERR::BadModulus); return; }
     CoCoA_ASSERT((r < m) && (r > -m));
-    if (check == CheckCoprimality && gcd(m,myM) != 1) CoCoA_THROW_ERROR("new modulus not coprime", "CRTMill::myAddInfo");
+    if (check == CheckCoprimality && gcd(m,myM) != 1)
+      CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");
     CoCoA_ASSERT(IsCoprime(m,myM));
     const BigInt a = myR%m;
     const BigInt k = SymmRemainder((r-a)*InvMod(myM,m), m); ///???BUG/SLUG??? SymmRemainder(r-a,m) ???
@@ -77,7 +80,7 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const CRTMill& CRT)
   {
-    if (!out) return out;  // short-cut for bad ostreams
+    if (!out)  return out;  // short-cut for bad ostreams
 
     out << "CRT(residue=" << CRT.myR << ", modulus=" << CRT.myM << ")";
     return out;

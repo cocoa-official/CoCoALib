@@ -98,7 +98,7 @@ namespace CoCoA
     const bool3 ans = IsPID3(R);
     if (!IsUncertain3(ans)) return IsTrue3(ans);
     // At this point we know R is a QuotientRing.
-    CoCoA_THROW_ERROR(ERR::NYI, "IsPID for quotient ring");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return false;
   }
 
@@ -120,7 +120,7 @@ namespace CoCoA
 
   long RingBase::myLogCardinality() const
   {
-    CoCoA_THROW_ERROR("Defined only for finite fields", "LogCardinality");
+    CoCoA_THROW_ERROR1("Defined only for finite fields");
     return 0; // just to keep compiler quiet
   }
 
@@ -137,7 +137,7 @@ namespace CoCoA
 
 
   RingElem RingBase::myFieldGen() const /* default throws error -- def'd only for finite fields */
-  { CoCoA_THROW_ERROR("Only for finite fields", "RingBase::myFieldGen"); }
+  { CoCoA_THROW_ERROR1("Only for finite fields"); }
 
 
   RingElemRawPtr RingBase::myNew(const BigRat& Q) const
@@ -152,7 +152,7 @@ namespace CoCoA
     if (!OK)
     {
 //      myDelete(n);
-      CoCoA_THROW_ERROR(ERR::EmbedBigRatFailed, "RingBase::myNew(BigRat) -- generic embedding function");
+      CoCoA_THROW_ERROR1(ERR::EmbedBigRatFailed);
     }
     return release(n);
   }
@@ -163,7 +163,7 @@ namespace CoCoA
     vector<symbol> syms = symbols(ring(this));   // makes a copy of vec
     syms.push_back(s);
     if ( AreDistinct(syms) )  // should be IsInSymbols(...)
-      CoCoA_THROW_ERROR("symbol not in ring", "myNew(symbol)");
+      CoCoA_THROW_ERROR1("symbol not in ring");
     return myNew(raw(mySymbolValue(s)));
   }
 
@@ -185,7 +185,7 @@ namespace CoCoA
     if (!OK)
     {
       myDelete(n);
-      CoCoA_THROW_ERROR(ERR::EmbedBigRatFailed, "RingBase::myAssign(RawPtr,BigRat) -- generic embedding function");
+      CoCoA_THROW_ERROR1(ERR::EmbedBigRatFailed);
     }
     mySwap(rawlhs, n); // really an assignment
     myDelete(n);
@@ -209,12 +209,12 @@ namespace CoCoA
 
   bool RingBase::myIsIrred(ConstRawPtr /*rawx*/) const
   {
-//     if (myIsZero(rawx)) return CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "RingBase::myIsIrred");
+//     if (myIsZero(rawx)) return CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
 //    if (IamField()) return false;  // subsumed by line below
 //     if (myIsInvertible(rawx)) return false;
-//     if (IamTrueGCDDomain()) return CoCoA_THROW_ERROR(ERR::NYI, "RingBase::myIsIrred(rawx) for GCDDomain");
-//     CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "RingBase::myIsIrred(rawx)");
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingBase::myIsIrred(rawx)");
+//     if (IamTrueGCDDomain()) return CoCoA_THROW_ERROR2(ERR::NYI, "RingBase::myIsIrred(rawx) for GCDDomain");
+//     CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return true; // NEVER REACHED; just to keep compiler quiet.
   }
   
@@ -222,7 +222,7 @@ namespace CoCoA
   // Default defn for myGcd: throws NotTrueGCDDomain error.
   void RingBase::myGcd(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/, ConstRawPtr /*rawy*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "RingBase::myGcd");
+    CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
   }
 
 
@@ -251,8 +251,8 @@ namespace CoCoA
 
   // void RingBase::myExgcd(RawPtr /*rawlhs*/, RawPtr /*rawxcofac*/, RawPtr /*rawycofac*/, ConstRawPtr /*rawx*/, ConstRawPtr /*rawy*/) const
   // {
-  //   if (IamTrueGCDDomain()) CoCoA_THROW_ERROR(ERR::NYI, "RingBase::myExgcd(,,)");
-  //   CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "RingBase::myExgcd(,,)");
+  //   if (IamTrueGCDDomain()) CoCoA_THROW_ERROR1(ERR::NYI);
+  //   CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
   // }
 
 
@@ -352,7 +352,7 @@ namespace CoCoA
 
 //   bool RingBase::myIsPrintedWithMinus(ConstRawPtr /*rawx*/) const
 //   {
-//     //    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingBase::myIsPrintedWithMinus");
+//     //    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
 //     return false;
 //   }
 
@@ -398,7 +398,7 @@ namespace CoCoA
   // to define myCmp for an ordered ring.
   int RingBase::myCmp(ConstRawPtr /*rawx*/, ConstRawPtr /*rawy*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingBase::myCmp should never be called");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return 0; // NEVER REACHED; just to keep compiler quiet.
   }
 
@@ -426,7 +426,7 @@ namespace CoCoA
   // to define myFloor for an ordered ring.
   BigInt RingBase::myFloor(ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingBase::myFloor should never be called");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return BigInt(0); // NEVER REACHED; just to keep compiler quiet.
   }
 
@@ -434,7 +434,7 @@ namespace CoCoA
   // to define myCeil for an ordered ring.
   BigInt RingBase::myCeil(ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingBase::myCeil should never be called");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return BigInt(0); // NEVER REACHED; just to keep compiler quiet.
   }
 
@@ -442,7 +442,7 @@ namespace CoCoA
   // to define myNearestInt for an ordered ring.
   BigInt RingBase::myNearestInt(ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingBase::myNearestInt should never be called");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return BigInt(0); // NEVER REACHED; just to keep compiler quiet.
   }
 
@@ -453,7 +453,7 @@ namespace CoCoA
   // By default we simply complain that the exponent is too big.
   void RingBase::myPowerBigExp(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/, const BigInt& /*N*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ExpTooBig, "power(r,N)");
+    CoCoA_THROW_ERROR1(ERR::ExpTooBig);
   }
 
   // Direct iteration for computing powers -- good for multivariate polys.
@@ -523,7 +523,7 @@ namespace CoCoA
 
   void RingBase::myGcdInField(RawPtr rawlhs, ConstRawPtr rawx, ConstRawPtr rawy) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "GCD in field");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     CoCoA_ASSERT(IamField());
     // In a field gcd always gives 1, unless both args are 0 when it gives 0.
     if (myIsZero(rawx) && myIsZero(rawy))
@@ -641,7 +641,7 @@ namespace CoCoA
   bool operator==(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem == RingElem");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     return owner(x)->myIsEqual(raw(x), raw(y));
   }
 
@@ -689,10 +689,10 @@ namespace CoCoA
     {
       const ring& Rx = owner(x);
       CoCoA_ASSERT(Rx == owner(y));
-      if (IsZeroDivisor(y)) CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem / RingElem");
+      if (IsZeroDivisor(y))  CoCoA_THROW_ERROR1(ERR::DivByZero);
       RingElem ans(Rx);
       if (!Rx->myIsDivisible(raw(ans), raw(x), raw(y)))
-        CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem / RingElem");
+        CoCoA_THROW_ERROR1(ERR::BadQuot);
       return ans;
     }
     
@@ -756,9 +756,9 @@ namespace CoCoA
     const ring& Rx = owner(x);
     const ring& Ry = owner(y);
     if (Rx != Ry)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "gcd(RingElem, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
 
-    if (!IsTrueGCDDomain(Rx)) CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "gcd(x,y)");
+    if (!IsTrueGCDDomain(Rx))  CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     RingElem ans(Rx);
     Rx->myGcd(raw(ans), raw(x), raw(y));
     return ans;
@@ -770,9 +770,9 @@ namespace CoCoA
     const ring& Rx = owner(x);
     const ring& Ry = owner(y);
     if (Rx != Ry)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "lcm(RingElem, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
 
-    if (!IsTrueGCDDomain(Rx)) CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "lcm(x,y)");
+    if (!IsTrueGCDDomain(Rx))  CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     RingElem ans(Rx);
     Rx->myLcm(raw(ans), raw(x), raw(y));
     return ans;
@@ -784,11 +784,11 @@ namespace CoCoA
     const ring& Rx = owner(x);
     const ring& Ry = owner(y);
     if (Rx != Ry)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "IsCoprime(RingElem, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
 
-    if (!IsTrueGCDDomain(Rx)) CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "IsCoprime(x,y)");
+    if (!IsTrueGCDDomain(Rx))  CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     const bool RingIsGood = (IsZZ(Rx) || (IsPolyRing(Rx) && IsField(CoeffRing(Rx))));
-    if (!RingIsGood) CoCoA_THROW_ERROR("Only over ZZ or k[x,y,...]", "IsCoprime(x,y)");
+    if (!RingIsGood)  CoCoA_THROW_ERROR1("Only over ZZ or k[x,y,...]");
     RingElem ans(Rx);
     Rx->myGcd(raw(ans), raw(x), raw(y));
     return IsInvertible(ans);
@@ -799,7 +799,7 @@ namespace CoCoA
     RingElem GcdList(const std::vector<RingElem> &L)
     {
       const size_t n = L.size();
-      if (n == 0) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+      if (n == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
 
       RingElem g = L[0];
       for (size_t i = 1; i < n; ++i)
@@ -819,9 +819,9 @@ namespace CoCoA
   //   const char* const FnName = "exgcd(c1,c2,r1,r2)";
   //   const ring& R = owner(x);
   //   if (owner(y) != R)
-  //     CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+  //     CoCoA_THROW_ERROR1(ERR::MixedRings);
   //   if (!IsTrueGCDDomain(R))
-  //     CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, FnName);
+  //     CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
   //   RingElem gcd(R);
   //   // BUG: clobbers xcoeff and ycoeff always; use locals and swap into xcoeff, ycoeff???
   //   xcoeff = gcd; // must force into same ring
@@ -834,12 +834,11 @@ namespace CoCoA
 
   void GcdQuot(RingElem& gcd, RingElem& quot1, RingElem& quot2, ConstRefRingElem x, ConstRefRingElem y)
   {
-    const char* const FnName = "GcdQuot(g,q1,q2,r1,r2)";
     const ring& R = owner(x);
     if (owner(y) != R)
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsTrueGCDDomain(R))
-      CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, FnName);
+      CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     // Next 3 lines are conditional in case there is aliasing between the args
     if (owner(gcd) != R)  gcd = zero(R); 
     if (owner(quot1) != R)  quot1 = zero(R); 
@@ -857,7 +856,7 @@ namespace CoCoA
       CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem += RingElem");
       const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem += RingElem -- refuse to promote LHS");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x += promote(y); //     Rx->myAdd(raw(x), raw(x), raw(promote(y)));
     }
 
@@ -875,7 +874,7 @@ namespace CoCoA
       CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem -= RingElem");
       const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem -= RingElem -- refuse to promote LHS");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x -= promote(y); //     Rx->mySub(raw(x), raw(x), raw(promote(y)));
     }
 
@@ -894,7 +893,7 @@ namespace CoCoA
       if (IsPolyRing(Rx) && CoeffRing(Rx) == Ry)  { PolyRing(Rx)->myMulByCoeff(raw(x),raw(y)); return x; }
       const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem *= RingElem -- refuse to promote LHS");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x *= promote(y); //     Rx->myMul(raw(x), raw(x), raw(promote(y)));
     }
 
@@ -910,16 +909,16 @@ namespace CoCoA
     if (Rx != Ry)
     {
       CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem /= RingElem");
-      if (IsPolyRing(Rx) && CoeffRing(Rx) == Ry)  { if (IsZeroDivisor(y))  CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem /= RingElem"); PolyRing(Rx)->myDivByCoeff(raw(x),raw(y)); return x; }
+      if (IsPolyRing(Rx) && CoeffRing(Rx) == Ry)  { if (IsZeroDivisor(y))  CoCoA_THROW_ERROR1(ERR::DivByZero); PolyRing(Rx)->myDivByCoeff(raw(x),raw(y)); return x; }
       const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem /= RingElem -- refuse to promote LHS");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x /= promote(y);
     }
 
-    if (IsZeroDivisor(y))  CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem /= RingElem");
+    if (IsZeroDivisor(y))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!Rx->myIsDivisible(raw(x), raw(x), raw(y)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem /= RingElem");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return x;
   }
 
@@ -991,10 +990,10 @@ namespace CoCoA
 
   bool IsIrred(ConstRefRingElem x)
   {
-    if (IsZero(x)) CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "IsIrred");
-    if (IsField(owner(x))) CoCoA_THROW_ERROR(ERR::NotElemGCDDomain, "IsIrred in field");
-    if (!IsTrueGCDDomain(owner(x))) CoCoA_THROW_ERROR(ERR::NotElemGCDDomain, "IsIrred for non TrueGCDDomain");
-    if (IsInvertible(x)) CoCoA_THROW_ERROR(ERR::InvertibleRingElem, "IsIrred -- elem is invertible");
+    if (IsZero(x))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
+    if (IsField(owner(x)))  CoCoA_THROW_ERROR1(ERR::NotElemGCDDomain);
+    if (!IsTrueGCDDomain(owner(x)))  CoCoA_THROW_ERROR1(ERR::NotElemGCDDomain);
+    if (IsInvertible(x))  CoCoA_THROW_ERROR1(ERR::InvertibleRingElem);
     return owner(x)->myIsIrred(raw(x));
   }
 
@@ -1011,7 +1010,7 @@ namespace CoCoA
     {
       const ring& Rnum = owner(num);
       CoCoA_ASSERT(Rnum == owner(den));
-      if (!AllowFieldFlag && IsField(Rnum)) CoCoA_THROW_ERROR("Not allowed in a field", "IsDivisible");
+      if (!AllowFieldFlag && IsField(Rnum))  CoCoA_THROW_ERROR1("Not allowed in a field");
       if (IsZero(den)) return false;
 // NO, because den may be zero-div!!!    if (IsZero(num)) return true;
       RingElem quot(Rnum);
@@ -1106,7 +1105,7 @@ namespace CoCoA
     {
       const ring& Rnum = owner(num);
       CoCoA_ASSERT(Rnum == owner(den));
-      if (!AllowFieldFlag && IsField(Rnum)) CoCoA_THROW_ERROR("Not allowed in a field", "IsDivisible");
+      if (!AllowFieldFlag && IsField(Rnum))  CoCoA_THROW_ERROR1("Not allowed in a field");
       if (IsZero(den)) return false;
       /// NO, because den may be a zero-div!!   if (IsZero(num)) return true;
       RingElem quot = zero(Rnum);
@@ -1196,9 +1195,9 @@ namespace CoCoA
   RingElem power(ConstRefRingElem x, const MachineInt& n) // deliberately allow negative exponents
   {
     if (IsZero(x) && IsNegative(n))
-      CoCoA_THROW_ERROR(ERR::BadPwrZero, "power(RingElem, n)");
+      CoCoA_THROW_ERROR1(ERR::BadPwrZero);
     if (IsNegative(n) && !IsInvertible(x))
-      CoCoA_THROW_ERROR(ERR::NotUnit, "power(RingElem, n) and n < 0");
+      CoCoA_THROW_ERROR1(ERR::NotUnit);
     if (!IsSignedLong(n)) return power(x, BigInt(n));
 // ??? special cases for x=1,0,-1 ???
     if (!IsNegative(n))
@@ -1220,9 +1219,9 @@ namespace CoCoA
   RingElem power(ConstRefRingElem x, const BigInt& N) // deliberately allow negative exponents
   {
     if (IsZero(x) && N < 0)
-      CoCoA_THROW_ERROR(ERR::BadPwrZero, "power(RingElem, N)");
+      CoCoA_THROW_ERROR1(ERR::BadPwrZero);
     if (N < 0 && !IsInvertible(x))
-      CoCoA_THROW_ERROR(ERR::NotUnit, "power(RingElem, N) and N < 0");
+      CoCoA_THROW_ERROR1(ERR::NotUnit);
 
     // General case for N a large integer
     if (N >= 0)
@@ -1243,7 +1242,7 @@ namespace CoCoA
   RingElem FieldGen(const ring& Fq)    ///< mult generator, only for finite fields
   {
     if (!IsFiniteField(Fq))
-      CoCoA_THROW_ERROR("Arg must be finite field", "FieldGen");
+      CoCoA_THROW_ERROR1("Arg must be finite field");
     return Fq->myFieldGen();
   }
 
@@ -1253,12 +1252,12 @@ namespace CoCoA
     const BigInt P = characteristic(owner(x));
     long p;
     if (!IsConvertible(p, P) || !IsPrime(p))
-      CoCoA_THROW_ERROR(ERR::BadArg, "IsPthPower");
-    if (IsFiniteField(owner(x))) return true;
-    if (IsFractionField(owner(x))) return IsPthPower(num(x)) && IsPthPower(den(x));
+      CoCoA_THROW_ERROR1(ERR::BadArg);
+    if (IsFiniteField(owner(x)))  return true;
+    if (IsFractionField(owner(x)))  return IsPthPower(num(x)) && IsPthPower(den(x));
     if (!IsPolyRing(owner(x)))
-      CoCoA_THROW_ERROR(ERR::BadArg, "IsPthPower");
-    if (!IsSparsePolyRing(owner(x))) CoCoA_THROW_ERROR(ERR::NYI, "IsPthPower -- not a sparse poly ring");
+      CoCoA_THROW_ERROR1(ERR::BadArg);
+    if (!IsSparsePolyRing(owner(x)))  CoCoA_THROW_ERROR1(ERR::NYI);
     for (SparsePolyIter it=BeginIter(x); !IsEnded(it); ++it)
     {
       if (!IsPower(PP(it), p)) return false;
@@ -1274,7 +1273,7 @@ namespace CoCoA
       return power(x, power(P, LogCardinality(owner(x))-1));
     long p;
     if (!IsConvertible(p, P) || !IsPrime(p))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "PthRoot");  // BUG -- weak impl!
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);  // BUG -- weak impl!
     if (IsFractionField(owner(x)))
     { // BUG BUG IMPERFECT IMPL -- could fail if num & den have non-trivial invertible factors without PthRoots
       const RingElem N = PthRoot(num(x));
@@ -1283,8 +1282,8 @@ namespace CoCoA
       return phi(N)/phi(D);
     }
     if (!IsPolyRing(owner(x)))
-      CoCoA_THROW_ERROR(ERR::BadArg, "PthRoot");
-    if (!IsSparsePolyRing(owner(x))) CoCoA_THROW_ERROR(ERR::NYI, "PthRoot -- not a sparse poly ring");
+      CoCoA_THROW_ERROR1(ERR::BadArg);
+    if (!IsSparsePolyRing(owner(x)))  CoCoA_THROW_ERROR1(ERR::NYI);
     const SparsePolyRing Rx = owner(x);
     RingElem ans(Rx);
     for (SparsePolyIter it=BeginIter(x); !IsEnded(it); ++it)
@@ -1299,7 +1298,7 @@ namespace CoCoA
   {
     const ring& R = owner(x);
     if (!IsZZ(R) && !IsPolyRing(R))
-      CoCoA_THROW_ERROR(ERR::BadRing, "radical");
+      CoCoA_THROW_ERROR1(ERR::BadRing);
     if (IsZZ(R))
       return RingElem(R, radical(ConvertTo<BigInt>(x)));
     return RadicalOfPoly(x);
@@ -1309,7 +1308,7 @@ namespace CoCoA
 
   RingElem binomial(RingElem x, const MachineInt& n)
   {
-    if (IsNegative(n)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "binomial(RingElem,int) <-- arg 2");
+    if (IsNegative(n))  CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "2nd arg");
     ring R = owner(x);
     if (IsZero(n)) return one(R);
     //??? special check for 0 < char(R) <= n  should give ERR:DivByZero
@@ -1368,9 +1367,9 @@ namespace CoCoA
   RingElem operator/(ConstRefRingElem r, const MachineInt& n)
   {
     RingElem ans(owner(r), n); // also use ans to convert n to RingElem
-    if (IsZeroDivisor(ans)) CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem / MachineInt");
+    if (IsZeroDivisor(ans))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!owner(r)->myIsDivisible(raw(ans), raw(r), raw(ans)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem / MachineInt");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return ans;
   }
 
@@ -1432,10 +1431,10 @@ namespace CoCoA
 
   RingElem operator/(const MachineInt& n, ConstRefRingElem r)
   {
-    if (IsZeroDivisor(r))  CoCoA_THROW_ERROR(ERR::DivByZero, "MachineInt / RingElem");
+    if (IsZeroDivisor(r))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     RingElem ans(owner(r), n); // use ans to convert n to a RingElem
     if (!owner(r)->myIsDivisible(raw(ans), raw(ans), raw(r)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "MachineInt / RingElem");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return ans;
   }
 
@@ -1486,9 +1485,9 @@ namespace CoCoA
   RingElem& operator/=(RingElem& r, const MachineInt& n)
   {
     RingElem den(owner(r), n);
-    if (IsZeroDivisor(den)) CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem /= MachineInt");
+    if (IsZeroDivisor(den))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!owner(r)->myIsDivisible(raw(r), raw(r), raw(den)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem /= MachineInt");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return r;
   }
 
@@ -1529,9 +1528,9 @@ namespace CoCoA
   RingElem operator/(ConstRefRingElem r, const BigInt& N)
   {
     RingElem ans(owner(r), N); // also use ans to convert N to RingElem
-    if (IsZeroDivisor(ans))  CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem / BigInt");
+    if (IsZeroDivisor(ans))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!owner(r)->myIsDivisible(raw(ans), raw(r), raw(ans)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem / BigInt");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return ans;
   }
 
@@ -1590,10 +1589,10 @@ namespace CoCoA
 
   RingElem operator/(const BigInt& N, ConstRefRingElem r)
   {
-    if (IsZeroDivisor(r)) CoCoA_THROW_ERROR(ERR::DivByZero, "BigInt / RingElem");
+    if (IsZeroDivisor(r))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     RingElem ans(owner(r), N);
     if (!owner(r)->myIsDivisible(raw(ans), raw(ans), raw(r)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "BigInt / RingElem");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return ans;
   }
 
@@ -1644,9 +1643,9 @@ namespace CoCoA
   RingElem& operator/=(RingElem& r, const BigInt& N)
   {
     RingElem den(owner(r), N);
-    if (IsZeroDivisor(den)) CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem /= BigInt");
+    if (IsZeroDivisor(den))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!owner(r)->myIsDivisible(raw(r), raw(r), raw(den)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem /= BigInt");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return r;
   }
 
@@ -1671,7 +1670,7 @@ namespace CoCoA
   int sign(ConstRefRingElem x)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "sign(RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->mySign(raw(x));
   }
 
@@ -1679,8 +1678,8 @@ namespace CoCoA
   RingElem abs(ConstRefRingElem x)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "abs(RingElem)");
-    if (x < 0) return -x;
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
+    if (x < 0)  return -x;
     return x;
   }
 
@@ -1688,7 +1687,7 @@ namespace CoCoA
   BigInt floor(ConstRefRingElem x)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "floor(RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myFloor(raw(x));
   }
 
@@ -1696,7 +1695,7 @@ namespace CoCoA
   BigInt ceil(ConstRefRingElem x)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "ceil(RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCeil(raw(x));
   }
 
@@ -1704,7 +1703,7 @@ namespace CoCoA
   BigInt NearestInt(ConstRefRingElem x)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "NearestInt(RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myNearestInt(raw(x));
   }
 
@@ -1720,9 +1719,9 @@ namespace CoCoA
   int cmp(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "cmp(RingElem, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "cmp(RingElem, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(y));
   }
 
@@ -1730,9 +1729,9 @@ namespace CoCoA
   int CmpAbs(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "CmpAbs(RingElem, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "CmpAbs(RingElem, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmpAbs(raw(x), raw(y));
   }
 
@@ -1740,9 +1739,9 @@ namespace CoCoA
   bool operator<(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem < RingElem");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem < RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(y)) < 0;
   }
 
@@ -1750,9 +1749,9 @@ namespace CoCoA
   bool operator<=(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem <= RingElem");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem <= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(y)) <= 0;
   }
 
@@ -1760,9 +1759,9 @@ namespace CoCoA
   bool operator>(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem > RingElem");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem > RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(y)) > 0;
   }
 
@@ -1770,9 +1769,9 @@ namespace CoCoA
   bool operator>=(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "RingElem >= RingElem");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem >= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(y)) >= 0;
   }
 
@@ -1783,7 +1782,7 @@ namespace CoCoA
   int cmp(const MachineInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "cmp(MachineInt, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(x)) return -sign(y);
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y));
   }
@@ -1792,7 +1791,7 @@ namespace CoCoA
   bool operator<(const MachineInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "MachineInt < RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(x)) return sign(y) > 0;
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) < 0;
   }
@@ -1801,7 +1800,7 @@ namespace CoCoA
   bool operator<=(const MachineInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "MachineInt <= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(x)) return sign(y) >= 0;
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) <= 0;
   }
@@ -1810,7 +1809,7 @@ namespace CoCoA
   bool operator>(const MachineInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "MachineInt > RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(x)) return sign(y) < 0;
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) > 0;
   }
@@ -1819,7 +1818,7 @@ namespace CoCoA
   bool operator>=(const MachineInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "MachineInt >= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(x)) return sign(y) <= 0;
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) >= 0;
   }
@@ -1832,7 +1831,7 @@ namespace CoCoA
   int cmp(ConstRefRingElem x, const MachineInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "cmp(RingElem, MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(y)) return sign(x);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y)));
   }
@@ -1841,7 +1840,7 @@ namespace CoCoA
   bool operator<(ConstRefRingElem x, const MachineInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem < MachineInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(y)) return sign(x) < 0;
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) < 0;
   }
@@ -1850,7 +1849,7 @@ namespace CoCoA
   bool operator<=(ConstRefRingElem x, const MachineInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem <= MachineInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(y)) return sign(x) <= 0;
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) <= 0;
   }
@@ -1859,7 +1858,7 @@ namespace CoCoA
   bool operator>(ConstRefRingElem x, const MachineInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem > MachineInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(y)) return sign(x) > 0;
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) > 0;
   }
@@ -1868,7 +1867,7 @@ namespace CoCoA
   bool operator>=(ConstRefRingElem x, const MachineInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem >= MachineInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     if (IsZero(y)) return sign(x) >= 0;
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) >= 0;
   }
@@ -1878,7 +1877,7 @@ namespace CoCoA
   int cmp(const BigInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "cmp(BigInt, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y));
   }
 
@@ -1886,7 +1885,7 @@ namespace CoCoA
   bool operator<(const BigInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigInt < RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) < 0;
   }
 
@@ -1894,7 +1893,7 @@ namespace CoCoA
   bool operator<=(const BigInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigInt <= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) <= 0;
   }
 
@@ -1902,7 +1901,7 @@ namespace CoCoA
   bool operator>(const BigInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigInt > RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) > 0;
   }
 
@@ -1910,7 +1909,7 @@ namespace CoCoA
   bool operator>=(const BigInt& x, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigInt >= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),x)), raw(y)) >= 0;
   }
 
@@ -1922,7 +1921,7 @@ namespace CoCoA
   int cmp(ConstRefRingElem x, const BigInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "cmp(RingElem, BigInt)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y)));
   }
 
@@ -1930,7 +1929,7 @@ namespace CoCoA
   bool operator<(ConstRefRingElem x, const BigInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem < BigInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) < 0;
   }
 
@@ -1938,7 +1937,7 @@ namespace CoCoA
   bool operator<=(ConstRefRingElem x, const BigInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem <= BigInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) <= 0;
   }
 
@@ -1946,7 +1945,7 @@ namespace CoCoA
   bool operator>(ConstRefRingElem x, const BigInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem > BigInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) > 0;
   }
 
@@ -1954,7 +1953,7 @@ namespace CoCoA
   bool operator>=(ConstRefRingElem x, const BigInt& y)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem >= BigInt");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),y))) >= 0;
   }
 
@@ -1995,9 +1994,9 @@ namespace CoCoA
   RingElem operator/(ConstRefRingElem r, const BigRat& Q)
   {
     RingElem ans(owner(r), Q); // also use ans to convert N to RingElem
-    if (IsZeroDivisor(ans)) CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem / BigRat");
+    if (IsZeroDivisor(ans))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!owner(r)->myIsDivisible(raw(ans), raw(r), raw(ans)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem / BigRat");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return ans;
   }
 
@@ -2034,10 +2033,10 @@ namespace CoCoA
 
   RingElem operator/(const BigRat& Q, ConstRefRingElem r)
   {
-    if (IsZeroDivisor(r)) CoCoA_THROW_ERROR(ERR::DivByZero, "BigRat / RingElem");
+    if (IsZeroDivisor(r)) CoCoA_THROW_ERROR1(ERR::DivByZero);
     RingElem ans(owner(r), Q);
     if (!owner(r)->myIsDivisible(raw(ans), raw(ans), raw(r)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "BigRat / RingElem");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return ans;
   }
 
@@ -2066,9 +2065,9 @@ namespace CoCoA
   RingElem& operator/=(RingElem& r, const BigRat& Q)
   {
     RingElem den(owner(r), Q);
-    if (IsZeroDivisor(den)) CoCoA_THROW_ERROR(ERR::DivByZero, "RingElem /= BigRat");
+    if (IsZeroDivisor(den))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!owner(r)->myIsDivisible(raw(r), raw(r), raw(den)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "RingElem /= BigRat");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     return r;
   }
 
@@ -2078,7 +2077,7 @@ namespace CoCoA
   int cmp(const BigRat& Q, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "cmp(BigRat, RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),Q)), raw(y));
   }
 
@@ -2086,7 +2085,7 @@ namespace CoCoA
   bool operator<(const BigRat& Q, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigRat < RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),Q)), raw(y)) < 0;
   }
 
@@ -2094,7 +2093,7 @@ namespace CoCoA
   bool operator<=(const BigRat& Q, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigRat <= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),Q)), raw(y)) <= 0;
   }
 
@@ -2102,7 +2101,7 @@ namespace CoCoA
   bool operator>(const BigRat& Q, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigRat > RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),Q)), raw(y)) > 0;
   }
 
@@ -2110,7 +2109,7 @@ namespace CoCoA
   bool operator>=(const BigRat& Q, ConstRefRingElem y)
   {
     if (!IsOrderedDomain(owner(y)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "BigRat >= RingElem");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(y)->myCmp(raw(RingElem(owner(y),Q)), raw(y)) >= 0;
   }
 
@@ -2122,7 +2121,7 @@ namespace CoCoA
   int cmp(ConstRefRingElem x, const BigRat& Q)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "cmp(RingElem, BigRat)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),Q)));
   }
 
@@ -2130,7 +2129,7 @@ namespace CoCoA
   bool operator<(ConstRefRingElem x, const BigRat& Q)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem < BigRat");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),Q))) < 0;
   }
 
@@ -2138,7 +2137,7 @@ namespace CoCoA
   bool operator<=(ConstRefRingElem x, const BigRat& Q)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem <= BigRat");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),Q))) <= 0;
   }
 
@@ -2146,7 +2145,7 @@ namespace CoCoA
   bool operator>(ConstRefRingElem x, const BigRat& Q)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem > BigRat");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),Q))) > 0;
   }
 
@@ -2154,7 +2153,7 @@ namespace CoCoA
   bool operator>=(ConstRefRingElem x, const BigRat& Q)
   {
     if (!IsOrderedDomain(owner(x)))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "RingElem >= BigRat");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     return owner(x)->myCmp(raw(x), raw(RingElem(owner(x),Q))) >= 0;
   }
 

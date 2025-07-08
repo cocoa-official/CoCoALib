@@ -79,7 +79,7 @@ namespace CoCoA
   BigRat operator/(const BigRat& Q1, const BigRat& Q2)
   {
     if (IsZero(Q2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "Q1/Q2");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     BigRat ans;
     mpq_div(mpqref(ans), mpqref(Q1), mpqref(Q2));
     return ans;
@@ -113,7 +113,7 @@ namespace CoCoA
   BigRat operator/(const BigRat& Q, const BigInt& N)
   {
     if (IsZero(N))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "Q/N");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     BigRat ans(Q);
     return ans /= N;
   }
@@ -137,7 +137,7 @@ namespace CoCoA
   BigRat operator/(const BigInt& N, const BigRat& Q)
   {
     if (IsZero(Q))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "N/Q");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     return BigRat(N,1)/Q;
   }
 
@@ -160,7 +160,7 @@ namespace CoCoA
   BigRat operator/(const BigRat& Q, const MachineInt& n)
   {
     if (IsZero(n))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "Q/n");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     return Q / BigRat(n,1);
   }
 
@@ -183,8 +183,8 @@ namespace CoCoA
   BigRat operator/(const MachineInt& n, const BigRat& Q)
   {
     if (IsZero(Q))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "n/Q");
-    if (IsOne(n)) { BigRat ans; mpq_inv(mpqref(ans), mpqref(Q)); return ans; }
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
+    if (IsOne(n))  { BigRat ans; mpq_inv(mpqref(ans), mpqref(Q)); return ans; }
     return BigRat(n,1) / Q;
   }
 
@@ -193,7 +193,7 @@ namespace CoCoA
     if (exponent >= 0)
       return BigRat(power(num(base), exponent), power(den(base), exponent), BigRat::AlreadyReduced);
     if (IsZero(base))
-      CoCoA_THROW_ERROR(ERR::BadPwrZero, "power(BigRat,BigInt)");
+      CoCoA_THROW_ERROR1(ERR::BadPwrZero);
     return BigRat(power(den(base), -exponent), power(num(base), -exponent), BigRat::AlreadyReduced);
   }
 
@@ -202,7 +202,7 @@ namespace CoCoA
     if (!IsNegative(exponent))
       return BigRat(power(num(base), exponent), power(den(base), exponent), BigRat::AlreadyReduced);
     if (IsZero(base))
-      CoCoA_THROW_ERROR(ERR::BadPwrZero, "power(BigRat,MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::BadPwrZero);
     return BigRat(power(den(base), uabs(exponent)), power(num(base), uabs(exponent)), BigRat::AlreadyReduced);
   }
 
@@ -557,7 +557,7 @@ namespace CoCoA
   double log(const BigRat& Q)
   {
     if (sign(Q) <= 0)
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "log(Q)");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     long exp;
     double mant = mpq_get_d_2exp(&exp, mpqref(Q));
     const double log2 = std::log(2.0);
@@ -567,8 +567,8 @@ namespace CoCoA
   double LogAbs(const BigRat& Q)
   {
     const int s = sign(Q);
-    if (s == 0)  CoCoA_THROW_ERROR(ERR::ReqNonZero, "LogAbs(Q)");
-    if (s > 0) return log(Q);
+    if (s == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
+    if (s > 0)  return log(Q);
     return log(-Q);
   }
 
@@ -584,9 +584,9 @@ namespace CoCoA
   // BUGLY: Can we merge the two almost identical sections?
   long FloorLogBase(const BigRat& Q, const BigInt& base)
   {
-    if (base < 2) CoCoA_THROW_ERROR(ERR::BadArg, "FloorLogBase: base must be at least 2");
-    if (IsZero(Q)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "FloorLogBase: arg1");
-    if (IsOne(abs(Q))) return 0;
+    if (base < 2)  CoCoA_THROW_ERROR2(ERR::BadArg, "base must be at least 2");
+    if (IsZero(Q))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
+    if (IsOne(abs(Q)))  return 0;
     const double ApproxLog = LogAbs(Q)/log(base);
     const double delta = 16 * std::abs(ApproxLog) * numeric_limits<double>::epsilon(); // ***ASSUME*** numerical error in ApproxLog is less than delta; 16 is "magic number" (but seems to be large enough)
 ///???BUG not yet fully implemented    if (ApproxLog > numeric_limits<long>::max()) CoCoA_THROW_ERROR(ERR::ArgTooBig, "FloorLogBase");
