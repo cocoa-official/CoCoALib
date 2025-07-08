@@ -83,7 +83,7 @@ namespace CoCoA
   // If you call this fn, you don't deserve to have it inline >-}
   AutoPtrSlice& AutoPtrSlice::operator=(const AutoPtrSlice& rhs)
   {
-    if (myMemMgr != rhs.myMemMgr) CoCoA_THROW_ERROR("MemPools are different", "AutoPtrSlice assignment");
+    if (myMemMgr != rhs.myMemMgr) CoCoA_THROW_ERROR1("MemPools are different");
     if (mySlicePtr == rhs.mySlicePtr) return *this; // ??? or give error???
     if (mySlicePtr) myMemMgr->free(mySlicePtr);
     mySlicePtr = rhs.mySlicePtr;
@@ -285,7 +285,7 @@ namespace CoCoA
       mySliceBytes(WordSize*mySliceWords),
       myFillNewLoaf(FillFlag == FillNewLoaf)
   {
-    if (sz == 0) CoCoA_THROW_ERROR(ERR::MemPoolZero, "MemPoolFast ctor");
+    if (sz == 0)  CoCoA_THROW_ERROR1(ERR::MemPoolZero);
 
     mySlicesPerLoaf = InitialLoafSlices(mySliceBytes, 16); // first loaf should have at least 16 slices
     myHeadOfFreeList = nullptr;
@@ -670,7 +670,7 @@ namespace CoCoA
 
   size_t MemPoolDebug::ourCheckCtorSizeArg(size_t sz)
   {
-    if (sz == 0) CoCoA_THROW_ERROR(ERR::MemPoolZero, "MemPoolDebug ctor");
+    if (sz == 0)  CoCoA_THROW_ERROR1(ERR::MemPoolZero);
     return sz;
   }
 
@@ -716,7 +716,7 @@ namespace CoCoA
     }
     // End of ugly hack.
     if (myAliveOrDead == AliveMark) return;
-    CoCoA_THROW_ERROR(ERR::DeadMemPool, "MemPoolDebug::myAliveCheck");
+    CoCoA_THROW_ERROR1(ERR::DeadMemPool);
   }
 
 

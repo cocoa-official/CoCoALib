@@ -397,7 +397,7 @@ namespace CoCoA
     // important for T2TT and T2FT
     RingElem MakeTerm(const ring& P, vector<long> expo){
     if (len(expo) != NumIndets(P)){
-    // CoCoA_THROW_ERROR(ERR::BadArg, "MakeTerm: exponent list has the wrong length");
+    // CoCoA_THROW_ERROR2(ERR::BadArg, "MakeTerm: exponent list has the wrong length");
     cout << "MakeTerm: exponent list has the wrong length" << endl;
     return zero(P); //just to keep the compiler quiet
     }
@@ -661,7 +661,7 @@ namespace CoCoA
     for (long i = 0; i < len(BiggerVars2); ++i)
     {
       long j;
-      if (!IsIndet(j, BiggerVars2[i])) CoCoA_THROW_ERROR1(ERR::ReqIndet);
+      if (!IsIndet(j, BiggerVars2[i]))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
       SetEntry(OrdM, 0, j, 1); // L[IndetIndex(BiggerVars[i])] = 1;
     }
     for (long i=0; i < N; ++i)  SetEntry(OrdM, 1, i, 1-OrdM(0,i));
@@ -810,7 +810,7 @@ namespace CoCoA
     
     if (codim <= 0){
     cout << "AlgIndVarsRec -- codim <= 0" << endl;
-    //CoCoA_THROW_ERROR(ERR::BadArg, "AlgIndVarsRec");
+    //CoCoA_THROW_ERROR1(ERR::BadArg);
     return impossibleList; // just to keep the compiler quiet
     }
 
@@ -887,13 +887,13 @@ namespace CoCoA
     //    cout << "Inds in AlgIndVars = " << Inds << endl;
     if (len(Inds) != codim){
     //cout << "AlgIndVars -- len(Inds) != codim " << endl;
-    CoCoA_THROW_ERROR(ERR::BadArg, "AlgIndVars; len(Inds) != codim");
+    CoCoA_THROW_ERROR2(ERR::BadArraySize, "AlgIndVars; len(Inds) != codim");
     return L; // just to keep compiler quiet
     }
 
     
     //if ((len(Inds) != codim) && (len(Inds) != codim - 1)){
-    // CoCoA_THROW_ERROR(ERR::BadArg, "AlgIndVars; len(Inds) != codim && len(Inds) != codim-1");
+    // CoCoA_THROW_ERROR2(ERR::BadArraySize, "AlgIndVars; len(Inds) != codim && len(Inds) != codim-1");
     // return L; // just to keep compiler quiet
     //}
     
@@ -1075,7 +1075,8 @@ namespace CoCoA
     if (L.empty()){
       return result;
     }
-    if (codim == 0){
+    if (codim == 0)
+    {
       //  CoCoA_THROW_ERROR(ERR::BadArg, "AlgIndVarsListRec; codim = 0");
       result.push_back(L);
       return result;

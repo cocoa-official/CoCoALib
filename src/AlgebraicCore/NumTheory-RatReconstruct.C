@@ -50,8 +50,8 @@ namespace CoCoA
       myResult(0,1),
       myBadFactor(0) // obviously "wrong" initial value
   {
-    if (myLogEps < 3) CoCoA_THROW_ERROR(ERR::BadArg, "RatReconstructByContFrac ctor");
-    if (myLogEps > 10000) CoCoA_THROW_ERROR(ERR::ArgTooBig, "RatReconstructByContFrac ctor");
+    if (myLogEps < 3 || myLogEps > 10000)
+      CoCoA_THROW_ERROR2(ERR::OutOfRange, "LogEps must be in 3..10000");
   }
 
 
@@ -130,7 +130,7 @@ namespace CoCoA
   const BigRat& ReconstructedRat(const RatReconstructByContFrac& reconstructor)
   {
     if (!IsConvincing(reconstructor)) // automatically updates
-      CoCoA_THROW_ERROR("Result is not convincing","ReconstructedRat(RatReconstructByContFrac)");
+      CoCoA_THROW_ERROR1("Result is not convincing");
     return reconstructor.myResult;
   }
 
@@ -145,7 +145,7 @@ namespace CoCoA
   const BigInt& BadMFactor(const RatReconstructByContFrac& reconstructor)
   {
     if (!IsConvincing(reconstructor)) // automatically updates
-      CoCoA_THROW_ERROR("Result is not convincing","BadMFactor(RatReconstructByContFrac)");
+      CoCoA_THROW_ERROR1("Result is not convincing");
     return reconstructor.myBadFactor;
   }
 
@@ -173,8 +173,8 @@ namespace CoCoA
   BigInt RatReconstructByLattice::myCheckSafetyFactor(const BigInt& SafetyFactor)
   {
     // SafetyFactor == 0 --> use default value (see static data mem ourDefaultSafetyFactor)
-    if (SafetyFactor < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RatReconstructByLattice ctor");
-    if (SafetyFactor > 0) return SafetyFactor;
+    if (SafetyFactor < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (SafetyFactor > 0)  return SafetyFactor;
     return BigInt(ourDefaultSafetyFactor);
   }
 
@@ -242,7 +242,7 @@ namespace CoCoA
   const BigRat& ReconstructedRat(const RatReconstructByLattice& reconstructor)
   {
     if (!IsConvincing(reconstructor)) // automatically updates
-      CoCoA_THROW_ERROR("Result is not convincing","ReconstructedRat(RatReconstructByLattice)");
+      CoCoA_THROW_ERROR1("Result is not convincing");
     return reconstructor.myResult;
   }
 
@@ -256,7 +256,7 @@ namespace CoCoA
   const BigInt& BadMFactor(const RatReconstructByLattice& reconstructor)
   {
     if (!IsConvincing(reconstructor)) // automatically updates
-      CoCoA_THROW_ERROR("Result is not convincing","BadMFactor(RatReconstructByLattice)");
+      CoCoA_THROW_ERROR1("Result is not convincing");
     return reconstructor.myBadFactor;
   }
 
@@ -299,10 +299,12 @@ namespace CoCoA
   {
     const BigRat FAILURE(BigRat::OneOverZero); // "impossible rational" used to indicate failure
     const long s = len(res);
-    if (len(mod) != s) CoCoA_THROW_ERROR(ERR::BadArg, "FTRR");
-    if (e < 0 || 2*e >= s || P < 1 || Q < 1) CoCoA_THROW_ERROR(ERR::BadArg, "FTRR");
+    if (len(mod) != s)  CoCoA_THROW_ERROR1(ERR::BadArraySize);
+    if (e < 0 || 2*e >= s || P < 1 || Q < 1)
+      CoCoA_THROW_ERROR1(ERR::BadArg);
     const BigInt Mmax = ComputeMmax(e, mod);
-    if (2*P*Q*power(Mmax,2) >= product(mod)) CoCoA_THROW_ERROR(ERR::BadArg, "FTRR");
+    if (2*P*Q*power(Mmax,2) >= product(mod))
+      CoCoA_THROW_ERROR2(ERR::BadArg, "combined modulus is too small");
 
     {
       long CountZeroes = 0;

@@ -46,15 +46,15 @@ namespace CoCoA
 
     // Throws if f is not univariate in char 0 with deg >= 1.
     // WARNING: does not check that coeffs are rationals!
-    void RootBound_CheckArg(ConstRefRingElem f, const char* const FnName)
+    void RootBound_CheckArg(ConstRefRingElem f, const ErrorContext& FnName)
     {
       const ring& P = owner(f);
       if (!IsPolyRing(P) || !IsZero(characteristic(P)))
-        CoCoA_THROW_ERROR(ERR::BadArg, FnName); // must be a poly in char 0
+        CoCoA_THROW_ERROR_WITH_CONTEXT3(ERR::BadArg, "expected univariate poly in characteristic 0", FnName);
       if (IsZero(f) || deg(f) == 0)
-        CoCoA_THROW_ERROR(ERR::BadArg, FnName); // must have deg >= 1
+        CoCoA_THROW_ERROR_WITH_CONTEXT3(ERR::BadArg, "must have deg >= 1", FnName);
       if (UnivariateIndetIndex(f) < 0)
-        CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName); // not univariate
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqUnivariate, FnName); // not univariate
     }
 
 
@@ -64,15 +64,15 @@ namespace CoCoA
     // // For d > 4 the formula (185*d-64)/128 requires proof.
     // BigRat BirkhoffScaleFactor(long d)
     // {
-    //   if (d < 2) CoCoA_THROW_ERROR(ERR::BadArg,"ScaleFactor");
-    //   if (d > 4) return BigRat(185*d-64, 128); // error less than 0.2%
+    //   if (d < 2)  CoCoA_THROW_ERROR2(ERR::BadArg,"degree must be at least 2");
+    //   if (d > 4)  return BigRat(185*d-64, 128); // error less than 0.2%
     //   switch (d)
     //   {
     //   case 2: return BigRat(619,256);
     //   case 3: return BigRat(493,128);
     //   case 4: return BigRat(677,128);
     //   }
-    //   CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "ScaleFactor");
+    //   CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     //   return BigRat(-1,1); // just to keep compiler quiet
     // }
 
@@ -80,9 +80,9 @@ namespace CoCoA
     // Upper bound for Birkhoff's scale factor (excess is about 0.01%-0.1%)
     double BirkhoffScaleFactor2(long d)
     {
-      if (d < 2) CoCoA_THROW_ERROR(ERR::BadArg,"ScaleFactor");
+      if (d < 2)  CoCoA_THROW_ERROR2(ERR::BadArg,"degre must be at least 2");
       const double log2 = std::log(2.0);
-      if (d >= 7) return (1+1.0/1024)*(d/log2-0.5);
+      if (d >= 7)  return (1+1.0/1024)*(d/log2-0.5);
       return (1+1.0/1024)/(exp(log2/d)-1);
     }
 
@@ -104,7 +104,7 @@ namespace CoCoA
     // Then if f(x) = g(x^k) some k then it returns g(x)
     RingElem RootBound_preprocess(ConstRefRingElem f)
     {
-      RootBound_CheckArg(f, "RootBound_preprocess");
+      RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
       
       VerboseLog VERBOSE("RootBound_preprocess");
       const PolyRing ZZx = NewPolyRing(RingZZ(), symbols("x"));
@@ -153,14 +153,14 @@ namespace CoCoA
 
       const double excess = d - pwr2*ln2;
       const int numer = static_cast<int>(std::ceil(exp(excess)));
-      if (pwr2 < 0) return BigRat(numer,power(2,-pwr2));
+      if (pwr2 < 0)  return BigRat(numer,power(2,-pwr2));
       return BigRat(numer*power(2,pwr2), 1);
     }
   
 
     BigRat ApproxRoot(const BigRat& q, int n)
     {
-      if (n == 1) return q;
+      if (n == 1)  return q;
       return ApproxExp(LogAbs(q)/n);
     }
 
@@ -190,7 +190,7 @@ namespace CoCoA
     BigRat RootBound_deg1(ConstRefRingElem f)
     {
       CoCoA_ASSERT(!IsZero(f) && deg(f) == 1);
-      if (NumTerms(f) == 1) return BigRat(0);
+      if (NumTerms(f) == 1)  return BigRat(0);
       const BigRat lcf = ConvertTo<BigRat>(LC(f));
       return abs(ConvertTo<BigRat>(coeff(++BeginIter(f)))/lcf);
     }
@@ -207,7 +207,7 @@ namespace CoCoA
     CoCoA_ASSERT(!LogCoeff.empty());
 //??    VerboseLog VERBOSE("LogRootBound_Cauchy");
     const int d = len(LogCoeff);  // must have d > 0
-    if (d == 1) return LogCoeff[0];
+    if (d == 1)  return LogCoeff[0];
 
     double MaxVal = LogZero;
     for (int i=0; i < d; ++i)
@@ -225,11 +225,11 @@ namespace CoCoA
 
   BigRat RootBound_Cauchy(ConstRefRingElem f)
   {
-    RootBound_CheckArg(f, "RootBound_Cauchy");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
 
     const int d = deg(f);
-    if (d == 1) return RootBound_deg1(f);
-    if (IsMonomial(f)) return BigRat(0);
+    if (d == 1)  return RootBound_deg1(f);
+    if (IsMonomial(f))  return BigRat(0);
     const double LogBound = LogRootBound_Cauchy(LogCoeffVec(f));
     return ApproxExp(LogBound);
   }
@@ -243,7 +243,7 @@ namespace CoCoA
     CoCoA_ASSERT(!LogCoeff.empty());
     VerboseLog VERBOSE("LogRootBound_Lagrange");
     const int d = len(LogCoeff);  // must have d > 0
-    if (d == 1) return LogCoeff[0];
+    if (d == 1)  return LogCoeff[0];
 
     double MaxVal = LogZero;
     for (int i=0; i < d; ++i)
@@ -259,7 +259,7 @@ namespace CoCoA
     VERBOSE(55) << "ignoring coeffs with logs below " << LWB << endl;
     for (int i=0; i < d; ++i)
     {
-      if (LogCoeff[i] < LWB) continue;
+      if (LogCoeff[i] < LWB)  continue;
       SumOfBigCoeffs += ApproxExp(LogCoeff[i]);
     }
 
@@ -271,11 +271,11 @@ namespace CoCoA
 
   BigRat RootBound_Lagrange(ConstRefRingElem f)
   {
-    RootBound_CheckArg(f, "RootBound_Lagrange");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
 
     const int d = deg(f);
-    if (d == 1) return RootBound_deg1(f);
-    if (IsMonomial(f)) return BigRat(0);
+    if (d == 1)  return RootBound_deg1(f);
+    if (IsMonomial(f))  return BigRat(0);
     const double LogBound = LogRootBound_Lagrange(LogCoeffVec(f));
     return ApproxExp(LogBound);
   }
@@ -288,7 +288,7 @@ namespace CoCoA
     CoCoA_ASSERT(!LogCoeff.empty());
     VerboseLog VERBOSE("LogRootBound_Birkhoff");
     const int d = len(LogCoeff);  // must have d > 0
-    if (d == 1) return LogCoeff[0];
+    if (d == 1)  return LogCoeff[0];
 
     double LogBinomial = 0.0;
     double MaxVal = LogZero;
@@ -298,7 +298,7 @@ namespace CoCoA
       if (LogCoeff[i] != LogZero)
       {
         const double val = (LogCoeff[i]-LogBinomial)/(d-i);
-        if (val > MaxVal) MaxVal = val;
+        if (val > MaxVal)  MaxVal = val;
 //      MaxVal = std::max(val, MaxVal);
       }
       LogBinomial += std::log(d-i) - std::log(i+1);
@@ -314,12 +314,12 @@ namespace CoCoA
 
   BigRat RootBound_Birkhoff(ConstRefRingElem f)
   {
-    RootBound_CheckArg(f, "RootBound_Birkhoff");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
 
 //    VerboseLog VERBOSE("RootBound_Birkhoff");
     const int d = deg(f);
-    if (d == 1) return RootBound_deg1(f);
-    if (IsMonomial(f)) return BigRat(0);
+    if (d == 1)  return RootBound_deg1(f);
+    if (IsMonomial(f))  return BigRat(0);
     const double LogBound = LogRootBound_Birkhoff(LogCoeffVec(f));
     return ApproxExp(LogBound);
     
@@ -335,7 +335,7 @@ namespace CoCoA
 //     double MaxVal = LogZero;
 //     for (int i=0; i < d; ++i)
 //     {
-//       if (LogCoeff[i] == LogZero) continue;
+//       if (LogCoeff[i] == LogZero)  continue;
 //       const double val = (LogCoeff[i]-LogBinomial)/(d-i);
 //       MaxVal = std::max(val, MaxVal);
 //       LogBinomial += std::log(d-i) - std::log(i+1);
@@ -357,14 +357,14 @@ namespace CoCoA
 //   {
 //     CoCoA_ASSERT(!LogCoeff.empty());
 //     const int d = len(LogCoeff);  // must have d > 0
-//     if (d == 1) return LogCoeff[0];
+//     if (d == 1)  return LogCoeff[0];
 
 //     double MaxVal = LogZero;
 //     for (int i=0; i < d; ++i)
 //     {
-//       if (LogCoeff[i] == LogZero) continue;
+//       if (LogCoeff[i] == LogZero)  continue;
 //       const double val = LogCoeff[i]/(d-i);
-//       if (val > MaxVal) MaxVal = val;
+//       if (val > MaxVal)  MaxVal = val;
 // //      MaxVal = std::max(val, MaxVal);
 //     }
 
@@ -373,11 +373,11 @@ namespace CoCoA
 
 //   BigRat RootBound_Knuth(ConstRefRingElem f)
 //   {
-//     RootBound_CheckArg(f, "RootBound_Knuth");
+//     RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
 
 //     const int d = deg(f);
-//     if (d == 1) return RootBound_deg1(f);
-//     if (IsMonomial(f)) return BigRat(0);
+//     if (d == 1)  return RootBound_deg1(f);
+//     if (IsMonomial(f))  return BigRat(0);
 //     const double LogBound = LogRootBound_Knuth(LogCoeffVec(f));
 //     return ApproxExp(LogBound);
 //   }
@@ -392,7 +392,7 @@ namespace CoCoA
     CoCoA_ASSERT(!LogCoeff.empty());
     VerboseLog VERBOSE("RootBound_LMS");
     const int d = len(LogCoeff);  // must have d > 0
-    if (d == 1) return LogCoeff[0];
+    if (d == 1)  return LogCoeff[0];
 
     double max1 = LogZero;
     double max2 = LogZero;
@@ -414,18 +414,18 @@ namespace CoCoA
   // LMS = Lagrange-Mignotte-Stefanescu
   BigRat RootBound_LMS(ConstRefRingElem f)
   {
-    RootBound_CheckArg(f, "RootBound_LMS");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
 
     const int d = deg(f);
-    if (d == 1) return RootBound_deg1(f);
-    if (IsMonomial(f)) return BigRat(0);
+    if (d == 1)  return RootBound_deg1(f);
+    if (IsMonomial(f))  return BigRat(0);
     const double LogBound = LogRootBound_LMS(LogCoeffVec(f));
     return ApproxExp(LogBound);
 
 //     VerboseLog VERBOSE("RootBound_LMS");
 //     const int d = deg(f);
-//     if (d == 1) return RootBound_deg1(f);
-//     if (IsMonomial(f)) return BigRat(0);
+//     if (d == 1)  return RootBound_deg1(f);
+//     if (IsMonomial(f))  return BigRat(0);
 //     vector<double> LogCoeff(d, LogZero);
 //     const double LogLCF = LogAbs(ConvertTo<BigRat>(LC(f)));
 //     for (SparsePolyIter it=++BeginIter(f); !IsEnded(it); ++it)
@@ -439,14 +439,14 @@ namespace CoCoA
 //     double max2 = LogZero;
 //     for (int i=0; i < d; ++i)
 //     {
-//       if (LogCoeff[i] == LogZero) continue;
+//       if (LogCoeff[i] == LogZero)  continue;
 //       double val = LogCoeff[i]/(d-i);
-//       if (val < max2) continue;
-//       if (val < max1) { max2 = val; continue; }
+//       if (val < max2)  continue;
+//       if (val < max1)  { max2 = val; continue; }
 //       max2 = max1; max1 = val;
 //     }
 //     VERBOSE(50) << "max1 = " << max1 << "   max2 = " << max2 << endl;
-//     if (max2 == LogZero) return ApproxExp(max1);
+//     if (max2 == LogZero)  return ApproxExp(max1);
 //     return ApproxExp(max1) + ApproxExp(max2);
   }
 
@@ -473,11 +473,11 @@ namespace CoCoA
 
   BigRat RootBound_simple(ConstRefRingElem f)
   {
-    RootBound_CheckArg(f, "RootBound_simple");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
 
     const int d = deg(f);  // must have d > 0
-    if (d == 1) return RootBound_deg1(f);
-    if (IsMonomial(f)) return BigRat(0);
+    if (d == 1)  return RootBound_deg1(f);
+    if (IsMonomial(f))  return BigRat(0);
     const double LogBound = LogRootBound_simple(LogCoeffVec(f));
     return ApproxExp(LogBound);
   }
@@ -486,9 +486,9 @@ namespace CoCoA
 
   BigRat RootBound(ConstRefRingElem f, long NumGraeffeIters)
   {
-    RootBound_CheckArg(f, "RootBound");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
     if (NumGraeffeIters < -1 || NumGraeffeIters > 25)
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "RootBound");
+      CoCoA_THROW_ERROR2(ERR::OutOfRange, "number of iters must be in 0..25");
     
     VerboseLog VERBOSE("RootBound");
     if (IsMonomial(f))
@@ -598,12 +598,12 @@ namespace CoCoA
 
   BigRat RootBound2(ConstRefRingElem f, long NumGraeffeIters)
   {
-    RootBound_CheckArg(f, "RootBound2");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
     if (NumGraeffeIters < -1 || NumGraeffeIters > 25)
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "RootBound2");
+      CoCoA_THROW_ERROR2(ERR::OutOfRange, "number of iters must be in 0..25");
 
     const double LogBound = LogRootBound(f, NumGraeffeIters);
-    if (LogBound == LogZero) return BigRat(0);
+    if (LogBound == LogZero)  return BigRat(0);
     return ApproxExp(LogBound);
   }
 
@@ -614,13 +614,13 @@ namespace CoCoA
   RingElem RootBoundTransform(ConstRefRingElem f)
   {
     static const ErrorInfo ErrMesg(ERR::BadConvert, "RootBoundTransform");
-    RootBound_CheckArg(f, "RootBoundTransform");
+    RootBound_CheckArg(f, CoCoA_ERROR_CONTEXT);
     const ring& P = owner(f);
     RingElem ans = monomial(P, abs(ConvertTo<BigRat>(LC(f),ErrMesg)), LPP(f));
     bool FirstTime = true;
     for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
     {
-      if (FirstTime) { FirstTime = false; continue; }
+      if (FirstTime)  { FirstTime = false; continue; }
       ans += monomial(P, -abs(ConvertTo<BigRat>(coeff(it),ErrMesg)), PP(it));
     }
     return ans;

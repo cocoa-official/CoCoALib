@@ -57,7 +57,7 @@ namespace CoCoA
 
   std::ostream& VerboseLog::operator()(long level)
   {
-    if (level < 1)  CoCoA_THROW_ERROR(ERR::ReqPositive, "Verbosity level");
+    if (level < 1)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     if (level > ourVerbosityLevel)  return DevNull;
     LogStream() << string(std::min(100L,ourNestingDepth)-1,' '); // indent by ourNestingDepth-1
 // min indent 3 spaces (2spaces for CoCoA5 verbosity)
@@ -69,7 +69,7 @@ namespace CoCoA
   //  long SetVerbosityLevel(long NewLevel)
   void SetVerbosityLevel(long NewLevel)
   {
-    if (NewLevel < 0)  CoCoA_THROW_ERROR(ERR::ReqNonNegative, "SetVerbosityLevel");
+    if (NewLevel < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     //    const long OldValue = VerboseLog::ourVerbosityLevel;
     VerboseLog::ourVerbosityLevel = NewLevel;
     //    return OldValue;

@@ -202,22 +202,22 @@ namespace CoCoA
   {
     GlobalSettings ans;
     if (arg1.myResidueReprHasBeenSet && arg2.myResidueReprHasBeenSet)
-      CoCoA_THROW_ERROR(ERR::BadGlobalSettings, "residue setting");
+      CoCoA_THROW_ERROR2(ERR::BadGlobalSettings, "residue setting");
     if (arg1.myResidueReprHasBeenSet) ans.mySetResidueRepr(arg1.myResidueRepr);
     if (arg2.myResidueReprHasBeenSet) ans.mySetResidueRepr(arg2.myResidueRepr);
 
     if (arg1.myGMPAllocatorTypeHasBeenSet && arg2.myGMPAllocatorTypeHasBeenSet)
-      CoCoA_THROW_ERROR(ERR::BadGlobalSettings, "GMP allocator type");
+      CoCoA_THROW_ERROR2(ERR::BadGlobalSettings, "GMP allocator type");
     if (arg1.myGMPAllocatorTypeHasBeenSet) ans.mySetGMPAllocatorType(arg1.myGMPAllocatorType);
     if (arg2.myGMPAllocatorTypeHasBeenSet) ans.mySetGMPAllocatorType(arg2.myGMPAllocatorType);
 
     if (arg1.mySliceSizeHasBeenSet && arg2.mySliceSizeHasBeenSet)
-      CoCoA_THROW_ERROR(ERR::BadGlobalSettings, "GMPAllocator slice size");
+      CoCoA_THROW_ERROR2(ERR::BadGlobalSettings, "GMPAllocator slice size");
     if (arg1.mySliceSizeHasBeenSet) ans.mySetSliceSize(arg1.mySliceSize);
     if (arg2.mySliceSizeHasBeenSet) ans.mySetSliceSize(arg2.mySliceSize);
 
     if (arg1.myObsolescentFnPolicyHasBeenSet && arg2.myObsolescentFnPolicyHasBeenSet)
-      CoCoA_THROW_ERROR(ERR::BadGlobalSettings, "obsolescent fns policy");
+      CoCoA_THROW_ERROR2(ERR::BadGlobalSettings, "obsolescent fns policy");
     if (arg1.myObsolescentFnPolicyHasBeenSet) ans.mySetObsolescentFnsPolicy(arg1.myObsolescentFnPolicy);
     if (arg2.myObsolescentFnPolicyHasBeenSet) ans.mySetObsolescentFnsPolicy(arg2.myObsolescentFnPolicy);
 
@@ -258,7 +258,7 @@ namespace CoCoA
 // !!!***NOT THREAD SAFE***!!!  Must make next 3 lines atomic.
     // Complain if a GlobalManager object has already been created
     if (IsInitialized())
-      CoCoA_THROW_ERROR(ERR::GlobalManager2, "GlobalManager ctor");
+      CoCoA_THROW_ERROR1(ERR::GlobalManager2);
     ourAllowObsolescentFnsFlag = (settings.myObsolescentFnPolicy == GlobalSettings::ObsolescentFnPolicy::allow);
 #ifdef CoCoA_WITH_GFAN
     gfan::initializeCddlibIfRequired();
@@ -322,7 +322,7 @@ namespace CoCoA
   ConstRefRingElem HPPowerList(int exp)
   {
     if (exp>HPPowerListMaxDeg())
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "HPPowerList");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return GlobalManager::ptr(CoCoA_ERROR_CONTEXT)->myHPPowerList[exp];
   }
   
