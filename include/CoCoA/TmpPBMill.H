@@ -57,7 +57,7 @@ namespace CoCoA
       {
         if (!IamPommaretBasis())
         {
-          CoCoA_THROW_ERROR("This is not a Pommaret Basis", "PBMill");
+          CoCoA_THROW_ERROR1("This is not a Pommaret Basis");
         }
       }
 
@@ -247,7 +247,7 @@ namespace CoCoA
       {
         if (!mill.IamPommaretBasis())
         {
-          CoCoA_THROW_ERROR("Janet basis is not a Pommaret basis", "PBMill::Converter::setJBMill");
+          CoCoA_THROW_ERROR1("Janet basis is not a Pommaret basis");
         }
         myContainerPtr = std::unique_ptr<JanetContainer> (new JanetContainer(mill.myGetJanetContainer()));
         return *this;
@@ -263,7 +263,7 @@ namespace CoCoA
       {
         if (myContainerPtr.get() == nullptr)
         {
-          CoCoA_THROW_ERROR("There must be a Janet basis as Input", "PBMill::Converter::build");
+          CoCoA_THROW_ERROR1("There must be a Janet basis as Input");
         }
         return *myContainerPtr;
       }
@@ -310,7 +310,7 @@ namespace CoCoA
         myInput.insert(myInput.begin(), inputBegin, inputEnd);
         if (myInput.empty())
         {
-          CoCoA_THROW_ERROR("empty input", "setInput");
+          CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
         }
         return *this;
       }
@@ -350,7 +350,7 @@ namespace CoCoA
       {
         if (myInput.empty())
         {
-          CoCoA_THROW_ERROR("empty input", "build");
+          CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
         }
         return myUseStrategy();
       }
@@ -378,7 +378,7 @@ namespace CoCoA
       {
         if (myInput.empty())
         {
-          CoCoA_THROW_ERROR(ERR::ReqNonEmpty, __FUNCTION__);
+          CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
         }
         return owner(myInput.front());
       }

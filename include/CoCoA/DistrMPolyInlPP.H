@@ -315,8 +315,7 @@ namespace CoCoA
 
   inline DistrMPolyInlPP::iter& DistrMPolyInlPP::iter::operator++()
   {
-    if (IamEnded())
-      CoCoA_THROW_ERROR(ERR::PolyIterEnded, "DistrMPolyInlPP::iter::op++");
+    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     myForward();
     return *this;
   }
@@ -324,8 +323,7 @@ namespace CoCoA
 
   inline DistrMPolyInlPP::iter DistrMPolyInlPP::iter::operator++(int)
   {
-    if (IamEnded())
-      CoCoA_THROW_ERROR(ERR::PolyIterEnded, "DistrMPolyInlPP::iter::op++");
+    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     iter ans(*this);
     myForward();
     return ans;
@@ -340,8 +338,7 @@ namespace CoCoA
 
   inline RingElemAlias coeff(const DistrMPolyInlPP::iter& i)
   {
-    if (IsEnded(i))
-      CoCoA_THROW_ERROR(ERR::PolyIterEnded, "coeff(PolyIter)");
+    if (IsEnded(i))  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     return i.myCoeff();
   }
 
@@ -354,22 +351,9 @@ namespace CoCoA
 
   inline ConstRefPPMonoidElem PP(const DistrMPolyInlPP::iter& i)
   {
-    if (IsEnded(i)) CoCoA_THROW_ERROR(ERR::PolyIterEnded, "PP(PolyIter)");
+    if (IsEnded(i))  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     return i.myPP();
   }
-
-
-//   inline bool DistrMPolyInlPP::iter::operator==(const iter& i2) const
-//   {
-//     if (&myPoly != &(i2.myPoly)) CoCoA_THROW_ERROR(ERR::MixedPolyIters, "PolyIter == PolyIter");
-//     return mySummand == i2.mySummand;
-//   }
-
-//   inline bool DistrMPolyInlPP::iter::operator!=(const iter& i2) const
-//   {
-//     if (&myPoly != &(i2.myPoly)) CoCoA_THROW_ERROR(ERR::MixedPolyIters, "PolyIter != PolyIter");
-//     return mySummand != i2.mySummand;
-//   }
 
 
   inline const void* DistrMPolyInlPP::iter::myPolyPtr() const

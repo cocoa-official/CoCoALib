@@ -27,8 +27,6 @@
 //using std::bitset;
 #include <limits>
 //using std::numeric_limits<long>::digits;
-///??? UNUSED!!! #include <list>
-///??? UNUSED!!! //using std::list;
 #include <vector>
 //using std::vector;
 
@@ -89,9 +87,6 @@ namespace CoCoA
     inline bool myIsEntryThere(const unsigned int j) const;
     inline void mySetEntryThere(const unsigned int j,bool value);
     //
-
-    //    inline std::list<unsigned int> myVertices() const;
-    //    inline friend bool lesser(const DynamicBitset&, const DynamicBitset&);
 
   private:
     void myResize(long n); ///< resize vector: only for ctors
@@ -355,7 +350,7 @@ namespace CoCoA
 
   bool Is1At(const DynamicBitset& b, long index)
   {
-    if (index>=len(b)) CoCoA_THROW_ERROR(ERR::BadIndex, "Is1At");
+    if (index < 0 || index >= len(b))  CoCoA_THROW_ERROR1(ERR::OutOfRange);
     return b.Iam1At(index);
   }
 

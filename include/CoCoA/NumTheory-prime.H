@@ -120,11 +120,6 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const NoSmallFactorSeq& seq);
 
-//   inline long NoSmallFactorSeq::operator*() const
-//   {
-// //    if (IamEnded())  CoCoA_THROW_ERROR(ERR::IterEnded, "PrimeSeq::op*");
-//     return myCurrVal;
-//   }
 
   //------------------------------------------------------------------
   // Seq of positive ints; seq contains all primes, and a "few" composites.

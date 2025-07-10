@@ -21,7 +21,7 @@
 
 #include <list>
 #include "CoCoA/SparsePolyOps-RingElem.H"
-//#include "CoCoA/SparsePolyRing.H" // from SparsePolyOps-RingElem.H
+
 
 namespace CoCoA {
   namespace Involutive {
@@ -245,8 +245,7 @@ namespace CoCoA {
        * JanetInternalNode
        */
       virtual inline std::list<JanetHandle>* myNextVarArm() {
-        CoCoA_THROW_ERROR("You don't have the permission to deal with JanetNodes, maybe there is a mistake in the datastructure",
-                    "myNextVarArm");  //??remove in the final version??
+        CoCoA_THROW_ERROR1("You don't have the permission to deal with JanetNodes, maybe there is a mistake in the datastructure");  //??remove in the final version??
         return nullptr;
       }
 
@@ -264,8 +263,7 @@ namespace CoCoA {
        * Warnings because I don't use nextArm
        */
       virtual inline void mySetNextVarArm(const std::list<JanetHandle>& /*NextArm*/) {
-        CoCoA_THROW_ERROR("You don't have the permission to deal with JanetNodes, maybe there is a mistake in the datastructure",
-                    "mySetNextVarArm");
+        CoCoA_THROW_ERROR1("You don't have the permission to deal with JanetNodes, maybe there is a mistake in the datastructure");
       }
 
     protected:
@@ -353,9 +351,7 @@ namespace CoCoA {
        * return an empty arm
        */
       inline std::list<JanetHandle>* myNextVarArm() {
-        CoCoA_THROW_ERROR(
-            "You don't have the permission to deal with arms in JanetLeafNodes, maybe there is a mistake in the datastructure",
-            "myNextVarArm");  //??maybe remove this in the final version??
+        CoCoA_THROW_ERROR1("You don't have the permission to deal with arms in JanetLeafNodes, maybe there is a mistake in the datastructure");  //??maybe remove this in the final version??
         return nullptr;
       }
 
@@ -365,9 +361,7 @@ namespace CoCoA {
        * !!WARNING because we don't need nextArm!!
        */
       inline void mySetNextVarArm(const std::list<JanetHandle>& /*NextArm*/) {
-        CoCoA_THROW_ERROR(
-            "You don't have the permission to deal with arms JanetLeafNodes, maybe there is a mistake in the datastructure",
-            "mySetNextVarArm");
+        CoCoA_THROW_ERROR1("You don't have the permission to deal with arms JanetLeafNodes, maybe there is a mistake in the datastructure");
       }
 
     private:
