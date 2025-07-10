@@ -278,8 +278,7 @@ namespace CoCoA
 
   inline DistrMPolyClean::iter& DistrMPolyClean::iter::operator++()
   {
-////    if (IamEnded()) CoCoA_THROW_ERROR(ERR::PolyIterEnded, "DistrMPolyClean::iter::op++");
-    if (IamEnded())  CoCoA_THROW_ERROR2(ERR::PolyIterEnded, "DistrMPolyClean::iter");
+    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     myForward(); //???mySummand = mySummand->myNext;
     return *this;
   }
@@ -287,8 +286,7 @@ namespace CoCoA
 
   inline DistrMPolyClean::iter DistrMPolyClean::iter::operator++(int)
   {
-////    if (IamEnded()) CoCoA_THROW_ERROR(ERR::PolyIterEnded, "DistrMPolyClean::iter::op++");
-    if (IamEnded())  CoCoA_THROW_ERROR2(ERR::PolyIterEnded, "DistrMPolyClean::iter");
+    if (IamEnded())  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     iter ans(*this);
     myForward(); //???mySummand = mySummand->myNext;
     return ans;
@@ -319,19 +317,6 @@ namespace CoCoA
     if (IsEnded(i))  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     return i.myPP();
   }
-
-
-//   inline bool DistrMPolyClean::iter::operator==(const iter& i2) const
-//   {
-//     if (&myPoly != &(i2.myPoly)) CoCoA_THROW_ERROR(ERR::MixedPolyIters, "PolyIter == PolyIter");
-//     return mySummandPtr == i2.mySummandPtr;
-//   }
-
-//   inline bool DistrMPolyClean::iter::operator!=(const iter& i2) const
-//   {
-//     if (&myPoly != &(i2.myPoly)) CoCoA_THROW_ERROR(ERR::MixedPolyIters, "PolyIter != PolyIter");
-//     return mySummandPtr != i2.mySummandPtr;
-//   }
 
 
   inline const void* DistrMPolyClean::iter::myPolyPtr() const

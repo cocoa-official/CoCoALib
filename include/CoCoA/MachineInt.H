@@ -130,12 +130,6 @@ namespace CoCoA
 /////    return n.myValue;
 /////  }
 
-  // inline unsigned long negate(const MachineInt& n)
-  // { 
-  //   CoCoA_ASSERT(n.IamNegative);
-  //   return -ULong2Long(n.myValue);
-  // }
-
 /////  inline unsigned long long ull_abs(const MachineInt& n) noexcept
 /////  { if (n.IamNegative) return -ULongLong2LongLong(n.myValue); else return n.myValue; }
 
@@ -144,7 +138,7 @@ namespace CoCoA
 /////    if (sizeof(unsigned long) == sizeof(unsigned long long)) return ull_abs(n);
 /////    const unsigned long long a = ull_abs(n);
 /////    if (a > std::numeric_limits<unsigned long>::max())
-/////      CoCoA_THROW_ERROR(ERR::ArgTooBig, "uabs");
+/////      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
 /////    return static_cast<unsigned long>(a);
 /////  }
 

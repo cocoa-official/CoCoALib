@@ -175,12 +175,6 @@ namespace CoCoA
   inline const PolyRingBase* PolyRingPtr(const ring& R)
   { return dynamic_cast<const PolyRingBase*>(R.myRawPtr()); }
 
-  // inline const PolyRingBase* PolyRingPtr(const ring& R, const char* const FnName)
-  // {
-  //   const PolyRingBase* ptr = PolyRingPtr(R);
-  //   if (ptr == nullptr)  CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName);
-  //   return ptr;
-  // }
 
   inline const PolyRingBase* PolyRingPtr(const ring& R, const ErrorContext& ErrCtx)
   {
@@ -189,6 +183,7 @@ namespace CoCoA
       CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqPolyRing, ErrCtx);
     return ptr;
   }
+
 
   inline bool IsPolyRing(const ring& R)
   {
@@ -199,10 +194,6 @@ namespace CoCoA
   inline PolyRing::PolyRing(const ring& R):
       ring(PolyRingPtr(R,CoCoA_ERROR_CONTEXT))
   {}
-
-  // inline PolyRing::PolyRing(const ring& R, const char* const FnName):
-  //     ring(PolyRingPtr(R, FnName))
-  // {}
 
   inline PolyRing::PolyRing(const ring& R, const ErrorContext& ErrCtx):
       ring(PolyRingPtr(R, ErrCtx))

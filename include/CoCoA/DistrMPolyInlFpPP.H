@@ -321,7 +321,6 @@ namespace CoCoA
 
   inline RingElemAlias coeff(const DistrMPolyInlFpPP::iter& i)
   {
-////    if (IsEnded(i))  CoCoA_THROW_ERROR(ERR::PolyIterEnded, "coeff(PolyIter)");
     if (IsEnded(i))  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     return i.myCoeff();
   }
@@ -335,23 +334,9 @@ namespace CoCoA
 
   inline ConstRefPPMonoidElem PP(const DistrMPolyInlFpPP::iter& i)
   {
-////    if (IsEnded(i)) CoCoA_THROW_ERROR(ERR::PolyIterEnded, "PP(PolyIter)");
     if (IsEnded(i))  CoCoA_THROW_ERROR1(ERR::PolyIterEnded);
     return i.myPP();
   }
-
-
-//   inline bool DistrMPolyInlFpPP::iter::operator==(const iter& i2) const
-//   {
-//     if (&myPoly != &(i2.myPoly)) CoCoA_THROW_ERROR(ERR::MixedPolyIters, "PolyIter == PolyIter");
-//     return mySummand == i2.mySummand;
-//   }
-
-//   inline bool DistrMPolyInlFpPP::iter::operator!=(const iter& i2) const
-//   {
-//     if (&myPoly != &(i2.myPoly)) CoCoA_THROW_ERROR(ERR::MixedPolyIters, "PolyIter != PolyIter");
-//     return mySummand != i2.mySummand;
-//   }
 
 
   inline const void* DistrMPolyInlFpPP::iter::myPolyPtr() const

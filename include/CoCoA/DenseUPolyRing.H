@@ -223,12 +223,6 @@ namespace CoCoA
     return dynamic_cast<const DenseUPolyRingBase*>(R.myRawPtr());
   }
 
-  // inline const DenseUPolyRingBase* DenseUPolyRingPtr(const ring& R, const char* const FnName)
-  // {
-  //   const DenseUPolyRingBase* ptr = DenseUPolyRingPtr(R);
-  //   if (ptr == nullptr) CoCoA_THROW_ERROR(ERR::NotDenseUPolyRing, FnName);
-  //   return ptr;
-  // }
 
   inline const DenseUPolyRingBase* DenseUPolyRingPtr(const ring& R, const ErrorContext& ErrCtx)
   {
