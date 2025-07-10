@@ -306,7 +306,7 @@ namespace CoCoA
         vector<long> cols;
         for (long j=0; j < NumCols(A); ++j)  cols.push_back(j);
         // cols = LongRange(0, NumCols(A)-1);  // AllCols
-        rows.empty();
+        rows.clear();
         for (long i=0; i < NumRows(A); ++i)
         {
           rows.push_back(i);

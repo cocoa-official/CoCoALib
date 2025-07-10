@@ -76,8 +76,8 @@ namespace CoCoA
     // Functions which every ring must implement:
     //----------------------------------------------------------------------
     bool IamCommutative() const override;
-    bool3 IamIntegralDomain3(bool) const override;
-    bool IamTrueGCDDomain() const override;
+///    bool3 IamIntegralDomain3(bool) const override;
+///    bool IamTrueGCDDomain() const override;
     ConstRefRingElem myZero() const override;
     ConstRefRingElem myOne() const override;
     RingElemRawPtr myNew() const override;
@@ -310,17 +310,17 @@ namespace CoCoA
   }
 
 
-  bool3 RingExtAlgImpl::IamIntegralDomain3(bool QuickMode) const
-  {
-    if (myNumIndets() > 0) return false3;
-    return myReprRing->IamIntegralDomain3(QuickMode); //??? I think this is right
-  }
+  // bool3 RingExtAlgImpl::IamIntegralDomain3(bool QuickMode) const
+  // {
+  //   if (myNumIndets() > 0) return false3;
+  //   return myReprRing->IamIntegralDomain3(QuickMode); //??? I think this is right
+  // }
 
 
-  bool RingExtAlgImpl::IamTrueGCDDomain() const
-  {
-    return false; // I have no clue how to compute GCDs even if they do exist
-  }
+  // bool RingExtAlgImpl::IamTrueGCDDomain() const
+  // {
+  //   return false; // I have no clue how to compute GCDs even if they do exist
+  // }
 
 
   ConstRefRingElem RingExtAlgImpl::myZero() const

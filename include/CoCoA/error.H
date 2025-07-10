@@ -219,7 +219,7 @@ namespace CoCoA
 ///???    const ERR::ID& id() const { return myID; }
     bool operator==(const ERR::ID& id) const noexcept { return myID == id; }
     bool operator!=(const ERR::ID& id) const noexcept { return myID != id; }
-    void myOutputSelf(std::ostream& out) const override;
+    void myOutputSelf(std::ostream& out) const override /*NOT final*/;
   private: // Data members (incl. myMessage & myContext from CoCoA::exception)
     friend void ANNOUNCE(std::ostream& out, const ErrorInfo& err);
     const ERR::ID myID;

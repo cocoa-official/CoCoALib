@@ -34,7 +34,7 @@ namespace CoCoA
     TimeoutException(const char* const context): ErrorInfo(ERR::TimedOut, context) {}
 //    TimeoutException(const std::string& context): ErrorInfo(ERR::TimedOut, context) {}
     virtual ~TimeoutException();
-    virtual void myOutputSelf(std::ostream& out) const override;
+    virtual void myOutputSelf(std::ostream& out) const override final;
   private: // same data members as class ErrorInfo
   };
 

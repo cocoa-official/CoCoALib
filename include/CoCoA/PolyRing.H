@@ -43,14 +43,14 @@ namespace CoCoA
   public:
     ///@name functions inherited from ring with a single implementation for all PolyRing implementations
     //@{
-    const ring& myBaseRing() const override  { return myCoeffRing(); }
-    BigInt myCharacteristic() const override; ////  { return characteristic(myCoeffRing()); }
+    const ring& myBaseRing() const override final  { return myCoeffRing(); }
+    BigInt myCharacteristic() const override final; ////  { return characteristic(myCoeffRing()); }
     bool IamCommutative() const override  { return true; } ///< RingWeyl redefines this
-    bool3 IamIntegralDomain3(bool QuickMode) const override  { return myCoeffRing()->IamIntegralDomain3(QuickMode); }
-    bool IamTrueGCDDomain() const override  { return myCoeffRing()->IamTrueGCDDomain() || myCoeffRing()->IamField(); };
-    bool IamField() const override  { return false; } //??? (myNumIndets()==0 && myCoeffRing()->IamField())
-    bool IamFiniteField() const override  { return false; } //??? (myNumIndets()==0 && myCoeffRing()->IamFiniteField())
-    bool IamExact() const override  { return IsExact(myCoeffRing()); }
+    bool3 IamIntegralDomain3(bool QuickMode) const override final  { return myCoeffRing()->IamIntegralDomain3(QuickMode); }
+    bool IamTrueGCDDomain() const override /*final*/  { return myCoeffRing()->IamTrueGCDDomain() || myCoeffRing()->IamField(); };
+    bool IamField() const override final  { return false; } //??? (myNumIndets()==0 && myCoeffRing()->IamField())
+    bool IamFiniteField() const override final  { return false; } //??? (myNumIndets()==0 && myCoeffRing()->IamFiniteField())
+    bool IamExact() const override final  { return IsExact(myCoeffRing()); }
     virtual std::string myImplDetails() const = 0;
     void myOutputSelf(std::ostream& out) const override;     // out << R
     void myOutputSelfLong(std::ostream& out) const override; // out << R

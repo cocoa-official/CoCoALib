@@ -22,7 +22,7 @@
 int FFkernel(FFelem **B, int nrows, int ncols, FFelem *M)
 {
   FFelem *Mi, *Mj, *c, *ans, *x;
-  int i, j, k, s, *d;
+  int i, j, k, /*s,*/ *d;
   FFelem q, Mik;
   int KerDim;
   unsigned int count;
@@ -73,7 +73,7 @@ int FFkernel(FFelem **B, int nrows, int ncols, FFelem *M)
   }
   
   ans = (FFelem*)MALLOC(KerDim*ncols*sizeof(FFelem));
-  s = 0;
+  /*s = 0;*/
   x = ans;
   for (k=0; k < ncols; k++)
   {
@@ -84,7 +84,7 @@ int FFkernel(FFelem **B, int nrows, int ncols, FFelem *M)
       else x[i] = M[d[i]*ncols + k];
     }
     x += ncols;
-    s++;
+    /*s++;*/
   }
   FREE(c);
   FREE(d);

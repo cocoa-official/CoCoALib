@@ -882,7 +882,7 @@ namespace CoCoA
 
     VERBOSE(80) <<"NUM INIT Candidates: " << len(CandidateCycloIndices) << std::endl;
     long EvalPtNumer = 2;  long EvalPtDenom = 1; /// always have: EvalPtNumer > EvalPtDenom & gcd = 1; also need EvalPtNumer^3 < MAX_LONG
-    int NumEvalPts = 0;
+///???    int NumEvalPts = 0;
     bool LastIter = false;
     while (true)
     {
@@ -894,7 +894,7 @@ namespace CoCoA
       }
       if (!palindromic)  // if input is not palindromic...
         Valf = gcd(Valf, EvalAt(f, EvalPtDenom, EvalPtNumer));
-      ++NumEvalPts;
+///???      ++NumEvalPts;
       VERBOSE(80) << "Chosen EvalPt=" << EvalPtNumer << "/" << EvalPtDenom << std::endl;
       BigInt Valf_reduced = CoprimeFactor(Valf, EvalPtNumer*(EvalPtNumer*EvalPtNumer-EvalPtDenom*EvalPtDenom)); // BUG?????  to avoid overflow need EvalPt^3 < MaxLong (or MaxULong)
 
