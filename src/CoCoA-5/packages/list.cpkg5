@@ -1,4 +1,4 @@
--- $ 2010/08/03 $
+-- $ 2025/07/07 $
 -- package for managing lists
 -- NOTE: this is fundamental part of the CoCoA-5 system: DO NOT EDIT
 
@@ -9,6 +9,7 @@ Export CartesianProductList;
 Export count;
 Export distrib;
 Export EqSet;
+Export FirstPosn;
 Export flatten;
 Export IsSubset;
 Export MakeSet;
@@ -313,6 +314,17 @@ Define count(L,E)
   Return C;
 EndDefine;
 
+
+define FirstPosn(L, E)
+  for i := 1 to len(L) do
+    try 
+      if L[i]=E then return i; endif;
+    uponerror Err Do /* ignore */; 
+    endtry;
+  endfor;
+  return 0;
+enddefine; -- FirstPosn
+  
 -------------------------------
 
 Define distrib(L)
