@@ -38,13 +38,13 @@ namespace CoCoA
   public:
     OpenMathOutputXML(std::ostream& out);
     ~OpenMathOutputXML();
-    void mySend(const MachineInt& n) override;
-    void mySend(const BigInt& N) override;
-    void mySend(const OpenMathSymbol& s) override;
-    void mySendApplyStart() override;
-    void mySendApplyEnd() override;
-    void mySendObjectStart() override;
-    void mySendObjectEnd() override;
+    void mySend(const MachineInt& n) override final;
+    void mySend(const BigInt& N) override final;
+    void mySend(const OpenMathSymbol& s) override final;
+    void mySendApplyStart() override final;
+    void mySendApplyEnd() override final;
+    void mySendObjectStart() override final;
+    void mySendObjectEnd() override final;
     //void OutputAttribute();//??????
   private:
     std::ostream& myOut;  // UGLY, RISKY!!???!!
@@ -60,13 +60,13 @@ namespace CoCoA
     OpenMathInputXML(std::istream& in); // just sets ref count to zero.
     virtual ~OpenMathInputXML();
 
-    void advance() override;
-    OpenMathTag myCurrTag() override;
-    long NumDescendants() const override;
-    bool myRecv(long & n) override; // SHORT INTEGER
+    void advance() override final;
+    OpenMathTag myCurrTag() override final;
+    long NumDescendants() const override final;
+    bool myRecv(long & n) override final; // SHORT INTEGER
 //????    virtual bool myRecv(unsigned long & n); // UNSIGNED SHORT INTEGER
-    bool myRecv(BigInt& N) override;    // LONG INTEGER
-    bool myRecv(OpenMathSymbol& s) override;
+    bool myRecv(BigInt& N) override final;    // LONG INTEGER
+    bool myRecv(OpenMathSymbol& s) override final;
   private: // data members
     enum class ReadStatus { NotYetRead, AlreadyRead };
     static constexpr ReadStatus NotYetRead = ReadStatus::NotYetRead;

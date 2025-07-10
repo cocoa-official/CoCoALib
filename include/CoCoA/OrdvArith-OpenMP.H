@@ -109,10 +109,10 @@ namespace CoCoA
     {
     public:
       LexImpl(long NumIndets);
-      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override;
-      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override;
-      virtual long myExponent(const OrdvElem* ordv, long var) const override;
-      virtual void myOutputSelf(std::ostream& out) const override;
+      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override final;
+      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override final;
+      virtual long myExponent(const OrdvElem* ordv, long var) const override final;
+      virtual void myOutputSelf(std::ostream& out) const override final;
     };
 
 
@@ -120,10 +120,10 @@ namespace CoCoA
     {
     public:
       XelImpl(long NumIndets);
-      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override;
-      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override;
-      virtual long myExponent(const OrdvElem* ordv, long var) const override;
-      virtual void myOutputSelf(std::ostream& out) const override;
+      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override final;
+      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override final;
+      virtual long myExponent(const OrdvElem* ordv, long var) const override final;
+      virtual void myOutputSelf(std::ostream& out) const override final;
     };
 
 
@@ -131,11 +131,11 @@ namespace CoCoA
     {
     public:
       StdDegLexImpl(long NumIndets);
-      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override;
-      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override;
-      virtual long myStdDeg(const OrdvElem* ordv) const override;
-      virtual long myExponent(const OrdvElem* ordv, long var) const override;
-      virtual void myOutputSelf(std::ostream& out) const override;
+      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override final;
+      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override final;
+      virtual long myStdDeg(const OrdvElem* ordv) const override final;
+      virtual long myExponent(const OrdvElem* ordv, long var) const override final;
+      virtual void myOutputSelf(std::ostream& out) const override final;
     };
 
 
@@ -143,11 +143,11 @@ namespace CoCoA
     {
     public:
       StdDegRevLexImpl(long NumIndets);
-      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override;
-      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override;
-      virtual long myStdDeg(const OrdvElem* ordv) const override;
-      virtual long myExponent(const OrdvElem* ordv, long var) const override;
-      virtual void myOutputSelf(std::ostream& out) const override;
+      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override final;
+      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override final;
+      virtual long myStdDeg(const OrdvElem* ordv) const override final;
+      virtual long myExponent(const OrdvElem* ordv, long var) const override final;
+      virtual void myOutputSelf(std::ostream& out) const override final;
     };
 
 
@@ -155,11 +155,11 @@ namespace CoCoA
     {
     public:
       StdDegRevLexImpl2(long NumIndets);
-      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override;
-      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override;
-      virtual long myStdDeg(const OrdvElem* ordv) const override;
-      virtual long myExponent(const OrdvElem* ordv, long var) const override;
-      virtual void myOutputSelf(std::ostream& out) const override;
+      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override final;
+      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override final;
+      virtual long myStdDeg(const OrdvElem* ordv) const override final;
+      virtual long myExponent(const OrdvElem* ordv, long var) const override final;
+      virtual void myOutputSelf(std::ostream& out) const override final;
     };
 
 
@@ -167,10 +167,10 @@ namespace CoCoA
     {
     public:
       MatrixOrderingImpl(long NumIndets, long GradingDim, const matrix& OrderMatrix);
-      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override;
-      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override;
-      virtual long myExponent(const OrdvElem* ordv, long var) const override;
-      virtual void myOutputSelf(std::ostream& out) const override;
+      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override final;
+      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override final;
+      virtual long myExponent(const OrdvElem* ordv, long var) const override final;
+      virtual void myOutputSelf(std::ostream& out) const override final;
     private:
       int myOrderMatrixDet;
       std::vector< std::vector<int> > myOrderMatrix;
@@ -182,10 +182,10 @@ namespace CoCoA
     {
     public:
       MatrixOrderingMod32749Impl(long NumIndets, long GradingDim, const matrix& OrderMatrix);
-      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override;
-      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override;
-      virtual long myExponent(const OrdvElem* ordv, long var) const override;
-      virtual void myOutputSelf(std::ostream& out) const override;
+      virtual void myAssignFromExpv(OrdvElem* ordv, const std::vector<long>& expv) const override final;
+      virtual void myComputeExpv(std::vector<long>& expv, const OrdvElem* ordv) const override final;
+      virtual long myExponent(const OrdvElem* ordv, long var) const override final;
+      virtual void myOutputSelf(std::ostream& out) const override final;
     private:
       std::vector< std::vector<int> > myOrderMatrix;
       std::vector< std::vector<int> > myInverseOrderMatrix;

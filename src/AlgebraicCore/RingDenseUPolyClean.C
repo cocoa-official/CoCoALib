@@ -65,12 +65,12 @@ namespace CoCoA
     long myMinCapacity;  // the minimum capacity for all coeff vectors
 
   public:  // functions which every ring must implement
-    BigInt myCharacteristic() const override  { return characteristic(myCoeffRingValue); }
+///    BigInt myCharacteristic() const override  { return characteristic(myCoeffRingValue); }
     bool IamCommutative() const override  { return true; /*assume CoeffRing comm*/ }
-    bool IamIntegralDomain() const /*override*/  { return IsIntegralDomain(myCoeffRingValue); }
-    bool IamTrueGCDDomain() const override  { return IsTrueGCDDomain(myCoeffRingValue) || IsField(myCoeffRingValue); }
-    bool IamField() const override  { return false; /*??? (myNumIndetsValue==0 && IsField(myCoeffRingValue)) */}
-    bool IamFiniteField() const override  { return false; /*??? (myNumIndetsValue==0 && IsFiniteField(myCoeffRingValue)) */}
+///    bool IamIntegralDomain() const /*override*/  { return IsIntegralDomain(myCoeffRingValue); }
+///    bool IamTrueGCDDomain() const override  { return IsTrueGCDDomain(myCoeffRingValue) || IsField(myCoeffRingValue); }
+///    bool IamField() const override  { return false; /*??? (myNumIndetsValue==0 && IsField(myCoeffRingValue)) */}
+///    bool IamFiniteField() const override  { return false; /*??? (myNumIndetsValue==0 && IsFiniteField(myCoeffRingValue)) */}
     ConstRefRingElem myZero() const override  { return *myZeroPtr; }
     ConstRefRingElem myOne() const override  { return *myOnePtr; }
     RingElemRawPtr myNew() const override;

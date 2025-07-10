@@ -52,7 +52,7 @@ using std::vector;
 namespace CoCoA
 {
 
-  class RingWeylImpl: public SparsePolyRingBase  //???? should be NCRingBase  non-commutative!!!
+  class RingWeylImpl: public SparsePolyRingBase  //??BUG BUG?? should be NCRingBase  non-commutative!!!
   {
 
   public:
@@ -70,8 +70,8 @@ namespace CoCoA
 
   public: // Functions which every ring must implement:
     bool IamCommutative() const override;
-    bool3 IamIntegralDomain3(bool) const override;
-    bool IamTrueGCDDomain() const override;
+///    bool3 IamIntegralDomain3(bool) const override;
+    bool IamTrueGCDDomain() const override;  // BUG BUG -- should not be derived from SparsePolyRingBase
     ConstRefRingElem myZero() const override;
     ConstRefRingElem myOne() const override;
     RingElemRawPtr myNew() const override;
@@ -301,12 +301,13 @@ namespace CoCoA
   }
 
 
-  bool3 RingWeylImpl::IamIntegralDomain3(bool QuickMode) const
-  {
-    return myReprRing->IamIntegralDomain3(QuickMode); //??? I think this is right
-  }
+  // bool3 RingWeylImpl::IamIntegralDomain3(bool QuickMode) const
+  // {
+  //   return myReprRing->IamIntegralDomain3(QuickMode); //??? I think this is right
+  // }
 
 
+// !!! BUG BUG BUG !!!
   bool RingWeylImpl::IamTrueGCDDomain() const
   {
     return false; // I have no clue how to compute GCDs even if they do exist
