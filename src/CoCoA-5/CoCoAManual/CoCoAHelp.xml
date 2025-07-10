@@ -6462,6 +6462,32 @@ x^2 +y*z
 </command>
 <!-- ===  COMMAND  =============================================== -->
 <command>
+  <title>FirstPosn</title>
+  <short_description>the position of the first entry in a list  equal to E</short_description>
+<syntax>
+FirstPosn(L: <type>LIST</type>,  E: <type>OBJECT</type>): <rtn>INT</rtn>
+</syntax>
+<description>
+This function returns the position of the first occurrence of the object <tt>E</tt> in the
+list <tt>L</tt>.
+<example>
+/**/  L := [1,2,3,2,[2,3]];
+/**/  FirstPosn(L,2);
+2
+/**/  FirstPosn(L,[2,3]);
+5
+/**/  FirstPosn(L,"a");
+0
+</example>
+</description>
+<seealso>
+  <see>count</see>
+  <see>FirstNonZero</see>
+  <see>FirstNonZeroPosn</see>
+</seealso>
+</command>
+<!-- ===  COMMAND  =============================================== -->
+<command>
   <title>FixedDivisor</title>
   <short_description>compute (integer) fixed divisor for polynomial</short_description>
 <syntax>
