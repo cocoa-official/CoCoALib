@@ -1,4 +1,4 @@
-//   Copyright (c)  2011  Anna Bigatti
+//   Copyright (c)  2011-2025  Anna Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -231,6 +231,17 @@ namespace CoCoA
       
       return BL;
     }
+
+namespace // anonymous
+{
+  
+  void free_int_mat(int** M, int dim)
+  {
+    for (int i=0; i<dim ; ++i) free(M[i]);
+    free(M);
+  }
+
+}
     
     
     void MatKerToBListAndIndices(ConstMatrixView M, BitermList *BL, ints *Indices, ints *Weights)
@@ -252,13 +263,8 @@ namespace CoCoA
 //   else
     IndNo = nrows;
 
-  /*  TODO CONTROLLA!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  rum_init(sizeof(expType)*(IndNo+1), RUM_STD_SIZE);
-  rum_init(sizeof(expType)*(IndNo+2), RUM_STD_SIZE);
-  */
-
   /* INDICES */
-  Indices1 = ints_malloc(ncols);
+  Indices1 = ints_malloc(ncols); // malloc Indices1 --------
   IntsSetSize(Indices1, ncols);
   IntsSetLen(Indices1, 0);
   *Indices = Indices1;
@@ -266,22 +272,35 @@ namespace CoCoA
   
   /* M --> small_matrix */
   int **Msmall;
-  Msmall = (int**)malloc(nrows*sizeof(int*));
+  Msmall = (int**)malloc(nrows*sizeof(int*)); // malloc Msmall --------
   int tmp_int;
   BigInt tmp_BigInt;
   for (long i=0; i<nrows; ++i)
   {
-    Msmall[i] = (int*)malloc(ncols*sizeof(int));
+    Msmall[i] = (int*)malloc(ncols*sizeof(int)); // malloc Msmall[i] --------
     for (long j=0; j<ncols; ++j)
     {
       if (!IsInteger(tmp_BigInt, M(i,j)))
+      {
+        //std::cout << "MatKerToBListAndIndices: bef error 1";
+        free_int_mat(Msmall, i+1); // free Msmall bef error
+        ints_free(Indices1);       // free Indices1 bef error
+        INDICES = NULL;            // reset INDICES bef error
         CoCoA_THROW_ERROR2(ERR::BadArg, "value must be integer");
-      if (!IsConvertible(tmp_int, tmp_BigInt))  CoCoA_THROW_ERROR1(ERR::OutOfRange);
+      }
+      if (!IsConvertible(tmp_int, tmp_BigInt))
+      {
+        //std::cout << "MatKerToBListAndIndices: bef error 2";
+        free_int_mat(Msmall, i+1); // free Msmall bef error
+        ints_free(Indices1);       // free Indices1 bef error
+        INDICES = NULL;            // reset INDICES bef error
+        CoCoA_THROW_ERROR1(ERR::OutOfRange);
+      }
       Msmall[i][j] = tmp_int;
     }
   }
   /* WEIGHTS */
-  weights = ints_init(nrows);
+  weights = ints_init(nrows); // ints_init ------------------
   IntsSetLen(weights, nrows);
   int i, j;
   for (i=0; i<nrows; ++i)
@@ -302,15 +321,13 @@ namespace CoCoA
   }
   *Weights = weights;  
   /* NULL_SPACE TO BLIST */
-  dim = null_space( &small_basis, Msmall, nrows, ncols);  
-//   for (i=0 ; i<dim ; i++) // print null_space
-//   {
-//     for (Index=0 ; Index<IndNo ; Index++ )
-//       std::cout << small_basis[i][Index] << "\t ";
-//     std::cout << std::endl;    
-//   }
-  
-  *BL = BLNew (matrices*dim, IndNo);
+  dim = null_space( &small_basis, Msmall, nrows, ncols); // null_space ----- 
+//     for (i=0 ; i<dim ; i++)
+//     {
+//       for (int k=0; k<IndNo; ++k) std::cout << small_basis[i][k] << "\t ";
+//       std::cout << std::endl;    
+//     }
+  *BL = BLNew (matrices*dim, IndNo); // BLNew -------------------------
   BListSetLen (*BL, matrices*dim);
   Bs = Biterms(*BL);
   int MaxExp = std::numeric_limits<int>::max()/(IndNo); // guarantee conv binom
@@ -324,24 +341,28 @@ namespace CoCoA
       else
       {
         if (std::abs(small_basis[i][Index]) >= MaxExp/weights[Index+1])
+        {
+          //std::cout << "MatKerToBListAndIndices: bef error 3";
+          free_int_mat(Msmall, nrows); // free Msmall bef error
+          ints_free(Indices1);         // free Indices1 bef error
+          INDICES = NULL;              // reset INDICES bef error
           CoCoA_THROW_ERROR2(ERR::ExpTooBig, "in binomial");
+        }
         ivec_set_nth(aux_V, Index+1, small_basis[i][Index]*weights[Index+1]);
       }
-    B = BitermMake(aux_V,1); // frees aux_V
+    B = BitermMake(aux_V,1); // frees aux_V  // BitermMake -------------------
     //VERBOSE(99) << "+++++  BitermLtDeg(B) = " << BitermLtDeg(B) << std::endl;
     Bs[++CurrLen] = B;
     if ( BitermLtDeg(B) > MaxDeg) { MaxDeg = BitermLtDeg(B); /*MaxDegB = B*/; }
   }
-  for (i=0; i<dim; i++) free(small_basis[i]);
-  free(small_basis);
+  free_int_mat(small_basis, dim);  // free_int_mat -------------------------
   // "matrices"-1 more new null_spaces of M
   for ( --matrices ; matrices>0 ; --matrices )
   {
-    dim = null_space( &small_basis, Msmall, nrows, ncols);  
+    dim = null_space( &small_basis, Msmall, nrows, ncols); // null_space ----- 
 //     for (i=0 ; i<dim ; i++)
 //     {
-//       for (Index=0 ; Index<IndNo ; Index++ )
-//         std::cout << small_basis[i][Index] << "\t ";
+//       for (int k=0; k<IndNo; ++k) std::cout << small_basis[i][k] << "\t ";
 //       std::cout << std::endl;    
 //     }
     for ( i=0 ; i<dim ; i++ )
@@ -353,18 +374,22 @@ namespace CoCoA
         else
         {
           if (std::abs(small_basis[i][Index]) >= MaxExp/weights[Index+1])
+          {
+            //std::cout << "MatKerToBListAndIndices: bef error 4";
+            free_int_mat(Msmall, nrows); // free Msmall bef error
+            ints_free(Indices1);       // free Indices1 bef error
+            INDICES = NULL;              // reset INDICES bef error
             CoCoA_THROW_ERROR2(ERR::ExpTooBig, "in binomial");
+          }
           ivec_set_nth(aux_V, Index+1, small_basis[i][Index]*weights[Index+1]);
         }
       B = BitermMake(aux_V,1); // frees aux_V
       Bs[++CurrLen] = B; 
       if ( BitermLtDeg(B) > MaxDeg) { MaxDeg = BitermLtDeg(B); /*MaxDegB = B;*/ }
     }
-    for (i=0; i<dim; i++) free(small_basis[i]);
-    free(small_basis);
+    free_int_mat(small_basis, dim);  // free small_basis bef closing
   }
-  for (i=0; i<nrows ; i++) free(Msmall[i]);
-  free(Msmall);
+  free_int_mat(Msmall, nrows);  // free Msmall bef closing
   BListSetMaxDeg (*BL, MaxDeg);
 
   /*
