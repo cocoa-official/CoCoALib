@@ -86,10 +86,10 @@ namespace CoCoA
   BigInt CatalanNumber(const MachineInt& n)
   {
     if (IsNegative(n))
-      CoCoA_THROW_ERROR("arg must be non-negative", "CatalanNumber");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const unsigned long N = uabs(n);
     if (N > std::numeric_limits<unsigned long>::max()/2)
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "CatalanNumber");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return binomial(2*N,N)/(N+1);
   }
   
@@ -97,7 +97,7 @@ namespace CoCoA
 
   std::vector<long> RandomSubsetIndices(const MachineInt& n)
   {
-    if (IsNegative(n)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomSubsetIndices");
+    if (IsNegative(n))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const long N = AsSignedLong(n);
     vector<long> ans;
     for (int i=0; i < N; ++i)
@@ -162,7 +162,7 @@ namespace CoCoA
 
   std::vector<long> RandomTupleIndices(const MachineInt& n, const MachineInt& r)
   {
-    if (IsNegative(n) || IsNegative(r)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomSubsetIndices");
+    if (IsNegative(n) || IsNegative(r))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const long N = AsSignedLong(n);
     const long R = AsSignedLong(r);
     vector<long> ans(R);
@@ -175,7 +175,7 @@ namespace CoCoA
   // Taken from Wikipedia (Random permutation); algorithm "Knuth Shuffle"
   std::vector<long> RandomPermutation(const MachineInt& n)
   {
-    if (IsNegative(n)) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomPermutation");
+    if (IsNegative(n))  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const long N = AsSignedLong(n);
     vector<long> ans(N);
     for (int i=0; i < N; ++i)
@@ -221,7 +221,7 @@ namespace CoCoA
       myN(n),
       myCard(-1),
       myCurrSubset()
-  { if (n < 0)  CoCoA_THROW_ERROR("arg 1 must be non-neg","SubsetIter ctor"); }
+  { if (n < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative); }
 
 
   // Only subsets of specified cardinality
@@ -230,10 +230,8 @@ namespace CoCoA
       myCard(card),
       myCurrSubset()
   {
-    if (n < 0)
-      CoCoA_THROW_ERROR("arg 1 must be non-neg","SubsetIter ctor");
-    if (card < 0 || card > n)
-      CoCoA_THROW_ERROR("arg 2 must be in range 0 <= card <= n", "SubsetIter ctor");
+    if (n < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (card < 0 || card > n)  CoCoA_THROW_ERROR1(ERR::OutOfRange);
     // Now place initial subset of given card in myCurrSubset
     myCurrSubset.resize(myCard);
     for (int j=0; j < myCard; ++j)
@@ -300,10 +298,8 @@ namespace CoCoA
       myCard(card),
       myCurrTuple()
   {
-    if (n < 0)
-      CoCoA_THROW_ERROR("arg 1 must be non-neg","TupleIter ctor");
-    if (card < 0)
-      CoCoA_THROW_ERROR("arg 2 must be positive", "TupleIter ctor");
+    if (n < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (card < 0)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     myCurrTuple.resize(myCard);     // Fill with initial zero tuple
   }
 

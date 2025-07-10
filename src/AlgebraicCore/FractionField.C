@@ -50,11 +50,11 @@ namespace CoCoA
     return dynamic_cast<const FractionFieldBase*>(R.myRawPtr());
   }
 
-  // const FractionFieldBase* FractionFieldPtr(const ring& R, const char* const FnName)
+  // const FractionFieldBase* FractionFieldPtr(const ring& R, const ErrorContext& FnName)
   // {
   //   const FractionFieldBase* ptr = FractionFieldPtr(R);
   //   if (ptr == nullptr)
-  //     CoCoA_THROW_ERROR(ERR::NotFracField, FnName);
+  //     CoCoA_THROW_ERROR1(ERR::NotFracField, FnName);
   //   return ptr;
   // }
 
@@ -130,7 +130,7 @@ namespace CoCoA
     const PolyRing Rx = myBaseRing();
     CoCoA_ASSERT(Rx->myIsOne(myRawDen(rawx)));
     const RingElemAlias x(Rx, myRawNum(rawx));
-    if (!IsIndet(x)) CoCoA_THROW_ERROR(ERR::ReqIndet, "FrF::myDeriv");
+    if (!IsIndet(x))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
     // Code below *ASSUMES* x is an indet (and not a power product)
     const RingElemAlias N(Rx, myRawNum(rawf));
     const RingElemAlias D(Rx, myRawDen(rawf));
@@ -791,10 +791,10 @@ namespace CoCoA
     RingElem ImNum(myCodomain);
     myInducingHom->myApply(raw(ImDen), RefDen(rawarg));
     if (IsZero(ImDen))
-      CoCoA_THROW_ERROR(ERR::BadPartialRingHomArg, "FractionFieldImpl::InducedHomImpl::myApply");
+      CoCoA_THROW_ERROR1(ERR::BadPartialRingHomArg);
     myInducingHom->myApply(raw(ImNum), RefNum(rawarg));
     if (!myCodomain->myIsDivisible(rawimage, raw(ImNum), raw(ImDen)))
-      CoCoA_THROW_ERROR(ERR::BadPartialRingHomArg, "FractionFieldImpl::InducedHomImpl::myApply");
+      CoCoA_THROW_ERROR1(ERR::BadPartialRingHomArg);
   }
 
 
@@ -816,10 +816,10 @@ namespace CoCoA
   FractionField NewFractionField(const ring& R)
   {
     if (!IsCommutative(R))
-      CoCoA_THROW_ERROR(ERR::NotCommutative, "NewFractionField (pseudo ctor)");
+      CoCoA_THROW_ERROR1(ERR::NotCommutative);
     if (!IsTrueGCDDomain(R))
-      CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "NewFractionField (pseudo ctor)");
-    if (IsZZ(R)) return RingQQ();
+      CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
+    if (IsZZ(R))  return RingQQ();
     return FractionField(new FractionFieldImpl(R)); // just make a general fraction field for now
   }
 
@@ -845,7 +845,7 @@ namespace CoCoA
   RingHom InducedHom(const FractionField& FrF, const RingHom& InducingHom)
   {
     if (domain(InducingHom) != BaseRing(FrF))
-      CoCoA_THROW_ERROR(ERR::BadInducingHom, "InducedHom(FractionField,ring,RingHom)");
+      CoCoA_THROW_ERROR1(ERR::BadInducingHom);
     return FrF->myInducedHomCtor(InducingHom);
   }
 
@@ -853,7 +853,7 @@ namespace CoCoA
   RingElem num(ConstRefRingElem q)
   {
     if (!IsFractionField(owner(q)))
-      CoCoA_THROW_ERROR(ERR::NotElemFrF, "num(RingElem)");
+      CoCoA_THROW_ERROR1(ERR::NotElemFrF);
     const FractionField F = owner(q);
     return RingElemAlias(BaseRing(F), F->myRawNum(raw(q)));
   }
@@ -862,7 +862,7 @@ namespace CoCoA
   RingElem den(ConstRefRingElem q)
   {
     if (!IsFractionField(owner(q)))
-      CoCoA_THROW_ERROR(ERR::NotElemFrF, "den(RingElem)");
+      CoCoA_THROW_ERROR1(ERR::NotElemFrF);
     const FractionField F = owner(q);
     return RingElemAlias(BaseRing(F), F->myRawDen(raw(q)));
   }

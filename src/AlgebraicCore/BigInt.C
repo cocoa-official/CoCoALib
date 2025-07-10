@@ -56,16 +56,16 @@ namespace CoCoA
   {
     mpz_init(myRepr);
 //     if (base != 0 && (base < 2 || base > 36))
-//       CoCoA_THROW_ERROR(ERR::BadNumBase, "BigInt(string)");
+//       CoCoA_THROW_ERROR1(ERR::BadNumBase);
     if (mpz_set_str(myRepr, str.c_str(), 10) != 0)
-      CoCoA_THROW_ERROR(ERR::BadArg, "BigIntFromString");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "BigIntFromString");
   }
 
 
   BigInt::BigInt(const mpz_t N, CopyFromMPZ /*NotUsed*/)
   {
     if (N == nullptr)
-      CoCoA_THROW_ERROR(ERR::NullPtr, "BigIntFromMPZ");
+      CoCoA_THROW_ERROR2(ERR::NullPtr, "BigIntFromMPZ");
 
     mpz_init_set(myRepr, N);
   }
@@ -110,7 +110,7 @@ namespace CoCoA
     std::string ConvertToString(const BigInt& src, int base)
     {
       if (base < 2 || base > 36)
-        CoCoA_THROW_ERROR(ERR::BadNumBase, "ConvertToString(BigInt,int)");
+        CoCoA_THROW_ERROR1(ERR::BadNumBase);
       const size_t digits = mpz_sizeinbase(mpzref(src), base);
       string ans; ans.reserve(digits+1); // +1 to allow for minus sign (overflow check?)
       vector<char> buffer(digits+2); // +2 to allow for minus sign and terminating NUL
@@ -126,7 +126,7 @@ namespace CoCoA
   {
     if (!out) return out;  // short-cut for bad ostreams
     CoCoA_ASSERT(IsDecimal(out));
-//???redmine 1547    if (!IsDecimal(out)) CoCoA_THROW_ERROR("ostream is not in \"decimal\" mode", "op<< BigInt");
+//???redmine 1547    if (!IsDecimal(out)) CoCoA_THROW_ERROR1("ostream is not in \"decimal\" mode");
 //    Using GMPXX next two lines should do it all...
 //    mpz_class Ncopy(N.myRepr);
 //    return out << Ncopy;
@@ -161,7 +161,7 @@ namespace CoCoA
   // // Note: base must be 8, 10 or 16 (otherwise always gives false)
   // bool IsDigitBase(char c, int base) // base = 8, 10 or 16
   // {
-  //   if (!(base == 10 || base == 8 || base == 16)) CoCoA_THROW_ERROR(ERR::BadArg, "IsDigitBase");
+  //   if (!(base == 10 || base == 8 || base == 16))  CoCoA_THROW_ERROR2(ERR::BadArg, "Base must be 10, 8 or 16");
   //   switch (base)
   //   {
   //   case 10:
@@ -180,11 +180,10 @@ namespace CoCoA
   // Leaves "in" in good state; if "in" was already not good, an exc is thrown
   std::string ScanUnsignedIntegerLiteral(std::istream& in)
   {
-    static const char* const FnName = "ScanUnsignedIntegerLiteral";
     if (!in.good())
-      CoCoA_THROW_ERROR("istream is not good", FnName);
+      CoCoA_THROW_ERROR1("istream is not good");
     if (!IsDecimal(in))
-      CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", FnName);
+      CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
 
     // Read in as many digits as possible.
     string digits;
@@ -202,21 +201,20 @@ namespace CoCoA
   
   std::istream& operator>>(std::istream& in, BigInt& N)
   {
-    static const char* const FnName = "operator>> for BigInt";
-    if (!in.good()) CoCoA_THROW_ERROR("istream is not good", FnName);
-    if (!IsDecimal(in)) CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", FnName);
+    if (!in.good())  CoCoA_THROW_ERROR1("istream is not good");
+    if (!IsDecimal(in))  CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
     ws(in);
 
     // Look for sign of number.
     const char FirstChar = in.peek(); // this may set eofbit
-    if (in.eof()) CoCoA_THROW_ERROR("EOF", FnName);
+    if (in.eof())  CoCoA_THROW_ERROR1("EOF");
     if (FirstChar == '-' || FirstChar == '+')  in.ignore();
     const string digits = ScanUnsignedIntegerLiteral(in); // leaves "in" in good state
     if (digits.empty())
-      CoCoA_THROW_ERROR("No decimal digits in input", FnName);
+      CoCoA_THROW_ERROR1("No decimal digits in input");
     // We found some digits, so convert them into a number.
     N = BigIntFromString(digits); // could throw if number is huge.
-    if (FirstChar == '-') negate(N);
+    if (FirstChar == '-')  negate(N);
     return in;
   }
 
@@ -230,7 +228,7 @@ namespace CoCoA
 
   OpenMathInput& operator>>(OpenMathInput& OMIn, BigInt& /*N*/)
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "OpenMathInput fns");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return OMIn;
   }
 
@@ -262,9 +260,9 @@ namespace CoCoA
   BigInt& BigInt::operator/=(const BigInt& rhs)
   {
     if (IsZero(rhs))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigInt /= BigInt");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
 //???    if (rhs < 0 && !mpz_divisible_p(myRepr, mpzref(rhs)))
-//???      CoCoA_THROW_ERROR(ERR::IntDivByNeg, "BigInt /= BigInt");
+//???      CoCoA_THROW_ERROR1(ERR::IntDivByNeg);
     mpz_tdiv_q(myRepr, myRepr, rhs.myRepr);
     return *this;
   }
@@ -273,9 +271,9 @@ namespace CoCoA
   BigInt& BigInt::operator%=(const BigInt& rhs)
   {
     if (IsZero(rhs))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "BigInt %= BigInt");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
 //???    if (rhs < 0 && !mpz_divisible_p(myRepr, mpzref(rhs)))
-//???      CoCoA_THROW_ERROR(ERR::IntDivByNeg, "BigInt %= BigInt");
+//???      CoCoA_THROW_ERROR1(ERR::IntDivByNeg);
     mpz_tdiv_r(myRepr, myRepr, rhs.myRepr);
     return *this;
   }
@@ -328,7 +326,7 @@ namespace CoCoA
   BigInt& BigInt::operator/=(const MachineInt& rhs)
   {
     if (IsZero(rhs))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigInt /= MachineInt");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (IsNegative(rhs))
       mpz_neg(myRepr, myRepr);
 
@@ -340,7 +338,7 @@ namespace CoCoA
   BigInt& BigInt::operator%=(const MachineInt& rhs)
   {
     if (IsZero(rhs))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroModulus, "BigInt %= MachineInt");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroModulus);
     mpz_tdiv_r_ui(myRepr, myRepr, uabs(rhs));
     return *this;
   }

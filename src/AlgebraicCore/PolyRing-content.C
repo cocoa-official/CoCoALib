@@ -48,7 +48,7 @@ namespace CoCoA
   RingElem content(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "content(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     const PolyRing Rx = owner(f);
     const ring R = CoeffRing(Rx);
 
@@ -66,7 +66,7 @@ namespace CoCoA
       Rx->myContent(raw(ans), raw(f));
       return ans;
     }
-    CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "content(f)");
+    CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     return zero(R); // never reached, just to keep compiler quiet
   }
 
@@ -74,16 +74,16 @@ namespace CoCoA
   RingElem CommonDenom(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "CommonDenom(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     const PolyRing Qx = owner(f);
     const ring Q = CoeffRing(Qx);
     if (!IsFractionField(Q))
-      CoCoA_THROW_ERROR(ERR::NotElemFrF, "CoeffRing inside CommonDenom(f)");
+      CoCoA_THROW_ERROR1(ERR::NotElemFrF);
     const ring R = BaseRing(Q);
     if (!IsTrueGCDDomain(R))
-      CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "BaseRing of CoeffRing inside CommonDenom(f)");
+      CoCoA_THROW_ERROR2(ERR::NotTrueGCDDomain, "BaseRing of CoeffRing");
 //     if (IsField(R))  // see documentation (Bugs section)
-//       CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "content(f)");
+//       CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     if (IsZero(f)) return one(R);
 
     RingElem ans(R);
@@ -96,7 +96,7 @@ namespace CoCoA
   {
     if (v.empty()) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     if (!HasUniqueOwner(v))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "CommonDenom(vector<RingElem> v)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     RingElem q = CommonDenom(v[0]);
     for (long i=1; i<len(v); ++i)  q = lcm(q, CommonDenom(v[i]));
     return q;
@@ -106,16 +106,16 @@ namespace CoCoA
   RingElem ClearDenom(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "ClearDenom(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     const PolyRing Qx = owner(f);
     const ring Q = CoeffRing(Qx);
     if (!IsFractionField(Q))
-      CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "CoeffRing inside ClearDenom(f)");
+      CoCoA_THROW_ERROR2(ERR::NotFracField, "[CoeffRing]");
     const ring R = BaseRing(Q);
     if (!IsTrueGCDDomain(R))
-      CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "BaseRing of CoeffRing inside ClearDenom(f)");
+      CoCoA_THROW_ERROR2(ERR::NotTrueGCDDomain, "[BaseRing of CoeffRing]");
 //     if (IsField(R))  // see documentation (Bugs section)
-//       CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "content(f)");
+//       CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     if (IsZero(f)) return zero(Qx);
 
     RingElem ans(Qx);
@@ -143,7 +143,7 @@ namespace CoCoA
       if (IsQQ(P)) { const BigRat q = ConvertTo<BigRat>(f); N = num(q); D = den(q); return; }
 //      if (IsFractionField(P)) ???
       if (!IsPolyRing(P) || !IsZero(characteristic(P)))
-        CoCoA_THROW_ERROR("Expected elem of poly ring of char 0", "prim_NumDen");
+        CoCoA_THROW_ERROR1("Expected elem of poly ring of char 0"); // ??? improve err mesg???
       N = 0; D = 1;
       BigInt n,d; // used in loops below
       if (IsDenseUPolyRing(P))
@@ -178,7 +178,7 @@ namespace CoCoA
   {
     const ring& P = owner(f);
     if (!IsPolyRing(P) || characteristic(P) != 0)
-      CoCoA_THROW_ERROR("Expected elem of poly ring of char 0", "prim");
+      CoCoA_THROW_ERROR1("Expected elem of poly ring of char 0");  // ??? improve err mesg ???
     if (IsZero(f)) return f;
     BigInt N, D;
     prim_NumDen(N,D, f);

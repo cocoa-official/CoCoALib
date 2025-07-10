@@ -79,13 +79,13 @@ namespace CoCoA
     FFselect(Fp);
     const long d = StdDeg(f);
     DUPFF ans = DUPFFnew(d);
-    { FFelem* CoeffVec = ans->coeffs; for (long i=0; i<=d; ++i) CoeffVec[i] = 0; }
+    { FFelem* CoeffVec = ans->coeffs; for (long i=0; i<=d; ++i)  CoeffVec[i] = 0; }
     for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
     {
       BigInt c;
-      if (!IsInteger(c, coeff(it))) { FFdtor(Fp); CoCoA_THROW_ERROR("coeff not integer","ConvertToDUPFF"); }
+      if (!IsInteger(c, coeff(it)))  { FFdtor(Fp); CoCoA_THROW_ERROR1("coeff not integer"); }  //  ??? BUG ???
       long coeff = ConvertTo<long>(c);
-      if (coeff < 0) coeff += p;
+      if (coeff < 0)  coeff += p;
       const long exp = StdDeg(PP(it));
       ans->coeffs[exp] = coeff;
     }
@@ -128,7 +128,7 @@ namespace CoCoA
 //     {
 // //      BigInt c;
 // //      if (!IsInteger(c, coeff(it)))
-// //        CoCoA_THROW_ERROR("coeff not in Z","factorize");
+// //        CoCoA_THROW_ERROR1("coeff not in Z");
 //       exponents(expv, PP(it));
 //       int *exps = (int*)malloc(nvars*sizeof(int)); // block absorbed by g
 //       std::copy(expv.begin(), expv.end(), exps);
@@ -154,7 +154,7 @@ namespace CoCoA
     {
       BigInt c;
       if (!IsInteger(c, coeff(it)))
-        CoCoA_THROW_ERROR("coeff not in Z","factorize");
+        CoCoA_THROW_ERROR1("coeff not in ZZ");
       exponents(expv, PP(it));
       int *exps = (int*)malloc(nvars*sizeof(int)); // block absorbed by g
       std::copy(expv.begin(), expv.end(), exps);
@@ -300,7 +300,7 @@ namespace CoCoA
       return ans;
     }
 
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "GCD_DMPZ");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return f; // just to keep compiler quiet
   }
 
@@ -312,9 +312,9 @@ namespace CoCoA
         && IsPolyRing(BaseRing(CoeffRing(R))) && IsField(CoeffRing(R)))
       return factor_AlgExtn(f);
     if (IsField(R) || !IsTrueGCDDomain(R))
-      CoCoA_THROW_ERROR("factorization not supported", "factor(RingElem)");
+      CoCoA_THROW_ERROR1("factorization not supported");
     if (IsZero(f))
-      CoCoA_THROW_ERROR(ERR::ReqNonZero, "factor(x)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     if (IsZZ(R))
     {
       // Factorization is actually over ZZ, so use factor(BigInt) to do the work!
@@ -327,9 +327,9 @@ namespace CoCoA
       return factorization<RingElem>(facs, IntFacs.myMultiplicities(), RingElem(R, IntFacs.myRemainingFactor()));
     }
     if (!IsPolyRing(R))
-      CoCoA_THROW_ERROR(ERR::ReqPolyRing, "factor(RingElem)");
+      CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
 /////    if (!IsSparsePolyRing(R))
-/////      CoCoA_THROW_ERROR(ERR::NYI, "factor(RingElem)  NYI over DUP");
+/////      CoCoA_THROW_ERROR1(ERR::NYI, "NYI over DUP");
     const SparsePolyRing P = owner(f);
     if (IsQQ(CoeffRing(P)))
     {
@@ -369,7 +369,7 @@ namespace CoCoA
       // Case FF(q)[x,y,z,...]
       ring FFq = CoeffRing(P);
       if (LogCardinality(FFq) > 1)
-        CoCoA_THROW_ERROR(ERR::NYI, "Factorization over alg extn of finite field");
+        CoCoA_THROW_ERROR2(ERR::NYI, "Factorization over alg extn of finite field");
       long var;
       if ((var = UnivariateIndetIndex(f)) >= 0)
       {
@@ -401,9 +401,9 @@ namespace CoCoA
 //         DUPFFlist_dtor(facs);
 //         return factorization<RingElem>(irreds, multiplicity, CoeffEmbeddingHom(P)(LC(f)));
       }
-      CoCoA_THROW_ERROR(ERR::NYI, "Multivariate factorization over finite field");
+      CoCoA_THROW_ERROR2(ERR::NYI, "Multivariate factorization over finite field");
     }
-    CoCoA_THROW_ERROR(ERR::NYI, "Factorization not in QQ[x,y,...]  or in ZZ/(p)[x,y,...]");
+    CoCoA_THROW_ERROR2(ERR::NYI, "Factorization not in QQ[x,y,...]  or in ZZ/(p)[x,y,...]");
     return factorization<RingElem>(vector<RingElem>(),vector<long>(),RingElem(P)); // NEVER EXECUTED, just to keep compiler quiet
   }
 
@@ -412,13 +412,13 @@ namespace CoCoA
   bool IsIrredPoly(ConstRefRingElem f)
   { 
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqPolyRing, "IsIrredPoly");
+      CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
  // ??? warning: factorize syntax might change: now only for multivariate
     if (IsConstant(f)) return IsIrred(LC(f));
     // ANNA: should do it for ZZ as well (taking care of constant factors)
     const PolyRing P = owner(f);
     if (!IsZZ(CoeffRing(P)) && !IsField(CoeffRing(P)))
-      CoCoA_THROW_ERROR(ERR::NYI, "IsIrredPoly: CoeffRing must be ZZ or a field");
+      CoCoA_THROW_ERROR2(ERR::NYI, "CoeffRing must be ZZ or a field");
     if ( IsSparsePolyRing(P) )
     {
       const factorization<RingElem> facs = factor(f);
@@ -444,7 +444,7 @@ namespace CoCoA
   {
     const ring& P = owner(f);
     const ring& k = CoeffRing(P);
-    if (!IsZZ(k) && !IsField(k)) CoCoA_THROW_ERROR(ERR::ReqField, "RadicalOfPoly");
+    if (!IsZZ(k) && !IsField(k))  CoCoA_THROW_ERROR1(ERR::ReqField);
     if (IsZero(f)) return f;
     const bool OverZZ = IsZZ(k);
     const BigInt PseudoContent = OverZZ ? ConvertTo<BigInt>(content(f)) : BigInt(1);
@@ -705,20 +705,19 @@ namespace CoCoA
 
   factorization<RingElem> SqFreeFactor(ConstRefRingElem f)
   {
-    const char* const FnName = "SqFreeFactor";
     const ring& P = owner(f);
     if (!IsPolyRing(P))
-      CoCoA_THROW_ERROR(ERR::NYI, FnName);
+      CoCoA_THROW_ERROR1(ERR::NYI);
     if (!IsTrueGCDDomain(P))
-      CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, FnName);
+      CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     if (IsZero(f))
-      CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqNonZero);
 
     const ring& k = CoeffRing(P);
     //    if (IsQQ(k)) return SqFreeFactorChar0(f);  // ANNA: true for Ch0???
-    if (IsZero(characteristic(k))) return SqFreeFactorChar0(f);
-    if (IsFiniteField(k)) return SqFreeFactorCharP(f);
-    if (IsPrime(characteristic(k))) return SqFreeFactorCharP(f); // BUG BUG  DODGY!!!
+    if (IsZero(characteristic(k)))  return SqFreeFactorChar0(f);
+    if (IsFiniteField(k)) return  SqFreeFactorCharP(f);
+    if (IsPrime(characteristic(k)))  return SqFreeFactorCharP(f); // BUG BUG  DODGY!!!
     return SqFreeFactor_generic(f);
   }
 
@@ -760,15 +759,14 @@ namespace CoCoA
 
   factorization<RingElem> ContentFreeFactor(ConstRefRingElem f)
   {
-    const char* const FnName = "ContentFreeFactor";
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
     const SparsePolyRing P = owner(f);
     const ring& k = CoeffRing(P);
     if (!IsZZ(k) && !IsField(k) && !IsTrueGCDDomain(k))
-      CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, FnName); //???? what error to give here???
+      CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain); //???? what error to give here???
     if (IsZero(f))
-      CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqNonZero);
 
     const RingElem PseudoContent = (IsZZ(k)) ? CoeffEmbeddingHom(P)(content(f)) : CoeffEmbeddingHom(P)(LC(f));
     if (NumIndets(P) == 1) { factorization<RingElem> ans(PseudoContent); ans.myAppend(f/PseudoContent, 1); return ans; }

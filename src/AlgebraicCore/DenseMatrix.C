@@ -283,7 +283,7 @@ namespace CoCoA
 //   bool DenseMatImpl::myIsZeroRow(long i) const
 //   {
 //     if (i >= myNumRows())
-//       CoCoA_THROW_ERROR(ERR::BadRowIndex, "DenseMatImpl::myIsZeroRow");
+//       CoCoA_THROW_ERROR1(ERR::BadRowIndex);
 //     for (long j=0; j < myNumCols(); ++j)
 //       if (!myR->myIsZero(myEntries[i][j])) return false;
 //     return true;
@@ -293,7 +293,7 @@ namespace CoCoA
 //   bool DenseMatImpl::myIsZeroCol(long j) const
 //   {
 //     if (j >= myNumCols())
-//       CoCoA_THROW_ERROR(ERR::BadColIndex, "DenseMatImpl::myIsZeroCol");
+//       CoCoA_THROW_ERROR1(ERR::BadColIndex);
 //     for (long i=0; i < myNumRows(); ++i)
 //       if (!myR->myIsZero(myEntries[i][j])) return false;
 //     return true;
@@ -302,11 +302,10 @@ namespace CoCoA
 
   void DenseMatImpl::myRowMul(long i, ConstRefRingElem c)
   {
-    const char* const FnName = "DenseMatImpl::myRowMul";
     myCheckRowIndex(i, CoCoA_ERROR_CONTEXT);
     if (owner(c) != myR)
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
-    if (IsOne(c)) return;
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (IsOne(c))  return;
     vector<RingElem> ans;
     ans.resize(myNumCols(), zero(myR));
     for (long j = 0; j < myNumCols(); ++j)
@@ -319,11 +318,10 @@ namespace CoCoA
 
   void DenseMatImpl::myColMul(long j, ConstRefRingElem c)
   {
-    const char* const FnName = "DenseMatImpl::myColMul";
     myCheckColIndex(j, CoCoA_ERROR_CONTEXT);
     if (owner(c) != myR)
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
-    if (IsOne(c)) return;
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (IsOne(c))  return;
     vector<RingElem> ans;
     ans.resize(myNumRows(), zero(myR));
     for (long i = 0; i < myNumRows(); ++i)
@@ -336,12 +334,11 @@ namespace CoCoA
 
   void DenseMatImpl::myAddRowMul(long i1, long i2, ConstRefRingElem c)
   {
-    const char* const FnName = "DenseMatImpl::myAddRowMul";
     myCheckRowIndex(i1, CoCoA_ERROR_CONTEXT);
     myCheckRowIndex(i2, CoCoA_ERROR_CONTEXT);
     if (owner(c) != myR)
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
-    if (IsZero(c)) return;
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (IsZero(c))  return;
     const long ncols = myNumCols();
     vector<RingElem> ans(ncols, zero(myR));
     for (long j = 0; j < ncols; ++j)
@@ -358,11 +355,10 @@ namespace CoCoA
 
   void DenseMatImpl::myAddColMul(long j1, long j2, ConstRefRingElem c)
   {
-    const char* const FnName = "DenseMatImpl::myAddColMul";
     myCheckColIndex(j1, CoCoA_ERROR_CONTEXT);
     myCheckColIndex(j2, CoCoA_ERROR_CONTEXT);
     if (owner(c) != myR)
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (IsZero(c)) return;
     vector<RingElem> ans;
     ans.resize(myNumRows(), zero(myR));
@@ -478,7 +474,7 @@ namespace CoCoA
     /*??!!useless check!!??*/    if (IsIntegralDomain(myR))
     { d = DetByBareiss(ConstMatrixView(this)); return; }
 //BUG SHOULD NEVER GET HERE --> restructure code!
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "densematrix::myDet");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
   }
 
 
@@ -501,7 +497,7 @@ namespace CoCoA
   matrix NewDenseMat(const ring& R, const std::vector< std::vector<long> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMat()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumRows = len(VV);
     if (NumRows == 0) return NewDenseMat(R, 0, 0);
     const long NumCols = len(VV[0]);
@@ -515,7 +511,7 @@ namespace CoCoA
   matrix NewDenseMat(const ring& R, const std::vector< std::vector<BigInt> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMat()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumRows = len(VV);
     if (NumRows == 0) return NewDenseMat(R, 0, 0);
     const long NumCols = len(VV[0]);
@@ -529,7 +525,7 @@ namespace CoCoA
   matrix NewDenseMat(const ring& R, const std::vector< std::vector<BigRat> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMat()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumRows = len(VV);
     if (NumRows == 0) return NewDenseMat(R, 0, 0);
     const long NumCols = len(VV[0]);
@@ -543,7 +539,7 @@ namespace CoCoA
   matrix NewDenseMat(const ring& R, const std::vector< std::vector<RingElem> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMat()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumRows = len(VV);
     if (NumRows == 0) return NewDenseMat(R, 0, 0);
     const long NumCols = len(VV[0]);
@@ -558,7 +554,7 @@ namespace CoCoA
   matrix NewDenseMatTranspose(const ring& R, const std::vector< std::vector<long> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMatTranspose()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumCols = len(VV);
     if (NumCols == 0) return NewDenseMat(R, 0, 0);
     const long NumRows = len(VV[0]);
@@ -572,7 +568,7 @@ namespace CoCoA
   matrix NewDenseMatTranspose(const ring& R, const std::vector< std::vector<BigInt> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMatTranspose()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumCols = len(VV);
     if (NumCols == 0) return NewDenseMat(R, 0, 0);
     const long NumRows = len(VV[0]);
@@ -586,7 +582,7 @@ namespace CoCoA
   matrix NewDenseMatTranspose(const ring& R, const std::vector< std::vector<BigRat> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMatTranspose()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumCols = len(VV);
     if (NumCols == 0) return NewDenseMat(R, 0, 0);
     const long NumRows = len(VV[0]);
@@ -600,7 +596,7 @@ namespace CoCoA
   matrix NewDenseMatTranspose(const ring& R, const std::vector< std::vector<RingElem> >& VV)
   {
     if (!IsRectangular(VV))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, "NewDenseMatTranspose()");
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const long NumCols = len(VV);
     if (NumCols == 0) return NewDenseMat(R, 0, 0);
     const long NumRows = len(VV[0]);

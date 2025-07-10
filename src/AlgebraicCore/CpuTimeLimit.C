@@ -69,21 +69,19 @@ namespace CoCoA
       myVariability(QuantifyVariability(v)),
       myScaleFactor(1)
   {
-    static const char* const FnName = "CpuTimeLimit ctor";
-    if (interval < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
-    if (interval > 1000000) CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
-///    if (myVariability < 1) CoCoA_THROW_ERROR(ERR::ReqPositive, FnName);
-///    if (myVariability > 256) CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    if (interval < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (interval > 1000000)  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
+///    if (myVariability < 1)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
+///    if (myVariability > 256)  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
   }
 
   
   void CpuTimeLimit::myReset(IterationVariability v) const
   {
-///    static const char* const FnName = "myReset";
     if (IamUnlimited()) return; // do nothing
 ///    long v = AsSignedLong(variability);
-///    if (v < 1) CoCoA_THROW_ERROR(ERR::ReqPositive, FnName);
-///    if (v > 256) CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+///    if (v < 1)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
+///    if (v > 256)  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     myCheckingInterval = 1;
     myCountdown = 1;
     myRefPt1Count = myTotalCount;

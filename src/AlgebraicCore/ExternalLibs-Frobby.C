@@ -188,7 +188,7 @@ namespace CoCoA
         string msg = operation + " (Frobby interface)";
         for (long i=0; i<len(gens(I)); ++i) // zeroes are acceptable
           if ((!IsZero(gens(I)[i]) && !IsMonomial(gens(I)[i])))
-            CoCoA_THROW_ERROR(ERR::ReqMonomialGens, msg);
+            CoCoA_THROW_ERROR2(ERR::ReqMonomialGens, msg);  // BUG BUG  ???muse  ErrorContext ???
       }
     }
   } // end of namespace anonymous
@@ -199,7 +199,7 @@ namespace CoCoA
     MustHaveMonomialGens(I, "FrbAlexanderDual");
     const SparsePolyRing polyRing = RingOf(I);
     if (PPM(polyRing) != owner(pp))
-      CoCoA_THROW_ERROR(ERR::MixedPPMs, "FrbAlexanderDual");
+      CoCoA_THROW_ERROR1(ERR::MixedPPMs);
 
     const std::size_t count = NumIndets(polyRing);
 

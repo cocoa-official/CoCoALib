@@ -174,7 +174,7 @@ namespace CoCoA
       {
         coord = OrigPt[i] * ScaleFactor[i];
         if (!IsRational(Q, coord) || !IsConvertible(ScaledPt[i], Q))
-          CoCoA_THROW_ERROR("Cannot convert to double", "ScalePt");
+          CoCoA_THROW_ERROR1("Cannot convert to double");
       }
     }
 
@@ -449,28 +449,28 @@ namespace CoCoA
 
   void PreprocessCheckArgs(const std::vector<ApproxPts::PointR>& OrigPts,
                            const std::vector<RingElem>& tolerance,
-                           const char* const FnName)
+                           const ErrorContext& FnName)
   {
     // Some sanity checks on the inputs.
     const long NumPts = len(OrigPts);
-    if (NumPts == 0) CoCoA_THROW_ERROR(ERR::ReqNonEmpty, FnName);
+    if (NumPts == 0)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqNonEmpty, FnName);
     const long dim = len(OrigPts[0]);
-    if (dim == 0) CoCoA_THROW_ERROR(ERR::ReqNonEmpty, FnName);
-    if (len(tolerance) != dim) CoCoA_THROW_ERROR(ERR::IncompatDims, FnName);
+    if (dim == 0)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqNonEmpty, FnName);
+    if (len(tolerance) != dim)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::IncompatDims, FnName);
 
     // Check that all points lie in the same space over the same ring.
     ring R = owner(OrigPts[0][0]);
-    if (!IsOrderedDomain(R)) CoCoA_THROW_ERROR(ERR::ReqOrdDom, FnName);
+    if (!IsOrderedDomain(R))  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqOrdDom, FnName);
     for (long i=0; i < NumPts; ++i)
     {
-      if (len(OrigPts[i]) != dim) CoCoA_THROW_ERROR(ERR::IncompatDims, FnName);
+      if (len(OrigPts[i]) != dim)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::IncompatDims, FnName);
       for (long j=0; j < dim; ++j)
-        if (owner(OrigPts[i][j]) != R) CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+        if (owner(OrigPts[i][j]) != R)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedRings, FnName);
     }
     for (long j=0; j < dim; ++j)
     {
-      if (owner(tolerance[j]) != R) CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
-      if (tolerance[j] < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+      if (owner(tolerance[j]) != R)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedRings, FnName);
+      if (tolerance[j] < 0)  CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqNonNegative, FnName);
     }
   }
 
@@ -483,7 +483,7 @@ namespace CoCoA
                          const std::vector<ApproxPts::PointR>& OrigPts,
                          std::vector<RingElem> tolerance)
   {
-    PreprocessCheckArgs(OrigPts, tolerance, "PreprocessPtsGrid");
+    PreprocessCheckArgs(OrigPts, tolerance, CoCoA_ERROR_CONTEXT);
     const long NumPts = len(OrigPts);
 
     // Normalization effectively makes the tolerance in each direction equal to 1.
@@ -525,7 +525,7 @@ namespace CoCoA
                          const std::vector<ApproxPts::PointR>& OrigPts,
                          std::vector<RingElem> tolerance)
   {
-    PreprocessCheckArgs(OrigPts, tolerance, "PreprocessPtsAggr");
+    PreprocessCheckArgs(OrigPts, tolerance, CoCoA_ERROR_CONTEXT);
     const long NumPts = len(OrigPts);
     const long dim = len(tolerance);
 
@@ -625,7 +625,7 @@ namespace CoCoA
                            const std::vector<ApproxPts::PointR>& OrigPts,
                            std::vector<RingElem> tolerance)
   {
-    PreprocessCheckArgs(OrigPts, tolerance, "PreprocessPtsSubdiv");
+    PreprocessCheckArgs(OrigPts, tolerance, CoCoA_ERROR_CONTEXT);
     const long NumPts = len(OrigPts);
 
     // Normalization effectively makes the tolerance in each direction equal to 1.

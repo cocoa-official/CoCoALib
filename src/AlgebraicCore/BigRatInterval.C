@@ -34,7 +34,7 @@ namespace CoCoA
   BigRatInterval::BigRatInterval(const BigRat& lwb, const BigRat& upb):
       myMin(lwb),
       myMax(upb)
-  { if (lwb > upb) CoCoA_THROW_ERROR(ERR::IncompatArgs, "BigRatInterval ctor"); }
+  { if (lwb > upb) CoCoA_THROW_ERROR1(ERR::IncompatArgs); }
 
 
   BigRatInterval operator*(const BigRat& A, const BigRatInterval& B)
@@ -82,7 +82,7 @@ namespace CoCoA
 // impl is simple and obviously correct, may not be so efficient...
   BigRatInterval operator/(const BigRatInterval& A, const BigRatInterval& B)
   {
-    if (min(B) <= 0 && max(B) >= 0) CoCoA_THROW_ERROR(ERR::DivByZero, "op/ for BigRatInterval");
+    if (min(B) <= 0 && max(B) >= 0)  CoCoA_THROW_ERROR1(ERR::DivByZero);
     const BigRat QuotMinMin = min(A)/min(B);
     const BigRat QuotMinMax = min(A)/max(B);
     const BigRat QuotMaxMin = max(A)/min(B);
@@ -113,12 +113,12 @@ namespace CoCoA
   {
     if (min(A) < min(B))
     {
-      if (max(A) < min(B)) CoCoA_THROW_ERROR(ERR::IncompatArgs, "merge(BigRatInterval,BigRatInterval)");
+      if (max(A) < min(B))  CoCoA_THROW_ERROR1(ERR::IncompatArgs);
       return BigRatInterval(min(A), max(max(A), max(B)));
     }
     // Here min(B) <= min(A)
       if (max(B) < min(A))
-        CoCoA_THROW_ERROR(ERR::IncompatArgs, "merge(BigRatInterval,BigRatInterval)");
+        CoCoA_THROW_ERROR1(ERR::IncompatArgs);
       return BigRatInterval(min(B), max(max(A), max(B)));
   }
 

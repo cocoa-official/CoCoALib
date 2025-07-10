@@ -86,20 +86,20 @@ namespace CoCoA
 
   SmallFpImpl::value LC(const DUPFp& f)
   {
-    if (f.myCoeffs.empty()) return zero(SmallFp);
+    if (f.myCoeffs.empty())  return zero(SmallFp);
     return f.myCoeffs.back();
   }
 
 
   void MakeMonic(DUPFp& f)
   {
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::DivByZero, "MakeMonic");
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     f /= LC(f);
   }
 
   DUPFp monic(const DUPFp& f)
   {
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::DivByZero, "monic");
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     return f/LC(f);
   }
 
@@ -139,8 +139,8 @@ namespace CoCoA
   {
     const SmallFpImpl& ModP = f.myArith;
     if (IsZero(c))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "op/(DUPFp,n)");
-    if (IsOne(c)) return f;
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
+    if (IsOne(c))  return f;
     return f * ModP.myRecip(c);
   }
 
@@ -149,9 +149,9 @@ namespace CoCoA
   {
     const SmallFpImpl& ModP = f.myArith;
     if (IsZero(c))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "op/=(DUPFp,n)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
 
-    if (IsOne(c)) return f;
+    if (IsOne(c))  return f;
     f *= ModP.myRecip(c);
     // const SmallFpImpl::value crecip = ModP.myRecip(c);
     // const long N = len(f.myCoeffs);
@@ -308,7 +308,7 @@ namespace CoCoA
 
   DUPFp square(const DUPFp& f)
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "square for DUPFp");
+    CoCoA_THROW_ERROR1(ERR::NYI);
 return f*f;
 //     if (IsZero(f)) return DUPFp(0, f.myArith);
 //     const long df = deg(f);
@@ -364,8 +364,8 @@ return f*f;
 
   DUPFp power(const DUPFp& base, long exp)
   {
-    if (exp < 0) CoCoA_THROW_ERROR(ERR::NegExp, "power(DUPFp,n)");
-    if (exp == 0) { DUPFp ans(0, base.myArith); AssignOne(ans); return ans; }
+    if (exp < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
+    if (exp == 0)  { DUPFp ans(0, base.myArith); AssignOne(ans); return ans; }
     if (IsZero(base))
     {
       DUPFp ans(0, base.myArith);
@@ -437,8 +437,8 @@ return f*f;
   DUPFp operator/(const DUPFp& num, const DUPFp& den)
   {
     CoCoA_ASSERT(num.myArith == den.myArith);
-    if (IsZero(den)) CoCoA_THROW_ERROR(ERR::DivByZero, "operator/ for DUPFp");
-    if (IsZero(num)) return DUPFp(0, num.myArith);//??? return num;???
+    if (IsZero(den))  CoCoA_THROW_ERROR1(ERR::DivByZero);
+    if (IsZero(num))  return DUPFp(0, num.myArith);//??? return num;???
     const long dnum = deg(num);
     const long dden = deg(den);
     DUPFp quot(dnum-dden, num.myArith);
@@ -450,8 +450,8 @@ return f*f;
   DUPFp operator%(const DUPFp& num, const DUPFp& den)
   {
     CoCoA_ASSERT(num.myArith == den.myArith);
-    if (IsZero(den)) CoCoA_THROW_ERROR(ERR::DivByZero, "operator/ for DUPFp");
-    if (IsZero(num)) return DUPFp(0, num.myArith);
+    if (IsZero(den))  CoCoA_THROW_ERROR1(ERR::DivByZero);
+    if (IsZero(num))  return DUPFp(0, num.myArith);
     const long dnum = deg(num);
     const long dden = deg(den);
     DUPFp quot(dnum-dden, num.myArith);
@@ -464,13 +464,13 @@ return f*f;
   void QuoRem(DUPFp& q, DUPFp& r, const DUPFp& num, const DUPFp& den)
   {
     if (&q == &r || &q == &num || &q == &den || &r == &num || &r == &den)
-      CoCoA_THROW_ERROR(ERR::BadArg, "QuoRem args alias");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "Aliasing between args");
     const SmallFpImpl& ModP = num.myArith;
     CoCoA_ASSERT(den.myArith == ModP);
     CoCoA_ASSERT(q.myArith == ModP);
     CoCoA_ASSERT(r.myArith == ModP);
     if (IsZero(den))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "QuoRem for DUPFp");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (IsZero(num))
     { AssignZero(q); AssignZero(r); return; }
 
@@ -599,11 +599,11 @@ return f*f;
 
   DUPFp gcd(const DUPFp& f, const DUPFp& g)
   {
-    if (f.myArith != g.myArith) CoCoA_THROW_ERROR(ERR::MixedRings, "gcd for DUPFp");
-    if (IsZero(f)) return monic(g);
-    if (IsZero(g)) return monic(f);
-    if (deg(f) == 0) return monic(f);
-    if (deg(g) == 0) return monic(g);
+    if (f.myArith != g.myArith)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (IsZero(f))  return IsZero(g)?g:monic(g);
+    if (IsZero(g))  return monic(f);
+    if (deg(f) == 0)  return monic(f);
+    if (deg(g) == 0)  return monic(g);
     DUPFp fcopy = f;
     DUPFp gcopy = g;
     return monic(EuclidAlgm(fcopy, gcopy));
@@ -652,12 +652,13 @@ return f*f;
 
   DUPFp exgcd(DUPFp& cf, DUPFp& cg, const DUPFp& f, const DUPFp& g)
   {
-    if (f.myArith != g.myArith) CoCoA_THROW_ERROR(ERR::MixedRings, "exgcd for DUPFp");
-    if (cf.myArith != cg.myArith) CoCoA_THROW_ERROR(ERR::MixedRings, "exgcd for DUPFp");
-    if (f.myArith != cf.myArith) CoCoA_THROW_ERROR(ERR::MixedRings, "exgcd for DUPFp");
+    if (f.myArith != g.myArith   ||
+        cf.myArith != cg.myArith ||
+        f.myArith != cf.myArith)
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (IsZero(f) && IsZero(g))  { AssignZero(cf); AssignZero(cg); return f; } // all zero!
-    if (IsZero(f) || deg(g) == 0) { AssignZero(cf); AssignOne(cg); cg /= LC(g); return monic(g); }
-    if (IsZero(g) || deg(f) == 0) { AssignOne(cf); AssignZero(cg); cf /= LC(f); return monic(f); }
+    if (IsZero(f) || deg(g) == 0)  { AssignZero(cf); AssignOne(cg); cg /= LC(g); return monic(g); }
+    if (IsZero(g) || deg(f) == 0)  { AssignOne(cf); AssignZero(cg); cf /= LC(f); return monic(f); }
 
     DUPFp fcopy(f); // work on copies of f & g!
     DUPFp gcopy(g);
@@ -686,8 +687,8 @@ return f*f;
 
   bool operator==(const DUPFp& f, const DUPFp& g)
   {
-    if (f.myArith != g.myArith) CoCoA_THROW_ERROR(ERR::MixedRings, "op== for DUPFp");
-    if (deg(f) != deg(g)) return false;
+    if (f.myArith != g.myArith)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (deg(f) != deg(g))  return false;
     return f.myCoeffs == g.myCoeffs;  // let std::vector do the work :-)
   }
 
@@ -766,7 +767,7 @@ return f*f;
 
   factorization<DUPFp> SqfrDecomp(DUPFp f)
   {
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "SqfrDecomp");
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     CoCoA_ASSERT(IsSqfr(f));
     vector<DUPFp> factors;
     vector<long> multiplicities;
@@ -802,7 +803,7 @@ return f*f;
 
   factorization<DUPFp> DistinctDegFactor(DUPFp f)
   {
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "DistinctDegFactor");
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     CoCoA_ASSERT(IsSqfr(f));
     vector<DUPFp> factors;
     const SmallFpImpl& ModP = f.myArith;
@@ -817,11 +818,11 @@ return f*f;
       const DUPFp g = gcd(xpower-x, f);
 ///???      xpower += x;
       factors.push_back(g);
-      if (deg(g) == 0) continue;
+      if (deg(g) == 0)  continue;
       f = f/g;
       xpower = xpower%f;
     }
-    if (deg(f) > 0) factors.push_back(monic(f));
+    if (deg(f) > 0)  factors.push_back(monic(f));
     DUPFp RemainingFactor(0, ModP); AssignOne(RemainingFactor); RemainingFactor *= LC(f);
     const vector<long> mult(len(factors), 1);
     return factorization<DUPFp>(factors, mult, RemainingFactor);
@@ -832,7 +833,7 @@ return f*f;
   {
     if (!IsSparsePolyRing(owner(f)))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
     CoCoA_ASSERT(UnivariateIndetIndex(f) >= 0);
-//????    if (UnivariateIndetIndex(f) < 0) CoCoA_THROW_ERROR("not univariate","ConvertToDUPFp");
+//????    if (UnivariateIndetIndex(f) < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const long degf = StdDeg(f);
     DUPFp ans(degf, ModP);
     ans.myCoeffs.resize(degf+1);
@@ -845,12 +846,12 @@ return f*f;
 
   RingElem ConvertFromDUPFp(ConstRefRingElem x, const DUPFp& f)
   {
-    if (!IsPolyRing(owner(x))) CoCoA_THROW_ERROR(ERR::ReqPolyRing, "ConvertFromDUPFp");
-    if (!IsIndet(x)) CoCoA_THROW_ERROR("x not indet", "ConvertFromDUPFp");
+    if (!IsPolyRing(owner(x)))  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
+    if (!IsIndet(x))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
     const PolyRing P = owner(x);
     const SmallFpImpl& ModP = f.myArith;
     RingElem ans(P);
-    if (IsZero(f)) return ans;
+    if (IsZero(f))  return ans;
     const long degf = deg(f);
     for (long i=0; i <= degf; ++i)
       if (!IsZero(f.myCoeffs[i]))

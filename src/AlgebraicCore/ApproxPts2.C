@@ -516,28 +516,26 @@ namespace CoCoA
       }
 
 
-    } // end of anonymous namespace
-
-
-
-    void CheckInput(const SparsePolyRing& P,
-                    const std::vector<PointR>& pts,
-                    const std::vector<RingElem>& tolerance)
-    {
-      const ring K = CoeffRing(P); // K must be an ordered field
-      CoCoA_ASSERT(IsOrderedDomain(K) && IsField(K));
-      if (owner(pts[0][0]) != K)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "ApproxPts::CheckInput");
-      const long dim = len(tolerance);
-      if (NumIndets(P) < dim)
-        CoCoA_THROW_ERROR(ERR::BadNumIndets, "ApproxPts::CheckInput");
+      void ApproxPts_CheckInput(const SparsePolyRing& P,
+                                const std::vector<PointR>& pts,
+                                const std::vector<RingElem>& tolerance)
+      {
+        const ring K = CoeffRing(P); // K must be an ordered field
+        CoCoA_ASSERT(IsOrderedDomain(K) && IsField(K));
+        if (owner(pts[0][0]) != K)
+          CoCoA_THROW_ERROR1(ERR::MixedRings);
+        const long dim = len(tolerance);
+        if (NumIndets(P) < dim)
+          CoCoA_THROW_ERROR1(ERR::BadNumIndets);
 #ifdef CoCoA_DEBUG
-      for (const RingElem& eps: tolerance)
-        if (eps < 0)
-          CoCoA_THROW_ERROR(ERR::ReqNonNegative, "ApproxPts::CheckInput");
+        for (const RingElem& eps: tolerance)
+          if (eps < 0)
+            CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
 #endif
-    }
+      }
     
+
+    } // end of anonymous namespace
 
 //     void SOI(std::vector<PPMonoidElem>& QB,
 //              std::vector<RingElem>& BBasis,
@@ -555,7 +553,7 @@ namespace CoCoA
              ConstRefRingElem gamma)
     {
       VerboseLog VERBOSE("ApproxPts::SOI");
-      CheckInput(P, pts, tolerance);
+      ApproxPts_CheckInput(P, pts, tolerance);
       const long dim = len(tolerance);
       const long NumPts = len(pts);
 
@@ -720,7 +718,7 @@ namespace CoCoA
                       ConstRefRingElem OrigGamma)
     {
       VerboseLog VERBOSE("ApproxPts::SOITF");
-      CheckInput(P, OrigPts, OrigTolerance);
+      ApproxPts_CheckInput(P, OrigPts, OrigTolerance);
       const long dim = len(OrigTolerance);
 ///      const long NumPts = len(OrigPts);
 
@@ -795,7 +793,7 @@ namespace CoCoA
              const std::vector<RingElem>& tolerance)
     {
       VerboseLog VERBOSE("ApproxPts::NBM");
-      CheckInput(P, pts, tolerance);
+      ApproxPts_CheckInput(P, pts, tolerance);
       const long NumPts = len(pts);
 
       ring K = CoeffRing(P);

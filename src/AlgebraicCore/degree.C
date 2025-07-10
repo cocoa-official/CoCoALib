@@ -33,10 +33,10 @@ using std::vector;
 namespace CoCoA
 {
 
-  // inline void degree::CheckCompatible(const degree& d1, const degree& d2, const char* fn)
+  // inline void degree::CheckCompatible(const degree& d1, const degree& d2, const ErrorContext& FnName)
   // {
   //   if (len(d1.myCoords) != len(d2.myCoords))
-  //     CoCoA_THROW_ERROR(ERR::MixedDegrees, fn);
+  //     CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedDegrees, FnName);
   // }
 
   inline void degree::CheckCompatible(const degree& d1, const degree& d2, const ErrorContext& ErrCtx)
@@ -49,7 +49,7 @@ namespace CoCoA
   const BigInt& degree::operator[](long index) const
   {
     if (index < 0 || index >= len(myCoords))
-      CoCoA_THROW_ERROR(ERR::BadIndex, "degree::operator[]");
+      CoCoA_THROW_ERROR1(ERR::BadIndex);
     return myCoords[index];
   }
 
@@ -164,14 +164,14 @@ namespace CoCoA
   void SetComponent(degree& d, long index, const BigInt& N)
   {
     if (index < 0 || index >= GradingDim(d))
-      CoCoA_THROW_ERROR(ERR::BadIndex, "SetComponent(degree, index, N)");
+      CoCoA_THROW_ERROR1(ERR::BadIndex);
     d.mySetComponent(index, N);
   }
 
   void SetComponent(degree& d, long index, const MachineInt& n)
   {
     if (index < 0 || index >= GradingDim(d))
-      CoCoA_THROW_ERROR(ERR::BadIndex, "SetComponent(degree, index, n)");
+      CoCoA_THROW_ERROR1(ERR::BadIndex);
     d.mySetComponent(index, n);
   }
 

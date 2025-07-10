@@ -52,10 +52,10 @@ namespace CoCoA
   BigInt PolyRingBase::myCharacteristic() const
   { return characteristic(myCoeffRing()); }  // not inline as o/w requires more includes in .H file
 
-  // void PolyRingBase::myCheckIndetIndex(long i, const char* where) const
+  // void PolyRingBase::myCheckIndetIndex(long i, const ErrorContext& where) const
   // {
   //   if (i < 0 || i >= myNumIndets())
-  //     CoCoA_THROW_ERROR(ERR::BadIndetIndex, where);
+  //     CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadIndetIndex, where);
   // }
 
   void PolyRingBase::myCheckIndetIndex(long i, const ErrorContext& ErrCtx) const
@@ -66,8 +66,8 @@ namespace CoCoA
 
   bool PolyRingBase::myIsIrred(ConstRawPtr rawf) const
   {
-    if (myIsZero(rawf)) CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "RingBase::myIsIrred(rawx)");
-    if (myIsInvertible(rawf)) CoCoA_THROW_ERROR(ERR::InvertibleRingElem, "RingBase::myIsIrred(rawx)");
+    if (myIsZero(rawf))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
+    if (myIsInvertible(rawf))  CoCoA_THROW_ERROR1(ERR::InvertibleRingElem);
     return IsIrredPoly(RingElemAlias(ring(this), rawf));
   }
 
@@ -75,19 +75,19 @@ namespace CoCoA
   void PolyRingBase::myDiv(RawPtr rawlhs, ConstRawPtr rawx, ConstRawPtr rawy) const
   {
     if (myIsZero(rawy)) // or CoCoA_ASSERT???
-      CoCoA_THROW_ERROR(ERR::DivByZero,"PolyRingBase::myDiv");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (!myIsDivisible(rawlhs, rawx, rawy))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "PolyRingBase::myDiv");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
   }  
   
 
   void PolyRingBase::myMonic(RawPtr rawmonic, ConstRawPtr rawf) const
   {
     if (myIsZero(rawf)) // or CoCoA_ASSERT???
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem,"PolyRingBase::myMonic");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     RingElem ans = RingElemAlias(ring(this), rawf);
     if (!IsOne(myLC(rawf)) && !myDivByCoeff(raw(ans), raw(myLC(rawf))))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "PolyRingBase::myDiv");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     mySwap(rawmonic, raw(ans));
   }
   
@@ -95,11 +95,11 @@ namespace CoCoA
   bool IsSqFree(ConstRefRingElem f)
   {
     const ring& P = owner(f);
-    if (!IsPolyRing(P)) CoCoA_THROW_ERROR(ERR::ReqPolyRing, "IsSqFree");
+    if (!IsPolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
     if (!IsZZ(CoeffRing(P)) && !IsField(CoeffRing(P)))
-      CoCoA_THROW_ERROR("CoeffRing must be ZZ or a field", "IsSqFree");
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "IsSqFree");
-    if (IsConstant(f)) return true;
+      CoCoA_THROW_ERROR1("CoeffRing must be ZZ or a field");
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
+    if (IsConstant(f))  return true;
 
     // Special case if poly is actually a single term
     if (IsMonomial(f))
@@ -129,7 +129,7 @@ namespace CoCoA
 
   bool PolyRingBase::myImageLiesInSubfield(const RingHom& /*phi*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "PolyRingBase::myImageLiesInSubfield");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return false; // just to keep compiler quiet
   }
 
@@ -179,7 +179,7 @@ namespace CoCoA
   const PolyRing& RingQQt(const MachineInt& NumIndets)
   {
     static vector<PolyRing*> QQtTable;
-    if (IsNegative(NumIndets) || IsZero(NumIndets)) CoCoA_THROW_ERROR(ERR::ReqPositive, "RingQQt");
+    if (IsNegative(NumIndets) || IsZero(NumIndets))  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     const long n = AsSignedLong(NumIndets);
     if (n >= len(QQtTable)) QQtTable.resize(n+1); // will fill with NULL ptrs
     if (QQtTable[n] == nullptr)
@@ -204,7 +204,7 @@ namespace CoCoA
   RingElem IndetPower(const PolyRing& P, long var, long exp)  // error if exp < 0
   {
     P->myCheckIndetIndex(var, CoCoA_ERROR_CONTEXT);
-    if (exp < 0) CoCoA_THROW_ERROR(ERR::NegExp, "IndetPower(P, var, exp)");
+    if (exp < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
     RingElem ans(P, 1);
     P->myIndetPower(raw(ans), var, exp);
     return ans;
@@ -220,7 +220,7 @@ namespace CoCoA
   // long NumTerms(ConstRefRingElem f)
   // {
   //   if (!IsPolyRing(owner(f)))
-  //     CoCoA_THROW_ERROR(ERR::NotElemPolyRing, "NumTerms(f)");
+  //     CoCoA_THROW_ERROR1(ERR::NotElemPolyRing);
   //   return PolyRingPtr(owner(f))->myNumTerms(raw(f));
   // }
 
@@ -231,7 +231,7 @@ namespace CoCoA
   bool IsMonomial(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "IsMonomial(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     return PolyRingPtr(owner(f))->myIsMonomial(raw(f));
   }
 
@@ -239,10 +239,10 @@ namespace CoCoA
   bool AreMonomials(const std::vector<RingElem>& v)
   {
     // morally:  return find_if(v.begin(), v.end(), not1(IsMonomial)) == v.end();
-    if (!HasUniqueOwner(v)) CoCoA_THROW_ERROR(ERR::MixedRings, "AreMonomials(v)");
+    if (!HasUniqueOwner(v))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     const long n = len(v);
     for (long i=0; i < n; ++i)
-      if (!IsMonomial(v[i])) return false;
+      if (!IsMonomial(v[i]))  return false;
     return true;
 //  We *DO NOT USE* STL algorithm because ptr_fun fails when args are references.
 //     return find_if(v.begin(), v.end(),
@@ -254,7 +254,7 @@ namespace CoCoA
   bool IsConstant(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "IsConstant(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     return PolyRingPtr(owner(f))->myIsConstant(raw(f));
   }
 
@@ -262,7 +262,7 @@ namespace CoCoA
   bool IsIndet(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "IsIndet(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     long junk;
     return PolyRingPtr(owner(f))->myIsIndet(junk, raw(f));
   }
@@ -271,7 +271,7 @@ namespace CoCoA
   bool IsIndet(long& index, ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "IsIndet(index,f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     return PolyRingPtr(owner(f))->myIsIndet(index, raw(f));
   }
 
@@ -279,7 +279,7 @@ namespace CoCoA
   bool IsIndetPosPower(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "IsIndetPosPower(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     return PolyRingPtr(owner(f))->myIsIndetPosPower(raw(f));
   }
 
@@ -287,27 +287,26 @@ namespace CoCoA
   bool IsEvenPoly(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "IsEvenPoly(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     return PolyRingPtr(owner(f))->myIsEvenPoly(raw(f));
   }
   
   bool IsOddPoly(ConstRefRingElem f)
   {
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "IsOddPoly(f)");
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     return PolyRingPtr(owner(f))->myIsOddPoly(raw(f));
   }
 
 
   long deg(ConstRefRingElem f, long var)
   {
-    const char* const FnName = "deg(f,var)";
     if (!IsPolyRing(owner(f)))
-      CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     const PolyRingBase* P = PolyRingPtr(owner(f));
     P->myCheckIndetIndex(var, CoCoA_ERROR_CONTEXT);
     if (IsZero(f))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     return P->myDeg(raw(f), var);
   }
 
@@ -316,15 +315,13 @@ namespace CoCoA
   RingElem FixedDivisor(ConstRefRingElem f)
   {
     // hint: could be clever if f is even or odd (need do only half as many evals)
-    const char* const FnName = "FixedDivisor";
-///    const ring& P = owner(f);
     const PolyRing P(owner(f), CoCoA_ERROR_CONTEXT);
-//    if (!IsPolyRing(P))  CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName);
-    if (!IsZero(characteristic(P)))  CoCoA_THROW_ERROR(ERR::BadArg, "FixedDivisor: characteristic must be 0");
-    if (IsZero(f))  CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "FixedDivisor");
+//    if (!IsPolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
+    if (!IsZero(characteristic(P)))  CoCoA_THROW_ERROR1(ERR::ReqChar0);
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     if (deg(f) == 0)  return abs(LC(f));
     const long x_ind = UnivariateIndetIndex(f);
-    if (x_ind < 0)  CoCoA_THROW_ERROR(ERR::ReqUnivariate, "FixedDivisor");
+    if (x_ind < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const ring& k = CoeffRing(P);
     const BigInt cont = ConvertTo<BigInt>(content(f)); // requires coeffs to be integers!
     EvalUPoly F(f/cont);
@@ -342,7 +339,7 @@ namespace CoCoA
     BigInt fact(1); // factorial(width)
     while (true)
     {
-      CheckForInterrupt(FnName);
+      CheckForInterrupt("FixedDivisor");
       ++width;
       fact *= width;
       const bool MoveHi = (val_lo >= val_hi);
@@ -378,8 +375,8 @@ namespace CoCoA
     RingElem DerivFrF(ConstRefRingElem f, ConstRefRingElem x)
     {
       const FractionField FrF = owner(f);
-      if (!IsPolyRing(BaseRing(FrF))) CoCoA_THROW_ERROR(ERR::ReqPolyRing, "deriv(f,x)");
-      if (!IsOne(den(x))) CoCoA_THROW_ERROR("Nonsensical derivative", "deriv(f,x)");
+      if (!IsPolyRing(BaseRing(FrF)))  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
+      if (!IsOne(den(x)))  CoCoA_THROW_ERROR1("Nonsensical derivative");  // BUG ??? also check that num(x) IsIndet ????
       RingElem ans(FrF);
       FrF->myDeriv(raw(ans), raw(f), raw(x));
       return ans;
@@ -388,10 +385,10 @@ namespace CoCoA
 
   RingElem deriv(ConstRefRingElem f, ConstRefRingElem x)
   {
-    if (owner(x) != owner(f)) CoCoA_THROW_ERROR(ERR::MixedRings, "deriv(f, x)");
+    if (owner(x) != owner(f))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (IsFractionField(owner(f))) return DerivFrF(f,x);
     // From here on we are in the "polynomial" case.
-    if (!IsIndet(x)) CoCoA_THROW_ERROR(ERR::ReqIndet, "deriv(f,x)");
+    if (!IsIndet(x))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
     const PolyRing Rx = owner(f);
     RingElem ans(Rx);
     Rx->myDeriv(raw(ans), raw(f), raw(x));
@@ -418,16 +415,16 @@ namespace CoCoA
   {
     const std::string FnName = "PolyRingHom(Rx,S,CoeffHom,IndetImages): ";
     if (domain(CoeffHom) != CoeffRing(Rx))
-      CoCoA_THROW_ERROR(ERR::BadDomain, FnName + "argument CoeffHom");
+      CoCoA_THROW_ERROR2(ERR::BadDomain, "CoeffHom");
     if (IsPolyRing(S) && codomain(CoeffHom) == CoeffRing(S))
       CoeffHom = CoeffEmbeddingHom(S)(CoeffHom);
     if (codomain(CoeffHom) != S)
-      CoCoA_THROW_ERROR(ERR::BadCodomain, FnName + "argument CoeffHom");
+      CoCoA_THROW_ERROR2(ERR::BadCodomain, "CoeffHom");
     if (NumIndets(Rx) != len(IndetImages))
-      CoCoA_THROW_ERROR(ERR::BadArraySize, FnName + "arguments Rx, IndetImages");
+      CoCoA_THROW_ERROR1(ERR::BadArraySize);
     for (long i=0; i < NumIndets(Rx); ++i)
       if (owner(IndetImages[i]) != S)
-        CoCoA_THROW_ERROR(ERR::BadPolyRingHomImages, FnName + "argument IndetImages");
+        CoCoA_THROW_ERROR1(ERR::BadPolyRingHomImages);
 
     return Rx->myHomCtor(S, CoeffHom, IndetImages);
   }
@@ -440,20 +437,19 @@ namespace CoCoA
 
   RingHom EvalHom(const PolyRing& Rx, const std::vector<RingElem>& IndetImages)
   {
-    const char* const FnName = "EvalHom(Rx,IndetImages)";
     const ring& R = CoeffRing(Rx);
     if (NumIndets(Rx) != len(IndetImages))
-      CoCoA_THROW_ERROR(ERR::BadArraySize, FnName);
+      CoCoA_THROW_ERROR1(ERR::BadArraySize);
     for (long i=0; i < NumIndets(Rx); ++i)
       if (owner(IndetImages[i]) != R)
-        CoCoA_THROW_ERROR(ERR::BadPolyRingHomImages, FnName);
+        CoCoA_THROW_ERROR1(ERR::BadPolyRingHomImages);
 
     return Rx->myHomCtor(R, IdentityHom(R), IndetImages);
   }
 
   RingHom EvalHom(const PolyRing& Rx, const MachineInt& n) // Maps f in R[x] into f(n) in R
   {
-    if (NumIndets(Rx) != 1) CoCoA_THROW_ERROR(ERR::BadArg, "EvalHom(Rx,n)");
+    if (NumIndets(Rx) != 1)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const ring& R = CoeffRing(Rx);
     const vector<RingElem> IndetImage(1, RingElem(R,n));
     return Rx->myHomCtor(R, IdentityHom(R), IndetImage);
@@ -461,7 +457,7 @@ namespace CoCoA
 
   RingHom EvalHom(const PolyRing& Rx, const BigInt& N)     // Maps f in R[x] into f(N) in R
   {
-    if (NumIndets(Rx) != 1) CoCoA_THROW_ERROR(ERR::BadArg, "EvalHom(Rx,N)");
+    if (NumIndets(Rx) != 1)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const ring& R = CoeffRing(Rx);
     const vector<RingElem> IndetImage(1, RingElem(R,N));
     return Rx->myHomCtor(R, IdentityHom(R), IndetImage);
@@ -469,7 +465,7 @@ namespace CoCoA
 
   RingHom EvalHom(const PolyRing& Rx, const BigRat& q)     // Maps f in R[x] into f(q) in R
   {
-    if (NumIndets(Rx) != 1) CoCoA_THROW_ERROR(ERR::BadArg, "EvalHom(Rx,N)");
+    if (NumIndets(Rx) != 1)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const ring& R = CoeffRing(Rx);
     const vector<RingElem> IndetImage(1, RingElem(R,q));
     return Rx->myHomCtor(R, IdentityHom(R), IndetImage);
@@ -477,9 +473,9 @@ namespace CoCoA
 
   RingHom EvalHom(const PolyRing& Rx, ConstRefRingElem r)  // Maps f in R[x] into f(r) in R
   {
-    if (NumIndets(Rx) != 1) CoCoA_THROW_ERROR(ERR::BadArg, "EvalHom(Rx,r)");
+    if (NumIndets(Rx) != 1)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const ring& R = CoeffRing(Rx);
-    if (owner(r) != R) CoCoA_THROW_ERROR(ERR::MixedRings, "EvalHom(Rx,r");
+    if (owner(r) != R)  CoCoA_THROW_ERROR1(ERR::MixedRings);
     const vector<RingElem> IndetImage(1, r);
     return Rx->myHomCtor(R, IdentityHom(R), IndetImage);
   }
@@ -487,21 +483,20 @@ namespace CoCoA
 
   RingHom PolyAlgebraHom(const PolyRing& Rx, const ring& Ry, const std::vector<RingElem>& IndetImages)
   {
-    const char* const FnName = "PolyAlgebraHom(Rx,Ry,IndetImages)";
     // Check that IndetImages are sensible...
     if (NumIndets(Rx) != len(IndetImages))
-      CoCoA_THROW_ERROR(ERR::BadArraySize, FnName);
+      CoCoA_THROW_ERROR1(ERR::BadArraySize);
     for (long i=0; i < NumIndets(Rx); ++i)
       if (owner(IndetImages[i]) != Ry)
-        CoCoA_THROW_ERROR(ERR::BadPolyRingHomImages, FnName);
+        CoCoA_THROW_ERROR1(ERR::BadPolyRingHomImages);
 //     // Special case: codomain is coeff ring.
 //     if (Ry == CoeffRing(Rx))
 //       return Rx->myHomCtor(Ry, IdentityHom(Ry), IndetImages);
 //     // General case: codomain must be a poly ring with same coeffs
 //     if (!IsPolyRing(Ry))
-//       CoCoA_THROW_ERROR(ERR::BadCodomain, FnName);
+//       CoCoA_THROW_ERROR1(ERR::BadCodomain);
 //     if (CoeffRing(Rx) != CoeffRing(Ry))
-//       CoCoA_THROW_ERROR(ERR::MixedCoeffRings, FnName);
+//       CoCoA_THROW_ERROR1(ERR::MixedCoeffRings);
 //    return Rx->myHomCtor(Ry, CoeffEmbeddingHom(Ry), IndetImages);
     return Rx->myHomCtor(Ry, CanonicalHom(CoeffRing(Rx),Ry), IndetImages);
   }
