@@ -483,7 +483,7 @@ namespace CoCoA
                          const std::vector<ApproxPts::PointR>& OrigPts,
                          std::vector<RingElem> tolerance)
   {
-    PreprocessCheckArgs(OrigPts, tolerance, "PreprocessPtsGrid");
+    PreprocessCheckArgs(OrigPts, tolerance, CoCoA_ERROR_CONTEXT);
     const long NumPts = len(OrigPts);
 
     // Normalization effectively makes the tolerance in each direction equal to 1.
@@ -525,7 +525,7 @@ namespace CoCoA
                          const std::vector<ApproxPts::PointR>& OrigPts,
                          std::vector<RingElem> tolerance)
   {
-    PreprocessCheckArgs(OrigPts, tolerance, "PreprocessPtsAggr");
+    PreprocessCheckArgs(OrigPts, tolerance, CoCoA_ERROR_CONTEXT);
     const long NumPts = len(OrigPts);
     const long dim = len(tolerance);
 
@@ -625,7 +625,7 @@ namespace CoCoA
                            const std::vector<ApproxPts::PointR>& OrigPts,
                            std::vector<RingElem> tolerance)
   {
-    PreprocessCheckArgs(OrigPts, tolerance, "PreprocessPtsSubdiv");
+    PreprocessCheckArgs(OrigPts, tolerance, CoCoA_ERROR_CONTEXT);
     const long NumPts = len(OrigPts);
 
     // Normalization effectively makes the tolerance in each direction equal to 1.

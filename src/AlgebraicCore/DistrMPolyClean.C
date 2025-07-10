@@ -333,7 +333,7 @@ namespace CoCoA
 
   void DistrMPolyClean::myAddMulLM(const DistrMPolyClean& h, const DistrMPolyClean& g, bool SkipLMg)
   {                                                 //???
-    if (IsZero(h))  CoCoA_THROW_ERROR(ERR::ReqNonZero);
+    if (IsZero(h))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     myAddMulSummand(h.mySummands, g, SkipLMg);     //???
   }                                                 //???
 

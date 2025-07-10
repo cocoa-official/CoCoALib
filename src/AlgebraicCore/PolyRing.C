@@ -339,7 +339,7 @@ namespace CoCoA
     BigInt fact(1); // factorial(width)
     while (true)
     {
-      CheckForInterrupt(FnName);
+      CheckForInterrupt("FixedDivisor");
       ++width;
       fact *= width;
       const bool MoveHi = (val_lo >= val_hi);

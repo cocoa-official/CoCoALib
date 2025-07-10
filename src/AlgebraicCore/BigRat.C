@@ -378,7 +378,7 @@ namespace CoCoA
   std::istream& operator>>(std::istream& in, BigRat& Q)
   {
     if (!in.good())  CoCoA_THROW_ERROR1("istream is not good");
-    if (!IsDecimal(in))  CoCoA_THROW_ERROR("istream is not in \"decimal\" mode");
+    if (!IsDecimal(in))  CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
     in.peek(); if (in.eof())  CoCoA_THROW_ERROR1("EOF"); // so that err mesg refers to correct fn
     BigInt N;
     in >> N;

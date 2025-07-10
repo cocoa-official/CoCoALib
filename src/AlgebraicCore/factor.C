@@ -154,7 +154,7 @@ namespace CoCoA
     {
       BigInt c;
       if (!IsInteger(c, coeff(it)))
-        CoCoA_THROW_ERROR1("coeff not in ZZ","maybe called by factorize");
+        CoCoA_THROW_ERROR1("coeff not in ZZ");
       exponents(expv, PP(it));
       int *exps = (int*)malloc(nvars*sizeof(int)); // block absorbed by g
       std::copy(expv.begin(), expv.end(), exps);
