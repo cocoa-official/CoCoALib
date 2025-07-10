@@ -55,7 +55,7 @@ namespace CoCoA
   BigRat::BigRat(const mpq_t q, CopyFromMPQ /*NotUsed*/)
   {
     if (q == nullptr)
-      CoCoA_THROW_ERROR(ERR::NullPtr, "ctor BigRat(mpq_t)");
+      CoCoA_THROW_ERROR1(ERR::NullPtr);
 
     mpq_init(myRepr);
     mpq_set(myRepr, q);
@@ -80,7 +80,7 @@ namespace CoCoA
   BigRat::BigRat(const MachineInt& n1, const MachineInt& n2, ReduceFlag status)
   {
     if (IsZero(n2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigRat(n1,n2)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpq_init(myRepr);
     myAssign(BigInt(n1), BigInt(n2), status);
 //    BELOW IS ORIGINAL CODE -- slightly better 'cos does not create temporaries.
@@ -97,7 +97,7 @@ namespace CoCoA
   BigRat::BigRat(const MachineInt& n1, const BigInt& N2, ReduceFlag status)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigRat(n1,N2)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpq_init(myRepr);
     myAssign(BigInt(n1), N2, status);
   }
@@ -105,7 +105,7 @@ namespace CoCoA
   BigRat::BigRat(const BigInt& N1, const MachineInt& n2, ReduceFlag status)
   {
     if (IsZero(n2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigRat(N1,n2)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpq_init(myRepr);
     myAssign(N1, BigInt(n2), status);
   }
@@ -113,7 +113,7 @@ namespace CoCoA
   BigRat::BigRat(const BigInt& N1, const BigInt& N2, ReduceFlag status)
   {
     if (IsZero(N2))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "BigRat(N1,N2)");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpq_init(myRepr);
     myAssign(N1, N2, status);
   }
@@ -123,10 +123,10 @@ namespace CoCoA
   {
     mpq_init(myRepr);
 //     if (base != 0 && (base < 2 || base > 36))
-//       CoCoA_THROW_ERROR(ERR::BadNumBase, "BigRat(string,int)");
+//       CoCoA_THROW_ERROR1(ERR::BadNumBase);
     constexpr int base = 10;
     if (mpq_set_str(myRepr, str.c_str(), base) != 0)
-      CoCoA_THROW_ERROR(ERR::BadArg, "BigRat(string)");
+      CoCoA_THROW_ERROR1(ERR::BadArg);
     if (status == NotReduced)
       mpq_canonicalize(myRepr);
   }
@@ -244,7 +244,7 @@ namespace CoCoA
   BigRat& BigRat::operator/=(const BigRat& rhs)
   {
     if (mpz_sgn(mpq_numref(rhs.myRepr)) == 0)
-      CoCoA_THROW_ERROR(ERR::DivByZero, "q1 /= q2");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     mpq_div(myRepr, myRepr, rhs.myRepr);
     return *this;
   }
@@ -285,7 +285,7 @@ namespace CoCoA
   BigRat& BigRat::operator/=(const BigInt& rhs)
   {
     if (IsZero(rhs))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "Q /= N");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     // Could be more efficient if "*this" is 0.
     return operator/=(BigRat(rhs,1));
   }
@@ -318,7 +318,7 @@ namespace CoCoA
   BigRat& BigRat::operator/=(const MachineInt& rhs)
   {
     if (IsZero(rhs))
-      CoCoA_THROW_ERROR(ERR::DivByZero, "Q /= n");
+      CoCoA_THROW_ERROR1(ERR::DivByZero);
     return operator/=(BigInt(rhs));
   }
 
@@ -356,7 +356,7 @@ namespace CoCoA
   string ConvertToString(const BigRat& src, int base/*=10*/)
   {
     if (base < 2 || base > 36)
-      CoCoA_THROW_ERROR(ERR::BadNumBase, "IsConvertible(string,BigRat,int)");
+      CoCoA_THROW_ERROR1(ERR::BadNumBase);
     const std::size_t digits = mpz_sizeinbase(mpq_numref(mpqref(src)),base) +
                                mpz_sizeinbase(mpq_denref(mpqref(src)),base);
     vector<char> buffer(digits+3); // +3 to allow for minus sign, "/" character and terminating NUL
@@ -377,10 +377,9 @@ namespace CoCoA
 
   std::istream& operator>>(std::istream& in, BigRat& Q)
   {
-    static const char* const FnName = "operator>> for BigRat";
-    if (!in.good()) CoCoA_THROW_ERROR("istream is not good", FnName);
-    if (!IsDecimal(in)) CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", FnName);
-    in.peek(); if (in.eof()) CoCoA_THROW_ERROR("EOF", FnName); // so that err mesg refers to correct fn
+    if (!in.good())  CoCoA_THROW_ERROR1("istream is not good");
+    if (!IsDecimal(in))  CoCoA_THROW_ERROR("istream is not in \"decimal\" mode");
+    in.peek(); if (in.eof())  CoCoA_THROW_ERROR1("EOF"); // so that err mesg refers to correct fn
     BigInt N;
     in >> N;
     Q = N;
@@ -407,7 +406,7 @@ namespace CoCoA
     // Found a slash
     const char AfterSlash = in.peek(); // might trigger EOF
     if (!in.good() || !isdigit(AfterSlash))
-      CoCoA_THROW_ERROR("Missing denominator in rational", FnName);
+      CoCoA_THROW_ERROR1("Missing denominator in rational");
     BigInt D;
     in >> D;
     Q /= D; // Might throw DivByZero
@@ -428,7 +427,7 @@ namespace CoCoA
 
   OpenMathInput& operator>>(OpenMathInput& OMIn, BigRat& /*Q*/)
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "OpenMathInput fn for BigRat");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return OMIn;
   }
 

@@ -61,7 +61,7 @@ namespace CoCoA
     if (IsZZ(domain)) return ZZEmbeddingHom(codomain);
     if (IsQQ(domain)) return QQEmbeddingHom(codomain); // NB result is only a partial hom!!
 
-    CoCoA_THROW_ERROR(ERR::CanonicalHomFail, "CanonicalHom(R1,R2)");
+    CoCoA_THROW_ERROR1(ERR::CanonicalHomFail);
     return IdentityHom(codomain); // Never executed; just to keep the compiler quiet.
   }
 
@@ -83,7 +83,7 @@ namespace CoCoA
       const QuotientRing QR = codomain;
       return QuotientingHom(QR) (ChainCanonicalHom(domain, BaseRing(QR)));
     }
-    CoCoA_THROW_ERROR(ERR::CanonicalHomFail, "ChainCanonicalHom(R1,R2)");
+    CoCoA_THROW_ERROR1(ERR::CanonicalHomFail);
     return IdentityHom(codomain); // Never executed; just to keep the compiler quiet.
   }
 

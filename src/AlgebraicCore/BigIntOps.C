@@ -908,7 +908,7 @@ namespace CoCoA
     const size_t sz = mpz_sizeinbase(mpzref(N),2)-1;
     // CHECK FOR OVERFLOW  - only necessary if long is 32-bit (M$ users deserve what they get?)
     // if (sz > static_cast<size_t>(numeric_limits<long>::max()))
-    //   CoCoA_THROW_ERROR(ERR::ArgTooBig, "FloorLog2");
+    //   CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return static_cast<long>(sz);
   }
 
@@ -1126,7 +1126,7 @@ namespace // anonymous
   {
     if (R < 0 || CmpAbs(R,N) > 0)  return BigInt(0);
 //    if (R < 0)
-//      CoCoA_THROW_ERROR(ERR::BadArg, "binomial(BigInt,BigInt): 2nd arg must be non-neg");
+//      CoCoA_THROW_ERROR1(ERR::BadArg);
     if (N < 0)
     {
       if (IsEven(R)) return binomial(R-N-1,R);
@@ -1336,7 +1336,7 @@ namespace // anonymous
     if (IsNegative(r) || IsZero(r))
       CoCoA_THROW_ERROR2(ERR::ReqPositive, "3rd arg");
 //    if (N < 0 && IsEven(AsUnsignedLong(r)))
-//      CoCoA_THROW_ERROR(ERR::BadArg, "IsExactFloorRoot: even root of negative number");
+//      CoCoA_THROW_ERROR2(ERR::BadArg, "IsExactFloorRoot: even root of negative number");
     const bool IsExact = mpz_root(mpzref(ans), mpzref(N), AsUnsignedLong(r));
     return IsExact;
   }

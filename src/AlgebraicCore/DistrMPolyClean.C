@@ -246,7 +246,7 @@ namespace CoCoA
 //     CoCoA_ASSERT(!IsZero(f));
 //     CoCoA_ASSERT(!IsZero(g));
 //     if (!DistrMPolyClean::compatible(f, g))
-//       CoCoA_THROW_ERROR("Incompatible polynomials", "CmpDeg(DistrMPolyClean,DistrMPolyClean)");
+//       CoCoA_THROW_ERROR1("Incompatible polynomials");
 //     return f.myPPM->myCmpWDeg(raw(f.mySummands->myPP), raw(g.mySummands->myPP));
 //   }
 
@@ -333,7 +333,7 @@ namespace CoCoA
 
   void DistrMPolyClean::myAddMulLM(const DistrMPolyClean& h, const DistrMPolyClean& g, bool SkipLMg)
   {                                                 //???
-    if (IsZero(h)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "DistrMPolyClean::myAddMul");
+    if (IsZero(h))  CoCoA_THROW_ERROR(ERR::ReqNonZero);
     myAddMulSummand(h.mySummands, g, SkipLMg);     //???
   }                                                 //???
 
@@ -896,7 +896,7 @@ namespace CoCoA
 
 //   bool div(DistrMPolyClean& lhs, const DistrMPolyClean& g, const DistrMPolyClean& h)  // result is true iff quotient is exact.
 //   {
-//     if (IsZero(h)) return false; //???CoCoA_THROW_ERROR(ERR::DivByZero,"div(DMP,DMP,DMP)");
+//     if (IsZero(h))  return false; //???CoCoA_THROW_ERROR1(ERR::DivByZero);
 //     PPMonoid PPM = lhs.myPPM;
 //     //    const PPOrdering ord = ordering(PPM);
 //     const ring& R = lhs.myCoeffRing;
@@ -1011,7 +1011,7 @@ namespace CoCoA
 
 //   void WeylDiv(DistrMPolyClean& lhs, const DistrMPolyClean& g, const DistrMPolyClean& h)
 //   {
-//     CoCoA_THROW_ERROR(ERR::NYI, "WeylDiv (DistrMPolyClean)");
+//     CoCoA_THROW_ERROR1(ERR::NYI);
 //   }
 
 

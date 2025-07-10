@@ -53,8 +53,9 @@ namespace CoCoA
       std::vector<T> first(const std::vector<T>& v, long n)
     {
       std::vector<T> w;
-      if (n>len(v)) CoCoA_THROW_ERROR("vector too short", "first(v, n)");
-      for (long i=0; i<n; ++i) w.push_back(v[i]);
+      if (n < 0 || n>len(v))  CoCoA_THROW_ERROR1(ERR::OutOfRange);
+      for (long i=0; i<n; ++i)
+        w.push_back(v[i]);
       return w;
     }
 
@@ -62,8 +63,9 @@ namespace CoCoA
       std::vector<T> last(const std::vector<T>& v, long n)
     {
       std::vector<T> w;
-      if (n>len(v)) CoCoA_THROW_ERROR("vector too short", "first(v, n)");
-      for (long i=len(v)-n; i<len(v); ++i) w.push_back(v[i]);
+      if (n < 0 || n>len(v))  CoCoA_THROW_ERROR1(ERR::OutOfRange);
+      for (long i=len(v)-n; i<len(v); ++i)
+        w.push_back(v[i]);
       return w;
     }
 
@@ -101,10 +103,10 @@ namespace CoCoA
     VerboseLog VERBOSE("factor_AlgExtn");
     const ring& Lx = owner(f);  // L is Pa/I
     if (!IsQuotientRing(CoeffRing(Lx)))
-      CoCoA_THROW_ERROR("CoeffRing must be QuotientRing", "factor_AlgExtn");
+      CoCoA_THROW_ERROR1(ERR::NotQuotientRing);
     long idx = UnivariateIndetIndex(f);
     if (idx < 0)
-      CoCoA_THROW_ERROR("expected univariate polynomials", "factor_AlgExtn");
+      CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const ring& Pa = BaseRing(CoeffRing(Lx));
     const RingHom phi = Hom_P_Px(Pa);
     const std::vector<RingElem> coeffs = CoeffVecWRT(f, indet(Lx, idx));

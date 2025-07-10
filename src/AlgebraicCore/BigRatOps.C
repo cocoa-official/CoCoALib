@@ -589,7 +589,7 @@ namespace CoCoA
     if (IsOne(abs(Q)))  return 0;
     const double ApproxLog = LogAbs(Q)/log(base);
     const double delta = 16 * std::abs(ApproxLog) * numeric_limits<double>::epsilon(); // ***ASSUME*** numerical error in ApproxLog is less than delta; 16 is "magic number" (but seems to be large enough)
-///???BUG not yet fully implemented    if (ApproxLog > numeric_limits<long>::max()) CoCoA_THROW_ERROR(ERR::ArgTooBig, "FloorLogBase");
+///???BUG not yet fully implemented    if (ApproxLog > numeric_limits<long>::max())  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     const long NearestInt = static_cast<long>(std::floor(ApproxLog+0.5)); // probably right but could be too big by 1
 
     // Easy case if ApproxLog is far from an integer...
