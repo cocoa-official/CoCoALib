@@ -334,7 +334,7 @@ namespace // anonymous
   MaxExp /= IndNo; // *extra margin* for GBasis/toric computation
   for ( i=0 ; i<dim ; i++)
   {
-    aux_V =ivec_init(IndNo);
+    aux_V =ivec_init(IndNo); // ivec_init ----------------------
     for ( Index=0 ; Index<IndNo ; Index++ )
       if ( Index>=nrows )
         ivec_set_nth(aux_V, Index+1, 0);
@@ -346,6 +346,7 @@ namespace // anonymous
           free_int_mat(Msmall, nrows); // free Msmall bef error
           ints_free(Indices1);         // free Indices1 bef error
           INDICES = NULL;              // reset INDICES bef error
+          ivec_free(aux_V);            // free aux_V bef error
           CoCoA_THROW_ERROR2(ERR::ExpTooBig, "in binomial");
         }
         ivec_set_nth(aux_V, Index+1, small_basis[i][Index]*weights[Index+1]);
@@ -367,7 +368,7 @@ namespace // anonymous
 //     }
     for ( i=0 ; i<dim ; i++ )
     {
-      aux_V =ivec_init(IndNo);
+      aux_V =ivec_init(IndNo); // ivec_init --------------------
       for ( Index=0 ; Index<IndNo ; Index++ )
         if ( Index>=nrows )
           ivec_set_nth(aux_V, Index+1, 0);
@@ -377,13 +378,14 @@ namespace // anonymous
           {
             //std::cout << "MatKerToBListAndIndices: bef error 4";
             free_int_mat(Msmall, nrows); // free Msmall bef error
-            ints_free(Indices1);       // free Indices1 bef error
+            ints_free(Indices1);         // free Indices1 bef error
             INDICES = NULL;              // reset INDICES bef error
+            ivec_free(aux_V);            // free aux_V bef error
             CoCoA_THROW_ERROR2(ERR::ExpTooBig, "in binomial");
           }
           ivec_set_nth(aux_V, Index+1, small_basis[i][Index]*weights[Index+1]);
         }
-      B = BitermMake(aux_V,1); // frees aux_V
+      B = BitermMake(aux_V,1); // frees aux_V  // BitermMake -------------------
       Bs[++CurrLen] = B; 
       if ( BitermLtDeg(B) > MaxDeg) { MaxDeg = BitermLtDeg(B); /*MaxDegB = B;*/ }
     }
