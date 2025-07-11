@@ -79,7 +79,7 @@ namespace CoCoA
       Mlhs->myAssign(raw(*this), raw(rhs));
       return *this;
     }
-    CoCoA_THROW_ERROR(ERR::MixedModules, "Mvector = Mvector");
+    CoCoA_THROW_ERROR1(ERR::MixedModules);
     return *this; // just to keep compiler quiet
   }
 
@@ -87,9 +87,9 @@ namespace CoCoA
   ConstRefRingElem ModuleElem::operator[](long pos) const
   {
     const module& M = owner(*this);
-    if (!IsFGModule(M))  CoCoA_THROW_ERROR(ERR::ReqFGModule, "ModuleElem[pos]");
+    if (!IsFGModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
     if (pos < 0 || pos >= NumCompts(M))
-      CoCoA_THROW_ERROR(ERR::BadIndex, "ModuleElem[pos]");
+      CoCoA_THROW_ERROR1(ERR::BadIndex);
     return FGModulePtr(M)->myCompt(raw(*this), pos);
   }
 
@@ -113,7 +113,7 @@ namespace CoCoA
       Mv->myAdd(raw(ans), raw(v), raw(w));
       return ans;
     }
-    CoCoA_THROW_ERROR(ERR::MixedModules, "Mvector + Mvector");
+    CoCoA_THROW_ERROR1(ERR::MixedModules);
     return v; // just to keep compiler quiet
   }
 
@@ -128,7 +128,7 @@ namespace CoCoA
       Mv->mySub(raw(ans), raw(v), raw(w));
       return ans;
     }
-    CoCoA_THROW_ERROR(ERR::MixedModules, "Mvector - Mvector");
+    CoCoA_THROW_ERROR1(ERR::MixedModules);
     return v; // just to keep compiler quiet
   }
 
@@ -136,14 +136,13 @@ namespace CoCoA
 
   ModuleElem operator*(ConstRefRingElem r, const ModuleElem& v)
   {
-    CoCoA_STATIC_ERROR_MESG(ErrCannotConvert, ERR::MixedRings,"RingElem*ModuleElem");
     const ring& Rr = owner(r);
     const module& M = owner(v);
     const ring& R = RingOf(M);
     if (Rr != R)
     {
-      if (RingID(Rr) > RingID(R)) ThrowException(ErrCannotConvert);
-      const RingHom promote = AutomaticConversionHom(Rr,R,ErrCannotConvert); // throws ErrCannotConvert if auto-conv not possible
+      if (RingID(Rr) > RingID(R))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+      const RingHom promote = AutomaticConversionHom(Rr,R,CoCoA_ERROR_CONTEXT); // throws ErrCannotConvert if auto-conv not possible
       return promote(r) * v;
     }
     // r is in correct ring
@@ -155,21 +154,20 @@ namespace CoCoA
 
   ModuleElem operator*(const ModuleElem& v, ConstRefRingElem r)
   {
-    CoCoA_STATIC_ERROR_MESG(ErrCannotConvert, ERR::MixedRings,"ModuleElem*RingElem");
     const ring& Rr = owner(r);
     const module& M = owner(v);
     const ring& R = RingOf(M);
     if (Rr != R)
     {
-      if (RingID(Rr) > RingID(R)) ThrowException(ErrCannotConvert);
-      const RingHom promote = AutomaticConversionHom(Rr,R,ErrCannotConvert); // throws ErrCannotConvert if auto-conv not possible
+      if (RingID(Rr) > RingID(R))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+      const RingHom promote = AutomaticConversionHom(Rr,R,CoCoA_ERROR_CONTEXT); // throws ErrCannotConvert if auto-conv not possible
       return v * promote(r);
     }
 
     // r is in the correct ring, just do the multoplication
-    if (IsCommutative(R)) return r*v; // placeholder until below is implemented
+    if (IsCommutative(R))  return r*v; // placeholder until below is implemented
     ModuleElem ans(M);
-    CoCoA_THROW_ERROR(ERR::NYI,"v*r");  // BUG BUG
+    CoCoA_THROW_ERROR1(ERR::NYI);  // BUG BUG
     M->myMul(raw(ans), raw(r), raw(v));  // BUG should mult on right!!!
     return ans;
   }
@@ -185,7 +183,7 @@ namespace CoCoA
       M->myDiv(raw(ans), raw(r), raw(v));  /// BUGLY;  mult on L or on R ????
       return ans;
     }
-    CoCoA_THROW_ERROR(ERR::MixedRings, "Mvector / RingElem");
+    CoCoA_THROW_ERROR1(ERR::MixedRings);
     return v; // just to keep compiler quiet
   }
 
@@ -194,7 +192,7 @@ namespace CoCoA
   {
     const module& Mv = owner(v);
     const module& Mw = owner(w);
-    if (Mv != Mw) CoCoA_THROW_ERROR(ERR::MixedModules, "Mvector += Mvector");
+    if (Mv != Mw)  CoCoA_THROW_ERROR1(ERR::MixedModules);
 
     Mv->myAdd(raw(v), raw(v), raw(w));
     return v;
@@ -210,7 +208,7 @@ namespace CoCoA
       Mv->mySub(raw(v), raw(v), raw(w));
       return v;
     }
-    CoCoA_THROW_ERROR(ERR::MixedModules, "Mvector -= Mvector");
+    CoCoA_THROW_ERROR1(ERR::MixedModules);
     return v; // just to keep compiler quiet
   }
 
@@ -225,7 +223,7 @@ namespace CoCoA
       M->myMul(raw(v), raw(r), raw(v));
       return v;
     }
-    CoCoA_THROW_ERROR(ERR::MixedRings, "Mvector *= RingElem");
+    CoCoA_THROW_ERROR1(ERR::MixedRings);
     return v; // just to keep compiler quiet
   }
 
@@ -239,7 +237,7 @@ namespace CoCoA
       M->myDiv(raw(v), raw(r), raw(v));
       return v;
     }
-    CoCoA_THROW_ERROR(ERR::MixedRings, "Mvector /= RingElem");
+    CoCoA_THROW_ERROR1(ERR::MixedRings);
     return v; // just to keep compiler quiet
   }
 

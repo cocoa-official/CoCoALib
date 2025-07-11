@@ -544,14 +544,6 @@ namespace CoCoA
   }
 
 
-  // const FreeModuleSpPRImpl* FreeModuleSpPRPtr(const module& M, const char* const FnName)
-  // {
-  //   const FreeModuleSpPRImpl* ptr = FreeModuleSpPRPtr(M);
-  //   if (ptr == nullptr) CoCoA_THROW_ERROR(ERR::ReqFreeModule, FnName);
-  //   return ptr;
-  // }
-
-
   inline bool IsFreeModuleSpPR(const module& M)
   { return FreeModuleSpPRPtr(M) != nullptr; }
 
@@ -912,9 +904,6 @@ namespace CoCoA
   ModuleElem homog(const ModuleElem& v, ConstRefRingElem h)
   {
     const FreeModule M(owner(v), CoCoA_ERROR_CONTEXT);
-//    const module& M = owner(v);
-//    if (!IsFreeModuleSpPR(M))
-//      CoCoA_THROW_ERROR(ERR::ReqModuleSpPR, "ModuleElem(v, h)");
     if ( GradingDim(RingOf(M)) != 1 )  CoCoA_THROW_ERROR2(ERR::NYI, "GradingDim!=1");
     CoCoA_ASSERT( IsIndet(h) );
     CoCoA_ASSERT( IsOne(wdeg(h)[0]) );

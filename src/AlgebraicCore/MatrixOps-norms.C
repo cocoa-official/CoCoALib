@@ -47,7 +47,7 @@ namespace CoCoA
   {
     const ring R = RingOf(M);
     if (!IsOrderedDomain(R))
-      CoCoA_THROW_ERROR(ERR::ReqOrdDom, "OperatorNormInfinity(Mat)");
+      CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
     const long Nrows = NumRows(M);
     const long Ncols = NumCols(M);
     RingElem MaxRowSize = zero(R);
@@ -55,7 +55,7 @@ namespace CoCoA
     for (long i=0; i < Nrows; ++i)
     {
       RingElem RowSize(zero(R));
-      for (long j=0; j < Ncols; ++j) {	RowSize += abs(M(i,j)); }
+      for (long j=0; j < Ncols; ++j)  { RowSize += abs(M(i,j)); }
       if (RowSize > MaxRowSize)
         MaxRowSize = RowSize;
     }

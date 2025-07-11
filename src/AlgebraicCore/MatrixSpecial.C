@@ -59,8 +59,8 @@ namespace CoCoA
 
   matrix JacobianMat(const std::vector<RingElem>& polys)
   {
-    if (polys.empty()) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
-    if (!HasUniqueOwner(polys)) CoCoA_THROW_ERROR(ERR::MixedRings, "JacobianMat(polys)");
+    if (polys.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
+    if (!HasUniqueOwner(polys))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     const PolyRing P = owner(polys[0]);
     return JacobianMat_aux(P, polys, indets(P));
   }
@@ -69,13 +69,13 @@ namespace CoCoA
   matrix JacobianMat(const std::vector<RingElem>& polys, const std::vector<RingElem>& inds)
   {
     if (len(inds)==0 && len(polys)==0) CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
-    if (!HasUniqueOwner(inds)) CoCoA_THROW_ERROR(ERR::MixedRings, "JacobianMat");
-    if (!HasUniqueOwner(polys)) CoCoA_THROW_ERROR(ERR::MixedRings, "JacobianMat");
+    if (!HasUniqueOwner(inds))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (!HasUniqueOwner(polys))  CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (len(inds)==0)
       return NewDenseMat(owner(polys[0]), len(polys), 0);
     const PolyRing P(owner(inds[0]));
-    if (polys.empty()) return NewDenseMat(P, 0, len(inds));
-    if (owner(polys[0]) != P) CoCoA_THROW_ERROR(ERR::MixedRings, "JacobianMat");
+    if (polys.empty())  return NewDenseMat(P, 0, len(inds));
+    if (owner(polys[0]) != P)  CoCoA_THROW_ERROR1(ERR::MixedRings);
     return JacobianMat_aux(P, polys, inds);
   }
   
@@ -101,12 +101,12 @@ namespace CoCoA
   {
     const PolyRing P = owner(x);
     if (owner(f) != P || owner(g) != P)
-      CoCoA_THROW_ERROR(ERR::MixedRings, "SylvesterMat(f, g, x)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (IsZero(f) || IsZero(g))
-      CoCoA_THROW_ERROR(ERR::ReqNonZeroRingElem, "SylvesterMat(f, g, x)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
     long index;
     if (!IsIndet(index, x))
-      CoCoA_THROW_ERROR(ERR::ReqIndet, "SylvesterMat(f, g, x)");
+      CoCoA_THROW_ERROR1(ERR::ReqIndet);
 
     const long degf = deg(f, index);
     const long degg = deg(g, index);
@@ -137,14 +137,15 @@ namespace CoCoA
   matrix RandomUnimodularMat(const ring& R, const MachineInt& N, const MachineInt& Niters /*=0*/)
   {
     if (IsNegative(N) || !IsSignedLong(N))
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomUnimodularMat, 2nd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "dimension");
     if (IsNegative(Niters) || !IsSignedLong(Niters))
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "RandomUnimodularMat, 3rd arg");
+      CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "num iters");
     if (IsZero(N)) return NewDenseMat(R,0,0);
     const long n = AsSignedLong(N);
-    if (n == 1) return NewDenseMat(IdentityMat(R,1)); 
+    if (n == 1)  return NewDenseMat(IdentityMat(R,1)); 
     const int niters = IntegerCast<int>(IsZero(Niters)?25*n:AsSignedLong(Niters));
-    if (niters > 250*n) return RandomUnimodularMat(R, N, niters/2)*RandomUnimodularMat(R, N, niters-niters/2); // Sometimes a SLUG!!!
+    if (niters > 250*n)
+      return RandomUnimodularMat(R, N, niters/2)*RandomUnimodularMat(R, N, niters-niters/2); // Sometimes a SLUG!!!
     vector< vector<BigInt> > VV(n, vector<BigInt>(n));
     for (int i=0; i < n; ++i)
       VV[i][i] = (RandomBool())?1:-1;
@@ -180,7 +181,7 @@ namespace CoCoA
   matrix HilbertMat(const MachineInt& N)
   {
     if (IsNegative(N) || !IsSignedLong(N))
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "HilbertMat");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const long n = AsSignedLong(N);
 
     matrix ans = NewDenseMat(RingQQ(), n,n);

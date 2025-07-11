@@ -520,7 +520,7 @@ namespace CoCoA
 
 		long NumSummands;
 		in >> NumSummands;
-		if (!in) CoCoA_THROW_ERROR(ERR::InputFail, "ReadPoly -- NumSummands");
+		if (!in) CoCoA_THROW_ERROR2(ERR::InputFail, "NumSummands");
 		BigInt IntCoeff; // to avoid ctor-dtor inside loop
 		RingElem c(R), ans(P), mon(P);
 		for (long NS=0; NS<NumSummands; ++NS)
@@ -528,7 +528,7 @@ namespace CoCoA
 			in >> IntCoeff;
 			for (long i=0 ; i<NumParams ; ++i)  in >> ParV[i];
 			for (long i=0 ; i<NumInds ; ++i)  in >> v[i];
-                        if (!in) CoCoA_THROW_ERROR(ERR::InputFail, "ReadPoly -- summand");
+                        if (!in) CoCoA_THROW_ERROR2(ERR::InputFail, "summand");
 			if (NumParams==0)
 				c = IntCoeff;
 			else
@@ -725,7 +725,7 @@ namespace CoCoA
 
 								std::istringstream in(polynomials);
 								in >> NumPolys;
-                                                                if (!in) CoCoA_THROW_ERROR(ERR::InputFail, "ReadPolyList -- NumPolys");
+                                                                if (!in) CoCoA_THROW_ERROR2(ERR::InputFail, "NumPolys");
 								j.reserve(NumPolys);
 
 								for (int i=0 ; i<NumPolys ; ++i)

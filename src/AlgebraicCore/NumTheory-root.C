@@ -74,8 +74,8 @@ namespace CoCoA
     // if UPBexp != 0 then restrict to k <= UPBexp
     BigInt StarRoot_naive(BigInt N, long UPBexp)
     {
-      if (N < 0) CoCoA_THROW_ERROR("arg1: N must be non-negative", "StarRoot_naive");
-      if (N < 2) return N;  // or ERROR???
+      if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+      if (N < 2)  return N;  // or ERROR???
 
       long logN = FloorLog2(N);
       if (UPBexp == 0) UPBexp = logN;
@@ -135,17 +135,16 @@ namespace CoCoA
   // Grunwald-Wang thm says this always terminates.
   long CertifyNotPower(const BigInt& N, long k)
   {
-    const char* const FnName = "CertifyNotPower";
-    if (N < 2) CoCoA_THROW_ERROR("arg 1: N must be >= 2", FnName);
-    if (k < 2 || !IsPrime(k)) CoCoA_THROW_ERROR("arg 2: k must be prime", FnName);
+    if (N < 2)  CoCoA_THROW_ERROR2(ERR::BadArg, "1st arg must be >= 2");
+    if (k < 2 || !IsPrime(k))  CoCoA_THROW_ERROR2(ERR::BadArg, "arg 2 must be prime");
 
     const long step = (k==2)?k:2*k;
     long p = 1;
     while (true)
     {
       p += step;
-      if (!IsPrime(p)) continue;
-      if (IsDivisible(N,p)) continue; // could be clever: check multiplicity (& if multiplicity is mult of k then check if what's left is a k-th power)
+      if (!IsPrime(p))  continue;
+      if (IsDivisible(N,p))  continue; // could be clever: check multiplicity (& if multiplicity is mult of k then check if what's left is a k-th power)
       CheckForInterrupt("CertifyNotPower");
       const long r = (p-1)/k;
       if (PowerMod(N, r, p) != 1)
@@ -158,9 +157,8 @@ namespace CoCoA
   // (works better if input is a factorial or primorial).
   long CertifyNotPower_(const BigInt& N, long k)
   {
-    const char* const FnName = "CertifyNotPower";
-    if (N < 2) CoCoA_THROW_ERROR("arg 1: N must be >= 2", FnName);
-    if (k < 2 || !IsPrime(k)) CoCoA_THROW_ERROR("arg 2: k must be prime", FnName);
+    if (N < 2)  CoCoA_THROW_ERROR2(ERR::BadArg, "1st arg must be >= 2");
+    if (k < 2 || !IsPrime(k))  CoCoA_THROW_ERROR2(ERR::BadArg, "2nd arg must be prime");
     if (IsOdd(k)) k *= 2;
     constexpr long thresh = 10000000;
     long p = 1;

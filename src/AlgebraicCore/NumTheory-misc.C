@@ -41,8 +41,8 @@ namespace CoCoA
   long EulerTotient(const MachineInt& n)
   {
     if (IsZero(n) || IsNegative(n))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "EulerTotient(n)");
-    if (!IsSignedLong(n)) CoCoA_THROW_ERROR(ERR::ArgTooBig, "EulerTotient(n)");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
+    if (!IsSignedLong(n))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     const factorization<long> facpows = factor(n);
     const vector<long>& primes = facpows.myFactors(); // assume fully factorized
     long ans = AsSignedLong(n);
@@ -56,7 +56,7 @@ namespace CoCoA
   BigInt EulerTotient(const BigInt& N)
   {
     if (N <= 0)
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "EulerTotient(N)");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     { long n; if (IsConvertible(n,N)) { return BigInt(EulerTotient(n)); } }
     const factorization<BigInt> facpows = factor(N);
     const vector<BigInt>& primes = facpows.myFactors();
@@ -64,7 +64,7 @@ namespace CoCoA
     for (const BigInt& p: primes)
     {
       if (!IsProbPrime(p))
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "EulerTotient: unable to factorize arg");
+        CoCoA_THROW_ERROR2(ERR::ArgTooBig, "unable to factorize arg");
       ans = (ans/p)*(p-1); // exact division
     }
     return ans;
@@ -75,26 +75,26 @@ namespace CoCoA
   bool IsEulerTotient(long n, long phi_n)
   {
     if (n < 1 || phi_n < 1)
-      CoCoA_THROW_ERROR("Args must be positive", "IsEulerTotient");
-    if (phi_n == 1) return (n == 1 || n == 2);
-    if (IsOdd(phi_n)) return false;
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
+    if (phi_n == 1)  return (n == 1 || n == 2);
+    if (IsOdd(phi_n))  return false;
     for (FastFinitePrimeSeq pseq; n > 1 && !IsEnded(pseq); ++pseq)
     {
       // if phi_n%4 == 2 then we can be cleverer (I think); means n must be prime power
       const long p = *pseq;
-      if (n/p < p) { /*n is prime*/ return (phi_n == n-1); }
-      if (n%p != 0) continue;
+      if (n/p < p)  { /*n is prime*/ return (phi_n == n-1); }
+      if (n%p != 0)  continue;
       const long m = FactorMultiplicity(p,n);
       // p_pwr = power(p,m-1)
       long p_pwr = 1; for (int i=1; i < m; ++i)  p_pwr *=p;  // cannot overflow!
       const long phi = (p-1) * p_pwr;   // cannot overflow!
-      if (phi_n%phi != 0) return false;
+      if (phi_n%phi != 0)  return false;
       phi_n /= phi;
       n /= (p*p_pwr); // cannot overflow, exact division
-      if (n != 1 && IsOdd(phi_n)) return false;
+      if (n != 1 && IsOdd(phi_n))  return false;
     }
-    if (n == 1) return (phi_n == 1);
-    CoCoA_THROW_ERROR(ERR::NYI, "IsEulerTotient: large factors");  // cannot happen???
+    if (n == 1)  return (phi_n == 1);
+    CoCoA_THROW_ERROR2(ERR::NYI, "for large factors");  // cannot happen???
   }
 
 
@@ -136,13 +136,13 @@ namespace CoCoA
 
   std::vector<long> InvTotient(long n, InvTotientMode mode /*=InvTotientMode::AllPreimages*/)
   {
-    if (n < 1) CoCoA_THROW_ERROR("arg must be >= 1","InvTot");
+    if (n < 1)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
    const unsigned long UPB = InvTotientBound_ulong(n);
    if (UPB == 1)
-     CoCoA_THROW_ERROR(ERR::ArgTooBig, "InvTotient");
-   if (UPB == 0) return vector<long>(); // no pre-images
+     CoCoA_THROW_ERROR1(ERR::ArgTooBig);
+   if (UPB == 0)  return vector<long>(); // no pre-images
 
-    if (n == 1) return vector<long>{1,2};
+    if (n == 1)  return vector<long>{1,2};
     
     // plist will contain exactly those primes p such that p-1 divides n
     // No other prime can divide any preimage of n.
@@ -170,7 +170,7 @@ namespace CoCoA
   // Simple rather than efficient
   BigInt InvTotientBoundUpto(const BigInt& phi)
   {
-    if (phi < 1)  CoCoA_THROW_ERROR("Arg must be > 0","InvTotientBoundUpto");
+    if (phi < 1)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
     if (IsOne(phi))  return BigInt(2);
     BigRat ratio(2,1);
     BigInt phi_reduced = phi;
@@ -326,9 +326,9 @@ namespace CoCoA
   long MoebiusFn(const MachineInt &n)
   {
     if (IsZero(n) || IsNegative(n))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "MoebiusFn(n)");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     if (!IsSignedLong(n))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "MoebiusFn(n):  n must fit into long");
+      CoCoA_THROW_ERROR2(ERR::ArgTooBig, "arg must fit into long");
     if (!IsSqFree(n))
       return 0;
     return SmallPower(-1, factor(n).myFactors().size());
@@ -369,15 +369,15 @@ namespace CoCoA
 
   std::vector<BigInt> BinomialRepr(BigInt N, long r)
   {
-    if (N < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "BinomialRepr(N,r): 1st arg");
-    if (r < 1) CoCoA_THROW_ERROR(ERR::ReqPositive, "BinomialRepr(N,r): 2nd arg");
+    if (N < 0)  CoCoA_THROW_ERROR2(ERR::ReqNonNegative, "1st arg");
+    if (r < 1)  CoCoA_THROW_ERROR2(ERR::ReqPositive, "2nd arg");
     vector<BigInt> ans(r+1);
     while (r > 0 && N > 0)
     {
       CheckForInterrupt("BinomialRepr");
       BigInt lwb = (r-1 + FloorRoot(power(2,r)*factorial(r)*N, r))/2;
-      if (N <= r || lwb < r) lwb = r;
-      if (lwb == r && N > r) lwb = r+1;
+      if (N <= r || lwb < r)  lwb = r;
+      if (lwb == r && N > r)  lwb = r+1;
       ans[r] = SearchUpwards(N, lwb, r);
       N -= binomial(ans[r], r);
       --r;

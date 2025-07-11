@@ -75,15 +75,15 @@ namespace CoCoA
 
   const BigInt& ContFracIter::operator*() const
   {
-    if (IsEnded(*this)) CoCoA_THROW_ERROR(ERR::IterEnded, "ContFracIter::operator*");
+    if (IsEnded(*this))  CoCoA_THROW_ERROR1(ERR::IterEnded);
     return myQuot;
   }
 
   ContFracIter& ContFracIter::operator++()
   {
-    if (IsEnded(*this)) CoCoA_THROW_ERROR(ERR::IterEnded, "ContFracIter::operator++");
+    if (IsEnded(*this))  CoCoA_THROW_ERROR1(ERR::IterEnded);
     ++myQuotIndex;
-    if (IsZero(myNum)) { /*signal iter ended:*/ myQuot = 0; return *this; }
+    if (IsZero(myNum))  { /*signal iter ended:*/ myQuot = 0; return *this; }
     if (!IsOne(myDen))
     { // the "usual" case
       quorem(myQuot, myNum, myNum, myDen);
@@ -91,7 +91,7 @@ namespace CoCoA
     }
     else
     { // myDen = 1, so almost ended.
-      if (myEpsilon < 0) { myQuot = myNum-1;  myNum = 1; }
+      if (myEpsilon < 0)  { myQuot = myNum-1;  myNum = 1; }
       else { myQuot = myNum; myNum = 0; }
     }
     myEpsilon = -myEpsilon;
@@ -193,9 +193,9 @@ namespace CoCoA
 
   CFApproximantsIter& CFApproximantsIter::operator++()
   {
-    if (IsEnded(*this)) CoCoA_THROW_ERROR(ERR::IterEnded, "CFApproximantsIter::operator++");
+    if (IsEnded(*this))  CoCoA_THROW_ERROR1(ERR::IterEnded);
     ++myCFIter;
-    if (IsEnded(myCFIter)) return *this;
+    if (IsEnded(myCFIter))  return *this;
     myApproximant.myAppendQuot(quot(myCFIter));
 
     return *this;
@@ -222,10 +222,11 @@ namespace CoCoA
   BigRat CFApprox(const BigRat& q, const BigRat& MaxRelErr)
   {
     // Simple rather than superfast.
-    if (MaxRelErr < 0 || MaxRelErr > 1) CoCoA_THROW_ERROR(ERR::BadArg, "CFApprox: relative error must be between 0 and 1");
-    if (IsZero(q) || IsZero(MaxRelErr)) return q;
+    if (MaxRelErr < 0 || MaxRelErr > 1)
+      CoCoA_THROW_ERROR2(ERR::BadArg, "relative error must be between 0 and 1");
+    if (IsZero(q) || IsZero(MaxRelErr))  return q;
     const BigRat MaxAbsErr = abs(q*MaxRelErr);
-    if (MaxAbsErr >= 1) return BigRat(floor(q),1);
+    if (MaxAbsErr >= 1)  return BigRat(floor(q),1);
     CFApproximantsIter CFAIter(q);
     while (abs(q - *CFAIter) > MaxAbsErr)
     {

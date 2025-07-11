@@ -92,7 +92,7 @@ namespace CoCoA
   {
     if (IsSatAlg)
     { 
-      //  if (!IsHomog) CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "DetermineComputationType");
+      //  if (!IsHomog)  CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
       if (GrDim==0) return SaturatingAlgNoDRL;
       return SaturatingAlg;
     }
@@ -158,7 +158,7 @@ namespace CoCoA
     myTimeoutChecker(CheckForTimeout)
   {
     //    if (!IsField(CoeffRing(theOldSPR)))
-    //      CoCoA_THROW_ERROR("coefficients are not in a field", "ComputeGBasis");
+    //      CoCoA_THROW_ERROR1(ERR::ReqField);
     std::vector<RingElem> Y; // The grading vars
     const std::vector<RingElem>& x = indets(myNewSPRValue);
     // Fill Y
@@ -198,7 +198,7 @@ namespace CoCoA
     myTimeoutChecker(CheckForTimeout)
   {
     //    if (!IsField(CoeffRing(theOldSPR)))
-    //      CoCoA_THROW_ERROR("coefficients are not in a field", "ComputeGBasis");
+    //      CoCoA_THROW_ERROR1(ERR::ReqField);
     myCtorAux(theNewSPR, IsHomog, IsSatAlg);
     myTimeoutChecker.myReset(IterationVariability::high);
   }// ctor GRingInfo
@@ -222,7 +222,7 @@ namespace CoCoA
     myTimeoutChecker(CheckForTimeout)
   {
     //    if (!IsField(CoeffRing(theOldSPR)))
-    //      CoCoA_THROW_ERROR("coefficients are not in a field", "ComputeGBasis");
+    //      CoCoA_THROW_ERROR1(ERR::ReqField);
     myCtorAux(theNewSPR, IsHomog, IsSatAlg);
     myTimeoutChecker.myReset(IterationVariability::high);
   }// ctor GRingInfo
@@ -302,7 +302,7 @@ RingElem GRingInfo::myY(const degree& the_d)const
         return NewStdSugarNoIdxSat(f, idx);
       }
       return NewStdSugarSat(f);
-    default: CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "GRingInfo::mySugar");
+    default: CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     }//switch
     return NewStdSugar(f); // just to keep the compiler quiet
   }

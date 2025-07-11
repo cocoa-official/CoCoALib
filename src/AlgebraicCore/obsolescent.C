@@ -31,7 +31,7 @@ namespace CoCoA
     void LogObsolescentFn(const char* const FnName, const char* const UsefulAdvice)
     {
       if (!IsAllowedObsolescentFnCall())
-        CoCoA_THROW_ERROR(ERR::OBSOLESCENT, FnName + std::string(" -- ") + UsefulAdvice);
+        CoCoA_THROW_ERROR2(ERR::OBSOLESCENT, FnName + std::string(" -- ") + UsefulAdvice);
       LogStream() << "WARNING: called obsolescent fn `" << FnName << "' -- " << UsefulAdvice << endl;
     }
 
@@ -44,7 +44,7 @@ namespace CoCoA
   std::size_t SizeInBase(const BigInt& N, long base)  // REMOVED 2022-08-08
   {
     if (base < 2 || base > 36)
-      CoCoA_THROW_ERROR(ERR::BadNumBase, "SizeInBase(BigInt,base)");
+      CoCoA_THROW_ERROR1(ERR::BadNumBase);
     return mpz_sizeinbase(mpzref(N), base);
   }
 
@@ -139,14 +139,14 @@ namespace CoCoA
   BigInt iroot(const BigInt& N,     const MachineInt& r)
   {
     LogObsolescentFn("iroot", "use \"FloorRoot\"");
-    if (N < 0) CoCoA_THROW_ERROR("iroot","1st arg must be non-negative");
+    if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     return FloorRoot(N,r);
   }
 
   BigInt iroot(const BigInt& N,     const BigInt& R)
   {
     LogObsolescentFn("iroot", "use \"FloorRoot\"");
-    if (N < 0) CoCoA_THROW_ERROR("iroot","1st arg must be non-negative");
+    if (N < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     return FloorRoot(N,R);
   }
 

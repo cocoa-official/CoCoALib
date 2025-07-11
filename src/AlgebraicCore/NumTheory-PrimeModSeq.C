@@ -26,16 +26,17 @@ namespace CoCoA
 
   /*static member*/ unsigned long PrimeSeq1ModN::ourComputeStepSize(long n)
   {
-    const char* const FnName = "PrimeSeq1ModN ctor: arg must be >= 2";
     if (n < 2)
-      CoCoA_THROW_ERROR(ERR::BadModulus, FnName);
+      CoCoA_THROW_ERROR1(ERR::BadModulus);
     if (IsEven(n))
     {
-      if (n > std::numeric_limits<long>::max()-1)  CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+      if (n > std::numeric_limits<long>::max()-1)
+        CoCoA_THROW_ERROR1(ERR::ArgTooBig);
       return n;
     }
     // n is odd
-    if (n > (std::numeric_limits<long>::max()-1)/2)  CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    if (n > (std::numeric_limits<long>::max()-1)/2)
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return 2*n;
   }
 

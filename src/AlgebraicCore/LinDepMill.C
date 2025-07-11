@@ -76,8 +76,8 @@ namespace CoCoA
       myRing(K),
       myVecLen(dim)
   {
-    if (!IsField(K)) CoCoA_THROW_ERROR(ERR::ReqField, "LinDepMill_generic ctor");
-    if (dim <= 0) CoCoA_THROW_ERROR(ERR::ReqPositive, "LinDepMill_generic ctor");
+    if (!IsField(K))  CoCoA_THROW_ERROR1(ERR::ReqField);
+    if (dim <= 0)  CoCoA_THROW_ERROR2(ERR::ReqPositive, "dimension");
     myM.reserve(dim);
     myRowRepr.reserve(dim);
     myColIndices.reserve(dim);
@@ -89,9 +89,9 @@ namespace CoCoA
   bool LinDepMill_generic::myAppendVec(const std::vector<RingElem>& vec)
   {
     const long n = len(vec);
-    if (n != myVecLen) CoCoA_THROW_ERROR(ERR::IncompatDims, "LinDepMill_generic::myAppendVec");
+    if (n != myVecLen)  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     if (owner(vec[0]) != myRing || !HasUniqueOwner(vec))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "LinDepMill_generic::myAppendVec");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     vector<RingElem> v(vec);
     const long ncols = len(myM);
     myLinRelnValue.resize(ncols, zero(myRing));

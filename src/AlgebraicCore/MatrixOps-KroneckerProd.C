@@ -34,13 +34,11 @@ namespace CoCoA
   //  Simple "dense" impl
   matrix KroneckerProd(ConstMatrixView M1, ConstMatrixView M2)
   {
-    const char* const FnName = "KroneckerProd";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,FnName);
     const ring& R1 = RingOf(M1);
     const ring& R2 = RingOf(M2);
     if (R1 != R2)
     {
-      const RingHom promote = AutomaticConversionHom(R1,R2,ErrMixed); // throws ErrMixed if auto-conv not possible
+      const RingHom promote = AutomaticConversionHom(R1,R2,CoCoA_ERROR_CONTEXT); // throws ErrMixed if auto-conv not possible
       if (codomain(promote) == R1)
         return KroneckerProd(M1, promote(M2));
       return KroneckerProd(promote(M1), M2);
@@ -75,11 +73,11 @@ namespace CoCoA
   // matrix TensorMat(ConstMatrixView A, ConstMatrixView B)
   // {
   //   if (RingOf(A) != RingOf(B))
-  //     CoCoA_THROW_ERROR(ERR::MixedRings, "TensorMat(A,B)");
+  //     CoCoA_THROW_ERROR1(ERR::MixedRings);
   //   if (NumCols(A) > numeric_limits<long>::max() /NumCols(B)) //avoid overflow  
-  //     CoCoA_THROW_ERROR(ERR::BadColIndex, "TensorMat(A,B)");
+  //     CoCoA_THROW_ERROR1(ERR::BadColIndex);
   //   if (NumRows(A) > numeric_limits<long>::max() /NumRows(B)) //avoid overflow  
-  //     CoCoA_THROW_ERROR(ERR::BadRowIndex, "TensorMat(A,B)");
+  //     CoCoA_THROW_ERROR1(ERR::BadRowIndex);
   //   matrix ans = NewDenseMat(RingOf(A), NumRows(A)*NumRows(B), NumCols(A)*NumCols(B));
   //   for (long iA=0; iA < NumRows(A); ++iA)
   //     for (long jA=0; jA < NumCols(A); ++jA)

@@ -44,7 +44,7 @@ namespace CoCoA
   {
     if (IsNegative(mod))  CoCoA_THROW_ERROR1(ERR::BadModulus);
     if (!IsSignedLong(mod) || !IsSignedLong(res))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "CRTMill::myAddInfo");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     const long m = AsSignedLong(mod);
     if (check == CheckCoprimality && gcd(m,myM) != 1)
       CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");

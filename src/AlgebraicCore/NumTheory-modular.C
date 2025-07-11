@@ -65,17 +65,17 @@ namespace CoCoA
 
 
     // Common sanity check for the modulus
-    void CheckModulus(const MachineInt& modulus, const char* const FnName)
+    void CheckModulus(const MachineInt& modulus, const ErrorContext& FnName)
     {
       if (IsNegative(modulus) || !IsSignedLong(modulus) || AsSignedLong(modulus) < 2)
-        CoCoA_THROW_ERROR(ERR::BadModulus, FnName);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadModulus, FnName);
     }
 
     // Common sanity check for the modulus
-    void CheckModulus(const BigInt& modulus, const char* const FnName)
+    void CheckModulus(const BigInt& modulus, const ErrorContext& FnName)
     {
       if (modulus < 2)
-        CoCoA_THROW_ERROR(ERR::BadModulus, FnName);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadModulus, FnName);
     }
 
   } // end of anonymous namespace
@@ -85,7 +85,7 @@ namespace CoCoA
   // The case 0^0 yields 1.
   long PowerMod(const MachineInt& base, const MachineInt& exponent, const MachineInt& modulus)
   {
-    CheckModulus(modulus, "PowerMod(base,exponent,modulus)");
+    CheckModulus(modulus, CoCoA_ERROR_CONTEXT);
     if (IsNegative(exponent))
     {
       const long inv = InvMod(base, modulus); // Throws ERR::DivByZero if inverse does not exist.
@@ -108,13 +108,13 @@ namespace CoCoA
   {
     // BUG/SLUG: horribly inefficient!!
     // What is the best way to implement this fn?????  Any volunteers?
-    CheckModulus(modulus, "PowerMod(base,exponent,modulus)");
+    CheckModulus(modulus, CoCoA_ERROR_CONTEXT);
     return ConvertTo<long>(PowerMod(BigInt(base), exponent, BigInt(modulus)));
   }
 
   long PowerMod(const BigInt& base, const MachineInt& exponent, const MachineInt& modulus)
   {
-    CheckModulus(modulus, "PowerMod(base,exponent,modulus)");
+    CheckModulus(modulus, CoCoA_ERROR_CONTEXT);
     return PowerMod(base%modulus, exponent, modulus);
   }
 
@@ -122,7 +122,7 @@ namespace CoCoA
   {
     // BUG/SLUG: horribly inefficient!!
     // What is the best way to implement this fn?????  Any volunteers?
-    CheckModulus(modulus, "PowerMod(base,exponent,modulus)");
+    CheckModulus(modulus, CoCoA_ERROR_CONTEXT);
     return ConvertTo<long>(PowerMod(base, exponent, BigInt(modulus)));
   }
 
@@ -133,7 +133,7 @@ namespace CoCoA
 
   BigInt PowerMod(const BigInt& base, const MachineInt& exponent, const BigInt& modulus)
   {
-    CheckModulus(modulus, "PowerMod(BigInt, MachineInt, BigInt)");
+    CheckModulus(modulus, CoCoA_ERROR_CONTEXT);
     if (IsNegative(exponent))
     {
       const BigInt inv = InvMod(base, modulus); // Throws ERR::DivByZero if inverse does not exist.
@@ -148,7 +148,7 @@ namespace CoCoA
 
   BigInt PowerMod(const MachineInt& base, const BigInt& exponent, const BigInt& modulus)
   {
-    CheckModulus(modulus, "PowerMod(MachineInt, BigInt, BigInt)");
+    CheckModulus(modulus, CoCoA_ERROR_CONTEXT);
     if (exponent < 0)
     {
       const BigInt inv = InvMod(base, modulus); // Throws ERR::DivByZero if inverse does not exist.
@@ -160,8 +160,8 @@ namespace CoCoA
 
   BigInt PowerMod(const BigInt& base, const BigInt& exponent, const BigInt& modulus)
   {
-    CheckModulus(modulus, "PowerMod(BigInt, BigInt, BigInt)");
-    if (IsZero(exponent)) return BigInt(1); // x^0 --> 1 even for x==0
+    CheckModulus(modulus, CoCoA_ERROR_CONTEXT);
+    if (IsZero(exponent))  return BigInt(1); // x^0 --> 1 even for x==0
     if (exponent < 0)
     {
       const BigInt inv = InvMod(base, modulus); // Throws ERR::DivByZero if inverse does not exist.
@@ -206,7 +206,7 @@ namespace CoCoA
       }
       if (r+m != 1)
       {
-        if (ErrorAction == ThrowOnError) CoCoA_THROW_ERROR(ERR::DivByZero, "InvMod");
+        if (ErrorAction == ThrowOnError)  CoCoA_THROW_ERROR1(ERR::DivByZero);
         return 0;
       }
       if (r == 0) return p-cm;
@@ -247,7 +247,7 @@ namespace CoCoA
     }
     if (r+m != 1)
     {
-      if (ErrorAction == ThrowOnError) CoCoA_THROW_ERROR(ERR::DivByZero, "InvMod");
+      if (ErrorAction == ThrowOnError)  CoCoA_THROW_ERROR1(ERR::DivByZero);
       return 0;
     }
     if (r == 0) return p-cm;
@@ -257,7 +257,7 @@ namespace CoCoA
   
   long InvMod(const MachineInt& r, const MachineInt& m, const InvModErrorAction ErrorAction /*= ThrowOnError*/)
   {
-    CheckModulus(m, "InvMod(residue,modulus)");
+    CheckModulus(m, CoCoA_ERROR_CONTEXT);
     const unsigned long modulus = uabs(m);
     unsigned long residue = LeastNNegRemainder(r,m);
     return InvModNoArgCheck(residue, modulus, ErrorAction);
@@ -265,31 +265,31 @@ namespace CoCoA
 
   long InvMod(const BigInt& r, const MachineInt& m, const InvModErrorAction ErrorAction /*= ThrowOnError*/)
   {
-    CheckModulus(m, "InvMod(residue,modulus)"); // throws if m < 2
+    CheckModulus(m, CoCoA_ERROR_CONTEXT); // throws if m < 2
     const long residue = LeastNNegRemainder(r,m);
     return InvModNoArgCheck(residue, AsUnsignedLong(m), ErrorAction);
   }
 
   BigInt InvMod(const MachineInt& r, const BigInt& m, const InvModErrorAction ErrorAction /*= ThrowOnError*/)
   {
-    CheckModulus(m, "InvMod(residue,modulus)"); // throws if m < 2
+    CheckModulus(m, CoCoA_ERROR_CONTEXT); // throws if m < 2
     const BigInt residue(r);
     BigInt ans;
     const int InverseExists = mpz_invert(mpzref(ans), mpzref(residue), mpzref(m));
     if (InverseExists) return ans;
     // Not invertible, so handle error.
-    if (ErrorAction == ThrowOnError) CoCoA_THROW_ERROR(ERR::DivByZero, "InvMod");
+    if (ErrorAction == ThrowOnError)  CoCoA_THROW_ERROR1(ERR::DivByZero);
     return BigInt(0);
   }
 
   BigInt InvMod(const BigInt& r, const BigInt& m, const InvModErrorAction ErrorAction /*= ThrowOnError*/)
   {
-    CheckModulus(m, "InvMod(residue,modulus)"); // throws if m < 2
+    CheckModulus(m, CoCoA_ERROR_CONTEXT); // throws if m < 2
     BigInt ans;
     const int InverseExists = mpz_invert(mpzref(ans), mpzref(r), mpzref(m));
     if (InverseExists) return ans;
     // Not invertible, so handle error.
-    if (ErrorAction == ThrowOnError) CoCoA_THROW_ERROR(ERR::DivByZero, "InvMod");
+    if (ErrorAction == ThrowOnError)  CoCoA_THROW_ERROR1(ERR::DivByZero);
     return BigInt(0);
   }
 
@@ -389,9 +389,9 @@ namespace CoCoA
   long MultiplicativeOrderMod(const MachineInt& residue, const MachineInt& modulus)
   {
     if (IsNegative(modulus) || AsUnsignedLong(modulus) < 2)
-      CoCoA_THROW_ERROR(ERR::BadArg, "MultiplicativeOrderMod: must have modulus >= 2");
+      CoCoA_THROW_ERROR1(ERR::BadModulus);
     if (gcd(residue, modulus) != 1)
-      CoCoA_THROW_ERROR(ERR::BadArg, "MultiplicativeOrderMod: residue must be coprime to modulus");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "residue must be coprime to modulus");
     const unsigned long m = AsUnsignedLong(modulus);
     if (m-1 > MaxSquarableInteger<unsigned long>())
     {
@@ -428,9 +428,9 @@ namespace CoCoA
   BigInt MultiplicativeOrderMod(const BigInt& residue, const BigInt& modulus)
   {
     if (modulus < 2)
-      CoCoA_THROW_ERROR(ERR::BadArg, "MultiplicativeOrderMod: must have modulus >= 2");
+      CoCoA_THROW_ERROR1(ERR::BadModulus);
     if (gcd(residue, modulus) != 1)
-      CoCoA_THROW_ERROR(ERR::BadArg, "MultiplicativeOrderMod: residue must be coprime to modulus");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "residue must be coprime to modulus");
     unsigned long m;
     if (IsConvertible(m, modulus) && m-1 <= MaxSquarableInteger<unsigned long>())
     {
@@ -455,7 +455,7 @@ namespace CoCoA
   long PrimitiveRoot(const MachineInt& pp)
   {
     if (IsNegative(pp) || !IsSignedLong(pp) || !IsPrime(pp))
-      CoCoA_THROW_ERROR(ERR::BadArg, "PrimitiveRoot(p):  p must be a (positive) prime");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "arg must be a (positive) prime");
 
     unsigned long p = AsUnsignedLong(pp);
     if (p == 2) return 1;
@@ -465,14 +465,14 @@ namespace CoCoA
     for (unsigned long root = 2; /*empty*/; ++root)
     {
       CoCoA_ASSERT(root < p);
-      if (root == 4 || root == 8 || root == 9 || root == 16) continue; // skip the first few prime powers
+      if (root == 4 || root == 8 || root == 9 || root == 16)  continue; // skip the first few prime powers
       bool failed = false;
       for (int i=0; i < NumPrimes; ++i)
       {
 	if (PowerMod(root, (p-1)/primes[i], p) == 1)
         { failed = true; break; } // effectively a "continue;" for the outer loop
       }
-      if (!failed) return root;
+      if (!failed)  return root;
     }
   }
 
@@ -481,7 +481,7 @@ namespace CoCoA
   long PrimitiveRoot(const BigInt& P)
   {
     if (P <= 0 || !IsPrime(P))
-      CoCoA_THROW_ERROR(ERR::BadArg, "PrimitiveRoot(P):  P must be a (positive) prime");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "arg must be a (positive) prime");
 
     if (P == 2) return 1;
     const factorization<BigInt> facpows = factor(P-1);
@@ -490,14 +490,14 @@ namespace CoCoA
     for (unsigned long root = 2; /*empty*/; ++root)
     {
       CoCoA_ASSERT(root < P);
-      if (root == 4 || root == 8 || root == 9 || root ==16) continue; // skip the first few prime powers
+      if (root == 4 || root == 8 || root == 9 || root ==16)  continue; // skip the first few prime powers
       bool failed = false;
       for (int i=0; i < NumPrimes; ++i)
       {
 	if (PowerMod(root, (P-1)/primes[i], P) == 1)
         { failed = true; break; } // effectively a "continue;" for the outer loop
       }
-      if (!failed) return root;
+      if (!failed)  return root;
     }
   }
 
@@ -507,25 +507,27 @@ namespace CoCoA
 
   long KroneckerSymbol(const MachineInt& residue, const MachineInt& modulus)
   {
-    if (IsNegative(modulus) || !IsSignedLong(modulus) || AsSignedLong(modulus) < 2) CoCoA_THROW_ERROR(ERR::BadModulus, "KroneckerSymbol");
+    if (IsNegative(modulus) || !IsSignedLong(modulus) || AsSignedLong(modulus) < 2)
+      CoCoA_THROW_ERROR1(ERR::BadModulus);
     return mpz_kronecker_si(mpzref(BigInt(residue)), AsSignedLong(modulus));
   }
 
   long KroneckerSymbol(const BigInt& residue,     const MachineInt& modulus) 
   {
-    if (IsNegative(modulus) || !IsSignedLong(modulus) || AsSignedLong(modulus) < 2) CoCoA_THROW_ERROR(ERR::BadModulus, "KroneckerSymbol");
+    if (IsNegative(modulus) || !IsSignedLong(modulus) || AsSignedLong(modulus) < 2)
+      CoCoA_THROW_ERROR1(ERR::BadModulus);
     return mpz_kronecker_si(mpzref(residue), AsSignedLong(modulus));
   }
   
   long KroneckerSymbol(const MachineInt& residue, const BigInt& modulus)
   {
-    if (modulus < 2) CoCoA_THROW_ERROR(ERR::BadModulus, "KroneckerSymbol");
+    if (modulus < 2)  CoCoA_THROW_ERROR1(ERR::BadModulus);
     return mpz_si_kronecker(AsSignedLong(residue), mpzref(modulus));
   }
 
   long KroneckerSymbol(const BigInt& residue,     const BigInt& modulus)
   {
-    if (modulus < 2) CoCoA_THROW_ERROR(ERR::BadModulus, "KroneckerSymbol");
+    if (modulus < 2)  CoCoA_THROW_ERROR1(ERR::BadModulus);
     return mpz_kronecker(mpzref(residue), mpzref(modulus));
   }
 

@@ -35,7 +35,7 @@ namespace CoCoA
   long rk(const ConstMatrixView& M)
   {
     if (!IsIntegralDomain(RingOf(M)))
-      CoCoA_THROW_ERROR(ERR::NotIntegralDomain, "rk(Mat)");
+      CoCoA_THROW_ERROR1(ERR::NotIntegralDomain);
     return M->myRank();
   }
 
@@ -44,8 +44,8 @@ namespace CoCoA
   // long RankAndGauss(matrix& M, const int ToDoCols)
   // {
   //   const ring R = RingOf(M);
-  //   if (!IsField(R)) CoCoA_THROW_ERROR(ERR::NotField, "gauss");  
-  //   if (ToDoCols > NumCols(M)) CoCoA_THROW_ERROR(ERR::BadColIndex, "gauss");  
+  //   if (!IsField(R))  CoCoA_THROW_ERROR1(ERR::ReqField);  
+  //   if (ToDoCols > NumCols(M))  CoCoA_THROW_ERROR1(ERR::BadColIndex);  
   //   const long Mrows = NumRows(M);
 
   //   long rank = 0;
@@ -77,10 +77,10 @@ namespace CoCoA
     // ??? this function works only within integral domains!
     const ring R(RingOf(M));
     if (!IsIntegralDomain(R))
-      CoCoA_THROW_ERROR(ERR::NotIntegralDomain, "RankByGauss(v,Mat)  over non-integral domain");
+      CoCoA_THROW_ERROR1(ERR::NotIntegralDomain);
     const long Nrows = NumRows(M);
     const long Ncols = NumCols(M);
-    if (Nrows == 0 || Ncols==0) return 0;
+    if (Nrows == 0 || Ncols==0)  return 0;
     // Henceforth M has at least 1 row & 1 col
     const ring K((IsField(R) ? R : NewFractionField(R)));
     const RingHom R2K(R==K ? IdentityHom(K) : EmbeddingHom(K));

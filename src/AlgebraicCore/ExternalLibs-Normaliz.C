@@ -696,7 +696,7 @@ namespace CoCoA
       //   v.reserve(VIn.size());
       //   for (vector<BigInt>::const_iterator it=VIn.begin(); it!=VIn.end(); ++it)
       //     if (IsConvertible(n, *it))  v.push_back(n);
-      //     else CoCoA_THROW_ERROR(ERR::BadConvert, "normaliz: BigIntVToLongV");
+      //     else CoCoA_THROW_ERROR1(ERR::BadConvert);
       //   return v;
       // }
 
