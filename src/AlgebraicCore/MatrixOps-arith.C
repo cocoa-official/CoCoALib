@@ -41,15 +41,13 @@ namespace CoCoA
   //  or even DiagMat(...)*AnyMat, or even ZeroMat*AnyMat,... lots of cases!!!??? BUG
   matrix operator*(ConstMatrixView Mleft, ConstMatrixView Mright)
   {
-    const char* const FnName = "Mat*Mat";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,FnName);
     if (NumCols(Mleft) != NumRows(Mright))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSize, FnName);
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     const ring& Rleft = RingOf(Mleft);
     const ring& Rright = RingOf(Mright);
     if (Rleft != Rright)
     {
-      const RingHom promote = AutomaticConversionHom(Rleft,Rright,ErrMixed); // throws ErrMixed if auto-conv not possible
+      const RingHom promote = AutomaticConversionHom(Rleft,Rright,CoCoA_ERROR_CONTEXT); // throws ErrMixed if auto-conv not possible
       if (codomain(promote) == Rleft)
         return Mleft * promote(Mright);
       return promote(Mleft) * Mright;
@@ -74,17 +72,15 @@ namespace CoCoA
 
   matrix operator+(ConstMatrixView Mleft, ConstMatrixView Mright)
   {
-    const char* const FnName = "Mat+Mat";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,FnName);
     const ring& Rleft = RingOf(Mleft);
     const ring& Rright = RingOf(Mright);
     const long Nrows = NumRows(Mleft);
     const long Ncols = NumCols(Mleft);
-    if (NumRows(Mright) != Nrows) CoCoA_THROW_ERROR(ERR::BadMatrixSize, FnName);
-    if (NumCols(Mright) != Ncols) CoCoA_THROW_ERROR(ERR::BadMatrixSize, FnName);
+    if (NumRows(Mright) != Nrows)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
+    if (NumCols(Mright) != Ncols)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     if (Rleft != Rright)
     {
-      const RingHom promote = AutomaticConversionHom(Rleft,Rright,ErrMixed); // throws ErrMixed if auto-conv not possible
+      const RingHom promote = AutomaticConversionHom(Rleft,Rright,CoCoA_ERROR_CONTEXT); // throws ErrMixed if auto-conv not possible
       if (codomain(promote) == Rleft)
         return Mleft + promote(Mright);
       return promote(Mleft) + Mright;
@@ -100,17 +96,15 @@ namespace CoCoA
 
   matrix operator-(ConstMatrixView Mleft, ConstMatrixView Mright)
   {
-    const char* const FnName = "Mat-Mat";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,FnName);
     const ring& Rleft = RingOf(Mleft);
     const ring& Rright = RingOf(Mleft);
     const long Nrows = NumRows(Mleft);
     const long Ncols = NumCols(Mleft);
-    if (NumRows(Mright) != Nrows) CoCoA_THROW_ERROR(ERR::BadMatrixSize, FnName);
-    if (NumCols(Mright) != Ncols) CoCoA_THROW_ERROR(ERR::BadMatrixSize, FnName);
+    if (NumRows(Mright) != Nrows)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
+    if (NumCols(Mright) != Ncols)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
     if (Rleft != Rright)
     {
-      const RingHom promote = AutomaticConversionHom(Rleft,Rright,ErrMixed); // throws ErrMixed if auto-conv not possible
+      const RingHom promote = AutomaticConversionHom(Rleft,Rright,CoCoA_ERROR_CONTEXT); // throws ErrMixed if auto-conv not possible
       if (codomain(promote) == Rleft)
         return Mleft + promote(Mright);
       return promote(Mleft) + Mright;
@@ -156,15 +150,13 @@ namespace CoCoA
 
   matrix operator*(ConstRefRingElem x, ConstMatrixView M)
   {
-    static const char* const FnName = "RingElem*Mat";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings, FnName);
     const ring& Rx = owner(x);
     const ring& R = RingOf(M);
     if (Rx != R)
     {
-      const RingHom promote = AutomaticConversionHom(Rx,R,ErrMixed); // throws ErrMixed if auto-conv not possible
+      const RingHom promote = AutomaticConversionHom(Rx,R,CoCoA_ERROR_CONTEXT); // throws ErrMixed if auto-conv not possible
       if (codomain(promote) == Rx)
-        CoCoA_THROW_ERROR("MixedRings: no automatic promotion mapping for matrices", FnName);
+        CoCoA_THROW_ERROR2(ERR::MixedRings, "no automatic promotion mapping for matrices");
 /////      return x*promote(M);
       return promote(x) * M;
     }
@@ -195,15 +187,13 @@ namespace CoCoA
   // Separate impl in case ring is not commutative
   matrix operator*(ConstMatrixView M, ConstRefRingElem x)
   {
-    static const char* const FnName = "Mat*RingElem";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings, FnName);
     const ring& Rx = owner(x);
     const ring& R = RingOf(M);
     if (Rx != R)
     {
-      const RingHom promote = AutomaticConversionHom(Rx,R,ErrMixed); // throws ErrMixed if auto-conv not possible
+      const RingHom promote = AutomaticConversionHom(Rx,R,CoCoA_ERROR_CONTEXT); // throws ErrMixed if auto-conv not possible
       if (codomain(promote) == Rx)
-        CoCoA_THROW_ERROR("MixedRings: no automatic promotion mapping for matrices", FnName);
+        CoCoA_THROW_ERROR2(ERR::MixedRings, "no automatic promotion mapping for matrices");
 ///        return promote(M) * x;
       return M * promote(x);
     }
@@ -235,16 +225,14 @@ namespace CoCoA
 
   matrix operator/(ConstMatrixView M, ConstRefRingElem x)
   {
-    static const char* const FnName = "Mat/RingElem";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,FnName);
-    if (IsZeroDivisor(x)) CoCoA_THROW_ERROR(ERR::DivByZero, FnName);
+    if (IsZeroDivisor(x))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     const ring& Rx = owner(x);
     const ring& R = RingOf(M);
     if (Rx != R)
     {
-      const RingHom promote = AutomaticConversionHom(Rx,R,ErrMixed); // throws ErrMixed if auto-conv not possible
+      const RingHom promote = AutomaticConversionHom(Rx,R,CoCoA_ERROR_CONTEXT); // throws ErrMixed if auto-conv not possible
       if (codomain(promote) == Rx)
-        CoCoA_THROW_ERROR("MixedRings: no automatic promotion mapping for matrices", FnName);
+        CoCoA_THROW_ERROR2(ERR::MixedRings, "no automatic promotion mapping for matrices");
 ///        return promote(M) / x;
       return M / promote(x);
     }

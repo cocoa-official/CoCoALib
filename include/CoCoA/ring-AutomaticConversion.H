@@ -1,7 +1,7 @@
 #ifndef CoCoA_ring_AutomaticConversion_H
 #define CoCoA_ring_AutomaticConversion_H
 
-//   Copyright (c)  2020  John Abbott,  Anna M. Bigatti
+//   Copyright (c)  2020,2025  John Abbott,  Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -19,6 +19,8 @@
 //   along with CoCoALib.  If not, see <http://www.gnu.org/licenses/>.
 
 
+#include "CoCoA/error.H"
+
 namespace CoCoA
 {
 
@@ -26,7 +28,7 @@ namespace CoCoA
   class RingHom;
   class ErrorInfo;  // fwd decl
 
-  RingHom AutomaticConversionHom(const ring& R1, const ring& R2, const ErrorInfo& err);
+  RingHom AutomaticConversionHom(const ring& R1, const ring& R2, const ErrorContext& ErrCtx);
 
 } // end of namespace CoCoA
 

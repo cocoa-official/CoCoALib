@@ -153,7 +153,7 @@ namespace CoCoA
   void FieldIdealImpl::myMul(const ideal& /*J*/)
   {
     if (IamZero()) return;
-    CoCoA_THROW_ERROR(ERR::NYI, "FieldIdealImpl::myMul");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   }
 
 
@@ -199,11 +199,11 @@ namespace CoCoA
   {
     // Check that k is indeed a field, and that all gens belong to k
     if (!IsField(k))
-      CoCoA_THROW_ERROR(ERR::ReqField, "NewFieldIdeal");
+      CoCoA_THROW_ERROR1(ERR::ReqField);
     const long n = len(gens);
     for (long i=0; i < n; ++i)
       if (owner(gens[i]) != k)
-        CoCoA_THROW_ERROR(ERR::MixedRings, "NewFieldIdeal");
+        CoCoA_THROW_ERROR1(ERR::MixedRings);
     return ideal(new FieldIdealImpl(k, gens));
   }
 

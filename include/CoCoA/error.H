@@ -233,11 +233,7 @@ namespace CoCoA
   void ANNOUNCE(std::ostream& out, const ErrorInfo& err);
 
 
-// Macro to avoid having to type explicitly __FILE__ and __LINE__
-#define CoCoA_STATIC_ERROR_MESG(ErrName, ErrID, FnName)  static const ::CoCoA::ErrorInfo ErrName(ErrID, FnName, __FILE__, __LINE__)
-
 // Helpful Macro: create error obj and throw it (puts in file name and line num)
-// !!! NOT YET -- NEEDS MORE THOUGHT !!!   #define CoCoA_THROW_ERROR(ErrID, FnName)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, CoCoA_ERROR_CONTEXT))
 #define CoCoA_THROW_ERROR(ErrID, FnName)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, FnName, __FILE__, __LINE__))
 #define CoCoA_THROW_ERROR1(ErrID)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, CoCoA_ERROR_CONTEXT))
 #define CoCoA_THROW_ERROR2(ErrID, MoreDetails)  ::CoCoA::ThrowException(::CoCoA::ErrorInfo(ErrID, MoreDetails, CoCoA_ERROR_CONTEXT))

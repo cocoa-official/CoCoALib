@@ -58,10 +58,10 @@ namespace CoCoA
   MantExp2 MantissaAndExponent2(const BigRat& q, const MachineInt& MantWidth)
   {
     if (IsNegative(MantWidth) || !IsSignedLong(MantWidth) || AsSignedLong(MantWidth) < 2)
-      CoCoA_THROW_ERROR(ERR::BadArg, "MantissaAndExponent2");
+      CoCoA_THROW_ERROR1(ERR::BadArg);
     if (IsZero(q)) return MantExp2(0,0,BigInt(0),0);
     const long MantBits = AsSignedLong(MantWidth);
-    if (MantBits > 1000000000L) CoCoA_THROW_ERROR(ERR::ArgTooBig, "Precision too high");
+    if (MantBits > 1000000000L)  CoCoA_THROW_ERROR2(ERR::ArgTooBig, "Precision too high");
     BigInt N = abs(num(q));
     BigInt D = den(q);
     const int SignQ = sign(q);
@@ -135,7 +135,7 @@ namespace CoCoA
   MantExp10 MantissaAndExponent10(const BigInt& N, const MachineInt& SigFig)
   {
     if (IsNegative(SigFig) || !IsSignedLong(SigFig) || IsZero(SigFig))
-      CoCoA_THROW_ERROR(ERR::BadArg, "MantissaAndExponent10");
+      CoCoA_THROW_ERROR1(ERR::BadArg);
     if (IsZero(N)) return MantExp10(0,0,BigInt(0),0);
     const long ndigits = AsSignedLong(SigFig);
     const int SignN = sign(N);
@@ -154,7 +154,7 @@ namespace CoCoA
   MantExp10 MantissaAndExponent10(const BigRat& q, const MachineInt& SigFig)
   {
     if (IsNegative(SigFig) || !IsSignedLong(SigFig) || IsZero(SigFig))
-      CoCoA_THROW_ERROR(ERR::BadArg, "MantissaAndExponent10");
+      CoCoA_THROW_ERROR1(ERR::BadArg);
     if (IsZero(q)) return MantExp10(0,0,BigInt(0),0);
     if (IsOneDen(q)) return MantissaAndExponent10(num(q), SigFig);
     const long ndigits = AsSignedLong(SigFig);

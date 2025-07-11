@@ -440,8 +440,7 @@ matrix InverseFp(ConstMatrixView M)
       myNumVecs(0),
       myColIndices(dim,-1)
     {
-//      if (!IsField(K)) CoCoA_THROW_ERROR(ERR::NotField, "LinDepMill ctor");
-      if (dim <= 0) CoCoA_THROW_ERROR(ERR::ReqPositive, "LinDepFp ctor");
+      if (dim <= 0)  CoCoA_THROW_ERROR2(ERR::ReqPositive, "dimension");
       myM.reserve(dim);
       myRow.reserve(2*dim);
       myLinRelnVec.reserve(dim);
@@ -628,8 +627,7 @@ int SignatureOfPerm(const vector<int>& perm)
       myDiagProd(one(SmallFp)),
       myColIndices(dim,-1)
     {
-//      if (!IsField(K)) CoCoA_THROW_ERROR(ERR::NotField, "LinDepMill ctor");
-      if (dim <= 0) CoCoA_THROW_ERROR(ERR::ReqPositive, "RowRednFp ctor");
+      if (dim <= 0)  CoCoA_THROW_ERROR2(ERR::ReqPositive, "dimension");
       myM.reserve(dim);
       myRow.reserve(2*dim);
 //      myLinRelnVec.reserve(dim);

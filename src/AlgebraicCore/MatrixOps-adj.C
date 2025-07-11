@@ -59,7 +59,7 @@ namespace CoCoA
     if (IsField(RingOf(M)))
     {
       const RingElem d = det(M);
-      if (IsZero(d)) CoCoA_THROW_ERROR(ERR::DivByZero, "AdjByInverse");
+      if (IsZero(d))  CoCoA_THROW_ERROR1(ERR::DivByZero);
       return d*inverse(M);
     }
     FractionField K(NewFractionField(RingOf(M)));
