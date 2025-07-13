@@ -107,7 +107,7 @@ DECLARE_STD_BUILTIN_FUNCTION(NumEvalUPoly, 2)
   intrusive_ptr<LIST> CoeffList = runtimeEnv->evalArgAs<LIST>(ARG(0));
   LIST::ContainerType::size_type size = CoeffList->size();
   vector<BigInt> C; C.reserve(size);
-  if (!IsVectorBigInt(C, CoeffList)) CoCoA_THROW_ERROR2("Bad CoeffList","NumEvalUPoly");
+  if (!IsVectorBigInt(C, CoeffList)) CoCoA_THROW_ERROR1("Bad CoeffList in NumEvalUPoly");
   if (IsZero(q)) return new RAT(BigRat(C.front()));
   BigInt numer;
   HornerRecursiveIterQQ2(numer, C, num(q), den(q));
@@ -803,7 +803,7 @@ DECLARE_STD_BUILTIN_FUNCTION(ExtGcd, 1) // TEMPORARY JAA
 //  if (l->size() == 0) return l;
   vector<BigInt> VecBigInt;
   if (IsVectorBigInt(VecBigInt, l))  return Value::from(ExtGcd(VecBigInt).myCofacs);
-  CoCoA_THROW_ERROR2("Expected list of integers","ExtGcd");
+  CoCoA_THROW_ERROR1("Expected list of integers in ExtGcd");
   return Value::from(false); // just to keep compiler quiet
 }
 END_STD_BUILTIN_FUNCTION
@@ -2050,7 +2050,7 @@ DECLARE_STD_BUILTIN_FUNCTION(SwinnertonDyerPoly, 2) { // JAA
   intrusive_ptr<LIST> L = runtimeEnv->evalArgAs<LIST>(ARG(1));
   vector<BigRat> roots;
   if (!IsVectorBigRat(roots, L))
-    CoCoA_THROW_ERROR2("Expected list of INT/RAT", "SwinnertonDyerPoly");
+    CoCoA_THROW_ERROR1("Expected list of INT/RAT in SwinnertonDyerPoly");
   return Value::from(SwinnertonDyerPoly(x,roots));
 }
 END_STD_BUILTIN_FUNCTION
