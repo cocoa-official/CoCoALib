@@ -94,7 +94,7 @@ namespace CoCoA
   RingElem ChebyshevPoly(long n, ConstRefRingElem x)
   {
     if (n < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "ChebyshevPoly: 1st arg");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const ring& P = owner(x);
     if (IsPolyRing(P) && IsIndet(x))
       return ChebyshevPoly_explicit(n, x);
@@ -110,7 +110,7 @@ namespace CoCoA
   RingElem ChebyshevPoly2_explicit(long n, ConstRefRingElem x)
   {
     if (n < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "ChebyshevPoly: 1st arg");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     BigInt c = power(2, n);
     RingElem ans = c*power(x,n);
     for (int k=1; k <= n/2; ++k) // integer division!
@@ -124,7 +124,7 @@ namespace CoCoA
   RingElem ChebyshevPoly2_iter(long n, ConstRefRingElem x)
   {
     if (n < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "ChebyshevPoly2: 1st arg");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     if (n == 0) return one(owner(x));
     if (n == 1) return x;
     RingElem prev = one(owner(x));
@@ -143,7 +143,7 @@ namespace CoCoA
   RingElem ChebyshevPoly2(long n, ConstRefRingElem x)
   {
     if (n < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "ChebyshevPoly2: 1st arg");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const ring& P = owner(x);
     if (IsPolyRing(P) && IsIndet(x))
       return ChebyshevPoly2_explicit(n, x);
@@ -193,7 +193,7 @@ namespace CoCoA
   RingElem HermitePoly(long n, ConstRefRingElem x)
   {
     if (n < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "HermitePoly: 1st arg");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const ring& P = owner(x);
     if (IsPolyRing(P) && IsIndet(x))
       return HermitePoly_explicit(n, x);
@@ -238,7 +238,7 @@ namespace CoCoA
   RingElem HermitePoly2(long n, ConstRefRingElem x)
   {
     if (n < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "HermitePoly2: : 1st arg");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const ring& P = owner(x);
     if (IsPolyRing(P) && IsIndet(x))
       return HermitePoly2_explicit(n, x);
@@ -256,7 +256,7 @@ namespace CoCoA
   RingElem LaguerrePoly(long n, ConstRefRingElem x)
   {
     if (n < 0)
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "LaguerrePoly: 1st arg");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     if (n == 0) return one(owner(x));
     if (n == 1) return 1-x;
     RingElem prev2 = one(owner(x));
@@ -281,9 +281,10 @@ namespace CoCoA
   RingElem BesselPoly(long n, ConstRefRingElem x)
   {
     const ring& P = owner(x);
-    if (!IsPolyRing(P)) CoCoA_THROW_ERROR(ERR::ReqPolyRing, "BesselPoly");
-    if (n < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "BesselPoly");
-    if (n > 32767 && n >= numeric_limits<long>::max()/n) CoCoA_THROW_ERROR(ERR::ArgTooBig, "BesselPoly");
+    if (!IsPolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
+    if (n < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (n > 32767 && n >= numeric_limits<long>::max()/n)
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     BigInt coeff(1);
     RingElem ans = one(P);
     RingElem xpow = one(P);
@@ -302,15 +303,15 @@ namespace CoCoA
 
   RingElem DicksonPoly(ConstRefRingElem x, long n, ConstRefRingElem alpha)
   {
-    if (n < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "DicksonPoly: 2nd arg");
-    if (!IsPolyRing(owner(x))) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "DicksonPoly");
+    if (n < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (!IsPolyRing(owner(x)))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     const PolyRing& P = owner(x);
-    if (owner(alpha) != P) CoCoA_THROW_ERROR(ERR::MixedRings, "DicksonPoly");
+    if (owner(alpha) != P)  CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (n == 0) return one(owner(x));
     const RingElem xsquared = x*x;
     RingElem pwrx = power(x,n);
     RingElem ans = pwrx;
-    if (n == 1) return ans;
+    if (n == 1)  return ans;
     RingElem coeff(P,n);
     RingElem pwralpha = -alpha;
     pwrx /= xsquared;
@@ -328,11 +329,11 @@ namespace CoCoA
 
   RingElem DicksonPoly2(ConstRefRingElem x, long n, ConstRefRingElem alpha)
   {
-    if (n < 0) CoCoA_THROW_ERROR(ERR::ReqNonNegative, "DicksonPoly2: 2nd arg");
-    if (!IsPolyRing(owner(x))) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "DicksonPoly2: 1st arg");
+    if (n < 0)  CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
+    if (!IsPolyRing(owner(x)))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     const PolyRing& P = owner(x);
-    if (owner(alpha) != P) CoCoA_THROW_ERROR(ERR::MixedRings, "DicksonPoly2");
-    if (n == 0) return one(owner(x));
+    if (owner(alpha) != P)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    if (n == 0)  return one(P);
     const RingElem xsquared = x*x;
     RingElem pwrx = power(x,n);
     RingElem ans = pwrx;
@@ -368,9 +369,9 @@ namespace CoCoA
   // This is a relatively simple/naive impl
   RingElem SwinnertonDyerPoly(ConstRefRingElem x, const std::vector<BigRat>& L)
   {
-    if (!IsPolyRing(owner(x))) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "SwinnertonDyerPoly");
-    if (!IsIndet(x))  CoCoA_THROW_ERROR(ERR::ReqIndet, "SwinnertonDyerPoly");
-    if (L.empty()) return one(owner(x));
+    if (!IsPolyRing(owner(x)))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
+    if (!IsIndet(x))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
+    if (L.empty())  return one(owner(x));
     const ring P = NewPolyRing(CoeffRing(owner(x)), symbols("x,y"));
     const RingElem y = indet(P,1);
     RingElem ans = indet(P,0);

@@ -326,7 +326,7 @@ namespace CoCoA
 
   void RingFpDoubleImpl::myRecvTwinFloat(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingFpDoubleImpl::myRecvTwinFloat");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
   }
 
 
@@ -575,30 +575,30 @@ namespace CoCoA
 
   QuotientRing NewRingFpDouble(const ideal& I)
   {
-    if (!IsZZ(RingOf(I))) CoCoA_THROW_ERROR(ERR::IdealNotInRing, "NewRingFpDouble(I)");
+    if (!IsZZ(RingOf(I)))  CoCoA_THROW_ERROR1(ERR::IdealNotInRing);
     return QuotientRing(new RingFpDoubleImpl(I));
   }
 
 
   bool IsGoodForRingFpDouble(const MachineInt& p)
   {
-    if (IsNegative(p) || !IsSignedLong(p)) return false;
+    if (IsNegative(p) || !IsSignedLong(p))  return false;
     const long n = AsSignedLong(p);
     return SmallFpDoubleImpl::IsGoodCtorArg(n);
   }
 
   bool IsGoodForRingFpDouble(const BigInt& P)
   {
-    if (P <= 0) return false;
+    if (P <= 0)  return false;
     long p;
-    if (!IsConvertible(p, P)) return false;
+    if (!IsConvertible(p, P))  return false;
     return IsGoodForRingFpDouble(p);
   }
 
   bool IsGoodForRingFpDouble(const ideal& I)
   {
-    if (!IsZZ(RingOf(I))) return false;
-    if (IsZero(I)) return false;
+    if (!IsZZ(RingOf(I)))  return false;
+    if (IsZero(I))  return false;
     return IsGoodForRingFpDouble(ConvertTo<BigInt>(TidyGens(I)[0]));
   }
 

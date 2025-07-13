@@ -215,7 +215,7 @@ namespace CoCoA
 //        Acofac[j+shift] += c*Bcofac[j];  // NORMALIZE!
 //      clog << "updated Acofac = " << Acofac << endl;
       int NewDegA = DegA-1;
-      while (NewDegA >= 0 && IsZero(A[NewDegA])) --NewDegA;
+      while (NewDegA >= 0 && IsZero(A[NewDegA]))  --NewDegA;
       A.resize(1+NewDegA);
       DegA = NewDegA;
     }
@@ -223,7 +223,7 @@ namespace CoCoA
     std::swap(DegA,DegB);
     std::swap(Acofac,Bcofac);
   }
-  if (DegA != 0) CoCoA_THROW_ERROR("Not a field","Fq::div");
+  if (DegA != 0)  CoCoA_THROW_ERROR1(ERR::ReqField);
 
   const FpElem scale = myFFp.myRecip(A[0]);
   for (int i=0; i < len(Acofac); ++i)
@@ -237,8 +237,8 @@ namespace CoCoA
   void FFqImpl_vec::myBinaryPowerLoop(OUTvalue_t ans, value_t x, long n) const  // assumes n >= 1
   {
     CoCoA_ASSERT(n >= 1);
-    if (n == 1) { for (int i=0; i<myDeg; ++i) { ans[i] = x[i]; } return; }
-    if (n == 2) { myMul(ans,x,x); return; }
+    if (n == 1)  { for (int i=0; i<myDeg; ++i) { ans[i] = x[i]; } return; }
+    if (n == 2)  { myMul(ans,x,x); return; }
     myBinaryPowerLoop(ans, x, n/2);  // floor division!
     myMul(ans, ans, ans);//???    mySquare(rawlhs, rawlhs);
     if (n&1) myMul(ans, ans, x);

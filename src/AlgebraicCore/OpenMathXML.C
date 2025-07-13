@@ -160,9 +160,9 @@ namespace CoCoA
     bool OpenMathInputXML::myRecv(long & n)
     {
       if (myCurrTag() != OpenMathTag::Int) return false;
-//???        CoCoA_THROW_ERROR("OpenMath node is not OMI","OpenMathInputXML::myRecv(long)");
+//???        CoCoA_THROW_ERROR1("OpenMath node is not OMI");
       if (!IsConvertible(n, myIntValue))
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "OpenMathInputXML::InputInteger");
+        CoCoA_THROW_ERROR2(ERR::ArgTooBig, "OpenMathInputXML::InputInteger");
       return true;
     }
 
@@ -171,9 +171,9 @@ namespace CoCoA
 //     bool OpenMathInputXML::myRecv(unsigned long & n)
 //     {
 //       if (myCurrTag() != OpenMathInt) return false;
-// //???        CoCoA_THROW_ERROR("OpenMath node is not OMI","OpenMathInputXML::myRecv(long)");
+// //???        CoCoA_THROW_ERROR1("OpenMath node is not OMI");
 //       if (!IsConvertible(n, myIntegerValue))
-//         CoCoA_THROW_ERROR(ERR::ArgTooBig, "OpenMathInputXML::InputInteger");
+//         CoCoA_THROW_ERROR2(ERR::ArgTooBig, "OpenMathInputXML::InputInteger");
 //       return true;
 //     }
 
@@ -181,7 +181,7 @@ namespace CoCoA
     bool OpenMathInputXML::myRecv(BigInt& N)
     {
       if (myCurrTag() != OpenMathTag::Int) return false;
-//???        CoCoA_THROW_ERROR("OpenMath node is not OMI","OpenMathInputXML::myRecv(BigInt)");
+//???        CoCoA_THROW_ERROR1("OpenMath node is not OMI");
       N = myIntValue;
       return true;
     }
@@ -190,7 +190,7 @@ namespace CoCoA
     bool OpenMathInputXML::myRecv(OpenMathSymbol& s)
     {
       if (myCurrTag() != OpenMathTag::Sym) return false;
-//???        CoCoA_THROW_ERROR("OpenMath node is not OMS", "OpenMathInputXML::myRecv(symbol)");
+//???        CoCoA_THROW_ERROR1("OpenMath node is not OMS");
       s = mySymbol;
       return true;
  }

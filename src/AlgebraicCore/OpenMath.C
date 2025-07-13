@@ -126,14 +126,14 @@ namespace CoCoA
   OpenMathInput& operator>>(OpenMathInput& OMIn, long n)
   {
     if (!OMIn->myRecv(n))
-      CoCoA_THROW_ERROR(ERR::BadOpenMath, "reading machine integer");
+      CoCoA_THROW_ERROR2(ERR::BadOpenMath, "reading machine integer");
     return OMIn;
   }
 
   OpenMathInput& operator>>(OpenMathInput& OMIn, OpenMathSymbol& s)
   {
     if (!OMIn->myRecv(s))
-      CoCoA_THROW_ERROR(ERR::BadOpenMath, "reading OM symbol");
+      CoCoA_THROW_ERROR2(ERR::BadOpenMath, "reading OM symbol");
     return OMIn;
   }
 

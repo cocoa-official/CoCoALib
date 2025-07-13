@@ -386,7 +386,7 @@ namespace CoCoA
   {
     if ( IsZero(h) )  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     //    if ( !IsMonomial(h) )
-    //    CoCoA_THROW_ERROR(ERR::NYI, "DistrMPolyInlPP::myAddMul first argument len>1");
+    //    CoCoA_THROW_ERROR2(ERR::NYI, "first argument len>1");
     myAddMulSummand(h.mySummands, g, SkipLMg);
   }
 

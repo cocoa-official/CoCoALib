@@ -106,7 +106,7 @@ namespace CoCoA
     if (mpz_cmp_ui(mpq_denref(mpqref(q)),1) == 0) // short-cut if den(q) == 1
       return mpz_fdiv_ui(mpq_numref(mpqref(q)), myModulusValue);
     const repr_t D = mpz_fdiv_ui(mpq_denref(mpqref(q)), myModulusValue);
-    if (D == 0) CoCoA_THROW_ERROR(ERR::DivByZero, "SallFpImpl::myReduce");
+    if (D == 0)  CoCoA_THROW_ERROR1(ERR::DivByZero);
     const repr_t N = mpz_fdiv_ui(mpq_numref(mpqref(q)), myModulusValue);
     return myDiv(N, D);
   }
@@ -115,7 +115,7 @@ namespace CoCoA
   SmallFpImpl::value SmallFpImpl::myRecip(value x) const
   {
     CoCoA_ASSERT(x == myNormalize(x));
-    if (IsZero(x)) CoCoA_THROW_ERROR(ERR::DivByZero, "SmallFpImpl::myRecip");
+    if (IsZero(x))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     return InvModNoArgCheck(x.myVal, myModulusValue);
   }
 
@@ -124,7 +124,7 @@ namespace CoCoA
   {
     CoCoA_ASSERT(x == myNormalize(x));
     CoCoA_ASSERT(y == myNormalize(y));
-    if (IsZero(y)) CoCoA_THROW_ERROR(ERR::DivByZero, "SmallFpImpl::myDiv");
+    if (IsZero(y))  CoCoA_THROW_ERROR1(ERR::DivByZero);
     if (IsZero(x)) return 0;
     const value yrecip = InvModNoArgCheck(y.myVal, myModulusValue);
     return myMul(x, yrecip);
@@ -150,7 +150,7 @@ namespace CoCoA
     for (; mask != 0; mask >>= 1)
     {
       ans = myMul(ans, ans);
-      if (n & mask) ans = myMul(ans, x);
+      if (n & mask)  ans = myMul(ans, x);
     }
     return ans;
   }
@@ -161,21 +161,21 @@ namespace CoCoA
   SmallFpImpl::repr_t SmallFpImpl::ourCheckCtorArg(const MachineInt& n)
   {
     if (!IsGoodCtorArg(n))
-      CoCoA_THROW_ERROR(ERR::BadSmallFpChar, "SmallFpImpl ctor");
+      CoCoA_THROW_ERROR2(ERR::BadSmallFpChar, "SmallFpImpl ctor");
     return AsUnsignedLong(n);
   }
 
   SmallFpImpl::repr_t SmallFpImpl::ourCheckCtorArg(SmallPrime p)
   {
     if (!IsGoodCtorArg(p))
-      CoCoA_THROW_ERROR(ERR::BadSmallFpChar, "SmallFpImpl ctor");
+      CoCoA_THROW_ERROR2(ERR::BadSmallFpChar, "SmallFpImpl ctor");
     return p;
   }
 
 
   std::ostream& operator<<(std::ostream& out, SmallFpImpl::NonRedValue x)
   {
-    if (!out) return out;  // short-cut for bad ostreams
+    if (!out)  return out;  // short-cut for bad ostreams
     return out << "!!" << x.myVal << "!!"; // "!!" to emphasise that internal repr is non-reduced
   }
 

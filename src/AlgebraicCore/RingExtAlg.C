@@ -238,8 +238,7 @@ namespace CoCoA
   //   for ( long i=0 ; i < NumNames ; ++i )
   //   {
   //     if ( NumSubscripts(names[i])!=0 )
-  //       CoCoA_THROW_ERROR("names must have no subscripts",
-  //                   "WANAMES(const vector<symbol>& names)");
+  //       CoCoA_THROW_ERROR1("names must have no subscripts");
   //     ans.push_back(symbol("d"+head(names[i])));
   //   }
   //   return ans;
@@ -447,7 +446,7 @@ namespace CoCoA
 
 //   void RingExtAlgImpl::myDiv(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/, ConstRawPtr /*rawy*/) const
 //   {
-//     CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::myDiv");
+//     CoCoA_THROW_ERROR1(ERR::NYI);
 //     return;//???
 // //     bool OK;                                            // Two lines o/w compiler complains that
 // //     OK = CoCoA::WeylDiv(AsDMPI(rawlhs), AsDMPI(x), AsDMPI(y)); // OK is unused when debugging is off.
@@ -457,7 +456,7 @@ namespace CoCoA
 
   bool RingExtAlgImpl::myIsDivisible(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/, ConstRawPtr /*rawy*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::myIsDivisible");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return false;
 //    return CoCoA::WeylDiv(AsDMPI(rawlhs), AsDMPI(x), AsDMPI(y));
   }
@@ -465,7 +464,7 @@ namespace CoCoA
 
   bool RingExtAlgImpl::myIsInvertible(ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::myIsInvertible");  //??? d[1]*x[1] = 1
+    CoCoA_THROW_ERROR1(ERR::NYI);  //??? d[1]*x[1] = 1
     return false;//???
   }
 
@@ -478,7 +477,7 @@ namespace CoCoA
 
   void RingExtAlgImpl::myGcd(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/, ConstRawPtr /*rawy*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::myGcd");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   }
 
 
@@ -557,7 +556,7 @@ namespace CoCoA
 
   RingHom RingExtAlgImpl::myCompose(const RingHom& /*phi*/, const RingHom& theta) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::compose");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return theta; // just to keep compiler quiet
   }
 
@@ -666,13 +665,13 @@ namespace CoCoA
 
   void RingExtAlgImpl::myDeriv(RawPtr /*rawlhs*/, ConstRawPtr /*rawf*/, ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::myDeriv");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   }
 
 
   RingHom RingExtAlgImpl::myHomCtor(const ring& /*codomain*/, const RingHom& /*CoeffHom*/, const std::vector<RingElem>& /*IndetImages*/) const
   {
-    CoCoA_THROW_ERROR("DOES NOT EXIST", "RingExtAlgImpl::myHomCtor");
+    CoCoA_THROW_ERROR1("DOES NOT EXIST");
     return IdentityHom(myReprRing); // just to keep compiler quiet
   }
 
@@ -900,7 +899,7 @@ namespace CoCoA
 
   void RingExtAlgImpl::myReductionStepGCD(RawPtr /*rawf*/, ConstRawPtr /*rawg*/, RingElem& /*fscale*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::ReductionStepGCD");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   }
 
 
@@ -911,7 +910,7 @@ namespace CoCoA
   RingExtAlgImpl::HomImpl::HomImpl(const SparsePolyRing& domain, const ring& codomain, const RingHom& CoeffHom, const std::vector<RingElem>& IndetImages):
     SparsePolyRingBase::HomImpl(domain, codomain, CoeffHom, IndetImages)
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::HomImpl::HomImpl");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   }
 
 
@@ -932,43 +931,43 @@ namespace CoCoA
 
 
   void RingExtAlgImpl::IdealImpl::myTestIsMaximal() const
-  { CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::IdealImpl::myTestIsMaximal()"); }
+  { CoCoA_THROW_ERROR1(ERR::NYI); }
 
 
   void RingExtAlgImpl::IdealImpl::myTestIsPrimary() const
-  { CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::IdealImpl::myTestIsPrimary()"); }
+  { CoCoA_THROW_ERROR1(ERR::NYI); }
 
 
   void RingExtAlgImpl::IdealImpl::myTestIsPrime() const
-  { CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::IdealImpl::myTestIsPrime()"); }
+  { CoCoA_THROW_ERROR1(ERR::NYI); }
 
 
   void RingExtAlgImpl::IdealImpl::myTestIsRadical() const
-  { CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::IdealImpl::myTestIsRadical()"); }
+  { CoCoA_THROW_ERROR1(ERR::NYI); }
 
 
   void RingExtAlgImpl::IdealImpl::myReduceMod(RingElemRawPtr /*rawr*/) const
-  { CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::WeylIdeal::IdealImpl::myReduceMod"); }
+  { CoCoA_THROW_ERROR1(ERR::NYI); }
 
 
   bool RingExtAlgImpl::IdealImpl::IhaveElem(RingElemConstRawPtr /*rawr*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::WeylIdeal::IhaveElem");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return false; /* just to keep compiler quiet */
   }
 
 
   void RingExtAlgImpl::IdealImpl::myIntersect(const ideal& /*J*/)
-  { CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::WeylIdeal::myIntersect"); }//???
+  { CoCoA_THROW_ERROR1(ERR::NYI); }//???
 
 
   void RingExtAlgImpl::IdealImpl::myColon(const ideal& /*J*/)
-  { CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::WeylIdeal::myColon"); }//???
+  { CoCoA_THROW_ERROR1(ERR::NYI); }//???
 
 
   bool RingExtAlgImpl::IdealImpl::myDivMod(RingElemRawPtr /*rawlhs*/, RingElemConstRawPtr /*rawnum*/, RingElemConstRawPtr /*rawden*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "RingExtAlgImpl::WeylIdeal::myDivMod");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return false; /* just to keep compiler quiet */
   }
 
@@ -1015,14 +1014,14 @@ namespace CoCoA
 
 //   const RingElem& indet(const RingWeyl& RW, long var)
 //   {
-//     if (var > CoCoA::NumIndets(RW)) CoCoA_THROW_ERROR("Indeterminate index too large", "indet(RW,var)");
+//     if (var > CoCoA::NumIndets(RW))  CoCoA_THROW_ERROR1(ERR::BadIndex);
 //     return RW->myIndetVector[var];
 //   }
 
 
 //   const RingElem& derivation(const RingWeyl& RW, long var)
 //   {
-//     if (var > CoCoA::NumIndets(RW)) CoCoA_THROW_ERROR("Indeterminate index too large", "derivation(RW,var)");
+//     if (var > CoCoA::NumIndets(RW))  CoCoA_THROW_ERROR1("Indeterminate index too large");
 //     return RW->myDerivationVector[var];
 //   }
 

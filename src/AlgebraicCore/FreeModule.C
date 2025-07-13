@@ -978,9 +978,9 @@ namespace CoCoA
 //   ConstRefRingElem FreeModuleElem::operator[](long pos) const
 //   {
 // //     if (!IsFGModule(owner(*this)))
-// //       CoCoA_THROW_ERROR(ERR::NotFGModule, "FreeModuleElem[pos]");
+// //       CoCoA_THROW_ERROR2(ERR::NotFGModule, "FreeModuleElem[pos]");
 //     if (pos < 0 || pos >= NumCompts(AsFGModule(owner(*this))))
-//       CoCoA_THROW_ERROR(ERR::BadComptIndex, "FreeModuleElem[pos]");
+//       CoCoA_THROW_ERROR2(ERR::BadComptIndex, "FreeModuleElem[pos]");
 //     return AsFGModule(owner(*this))->myCompt(raw(*this), pos);
 //   }
 
@@ -988,9 +988,9 @@ namespace CoCoA
 //   RingElem& FreeModuleElem::operator[](long pos)
 //   {
 // //     if (!IsFGModule(owner(*this)))
-// //       CoCoA_THROW_ERROR(ERR::NotFGModule, "FreeModuleElem[pos]");
+// //       CoCoA_THROW_ERROR2(ERR::NotFGModule, "FreeModuleElem[pos]");
 //     if (pos < 0 || pos >= NumCompts(AsFGModule(owner(*this))))
-//       CoCoA_THROW_ERROR(ERR::BadComptIndex, "FreeModuleElem[pos]");
+//       CoCoA_THROW_ERROR2(ERR::BadComptIndex, "FreeModuleElem[pos]");
 //     return AsFGModule(owner(*this))->myCompt(raw(*this), pos);
 //   }
 

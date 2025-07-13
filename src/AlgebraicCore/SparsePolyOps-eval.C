@@ -42,10 +42,10 @@ namespace CoCoA
     std::vector<BigInt> ConvertToVectorBigInt(ConstRefRingElem f)
     {
       if (!IsSparsePolyRing(owner(f)) || !IsZero(characteristic(owner(f))))
-        CoCoA_THROW_ERROR("Expected univariate poly with coeffs in ZZ", "EvalUPoly ctor");
+        CoCoA_THROW_ERROR1("Expected poly with coeffs in ZZ  [[EvalUPoly ctor]]");
         
       if (UnivariateIndetIndex(f) < 0)
-        CoCoA_THROW_ERROR(ERR::ReqUnivariate, "EvalUPoly ctor");
+        CoCoA_THROW_ERROR2(ERR::ReqUnivariate, "EvalUPoly ctor");
       vector<BigInt> C(1+deg(f));
       for (SparsePolyIter it = BeginIter(f); !IsEnded(it); ++it)
         C[deg(PP(it))] = ConvertTo<BigInt>(coeff(it));
@@ -84,7 +84,7 @@ namespace CoCoA
     // !!RETURNS JUST THE NUMERATOR!!
     BigInt EvalAt_bin(std::vector<BigInt> C, BigInt a, BigInt b)
     {
-      if (IsZero(b))  CoCoA_THROW_ERROR(ERR::DivByZero, "EvalUPoly/EvalAt");
+      if (IsZero(b))  CoCoA_THROW_ERROR2(ERR::DivByZero, "EvalUPoly/EvalAt");
       if (IsOne(b))  return EvalAt_bin(C, a);
       // HINT: allocate workspace for the products & use mpz_add, mpz_mul
       BigInt ExcessFactor(1);

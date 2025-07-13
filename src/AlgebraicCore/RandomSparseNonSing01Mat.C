@@ -52,7 +52,7 @@ namespace CoCoA
   matrix RandomSparseNonSing01Mat(const ring& R, const MachineInt& N)
   {
     if (IsNegative(N) || !IsSignedLong(N))
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "RandomSparseNonSing01Mat");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     const long n = AsSignedLong(N);
     VerboseLog VERBOSE("RandomSparseNonSing01Mat");
     

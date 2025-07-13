@@ -276,14 +276,14 @@ namespace CoCoA
 //   void RingDenseUPolyCleanImpl::myDiv(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/, ConstRawPtr rawy) const
 //   {
 //     CoCoA_ASSERT(!myIsZero(rawy));
-//     CoCoA_THROW_ERROR(ERR::NYI, "RingDenseUPolyCleanImpl::myDiv");
+//     CoCoA_THROW_ERROR1(ERR::NYI);
 //   }
 
 
 //   bool RingDenseUPolyCleanImpl::myIsDivisible(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/, ConstRawPtr rawy) const
 //   {
 //     CoCoA_ASSERT(!myIsZero(rawy));
-//     CoCoA_THROW_ERROR(ERR::NYI, "RingDenseUPolyCleanImpl::myDiv");
+//     CoCoA_THROW_ERROR1(ERR::NYI);
 //     return true;
 //   }
 
@@ -297,7 +297,7 @@ namespace CoCoA
 //     if (myIsIndet(NoUse, rawx))
 //       myIndetPower(rawlhs, 0, n);
 //     else
-//       CoCoA_THROW_ERROR(ERR::NYI, "RingDenseUPolyCleanImpl::myPowerSmallExp");
+//       CoCoA_THROW_ERROR1(ERR::NYI);
 //   }
 
 
@@ -402,11 +402,11 @@ namespace CoCoA
   DenseUPolyRing NewPolyRing_DUP(const ring& CoeffRing, const symbol& IndetName, long MinCapacity)
   {
     if (!IsCommutative(CoeffRing))
-      CoCoA_THROW_ERROR(ERR::NotCommutative, "NewPolyRing_DUP(R, x) pseudo ctor");
+      CoCoA_THROW_ERROR1(ERR::NotCommutative);
     if (!IsGoodIndetName(CoeffRing, IndetName))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPolyRing_DUP(R, x) pseudo ctor");
-    if (MinCapacity<=0) // or too big?
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "NewPolyRing_DUP(R, x) pseudo ctor");
+      CoCoA_THROW_ERROR1(ERR::BadIndetNames);
+    if (MinCapacity <= 0) // or too big?
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     return DenseUPolyRing(new RingDenseUPolyCleanImpl(CoeffRing, IndetName, MinCapacity));
   }
 

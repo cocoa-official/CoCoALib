@@ -74,10 +74,10 @@ namespace CoCoA
   long RandomLong(RandomSource& RndSrc, const MachineInt& lwb, const MachineInt& upb)
   {
     if (!IsSignedLong(lwb) || !IsSignedLong(upb))
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomLong: lwb & upb must each fit into a long");
+      CoCoA_THROW_ERROR2(ERR::BadArg, "RandomLong: lwb & upb must each fit into a long");
     const long lo = AsSignedLong(lwb);
     const long hi = AsSignedLong(upb);
-    if (lo > hi) CoCoA_THROW_ERROR(ERR::BadArg, "RandomLong: must have lwb <= upb");
+    if (lo > hi)  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     const unsigned long RangeWidth = 1ul + ULongDiff(hi,lo);
     if (RangeWidth == 0)
       return ULong2Long(gmp_urandomb_ui(RndSrc.myState, numeric_limits<unsigned long>::digits));
@@ -102,7 +102,7 @@ namespace CoCoA
 
   BigInt RandomBigInt(RandomSource& RndSrc, const BigInt& lwb, const BigInt& upb)
   {
-    if (lwb > upb) CoCoA_THROW_ERROR(ERR::BadArg, "RandomBigInt: must have lwb <= upb");
+    if (lwb > upb)  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     BigInt sample;
     mpz_urandomm(mpzref(sample), RndSrc.myState, mpzref(upb-lwb+1));
     return lwb + sample;
@@ -111,7 +111,7 @@ namespace CoCoA
 // NOTE (2011-04-26): this is significantly faster than the fn above.
 //   BigInt RandomBigIntmod(RandomSource& RndSrc, const BigInt& M)
 //   {
-//     if (M <= 0) CoCoA_THROW_ERROR(ERR::BadArg, "RandomBigIntmod: must have M > 0");
+//     if (M <= 0)  CoCoA_THROW_ERROR1(ERR::ReqPositive);
 //     BigInt sample;
 //     mpz_urandomm(mpzref(sample), RndSrc.myState, mpzref(M));
 //     return sample;
@@ -133,7 +133,7 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const RandomSource& RndSrc)
   {
-    if (!out) return out;  // short-cut for bad ostreams
+    if (!out)  return out;  // short-cut for bad ostreams
     out << "RandomSource(seed=" << RndSrc.mySeed << ", state=unprintable)";
     return out;
   }
@@ -145,13 +145,13 @@ namespace CoCoA
   bool RandomBiasedBool(double P)
   {
     // BAD DESIGN: This is an almost identical copy of NextBiasedBool(RandomSeqBool&,double)
-    if (P < 0 || P > 1) CoCoA_THROW_ERROR(ERR::BadProbability, "RandomBiasedBool(P)");
-    if (P == 1) return true;
+    if (P < 0 || P > 1)  CoCoA_THROW_ERROR1(ERR::BadProbability);
+    if (P == 1)  return true;
     while (true)
     {
-      if (P == 0) return false;
+      if (P == 0)  return false;
       const bool bit = (P >= 0.5);
-      if (bit ^ RandomBool(GlobalRandomSource())) return bit;
+      if (bit ^ RandomBool(GlobalRandomSource()))  return bit;
       P *= 2;
       if (bit) --P;
     }
@@ -160,14 +160,14 @@ namespace CoCoA
   bool RandomBiasedBool(unsigned long N, unsigned long D)
   {
     CoCoA_ASSERT(D <= numeric_limits<unsigned long>::max()/2);
-    if (D == 0 || N > D) CoCoA_THROW_ERROR(ERR::BadProbability, "RandomBiasedBool(N,D)");
-    if (N == D) return true;
+    if (D == 0 || N > D)  CoCoA_THROW_ERROR1(ERR::BadProbability);
+    if (N == D)  return true;
     while (true)
     {
-      if (N == 0) return false;
+      if (N == 0)  return false;
       N <<= 1;
       const bool bit = (N >= D);
-      if (bit ^ RandomBool(GlobalRandomSource())) return bit;
+      if (bit ^ RandomBool(GlobalRandomSource()))  return bit;
       if (bit) N -= D;
     }
   }
@@ -201,7 +201,7 @@ namespace CoCoA
       myState() // init in body
   {
     if (myLwb > myUpb)
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomSeqLong: must have lwb <= upb");
+      CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     gmp_randinit_mt(myState);
     gmp_randseed_ui(myState, mySeed);
     myGenValue();
@@ -268,7 +268,7 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const RandomSeqLong& RndLong)
   {
-    if (!out) return out;  // short-cut for bad ostreams
+    if (!out)  return out;  // short-cut for bad ostreams
     out << "RandomSeqLong(lwb=" << RndLong.myLwb
         << ", upb=" << RndLong.myUpb
         << ", seed=" << RndLong.mySeed
@@ -347,13 +347,13 @@ namespace CoCoA
   // This would be cleaner if I were to use an unsigned long instead of a double.
   bool NextBiasedBool(RandomSeqBool& RndBool, double P)
   {
-    if (P < 0 || P > 1) CoCoA_THROW_ERROR(ERR::BadProbability, "NextBiasedBool(RndBool,P)");
-    if (P == 1) return true;
+    if (P < 0 || P > 1)  CoCoA_THROW_ERROR1(ERR::BadProbability);
+    if (P == 1)  return true;
     while (true)
     {
-      if (P == 0) return false;
+      if (P == 0)  return false;
       const bool bit = (P >= 0.5);
-      if (bit ^ NextValue(RndBool)) return bit;
+      if (bit ^ NextValue(RndBool))  return bit;
       P *= 2;
       if (bit) --P;
     }
@@ -362,7 +362,7 @@ namespace CoCoA
 
   std::ostream& operator<<(std::ostream& out, const RandomSeqBool& RndBool)
   {
-    if (!out) return out;  // short-cut for bad ostreams
+    if (!out)  return out;  // short-cut for bad ostreams
     out << "RandomSeqBool(seed=" << RndBool.mySeed << ", counter=" << RndBool.myCounter << ")";
     return out;
   }
@@ -381,7 +381,7 @@ namespace CoCoA
       myState() // init in body
   {
     if (myLwb > myUpb)
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomSeqBigInt: must have lwb <= upb");
+      CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     gmp_randinit_mt(myState);
     gmp_randseed_ui(myState, mySeed);
     myGenValue();
@@ -397,7 +397,7 @@ namespace CoCoA
       myState() // init in body
   {
     if (myLwb > myUpb)
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomSeqBigInt: must have lwb <= upb");
+      CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     gmp_randinit_mt(myState);
     gmp_randseed_ui(myState, mySeed);
     myGenValue();
@@ -413,7 +413,7 @@ namespace CoCoA
       myState() // init in body
   {
     if (myLwb > myUpb)
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomSeqBigInt: must have lwb <= upb");
+      CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     gmp_randinit_mt(myState);
     gmp_randseed_ui(myState, mySeed);
     myGenValue();
@@ -429,7 +429,7 @@ namespace CoCoA
       myState() // init in body
   {
     if (myLwb > myUpb)
-      CoCoA_THROW_ERROR(ERR::BadArg, "RandomSeqBigInt: must have lwb <= upb");
+      CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     gmp_randinit_mt(myState);
     gmp_randseed_ui(myState, mySeed);
     myGenValue();

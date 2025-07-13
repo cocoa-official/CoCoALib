@@ -52,7 +52,7 @@ namespace CoCoA
             const long rnd = RandomLong(RndSrc, i, j);
             CoCoA_ASSERT_ALWAYS(i <= j && i <= rnd && rnd <= j);
           }
-          catch (const ErrorInfo& err) { CoCoA_ASSERT_ALWAYS(err == ERR::BadArg); }
+          catch (const ErrorInfo& err) { CoCoA_ASSERT_ALWAYS(err == ERR::ReqNonEmpty); }
         }
 
 

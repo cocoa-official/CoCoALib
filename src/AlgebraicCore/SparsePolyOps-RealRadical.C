@@ -146,7 +146,7 @@ namespace CoCoA
   RingElem RealRadical(const RingElem& f)
   {
     const ring& P = owner(f);
-    if (!IsPolyRing(P) || !IsQQ(CoeffRing(P))) CoCoA_THROW_ERROR(ERR::BadRing, "RealRadical");
+    if (!IsPolyRing(P) || !IsQQ(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::BadRing);
     const factorization<RingElem> FacInfo = factor(radical(f));
     const vector<RingElem>& fac = FacInfo.myFactors();
     RingElem ans = one(P);

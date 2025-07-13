@@ -39,13 +39,16 @@ using std::vector;
 namespace CoCoA
 {
 
-  namespace  {    //anonymous
-  long deg(const DenseUPolyClean& f)
+  namespace   //anonymous
   {
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "deg(f)");
-    return f.myDegPlus1()-1;
-  }
-  }
+
+    long deg(const DenseUPolyClean& f)
+    {
+      if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
+      return f.myDegPlus1()-1;
+    }
+
+  }  // end of anonymous namespace
   
   ring CoeffRing(const DenseUPolyClean& f)
   { return f.myCoeffRingValue; }

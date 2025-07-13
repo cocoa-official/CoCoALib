@@ -207,7 +207,7 @@ namespace CoCoA
 //   const OrdvArith::reference& OrdvA(const PPMonoid& PPM)
 //   {
 //     if (!IsPPMonoidOv(PPM))
-//       CoCoA_THROW_ERROR("PPM must be PPMonoidOvImpl", OrdvA);
+//       CoCoA_THROW_ERROR1("PPM must be PPMonoidOvImpl");
 //     return dynamic_cast<const PPMonoidOvImpl*>(PPM.mySmartPtr()).myOrdvArith;
 //   }
 
@@ -566,12 +566,10 @@ namespace CoCoA
     // Sanity check on the indet names given.
     const long nvars = NumIndets(ord);
 
-    if (len(IndetNames) != nvars)
-      CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPPMonoidOv(IndetNames,ord)");
-    if (!AreDistinct(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidOv(IndetNames,ord)");
-    if (!AreArityConsistent(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidOv(IndetNames,ord)");
+    if (len(IndetNames) != nvars ||
+        !AreDistinct(IndetNames) ||
+        !AreArityConsistent(IndetNames))
+      CoCoA_THROW_ERROR1(ERR::BadIndetNames);
 
     return PPMonoid(new PPMonoidOvImpl(IndetNames, ord));
   }

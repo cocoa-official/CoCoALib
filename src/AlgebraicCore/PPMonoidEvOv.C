@@ -445,7 +445,7 @@ namespace CoCoA
     myPowerOverflowCheck(rawpp1, LongExp);
 #endif
     if (static_cast<unsigned long>(LongExp) > ourMaxExp)
-      CoCoA_THROW_ERROR(ERR::ExpTooBig, "PPMonoidEvOvImpl::myPowerSmallExp");
+      CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     const SmallExponent_t exp = static_cast<SmallExponent_t>(LongExp);
 
     SmallExponent_t* const expv = myExpv(rawpp);
@@ -460,9 +460,8 @@ namespace CoCoA
   {
     if (LongExp == 0 || LongExp == 1) return;
     CoCoA_ASSERT(LongExp >= 0);
-    const char* const FnName = "PPMonoidEvOvImpl::myPowerOverflowCheck";
     if (static_cast<unsigned long>(LongExp) > ourMaxExp)
-      CoCoA_THROW_ERROR(ERR::ExpTooBig, FnName);
+      CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     const SmallExponent_t exp = static_cast<SmallExponent_t>(LongExp);
     const SmallExponent_t limit = ourMaxExp/exp;
 
@@ -470,7 +469,7 @@ namespace CoCoA
     for (long i = 0; i < myNumIndets; ++i)
     {
       if (expv[i] > limit)
-        CoCoA_THROW_ERROR(ERR::ExpTooBig, FnName);
+        CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     }
     // Check separately for overflow in ordv
     myOrdvArith->myPowerOverflowCheck(myOrdv(rawpp), exp);
@@ -654,18 +653,10 @@ namespace CoCoA
     // Sanity check on the indet names given.
     const long nvars = NumIndets(ord);
 
-    if (len(IndetNames) != nvars)
-      CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPPMonoidEvOv(IndetNames,ord)");
-    if (!AreDistinct(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidEvOv(IndetNames,ord)");
-    if (!AreArityConsistent(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidEvOv(IndetNames,ord)");
-
-    // Inefficient quadratic loop -- speed is probably not important.
-    for (long i=0; i < nvars; ++i)
-      for (long j=i+1; j < nvars; ++j)
-        if (IndetNames[i] == IndetNames[j])
-          CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidEvOv(IndetNames,ord)");
+    if (len(IndetNames) != nvars ||
+        !AreDistinct(IndetNames) ||
+        !AreArityConsistent(IndetNames))
+      CoCoA_THROW_ERROR1(ERR::BadIndetNames);
 
     return PPMonoid(new PPMonoidEvOvImpl(IndetNames, ord));
   }

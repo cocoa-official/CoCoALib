@@ -500,23 +500,23 @@ namespace CoCoA
     void CheckCoeffRing(const ring& K)
     {
       if (!IsCommutative(K))
-        CoCoA_THROW_ERROR(ERR::NotCommutative, "NewPolyRing_DMP pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::NotCommutative, "NewPolyRing_DMP pseudo ctor");
     }
     
 
     void CheckIndets(const ring& K, const std::vector<symbol>& IndetNames)
     {
       if (IndetNames.empty())
-        CoCoA_THROW_ERROR(ERR::ReqNonEmpty, "NewPolyRing_DMPI pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, "NewPolyRing_DMPI pseudo ctor");
       if (!AreGoodIndetNames(K, IndetNames))
-        CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPolyRing_DMPI pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::BadIndetNames, "NewPolyRing_DMPI pseudo ctor");
     }
 
 
     void CheckNumIndets(long n)
     {
-      if (n <=0 )
-        CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPolyRing_DMP pseudo ctor");
+      if (n <= 0)
+        CoCoA_THROW_ERROR2(ERR::BadNumIndets, "NewPolyRing_DMP pseudo ctor");
     }
 
 
@@ -524,7 +524,7 @@ namespace CoCoA
     {
       CheckNumIndets(n);
       if (n != len(IndetNames))
-        CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPolyRing_DMP pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::BadNumIndets, "NewPolyRing_DMP pseudo ctor");
     }
     
   }  // anonymous namespace

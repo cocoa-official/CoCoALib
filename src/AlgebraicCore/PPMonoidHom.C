@@ -34,7 +34,7 @@ namespace CoCoA
   PPMonoidElem PPMonoidHom::operator()(ConstRefPPMonoidElem x) const
   {
     if (owner(x) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadPPMonoidHomArg, "Applying PPMonoidHom to PPMonoidElem");
+      CoCoA_THROW_ERROR1(ERR::BadPPMonoidHomArg);
     PPMonoidElem ans(codomain(*this));
     mySmartPtr->myApply(raw(ans), raw(x));
     return ans;
@@ -44,8 +44,9 @@ namespace CoCoA
   PPMonoidHom PPMonoidHom::operator()(const PPMonoidHom& theta) const
   {
     if (codomain(theta) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadCompose, "PPMonoidHom(PPMonoidHom)  i.e. PPMonoidHom composition");
-    CoCoA_THROW_ERROR(ERR::NYI,"COMPOSE for PPMonoidHom");return theta;
+      CoCoA_THROW_ERROR1(ERR::BadCompose);
+    CoCoA_THROW_ERROR1(ERR::NYI);
+    return theta; // just to keep compiler quiet
 //    return domain(theta)->myCompose(*this, theta);
   }
 
@@ -145,7 +146,7 @@ namespace CoCoA
       if (/*IsPPMonoidOv(myCodomain)&&*/
           IsMatrixOrdering(ordering(myCodomain)))
         if (exp[i] >= 32749)  // BUG BUG BUG  now matrix ordering allows higher exponents!!!
-          CoCoA_THROW_ERROR(ERR::ExpTooBig, "GeneralPPMonoidHomImpl::myApply");
+          CoCoA_THROW_ERROR1(ERR::ExpTooBig);
       ans *= power(myImages[i], exp[i]);
     }
     myCodomain->myAssign(image, raw(ans));
@@ -168,7 +169,7 @@ namespace CoCoA
   PPMonoidHom GeneralHom(const PPMonoid& PPM, const std::vector<PPMonoidElem>& images)
   {
     if (len(images) != NumIndets(PPM))
-      CoCoA_THROW_ERROR(ERR::BadArg, "PPMonoid GeneralHom -- wrong number of images");
+      CoCoA_THROW_ERROR1(ERR::BadArraySize);
     return PPMonoidHom(new GeneralPPMonoidHomImpl(PPM, images));
   }
 
@@ -233,7 +234,7 @@ namespace CoCoA
     {
       const long i = IndetIndices[j];
       if (i < 0 || i >= nvars || mask[i] == true)
-        CoCoA_THROW_ERROR(ERR::BadIndex, "RestrictionHom pseudo ctor");
+        CoCoA_THROW_ERROR1(ERR::BadIndex);
       mask[i] = true;
     }
     return PPMonoidHom(new RestrictionPPMonoidHomImpl(PPM, mask));
