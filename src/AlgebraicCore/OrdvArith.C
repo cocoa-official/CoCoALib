@@ -944,9 +944,9 @@ namespace CoCoA
 //       for (long j=0; j < myNumIndets; ++j)
 //       {
 //         if (!IsInteger(tmp, M(i, j)))
-//           CoCoA_THROW_ERROR("entry of MatrixOrdering is not integer","MatrixOrderingMod32749Impl");
+//           CoCoA_THROW_ERROR1("entry of MatrixOrdering is not integer");
 //         if (!convert(myInverseOrderMatrix[i][j], tmp))
-//           CoCoA_THROW_ERROR("entry of MatrixOrdering is not integer","MatrixOrderingMod32749Impl");
+//           CoCoA_THROW_ERROR1("entry of MatrixOrdering is not integer");
 //       }
 //   }
 
@@ -1109,9 +1109,9 @@ namespace CoCoA
 //       for (long j=0; j < myNumIndets; ++j)
 //       {
 //         if (!IsInteger(tmp, M(i, j)))
-//           CoCoA_THROW_ERROR("entry of MatrixOrdering is not integer","MatrixOrdering32bitImpl");
+//           CoCoA_THROW_ERROR1("entry of MatrixOrdering is not integer");
 //         if (!convert(myInverseOrderMatrix[i][j], tmp))
-//           CoCoA_THROW_ERROR("entry of MatrixOrdering is not integer","MatrixOrdering32bitImpl");
+//           CoCoA_THROW_ERROR1("entry of MatrixOrdering is not integer");
 //       }
 //   }
 

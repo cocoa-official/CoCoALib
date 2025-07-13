@@ -42,9 +42,9 @@ namespace CoCoA
         if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
         const long IndetIndex = UnivariateIndetIndex(f);
         if (IndetIndex < 0)
-            CoCoA_THROW_ERROR("Expected univariate poly", "GraeffeSeq ctor");
+          CoCoA_THROW_ERROR2(ERR::ReqUnivariate, "GraeffeSeq ctor");
         if (!IsZZ(P) && !IsQQ(P))
-            CoCoA_THROW_ERROR(ERR::BadRing, "GraeffeSeq ctor");
+            CoCoA_THROW_ERROR2(ERR::ReqChar0, "GraeffeSeq ctor");
         return f;
     }
 
@@ -66,7 +66,7 @@ namespace CoCoA
             const RingElem fQ = PolyRingHom(owner(f), Q, ZZEmbeddingHom(CoeffRing(Q)), std::vector<RingElem>(NumIndets(owner(f)), xQ))(f);
             return CoeffVecWRT(monic(fQ), xQ);
         }
-        CoCoA_THROW_ERROR(ERR::BadRing, "GraeffeSeq ctor");
+        CoCoA_THROW_ERROR2(ERR::BadRing, "GraeffeSeq ctor");
         return {}; // Shut up compiler warnings
     }
 

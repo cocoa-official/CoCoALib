@@ -123,11 +123,11 @@ namespace CoCoA
   // {
   //   const ring& R = RingOf(lhs);
   //   if (NumCols(M1) != NumRows(M2))
-  //     CoCoA_THROW_ERROR(ERR::BadMatrixSize, "mul(Mat1, Mat2)");
+  //     CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
   //   if ( NumRows(lhs) != NumRows(M1) || NumCols(lhs) != NumCols(M2) )
-  //     CoCoA_THROW_ERROR(ERR::BadMatrixSize, "mul(Mat1, Mat2)");
+  //     CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
   //   if (RingOf(M1) != R || RingOf(M2) != R)
-  //     CoCoA_THROW_ERROR(ERR::MixedRings, "mul(Mat1, Mat2)");
+  //     CoCoA_THROW_ERROR1(ERR::MixedRings);
   //   // Use of the temporary ans avoids aliasing problems and makes the code exception safe.
   //   matrix ans(lhs->myZeroClone(RingOf(lhs), NumRows(M1), NumCols(M2)));
   //   RingElem sum(R), prod(R);
@@ -276,8 +276,8 @@ namespace CoCoA
     const ring R = RingOf(M);
     const long Nrows = NumRows(M);
     const long Ncols = NumCols(M);
-    if (Nrows != Ncols) CoCoA_THROW_ERROR(ERR::BadMatrixSize, "power(M,n)");
-    if (n == numeric_limits<long>::min()) CoCoA_THROW_ERROR(ERR::ExpTooBig, "power(M,n)");
+    if (Nrows != Ncols)  CoCoA_THROW_ERROR1(ERR::BadMatrixSize);
+    if (n == numeric_limits<long>::min())  CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     if (n < 0) return power(inverse(M), -n); // cannot overflow because we have excluded n == MinLong
     if (n == 0) return NewDenseMat(IdentityMat(R,Nrows));
     if (IsDiagonal(M)) return PowerOfDiagMat(M,n);
@@ -298,7 +298,7 @@ namespace CoCoA
   matrix power(ConstMatrixView M, const BigInt& N)
   {
     long n;
-    if (!IsConvertible(n, N)) CoCoA_THROW_ERROR(ERR::ExpTooBig, "power(M,N)");
+    if (!IsConvertible(n, N))  CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     return power(M, n);
   }
 

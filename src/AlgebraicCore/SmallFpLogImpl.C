@@ -119,7 +119,7 @@ namespace CoCoA
   SmallFpLogImpl::value_t SmallFpLogImpl::myReduce(const BigRat& q) const
   {
     const value_t D = mpz_fdiv_ui(mpq_denref(mpqref(q)), myModulusValue);
-    if (IsZero(D))  CoCoA_THROW_ERROR(ERR::DivByZero, "SmallFpLogImpl::myReduce");
+    if (IsZero(D))   CoCoA_THROW_ERROR1(ERR::DivByZero);
     const value_t N = mpz_fdiv_ui(mpq_numref(mpqref(q)), myModulusValue);
     return myDiv(N, D);
   }
@@ -130,11 +130,11 @@ namespace CoCoA
     CoCoA_ASSERT(x == myNormalize(x));
     CoCoA_ASSERT(x != 0 || n > 0); // complain about any non-positive power of 0
     if (x == 0) { return 0; }
-    if (x == 1) { return 1; }
+    if (x == 1)  { return 1; }
     n %= myModulusValue-1;
-    if (n < 0) n += myModulusValue-1;
-    if (n == 0) { return 1; }
-    if (n == 1) { return x; }
+    if (n < 0)  n += myModulusValue-1;
+    if (n == 0)  { return 1; }
+    if (n == 1)  { return x; }
     // At this point 0 <= n < myModulusValue-1 and x != 0 and x != 1
     // (n*myLog[x]) cannot overflow, since square of myModulusValue-1 fits in a value_t (see ctor)
     return myExp[(n*myLog[x])%(myModulusValue-1)];  // no risk of overflow in the product
@@ -147,14 +147,14 @@ namespace CoCoA
   SmallFpLogImpl::value_t SmallFpLogImpl::ourCheckCtorArg(const MachineInt& n)
   {
     if (!IsGoodCtorArg(n))
-      CoCoA_THROW_ERROR(ERR::BadSmallFpChar, "SmallFpLogImpl ctor");
+      CoCoA_THROW_ERROR2(ERR::BadSmallFpChar, "SmallFpLogImpl ctor");
     return AsUnsignedLong(n);
   }
 
   SmallFpLogImpl::value_t SmallFpLogImpl::ourCheckCtorArg(SmallPrime p)
   {
     if (!IsGoodCtorArg(p))
-      CoCoA_THROW_ERROR(ERR::BadSmallFpChar, "SmallFpLogImpl ctor");
+      CoCoA_THROW_ERROR2(ERR::BadSmallFpChar, "SmallFpLogImpl ctor");
     return p;
   }
 

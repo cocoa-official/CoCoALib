@@ -52,7 +52,7 @@ namespace CoCoA
 
   RingElem RingTwinFloatBase::mySymbolValue(const symbol& /*sym*/) const
   {
-    CoCoA_THROW_ERROR("This ring has no symbols", "RingTwinFloatBase::mySymbolValue");
+    CoCoA_THROW_ERROR1("This ring has no symbols");
     return myZero();
   }
 
@@ -65,7 +65,7 @@ namespace CoCoA
   // const RingTwinFloatBase* RingTwinFloatPtr(const ring& R, const char* const FnName)
   // {
   //   const RingTwinFloatBase* ptr = RingTwinFloatPtr(R);
-  //   if (ptr == nullptr) CoCoA_THROW_ERROR(ERR::NotRingTwinFloat, FnName);
+  //   if (ptr == nullptr)  CoCoA_THROW_ERROR2(ERR::NotRingTwinFloat, FnName);
   //   return ptr;
   // }
 
@@ -742,7 +742,7 @@ namespace CoCoA
 
   void RingTwinFloatImpl::myOutput_OM(OpenMathOutput& OMOut, ConstRawPtr rawx) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "Sending Twin Floats via OpenMath not yet properly defined");
+    CoCoA_THROW_ERROR2(ERR::NYI, "Sending Twin Floats via OpenMath not yet properly defined");
     using std::ceil;
     ConstMultipleFloat_t val(import(rawx));
 //?????    if (mpf_sgn(val[0]) == 0) return out << "0";
@@ -994,9 +994,9 @@ namespace CoCoA
     ConstMultipleFloat_t x = import(rawx);
     long exp;
     d = mpf_get_d_2exp(&exp, x[0]);
-    if (numeric_limits<double>::radix != 2) CoCoA_THROW_ERROR(ERR::NYI, "RingTwinFloatImpl::myIsDouble");
-    if (exp < numeric_limits<double>::min_exponent) { d=0; return true; }  // ???false also for underflow???
-    if (exp > numeric_limits<double>::max_exponent) return false;
+    if (numeric_limits<double>::radix != 2)  CoCoA_THROW_ERROR1(ERR::NYI);
+    if (exp < numeric_limits<double>::min_exponent)  { d=0; return true; }  // ???false also for underflow???
+    if (exp > numeric_limits<double>::max_exponent)  return false;
     d = ldexp(d,exp);
     return true;
   }
@@ -1045,7 +1045,7 @@ namespace CoCoA
       return NewApproxHom(domain(theta), codomain(phi));
 //!!!PHILOSOPHICAL QUESTIONS TO ANSWER!!!
 //NYI!!!    return RingHomComposite(phi,theta);
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingTwinFloatImpl::myCompose -- how did you get here?");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return phi; // just to keep compiler quiet
   }
 
@@ -1258,7 +1258,7 @@ namespace CoCoA
   void RingTwinFloatImpl::HomExactImpl::myApply(RingElemRawPtr image, RingElemConstRawPtr arg) const
   {
     BigRat tmp;
-    if (!myDomain->myIsRational(tmp, arg)) CoCoA_THROW_ERROR(ERR::BadArg, "Applying RingTwinFloat exact hom");
+    if (!myDomain->myIsRational(tmp, arg))  CoCoA_THROW_ERROR1(ERR::BadArg);
     myCodomain->myAssign(image, tmp);
   }
 
@@ -1283,9 +1283,9 @@ namespace CoCoA
   bool IsPracticallyEqual(ConstRefRingElem x, ConstRefRingElem y)
   {
     if (owner(x) != owner(y))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "IsPracticallyEqual(RingElem,RingElem)");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsRingTwinFloat(owner(x)))
-      CoCoA_THROW_ERROR(ERR::NotRingTwinFloat, "IsPracticallyEqual(RingElem,RingElem)");
+      CoCoA_THROW_ERROR1(ERR::NotRingTwinFloat);
 
     try
     {
@@ -1301,12 +1301,12 @@ namespace CoCoA
   RingHom NewApproxHom(const ring& RR, const ring& S)
   {
     if (!IsRingTwinFloat(RR))
-      CoCoA_THROW_ERROR(ERR::NotRingTwinFloat, "NewApproxHom (1st arg)");
+      CoCoA_THROW_ERROR1(ERR::NotRingTwinFloat);
     if (IsExact(S))
       return RingHom(new RingTwinFloatImpl::HomExactImpl(RR, S));
     if (IsRingTwinFloat(S))
       return RingHom(new RingTwinFloatImpl::HomApproxImpl(RR, S));
-    CoCoA_THROW_ERROR(ERR::NYI, "NewApproxHom unhandled case");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return IdentityHom(S); // just to keep compiler quiet
   }
 
@@ -1364,7 +1364,7 @@ namespace CoCoA
   void DebugPrint(std::ostream& out, ConstRefRingElem x)
   {
     if (!IsRingTwinFloat(owner(x)))
-      CoCoA_THROW_ERROR("Only for elems of RingTwinFloat", "DebugPrint");
+      CoCoA_THROW_ERROR1("Only for elems of RingTwinFloat");
     dynamic_cast<const RingTwinFloatImpl*>(owner(x).myRawPtr())->myDebugPrint(out, raw(x));
   }
 
@@ -1382,7 +1382,7 @@ namespace CoCoA
   RingTwinFloat NewRingTwinFloat(const MachineInt& AccuracyBits)
   {
     if (IsNegative(AccuracyBits) || ! IsSignedLong(AccuracyBits))
-      CoCoA_THROW_ERROR(ERR::ReqNonNegative, "NewRingTwinFloat(A)");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const long A = AsSignedLong(AccuracyBits);
     return RingTwinFloat(new RingTwinFloatImpl(A, A, max(32l, A/4)));
   }
@@ -1393,7 +1393,7 @@ namespace CoCoA
     if (IsNegative(AccuracyBits) || !IsSignedLong(AccuracyBits) ||
         IsNegative(BufferBits) || !IsSignedLong(BufferBits) ||
         IsNegative(NoiseBits) || !IsSignedLong(NoiseBits))
-      CoCoA_THROW_ERROR(ERR::BadArg, "NewRingTwinFloat(A,B,N): args must be non negative");
+      CoCoA_THROW_ERROR1(ERR::ReqNonNegative);
     const long A = AsSignedLong(AccuracyBits);
     const long B = AsSignedLong(BufferBits);
     const long N = AsSignedLong(NoiseBits);
@@ -1448,7 +1448,7 @@ namespace CoCoA
 
   MantExp2 MantissaAndExponent2(const RingElem& x)
   {
-    if (!IsRingTwinFloat(owner(x))) CoCoA_THROW_ERROR(ERR::NotRingTwinFloat, "MantissaAndExponent2");
+    if (!IsRingTwinFloat(owner(x)))  CoCoA_THROW_ERROR1(ERR::NotRingTwinFloat);
     if (IsZero(x)) return MantExp2(0,0,BigInt(0),0);
     return RingTwinFloatPtr(owner(x))->myExport(raw(x));
   }

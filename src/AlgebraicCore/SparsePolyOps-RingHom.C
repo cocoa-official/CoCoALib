@@ -122,7 +122,7 @@ namespace
         if (expv[ind] == 0) continue;
         if (/*IsPPMonoidOv(myCodomain) && */IsMatrixOrdering(ordering(PPM(S))))
           if (expv[ind] >= 32749)  // BUG BUG: nasty hack to avoid exp overflow!!!
-            CoCoA_THROW_ERROR(ERR::ExpTooBig, "ApplySPRCodomain");
+            CoCoA_THROW_ERROR1(ERR::ExpTooBig);
         SummandPP *= power(IndetImage[ind], expv[ind]);
       }
       RingElem ImageTerm = monomial(S, CoeffImage, SummandPP);
@@ -160,7 +160,7 @@ namespace
         if (expv[ind] == 0) continue;
         if (/*IsPPMonoidOv(myCodomain) && */IsMatrixOrdering(ordering(PPM(S))))
           if (expv[ind] >= 32749)  // BUG BUG: nasty hack to avoid exp overflow!!!
-            CoCoA_THROW_ERROR(ERR::ExpTooBig, "ApplySPRCodomain");
+            CoCoA_THROW_ERROR1(ERR::ExpTooBig);
         SummandImage *= power(IndetImages[ind], expv[ind]);
       }
       gbk.myAddClear(SummandImage, NumTerms(SummandImage));
@@ -251,7 +251,7 @@ namespace
 
   bool SparsePolyRingBase::myImageLiesInSubfield(const RingHom& phi) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "SparsePolyRingBase::myImageLiesInSubfield");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return false;
   }
 

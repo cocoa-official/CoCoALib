@@ -72,14 +72,13 @@ namespace CoCoA
   std::vector<RingElem> SturmSeq(const RingElem& f)
   {
     const PolyRing P(owner(f), CoCoA_ERROR_CONTEXT);
-    const char* const FnName = "SturmSeq";
-////    if (!IsPolyRing(P)) CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName);
-    if (!IsQQ(CoeffRing(P))) CoCoA_THROW_ERROR(ERR::BadRing, FnName);
-    if (!IsField(CoeffRing(P))) CoCoA_THROW_ERROR(ERR::ReqField, FnName);
-    if (!IsOrderedDomain(CoeffRing(P))) CoCoA_THROW_ERROR(ERR::ReqOrdDom, FnName);
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
+////    if (!IsPolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
+    if (!IsQQ(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::BadRing);
+    if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqField);
+    if (!IsOrderedDomain(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     const int var = UnivariateIndetIndex(f);
-    if (var < 0) CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+    if (var < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const RingElem& x = indet(P,var);
     vector<RingElem> seq;  seq.reserve(1+deg(f));
     RingElem prev = f*ConvertTo<BigInt>(CommonDenom(f));
@@ -101,15 +100,14 @@ namespace CoCoA
   long NumRealRoots(const RingElem& f)
   {
     const ring& P = owner(f);
-    const char* const FnName = "NumRealRoots";
-    if (!IsPolyRing(P)) CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName);
-    if (!IsQQ(CoeffRing(P))) CoCoA_THROW_ERROR(ERR::BadRing, FnName);
-    if (!IsField(CoeffRing(P))) CoCoA_THROW_ERROR(ERR::ReqField, FnName);
-    if (!IsOrderedDomain(CoeffRing(P))) CoCoA_THROW_ERROR(ERR::ReqOrdDom, FnName);
-    if (IsZero(f)) CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
-    if (deg(f) == 0) CoCoA_THROW_ERROR("Poly must have deg >= 1", FnName);
+    if (!IsPolyRing(P))  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
+    if (!IsQQ(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::BadRing);
+    if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqField);
+    if (!IsOrderedDomain(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqOrdDom);
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
+    if (deg(f) == 0)  CoCoA_THROW_ERROR1("Poly must have deg >= 1");
     const int var = UnivariateIndetIndex(f);
-    if (var < 0) CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+    if (var < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     const vector<RingElem> Sseq = SturmSeq(f);
     long CountPlusInf = 0;
     long CountMinusInf = 0;

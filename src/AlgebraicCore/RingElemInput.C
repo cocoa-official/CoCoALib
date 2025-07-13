@@ -87,7 +87,7 @@ namespace CoCoA
       // if (ch == ')') return ')';
       // if (ch == ';') return ';';
       // if (ch == ',') return ',';
-   //   CoCoA_THROW_ERROR("Illegal char \'"+string(1,ch)+'\'', "WhatsNext");
+   //   CoCoA_THROW_ERROR1("Illegal char \'"+string(1,ch)+'\'');
       return '?'; // never reached -- just to keep compiler quiet
     }
 
@@ -95,15 +95,15 @@ namespace CoCoA
     void CoCoA_THROW_ERROR_NextChar(std::istream& in, const string& FuncName)
     {
       if (in.eof())
-        CoCoA_THROW_ERROR("Unexpected EOF", FuncName);
+        CoCoA_THROW_ERROR1("Unexpected EOF in context: " + FuncName);
 //???    in.clear();
       const char ch = in.peek();
       const int ByteCode = static_cast<int>(static_cast<unsigned char>(ch));
       // 
       if (ByteCode >= 32 && ByteCode < 127)
-        CoCoA_THROW_ERROR("Unexpected \'"+string(1,ch)+'\'', FuncName);
+        CoCoA_THROW_ERROR1("Unexpected \'"+string(1,ch)+"\' in context: " + FuncName);
       std::ostringstream ByteCodeDecimal; ByteCodeDecimal << ByteCode;
-      CoCoA_THROW_ERROR("Unexpected char with byte code "+ByteCodeDecimal.str(), FuncName);
+      CoCoA_THROW_ERROR1("Unexpected char with byte code "+ByteCodeDecimal.str()+" in context: " + FuncName);
     }
 
 
@@ -145,7 +145,7 @@ namespace CoCoA
         {
           std::ostringstream os;
           os << "symbol \"" << s << "\" not in ring";
-          CoCoA_THROW_ERROR(std::string(os.str()), "ReadFactor: symbol");
+          CoCoA_THROW_ERROR1(std::string(os.str()) + "in context: ReadFactor: symbol");
         }
         //        return indet(P, SymTable.find(s)->second);
         return RingElem(P, s);
@@ -317,9 +317,9 @@ namespace CoCoA
   RingElem ReadExpr(const ring& P, std::istream& in)
   {
     if (!in.good())
-      CoCoA_THROW_ERROR("istream is not good", "ReadExpr");
+      CoCoA_THROW_ERROR1("istream is not good");
     if (!IsDecimal(in))
-      CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", "ReadExpr");
+      CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
 
     const vector<symbol> syms = symbols(P);    // makes a copy of vec
     map<symbol, long> SymTable;
@@ -327,7 +327,7 @@ namespace CoCoA
       SymTable[syms[i]] = i;
     
     const RingElem ans = ReadExpr(P, in, SymTable);
-//    if (WhatsNext(in) != '\0') CoCoA_THROW_ERROR("Extra chars after reading ringelem expression", "ReadExpr");
+//    if (WhatsNext(in) != '\0')  CoCoA_THROW_ERROR1("Extra chars after reading ringelem expression");
     return ans;
   }
 
@@ -335,9 +335,9 @@ namespace CoCoA
   RingElem ReadExprSemicolon(const ring& P, std::istream& in)
   {
     if (!in.good())
-      CoCoA_THROW_ERROR("istream is not good", "ReadExprSemicolon");
+      CoCoA_THROW_ERROR1("istream is not good");
     if (!IsDecimal(in))
-      CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", "ReadExprSemicolon");
+      CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
 
     const RingElem ans = ReadExpr(P, in);
     if ( WhatsNext(in) != ';' )
@@ -379,9 +379,9 @@ namespace CoCoA
   std::vector<RingElem> RingElems(const ring& P, std::istream& in)
   {
     if (!in.good())
-      CoCoA_THROW_ERROR("istream is not good",  "RingElems");
+      CoCoA_THROW_ERROR1("istream is not good");
     if (!IsDecimal(in))
-      CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", "RingElems");
+      CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
 
     /*const*/ vector<RingElem> v = ReadCommaSeparatedListOfRingElems(P, in);
     return v;
@@ -392,14 +392,14 @@ namespace CoCoA
   {
     static const char* const FnName = "RingElemVec";
     if (!in.good())
-      CoCoA_THROW_ERROR("istream is not good", FnName);
+      CoCoA_THROW_ERROR1("istream is not good");
     if (!IsDecimal(in))
-      CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", "RingElemVec");
+      CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
 
     char ch;
     in >> ch;
     if (in.eof() || ch != '[')
-      CoCoA_THROW_ERROR("Expected initial '['", FnName);
+      CoCoA_THROW_ERROR1("Expected initial '['");
     in >> std::ws;
     if (in.eof())  CoCoA_THROW_ERROR_NextChar(in, FnName);
     if (in.peek() == ']')  { in.ignore(); return vector<RingElem>(0); }
@@ -422,7 +422,7 @@ namespace CoCoA
     istringstream is(s);
     /*const*/ RingElem ans =  ReadExprSemicolon(P, is);
     if (!is.eof())
-      CoCoA_THROW_ERROR("Extra chars after RingElem expression", "ReadExprSemicolon(string)");
+      CoCoA_THROW_ERROR1("Extra chars after RingElem expression");
     return ans;
   }
 
@@ -457,11 +457,11 @@ namespace CoCoA
       const char ch = is.peek();
       // Special handling for "double exponents" (redmine 1579)
       if (ch == '^')
-        CoCoA_THROW_ERROR("Double exponent not allowed; use brackets like (a^b)^c", "ReadExpr(string)");
+        CoCoA_THROW_ERROR1("Double exponent not allowed; use brackets like (a^b)^c");
       std::ostringstream os;
       os << "Unexpected char \'" << ch << "\' in string from \"" << snippet(is) << "\"";
       if (ch == '(' || isalnum(ch)) os << " -- maybe forgotten '*'?";
-      CoCoA_THROW_ERROR(os.str(), "ReadExpr(string)");
+      CoCoA_THROW_ERROR1(os.str());
     }
     return ans;
   }
@@ -472,8 +472,8 @@ namespace CoCoA
     istringstream is(s);
     /*const*/ vector<RingElem> v = RingElems(P, is);
     if (!is.eof())
-      CoCoA_THROW_ERROR("Extra chars after last RingElem expression", "RingElems(string)");
-////    if (WhatsNext(is) != '\0') CoCoA_THROW_ERROR_NextChar(is, "RingElems");
+      CoCoA_THROW_ERROR1("Extra chars after last RingElem expression");
+////    if (WhatsNext(is) != '\0')  CoCoA_THROW_ERROR_NextChar(is, "RingElems");
     return v;
   }
   
@@ -483,7 +483,7 @@ namespace CoCoA
     /*const*/ vector<RingElem> v = RingElemVec(P, is);
     if (!is.eof())  is >> std::ws; // flush any trailing whitespace
     if (!is.eof())
-      CoCoA_THROW_ERROR("Extra chars after list inside []", "RingElemVec");
+      CoCoA_THROW_ERROR1("Extra chars after list inside []");
 ////    if (WhatsNext(is) != '\0') CoCoA_THROW_ERROR_NextChar(is, "RingElemVec");
     return v;
   }

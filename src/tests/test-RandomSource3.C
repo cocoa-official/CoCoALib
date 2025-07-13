@@ -48,7 +48,7 @@ namespace CoCoA
             const BigInt rnd = RandomBigInt(RndSrc, i, j);
             CoCoA_ASSERT_ALWAYS(i <= j && i <= rnd && rnd <= j);
           }
-          catch (const ErrorInfo& err) { CoCoA_ASSERT_ALWAYS(err == ERR::BadArg); }
+          catch (const ErrorInfo& err) { CoCoA_ASSERT_ALWAYS(err == ERR::ReqNonEmpty); }
         }
 
     // Now choose a random (negative) range, and check that even numbers

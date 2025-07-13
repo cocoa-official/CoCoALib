@@ -265,26 +265,26 @@ namespace CoCoA
     // Handle the simple case of Z/I
     if (IsZZ(myReprRing))
     {
-      if (IsZero(myReducingIdeal)) return BigInt(0);
+      if (IsZero(myReducingIdeal))  return BigInt(0);
       return ConvertTo<BigInt>(TidyGens(myReducingIdeal)[0]);
     }
-    if (IsOne(myReducingIdeal)) { return BigInt(1); } // trivial ring has char=1
+    if (IsOne(myReducingIdeal))  { return BigInt(1); } // trivial ring has char=1
     if (IsPolyRing(myBaseRingValue) && IsField(CoeffRing(myBaseRingValue)))
     {
       return characteristic(myBaseRingValue);
     }
-    CoCoA_THROW_ERROR(ERR::NYI, "GeneralQuotientRingImpl::characteristic");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     return characteristic(myBaseRingValue); // just to keep compiler quiet
   }
 
 
   long GeneralQuotientRingImpl::myLogCardinality() const
   {
-    if (!IamFiniteField()) return 0;
-    if (IsZZ(myReprRing)) return 1;
+    if (!IamFiniteField())  return 0;
+    if (IsZZ(myReprRing))  return 1;
     if (IsPolyRing(myBaseRingValue))
       return CoeffRing(myBaseRingValue)->myLogCardinality() * len(QuotientBasis(myReducingIdeal)); // SLUG SLUG SLUG!!!
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "GeneralQuotientRingImpl::myLogCardinality");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
     return -1;
   }
 
@@ -296,7 +296,7 @@ namespace CoCoA
     // Currently we recognise only k[x]/I where k is finite field
     if (!IsPolyRing(myReprRing)) return false;
     if (!IsField(CoeffRing(myReprRing)))
-      CoCoA_THROW_ERROR(ERR::NYI, "GeneralQuotientRingImpl::IamFiniteField");
+      CoCoA_THROW_ERROR1(ERR::NYI);
     return IsFiniteField(CoeffRing(myReprRing)) &&
            IsZeroDim(myReducingIdeal) &&
            IsMaximal(myReducingIdeal);
@@ -413,7 +413,7 @@ namespace CoCoA
     RingElem Y = myCanonicalRepr(rawy);
     RingElem ans(myReprRing);
     if (!myReducingIdeal->myDivMod(raw(ans), raw(X), raw(Y)))
-      CoCoA_THROW_ERROR(ERR::BadQuot, "GQR::myDiv");
+      CoCoA_THROW_ERROR1(ERR::BadQuot);
     myReduction(rawlhs, raw(ans));
   }
 
@@ -457,11 +457,11 @@ namespace CoCoA
   void GeneralQuotientRingImpl::myGcd(RawPtr rawlhs, ConstRawPtr rawx, ConstRawPtr rawy) const
  {
    if (!IamTrueGCDDomain())
-     CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "gcd(lhs, x, y) in a quotient ring");
-   if (IamField()) { myGcdInField(rawlhs, rawx, rawy); return; }
+     CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
+   if (IamField())  { myGcdInField(rawlhs, rawx, rawy); return; }
 
    //??? BUG INCOMPLETE BUG ???
-   CoCoA_THROW_ERROR(ERR::NYI, "gcd in generic quotient ring which is not a field");
+   CoCoA_THROW_ERROR2(ERR::NYI, "gcd in generic quotient ring which is not a field");
  }
 
 
@@ -685,28 +685,28 @@ namespace CoCoA
 
   void GeneralQuotientRingImpl::IdealImpl::myTestIsMaximal() const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "GeneralQuotientRingImpl::IdealImpl::myTestIsMaximal()");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   //???    myAssignMaximalFlag(IsMaximal(myPreimageIdeal));
   }
 
 
   void GeneralQuotientRingImpl::IdealImpl::myTestIsPrimary() const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "GeneralQuotientRingImpl::IdealImpl::myTestIsPrimary()");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   //???    myAssignMaximalFlag(IsMaximal(myPreimageIdeal));
   }
 
 
   void GeneralQuotientRingImpl::IdealImpl::myTestIsPrime() const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "GeneralQuotientRingImpl::IdealImpl::myTestIsPrime()");
+    CoCoA_THROW_ERROR1(ERR::NYI);
     //???    myAssignPrimeFlag(IsPrime(myPreimageIdeal));
   }
 
 
   void GeneralQuotientRingImpl::IdealImpl::myTestIsRadical() const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "GeneralQuotientRingImpl::IdealImpl::myTestIsRadical()");
+    CoCoA_THROW_ERROR1(ERR::NYI);
   //???    myAssignMaximalFlag(IsMaximal(myPreimageIdeal));
   }
 
@@ -738,7 +738,7 @@ namespace CoCoA
   void GeneralQuotientRingImpl::IdealImpl::myMul(const ideal& J)
   {
     if (IamZero()) return;
-    //    CoCoA_THROW_ERROR(ERR::NYI, "GeneralQuotientRingImpl::IdealImpl::mul");
+    //    CoCoA_THROW_ERROR1(ERR::NYI);
     vector<RingElem> tmpV; //???tmpV.reserve(len(myGens)*len(gens(J))); // BUG  OVERFLOW????
     for (const RingElem& f: myGens())
       for (const RingElem& g: gens(J))
@@ -804,7 +804,7 @@ namespace CoCoA
   {
     if (R != RingOf(I))  CoCoA_THROW_ERROR1(ERR::IdealNotInRing);
     if (IsOne(I))  CoCoA_THROW_ERROR2(ERR::BadQuotRing, "ideal is <1>");
-//???    if (IsZero(I)) CoCoA_THROW_ERROR(ERR::BadQuotRing, "NewQuotientRing"); ???
+//???    if (IsZero(I)) CoCoA_THROW_ERROR1(ERR::BadQuotRing); ???
     if (!IsZero(I) && IsZZ(R))
     {
       // Try to make a RingFp first as it is fastest.

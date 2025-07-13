@@ -68,7 +68,7 @@ namespace CoCoA
     //   if (index < 1181895L) return 119633LL;
     //   if (index < 10163195L) return 150000001LL;
     //   if (index < 40324935L) return 5398416817471LL;
-    //   CoCoA_THROW_ERROR(ERR::ArgTooBig, "cyclotomic_modulus");
+    //   CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     // }
 
 
@@ -133,7 +133,7 @@ namespace CoCoA
 //       //   if (d < 268240896) return 9038988754691465073; // Phi(582923523)
 //       //   if (d < 321159168) return 9118090447189969651; // Phi(693722757)
 //       //   if (d < 1072341504) return 9164566312887510757; // Phi(2583303555)
-//       CoCoA_THROW_ERROR(ERR::ArgTooBig,"CycloCoeffHeightBound_sqfr");
+//       CoCoA_THROW_ERROR1(ERR::ArgTooBig);
 //     }
 
 
@@ -194,7 +194,7 @@ namespace CoCoA
       if (k < 693722757)  return 9118090447189969651;
       if (k < 2583303555)  return 9164566312887510757; // 64-bit limit!
 #endif
-      CoCoA_THROW_ERROR(ERR::ArgTooBig,"CycloCoeffHeightBound_index");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     }
 
 
@@ -362,15 +362,15 @@ namespace CoCoA
 //   RingElem cyclotomic_FabioRossi(long n, const RingElem& x)
 //   {
 //     if (n < 1)
-//       CoCoA_THROW_ERROR("arg 1: n must be >= 1","cyclotomic");
+//       CoCoA_THROW_ERROR(ERR::ReqPositive);
 //     if (!IsIndet(x))
-//       CoCoA_THROW_ERROR("arg 2: x must be an indet", "cyclotomic");
-//     if (n == 1) return x-1;
+//       CoCoA_THROW_ERROR(ERR::ReqIndet);
+//     if (n == 1)  return x-1;
 
 //     int power2 = 0;
 //     while (IsEven(n)) { ++power2; n /= 2; }
 //     const factorization<long> facs = factor(n);
-//     long radn = 1; for (long j: facs.myFactors()) radn *= j;
+//     long radn = 1; for (long j: facs.myFactors())  { radn *= j; }
 //     const long deg = EulerTotient(radn);
 //     const vector<long> plist = facs.myFactors();
 //     const long long M = cyclotomic_modulus(radn);
@@ -426,11 +426,11 @@ namespace CoCoA
   RingElem cyclotomic(long n, ConstRefRingElem x)
   {
     if (n < 1)
-      CoCoA_THROW_ERROR("arg 1: n must be >= 1","cyclotomic");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     long x_index;
     if (!IsIndet(x_index, x))
-      CoCoA_THROW_ERROR(ERR::ReqIndet, "cyclotomic: arg2");
-    if (n == 1) return x-1;
+      CoCoA_THROW_ERROR1(ERR::ReqIndet);
+    if (n == 1)  return x-1;
     const long OddPart = CoprimeFactor(n,2);
     if (OddPart == 1)  return power(x,n/2) + 1;
     const bool EvenIndex = IsEven(n);
@@ -448,16 +448,16 @@ namespace CoCoA
     {
       // Check only if nfacs > 3 because o/w coeffs have to be small
       if (sizeof(unsigned long) == 4 && OddRadical >= 10163195L)
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "cyclotomic");
+        CoCoA_THROW_ERROR1(ERR::ArgTooBig);
       if (sizeof(unsigned long) == 8 && OddRadical >= 169828113L)
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "cyclotomic");
+        CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     }
 
     const auto coeff = CycloPrefix(facs.myFactors());
     const long UPB = PhiOddPrimes/2; // exact division
     const long exponent = EvenIndex ? (n*EvenPart/2) : n;
     const PPMonoidElem X = power(LPP(x), exponent);
-    { /*not used*/ const PPMonoidElem Xpwr = power(X, UPB); /* might ExpTooBig trigger error*/ if (deg(Xpwr)/UPB != deg(X)) CoCoA_THROW_ERROR(ERR::ExpTooBig, "cyclotomic"); }
+    { /*not used*/ const PPMonoidElem Xpwr = power(X, UPB); /* might ExpTooBig trigger error*/ if (deg(Xpwr)/UPB != deg(X))  CoCoA_THROW_ERROR1(ERR::ExpTooBig); }
     const vector<long> Xexpv = exponents(X);
     const int nvars = len(Xexpv);
     const SparsePolyRing P = owner(x);
@@ -747,12 +747,12 @@ namespace CoCoA
     const char* const FnName = "CyclotomicFactors_BeukersSmyth";
     VerboseLog VERBOSE(FnName);
     if (IsZero(f))
-      CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     if (IsConstant(f))
       return factorization<RingElem>(f);
     const long x = UnivariateIndetIndex(f);
     if (x < 0)
-      CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+      CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     factorization<RingElem> ans(one(owner(f)));
     VERBOSE(85) << "Extract palindromic factor" << std::endl;
     const RingElem pal = PalindromicFactor(f);
@@ -958,11 +958,11 @@ namespace CoCoA
   std::vector<long> CyclotomicFactorIndices(RingElem f)
   {
     const char* const FnName = "CyclotomicFactorIndices";
-    if (IsZero(f))  CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     vector<long> IndexList; // will contain result
     if (IsConstant(f))  return IndexList; // must be before call to UnivariateIndetIndex
     const long x_index = UnivariateIndetIndex(f);
-    if (x_index < 0)  CoCoA_THROW_ERROR(ERR::ReqUnivariate, FnName);
+    if (x_index < 0)  CoCoA_THROW_ERROR1(ERR::ReqUnivariate);
     VerboseLog VERBOSE(FnName);
     VERBOSE(80) << "Minor preprocessing" << std::endl;
     // TODO: if ConstCoeff == 0 then divide by power of x
@@ -1015,7 +1015,7 @@ namespace CoCoA
   {
     const char* const FnName = "CyclotomicFactors";
     VerboseLog VERBOSE(FnName);
-    if (IsZero(f))  CoCoA_THROW_ERROR(ERR::ReqNonZero, FnName);
+    if (IsZero(f))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     const factorization<RingElem> facs = SqFreeFactor(PalindromicFactor(f));
     const vector<RingElem>& F = facs.myFactors();
     const vector<long>& m = facs.myMultiplicities();

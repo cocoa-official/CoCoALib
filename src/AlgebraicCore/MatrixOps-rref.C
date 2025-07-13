@@ -31,7 +31,7 @@ namespace CoCoA
 
   // matrix RowReducedForm(ConstMatrixView M_orig)
   // {
-  //   if (!IsField(RingOf(M_orig))) CoCoA_THROW_ERROR(ERR::NYI, "row reduction over non field");
+  //   if (!IsField(RingOf(M_orig))) CoCoA_THROW_ERROR2(ERR::NYI, "row reduction over non field");
   //   matrix M = NewDenseMat(M_orig);
   //   if (NumRows(M) < 2) return M;
   //   const long ncols = NumCols(M);
@@ -70,7 +70,8 @@ namespace CoCoA
   // Simple rather than smart/fast
   matrix RREFByGauss(ConstMatrixView M_orig)
   {
-    if (!IsField(RingOf(M_orig))) CoCoA_THROW_ERROR(ERR::ReqField, "RREFByGauss");
+    if (!IsField(RingOf(M_orig)))
+      CoCoA_THROW_ERROR1(ERR::ReqField);
     matrix M = NewDenseMat(M_orig);
     const int nrows = NumRows(M);
     const int ncols = NumCols(M);
@@ -81,8 +82,8 @@ namespace CoCoA
       do
       {
         PivotRow = r;
-        while (PivotRow < nrows && IsZero(M(PivotRow,CurrCol))) { ++PivotRow; }
-        if (PivotRow < nrows) break;
+        while (PivotRow < nrows && IsZero(M(PivotRow,CurrCol)))  { ++PivotRow; }
+        if (PivotRow < nrows)  break;
         ++CurrCol;
       }
       while (CurrCol < ncols);

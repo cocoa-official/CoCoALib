@@ -115,21 +115,21 @@ namespace CoCoA
   std::string ScientificStr(const BigInt& N, const MachineInt& SigFig)
   {
     if (IsNegative(SigFig) || !IsSignedLong(SigFig) || IsZero(SigFig))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ScientificStr");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     return ScientificStr(MantissaAndExponent10(N, SigFig), AsSignedLong(SigFig));
   }
 
   std::string ScientificStr(const BigRat& q, const MachineInt& SigFig)
   {
     if (IsNegative(SigFig) || !IsSignedLong(SigFig) || IsZero(SigFig))
-      CoCoA_THROW_ERROR(ERR::BadArg, "ScientificStr");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     return ScientificStr(MantissaAndExponent10(q, SigFig), AsSignedLong(SigFig));
   }
 
   std::string FloatStr(const BigInt& N, const MachineInt& SigFig)
   {
     if (IsNegative(SigFig) || !IsSignedLong(SigFig) || IsZero(SigFig))
-      CoCoA_THROW_ERROR(ERR::BadArg, "FloatStr");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
 //???    if (abs(N) < power(10,SigFig)) return ToString(N);
 
     return FloatStr(MantissaAndExponent10(N, SigFig), AsSignedLong(SigFig));
@@ -138,7 +138,7 @@ namespace CoCoA
   std::string FloatStr(const BigRat& q, const MachineInt& SigFig)
   {
     if (IsNegative(SigFig) || !IsSignedLong(SigFig) || IsZero(SigFig))
-      CoCoA_THROW_ERROR(ERR::BadArg, "FloatStr");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
 //    if (IsOneDen(q)) return FloatStr(num(q), SigFig);
     return FloatStr(MantissaAndExponent10(q, SigFig), AsSignedLong(SigFig));
   }
@@ -150,7 +150,7 @@ namespace CoCoA
   std::string DecimalStr(const BigInt& N, const MachineInt& DecimalPlaces)
   {
     if (IsNegative(DecimalPlaces) || !IsSignedLong(DecimalPlaces) || IsZero(DecimalPlaces))
-      CoCoA_THROW_ERROR(ERR::BadArg, "FixedStr");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
 
     return ToString(N);
   }
@@ -158,8 +158,8 @@ namespace CoCoA
   std::string DecimalStr(const BigRat& q, const MachineInt& DecimalPlaces)
   {
     if (IsNegative(DecimalPlaces) || !IsSignedLong(DecimalPlaces) || IsZero(DecimalPlaces))
-      CoCoA_THROW_ERROR(ERR::BadArg, "FixedStr");
-    if (IsOneDen(q)) return DecimalStr(num(q), DecimalPlaces);
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
+    if (IsOneDen(q))  return DecimalStr(num(q), DecimalPlaces);
     const long DigitsAfterPoint = AsSignedLong(DecimalPlaces);
     const BigInt N = RoundDiv(abs(num(q))*power(10,DigitsAfterPoint),den(q));
     string digits = ToString(N);

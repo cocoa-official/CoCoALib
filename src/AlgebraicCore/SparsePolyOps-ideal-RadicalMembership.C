@@ -93,11 +93,10 @@ namespace CoCoA
 
   bool IsInRadical(ConstRefRingElem f, const ideal& I)
   {
-    const char* const FnName = "IsInRadical";
     if (owner(f) != RingOf(I))
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsPolyRing(RingOf(I)) || !IsField(CoeffRing(RingOf(I))))
-      CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName); // BUG BUG err should say "polyring over field"
+      CoCoA_THROW_ERROR1(ERR::ReqPolyRing); // BUG BUG err should say "polyring over field"
     if (IsZero(I))  return IsZero(f);  // SparsePolyRing
 
     vector<RingElem> GensI_Rabinovich; // filled, only if needed, by RabinovichTrick
@@ -127,9 +126,9 @@ namespace CoCoA
 //   {
 //     const char* const FnName = "MinPowerInIdeal";
 //     if (owner(f) != RingOf(I))
-//       CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+//       CoCoA_THROW_ERROR1(ERR::MixedRings);
 //     if (!IsPolyRing(RingOf(I)) || !IsField(CoeffRing(RingOf(I))))
-//       CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName); // BUG BUG err should say "polyring over field"
+//       CoCoA_THROW_ERROR1(ERR::ReqPolyRing); // BUG BUG err should say "polyring over field"
 
 //     if (!IsInRadical(f, I)) return -1;
 //     long D = 1;
@@ -149,9 +148,9 @@ namespace CoCoA
   {
     const char* const FnName = "MinPowerInIdeal_binary";
     if (owner(f) != RingOf(I))
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsPolyRing(RingOf(I)) || !IsField(CoeffRing(RingOf(I))))
-      CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName); // BUG BUG err should say "polyring over field"
+      CoCoA_THROW_ERROR1(ERR::ReqPolyRing); // BUG BUG err should say "polyring over field"
 //JAA: suggest clearing denoms (before & after NF?)
     f = NF(f,I);
     if (IsZero(f)) return 1;
@@ -191,12 +190,12 @@ namespace CoCoA
   {
     const char* const FnName = "MinPowerInIdeal";
     if (owner(f) != RingOf(I))
-      CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (!IsPolyRing(RingOf(I)) || !IsField(CoeffRing(RingOf(I))))
-      CoCoA_THROW_ERROR(ERR::ReqPolyRing, FnName); // BUG BUG err should say "polyring over field"
+      CoCoA_THROW_ERROR1(ERR::ReqPolyRing); // BUG BUG err should say "polyring over field"
 //JAA: suggest clearing denoms (before & after NF?)
     f = NF(f,I);
-    if (!IsInRadical(f, I)) return -1;  // WARNING: test can be slow/costly
+    if (!IsInRadical(f, I))  return -1;  // WARNING: test can be slow/costly
     // simple sequential loop
     long D = 1;
     RingElem FpowD = f;

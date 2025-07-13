@@ -72,7 +72,7 @@ namespace CoCoA
     CoCoA_ASSERT(owner(pp) == myPPMValue);
     const list<PPMonoidElem>::iterator posn = find(myCornerList.begin(), myCornerList.end(), pp);
     if (posn == myCornerList.end())
-      CoCoA_THROW_ERROR("PP does not belong to the corner set", "myCornerPPIntoQB");
+      CoCoA_THROW_ERROR1("PP does not belong to the corner set");
 
     // To ensure EXCEPTION SAFETY, we create a list of all possible new corners
     // which will later be filtered to remove the bad candidates.
@@ -113,7 +113,7 @@ namespace CoCoA
     CoCoA_ASSERT(owner(pp) == myPPMValue);
     const list<PPMonoidElem>::iterator it = find(myCornerList.begin(), myCornerList.end(), pp);
     if (it == myCornerList.end())
-      CoCoA_THROW_ERROR("PP does not belong to the corner set", "myCornerPPIntoAvoidSet");
+      CoCoA_THROW_ERROR1("PP does not belong to the corner set");
     myAvoidList.push_back(pp); // Do this *before* deleting pp from myCornerList as pp may alias the element we delete!
     myCornerList.erase(it);
     myNewCornerList.clear();

@@ -424,7 +424,7 @@ namespace CoCoA
 //                                      InlineFpImpl::RawValue& fscale,
 //                                      InlineFpImpl::RawValue& gscale)
 //   {
-//     CoCoA_THROW_ERROR("It does not make sense", "DistrMPolyInlFpPP::ComputeFScaleAndGScale");
+//     CoCoA_THROW_ERROR1("It does not make sense");
 //   }
 
 

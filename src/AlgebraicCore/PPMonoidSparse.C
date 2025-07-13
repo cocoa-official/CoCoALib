@@ -496,7 +496,7 @@ namespace CoCoA
     while (it != endit)
     {
       if (it->myExp > limit)
-        CoCoA_THROW_ERROR(ERR::ExpTooBig, "PPMonoidSparseImpl::myPowerOverflowCheck");
+        CoCoA_THROW_ERROR1(ERR::ExpTooBig);
       ++it;
     }
   }
@@ -618,7 +618,8 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
   int PPMonoidSparseImpl::myCmpOrdvs(ConstRawPtr rawpp1, ConstRawPtr rawpp2, long n) const
   {
     // This fn computes the ordvs of pp1 & pp2 one compt at a time, and compares them lexicographically.
-    if (n < 0 || n > NumIndets(myOrdering())) CoCoA_THROW_ERROR(ERR::BadIndex, "myCmpOrdvs");
+    if (n < 0 || n > NumIndets(myOrdering()))
+      CoCoA_THROW_ERROR1(ERR::BadIndex);
     const ConstMatrixView& M = OrdMat(myOrdering());
     const value_t& T1 = import(rawpp1);
     const value_t& T2 = import(rawpp2);
@@ -649,7 +650,8 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
   void PPMonoidSparseImpl::myWDeg(degree& d, ConstRawPtr rawpp) const
   {
     const int dim = GradingDim(d);
-    if (dim != GradingDim(myOrdering())) CoCoA_THROW_ERROR(ERR::MixedDegrees, "PPMonoidSparseImpl::myWDeg");
+    if (dim != GradingDim(myOrdering()))
+      CoCoA_THROW_ERROR1(ERR::MixedDegrees);
     const ConstMatrixView& M = OrdMat(myOrdering());
     const value_t& T = import(rawpp);
     typedef value_t::const_iterator iter;
@@ -675,7 +677,8 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
 
   int PPMonoidSparseImpl::myCmpWDegPartial(ConstRawPtr rawpp1, ConstRawPtr rawpp2, long n) const
   {
-    if (n < 0 || n > GradingDim(myOrdering())) CoCoA_THROW_ERROR(ERR::BadIndex, "myCmpWDegPartial");
+    if (n < 0 || n > GradingDim(myOrdering()))
+      CoCoA_THROW_ERROR1(ERR::BadIndex);
     return myCmpOrdvs(rawpp1, rawpp2, n);
   }
 
@@ -777,12 +780,10 @@ bool PPMonoidSparseImpl::myIsEqual(ConstRawPtr rawpp1, ConstRawPtr rawpp2) const
   // Sanity check on the indet names given.
     const long nvars = NumIndets(ord);
 
-    if (len(IndetNames) != nvars)
-      CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPPMonoidSparse(IndetNames,ord)");
-    if (!AreDistinct(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidSparse(IndetNames,ord)");
-    if (!AreArityConsistent(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidSparse(IndetNames,ord)");
+    if (len(IndetNames) != nvars ||
+        !AreDistinct(IndetNames) ||
+        !AreArityConsistent(IndetNames))
+      CoCoA_THROW_ERROR1(ERR::BadIndetNames);
 
     return PPMonoid(new PPMonoidSparseImpl(IndetNames, ord));
   }

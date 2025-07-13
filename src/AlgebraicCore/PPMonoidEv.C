@@ -455,7 +455,7 @@ namespace CoCoA
     myPowerOverflowCheck(rawpp1, LongExp);
 #endif
     if (static_cast<unsigned long>(LongExp) > ourMaxExp)
-      CoCoA_THROW_ERROR(ERR::ExpTooBig, "PPMonoidEvSmallExpImpl::myPowerSmallExp");
+      CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     const SmallExponent_t exp = static_cast<SmallExponent_t>(LongExp);
 
     SmallExponent_t* const expv = myExpv(rawpp);
@@ -469,9 +469,8 @@ namespace CoCoA
   {
     if (LongExp == 0 || LongExp == 1) return;
     CoCoA_ASSERT(LongExp >= 0);
-    const char* const FnName = "PPMonoidEvSmallExpImpl::myPowerOverflowCheck";
     if (static_cast<unsigned long>(LongExp) > ourMaxExp)
-      CoCoA_THROW_ERROR(ERR::ExpTooBig, FnName);
+      CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     const SmallExponent_t exp = static_cast<SmallExponent_t>(LongExp);
     const SmallExponent_t limit = ourMaxExp/exp;
 
@@ -479,7 +478,7 @@ namespace CoCoA
     for (long i = 0; i < myNumIndets; ++i)
     {
       if (expv[i] > limit)
-        CoCoA_THROW_ERROR(ERR::ExpTooBig, FnName);
+        CoCoA_THROW_ERROR1(ERR::ExpTooBig);
     }
   }
 
@@ -1366,7 +1365,7 @@ namespace CoCoA
     long TmpIndex, TmpPow;
     if (!myIsIndetPosPower(TmpIndex, POW, rawpp)) return false;
     if (!IsConvertible(TmpPow, POW))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "PPMonoidEvBigExpImpl::myIsIndetPosPower");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     index = TmpIndex;
     pow = TmpPow;
     return true;
@@ -1446,7 +1445,7 @@ namespace CoCoA
       d += expv[i];
     long ans;
     if (!IsConvertible(ans, d))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "PPMonoidEvBigExpImpl::myStdDeg");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return ans;
   }
 
@@ -1474,7 +1473,7 @@ namespace CoCoA
     CoCoA_ASSERT(0 <= indet && indet < myNumIndets);
     long ans;
     if (!IsConvertible(ans, myExpv(rawpp)[indet]))
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "PPMonoidEvBigExpImpl::myExponent");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return ans;
   }
 
@@ -1501,7 +1500,7 @@ namespace CoCoA
           v[i] = numeric_limits<long>::min();
       }
       if (!OK)
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "PPMonoidEvBigExpImpl::myExponents");
+        CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     }
   }
 
@@ -1526,7 +1525,7 @@ namespace CoCoA
 
   void PPMonoidEvBigExpImpl::myComputeDivMask(DivMask& /*dm*/, const DivMaskRule& /*DivMaskImpl*/, ConstRawPtr /*rawpp*/) const
   {
-    CoCoA_THROW_ERROR(ERR::NYI, "PPMonoidEvBigExpImpl::myComputeDivMask");
+    CoCoA_THROW_ERROR1(ERR::NYI);
 // BUG BUG can't do this (yet)    DivMaskImpl->myAssignFromExpv(dm, myExpv(rawpp), myNumIndets);
   }
 
@@ -1759,12 +1758,10 @@ namespace CoCoA
     // Sanity check on the indet names given.
     const long nvars = NumIndets(ord);
 
-    if (len(IndetNames) != nvars)
-      CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPPMonoidEv(IndetNames,ord)");
-    if (!AreDistinct(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidEv(IndetNames,ord)");
-    if (!AreArityConsistent(IndetNames))
-      CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPPMonoidEv(IndetNames,ord)");
+    if (len(IndetNames) != nvars ||
+        !AreDistinct(IndetNames) ||
+        !AreArityConsistent(IndetNames))
+      CoCoA_THROW_ERROR1(ERR::BadIndetNames);
 
     if (ExpSize == PPExpSize::small)
       return PPMonoid(new PPMonoidEvSmallExpImpl(IndetNames, ord));

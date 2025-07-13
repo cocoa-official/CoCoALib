@@ -63,13 +63,13 @@ namespace CoCoA
         SmallFpDoubleImpl::value_t q = std::floor(m/r);
 	m -= q*r;
 	cm += q*cr;
-	if (m == 0) break;
+	if (m == 0)  break;
 	q = std::floor(r/m);
 	r -= q*m;
 	cr += q*cm;
       }
-      if (r+m != 1) CoCoA_THROW_ERROR(ERR::DivByZero, "SmallFpDoubleImpl::myDiv");
-      if (r == 0) return p-cm;
+      if (r+m != 1)  CoCoA_THROW_ERROR1(ERR::DivByZero);
+      if (r == 0)  return p-cm;
       return cr;
     }
 
@@ -144,7 +144,7 @@ return (ourMaxInt()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum
   SmallFpDoubleImpl::value_t SmallFpDoubleImpl::myReduce(const BigRat& q) const
   {
     const value_t D = mpz_fdiv_ui(mpq_denref(mpqref(q)), myModulus());
-    if (D == 0) CoCoA_THROW_ERROR(ERR::DivByZero, "SmallFpDoubleImpl::myReduce");
+    if (D == 0)  CoCoA_THROW_ERROR1(ERR::DivByZero);
     const value_t N = mpz_fdiv_ui(mpq_numref(mpqref(q)), myModulus());
     return myDiv(N, D);
   }
@@ -195,21 +195,21 @@ return (ourMaxInt()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum
   SmallFpDoubleImpl::value_t SmallFpDoubleImpl::ourCheckCtorArg(const MachineInt& n)
   {
     if (!IsGoodCtorArg(n))
-      CoCoA_THROW_ERROR(ERR::BadSmallFpChar, "SmallFpDoubleImpl ctor");
+      CoCoA_THROW_ERROR2(ERR::BadSmallFpChar, "SmallFpDoubleImpl ctor");
     return AsUnsignedLong(n);
   }
 
   SmallFpDoubleImpl::value_t SmallFpDoubleImpl::ourCheckCtorArg(SmallPrime p)
   {
     if (!IsGoodCtorArg(p))
-      CoCoA_THROW_ERROR(ERR::BadSmallFpChar, "SmallFpDoubleImpl ctor");
+      CoCoA_THROW_ERROR2(ERR::BadSmallFpChar, "SmallFpDoubleImpl ctor");
     return p;
   }
 
 
   std::ostream& operator<<(std::ostream& out, const SmallFpDoubleImpl& arith)
   {
-    if (!out) return out;  // short-cut for bad ostreams
+    if (!out)  return out;  // short-cut for bad ostreams
     return out << "SmallFpDoubleImpl(" << arith.myModulus() << ")";
   }
 

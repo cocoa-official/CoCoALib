@@ -29,7 +29,7 @@ namespace CoCoA
       myLevel(vl)
   {
     if (vl < 0 || vl > 1000)
-      CoCoA_THROW_ERROR(ERR::OutOfRange, "VerificationLevel ctor");
+      CoCoA_THROW_ERROR1(ERR::OutOfRange);
   }
 
 

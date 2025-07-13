@@ -70,7 +70,7 @@ namespace CoCoA
   std::vector<symbol> NewSymbols(const long NumSyms)
   {
     if (NumSyms <= 0)
-      CoCoA_THROW_ERROR(ERR::ReqPositive, "NewSymbols");
+      CoCoA_THROW_ERROR1(ERR::ReqPositive);
     vector<symbol> ans; ans.reserve(NumSyms);
     // Next 2 lines should be threadsafe (I hope)
     const long LAST = (/*atomic*/NewSymbolCounter += NumSyms);  // BUG no overflow check!
@@ -109,7 +109,7 @@ namespace CoCoA
       mySubscripts(0)
   {
     if (!IsValidHead(myHead))
-      CoCoA_THROW_ERROR(ERR::BadSymbolHead, "symbol(head)");
+      CoCoA_THROW_ERROR2(ERR::BadSymbolHead, "symbol(head)");
   }
 
 
@@ -118,7 +118,7 @@ namespace CoCoA
       mySubscripts(1)
   {
     if (!IsValidHead(myHead))
-      CoCoA_THROW_ERROR(ERR::BadSymbolHead, "symbol(head, subscript)");
+      CoCoA_THROW_ERROR2(ERR::BadSymbolHead, "symbol(head, subscript)");
     mySubscripts[0] = subscript;
   }
 
@@ -129,7 +129,7 @@ namespace CoCoA
       mySubscripts(2)
   {
     if (!IsValidHead(myHead))
-      CoCoA_THROW_ERROR(ERR::BadSymbolHead, "symbol(head, subscript)");
+      CoCoA_THROW_ERROR1(ERR::BadSymbolHead);
     mySubscripts[0] = subscript1;
     mySubscripts[1] = subscript2;
   }
@@ -141,17 +141,17 @@ namespace CoCoA
       mySubscripts(subscripts)
   {
     if (!IsValidHead(myHead))
-      CoCoA_THROW_ERROR(ERR::BadSymbolHead, "symbol(head, subscripts)");
+      CoCoA_THROW_ERROR1(ERR::BadSymbolHead);
   }
 
 
   void symbol::myOutputSelf(std::ostream& out) const
   {
-    if (!out) return;  // short-cut for bad ostreams
+    if (!out)  return;  // short-cut for bad ostreams
     CoCoA_ASSERT(IsDecimal(out));
 
     if (myHead.empty()) out << AnonHead; else out << myHead;
-    if (mySubscripts.empty()) return;
+    if (mySubscripts.empty())  return;
     out << '[' << mySubscripts[0];
     const long n = len(mySubscripts);
     for (long i=1; i < n; ++i)
@@ -177,11 +177,10 @@ namespace CoCoA
   // Normal input fns merely set the failbit of the stream for parse errors.
   void symbol::myInput(istream& in)
   {
-    static const char* const FnName = "symbol::myInput";
-    if (!in.good()) CoCoA_THROW_ERROR("istream is not good", FnName);
-    if (!IsDecimal(in)) CoCoA_THROW_ERROR("istream is not in \"decimal\" mode", FnName);
+    if (!in.good())  CoCoA_THROW_ERROR1("istream is not good");
+    if (!IsDecimal(in))  CoCoA_THROW_ERROR1("istream is not in \"decimal\" mode");
     in >> std::ws;
-    if (!in.good() || !IsValidFirstChar(in.peek())) { CoCoA_THROW_ERROR("No symbol head found", FnName); }
+    if (!in.good() || !IsValidFirstChar(in.peek())) { CoCoA_THROW_ERROR1("No symbol head found"); }
     string head;
     while (IsValidAfterFirstChar(in.peek())) // ASSUMES that IsValidFirstChar ==> IsValidAfterFirstChar
     {
@@ -204,10 +203,10 @@ namespace CoCoA
     {
       long subscript;
       in >> subscript >> std::ws;
-      if (!in) { CoCoA_THROW_ERROR("Invalid symbol index", FnName); }
+      if (!in)  { CoCoA_THROW_ERROR1("Invalid symbol index"); }
       subscripts.push_back(subscript);
       if (in.peek() == ']') break;
-      if (!in || in.peek() != ',') { CoCoA_THROW_ERROR("Symbol index list not closed, or contains unexpected char", FnName); }
+      if (!in || in.peek() != ',')  { CoCoA_THROW_ERROR1("Symbol index list not closed, or contains unexpected char"); }
       in.ignore(); // ignore the comma
     }
     in.ignore(); // ignore the final ']'
@@ -263,7 +262,7 @@ namespace CoCoA
   {
     const long n = NumSubscripts(sym1);
     if (head(sym1) != head(sym2) || NumSubscripts(sym2) != n)
-      CoCoA_THROW_ERROR(ERR::BadSymbolRange, "SymbolRange(sym1,sym2)");
+      CoCoA_THROW_ERROR1(ERR::BadSymbolRange);
 
     // Boring trivial case; maybe it should be an error?
     if (sym1 == sym2)
@@ -278,14 +277,14 @@ namespace CoCoA
     for (long i=0; i < n; ++i)
     {
       if (subscript(sym1,i) > subscript(sym2,i))
-        CoCoA_THROW_ERROR(ERR::BadSymbolRange, "SymbolRange(sym1,sym2)");
+        CoCoA_THROW_ERROR1(ERR::BadSymbolRange);
       const size_t dim = ULongDiff(subscript(sym2,i), subscript(sym1,i));
       // Next "if" checks whether dim+1 would overflow:
       if (dim >= static_cast<size_t>(MaxLong))
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "SymbolRange(sym1,sym2)");
+        CoCoA_THROW_ERROR1(ERR::ArgTooBig);
       // Next "if" checks whether product Range*(dim+1) would overflow.
       if (MAX/(dim+1) < RangeSize)
-        CoCoA_THROW_ERROR(ERR::ArgTooBig, "SymbolRange(sym1,sym2)");
+        CoCoA_THROW_ERROR1(ERR::ArgTooBig);
       RangeSize *= dim+1; // cannot overflow thanks to checks above.
     }
     ans.reserve(RangeSize);
@@ -303,8 +302,7 @@ namespace CoCoA
 
   std::vector<symbol> SymbolRange(const std::string& head, long lo, long hi)
   {
-    const char* const FnName = "SymbolRange(hd,ind1,ind2)";
-    if (!symbol::IsValidHead(head)) CoCoA_THROW_ERROR(ERR::BadSymbolHead, FnName);
+    if (!symbol::IsValidHead(head))  CoCoA_THROW_ERROR1(ERR::BadSymbolHead);
     return SymbolRange(symbol(head,lo), symbol(head,hi));
   }
 
@@ -312,7 +310,7 @@ namespace CoCoA
   long subscript(const symbol& sym, long n)
   {
     if (n < 0 || n >= NumSubscripts(sym))
-      CoCoA_THROW_ERROR(ERR::BadSymbolSubscript, "subscript(symbol,n)");
+      CoCoA_THROW_ERROR1(ERR::BadSymbolSubscript);
     return sym.mySubscripts[n];
   }
 
@@ -361,13 +359,13 @@ namespace CoCoA
     void CoCoA_THROW_ERROR_NextChar(std::istream& in, const string& FuncName)
     {
       in.clear();
-      CoCoA_THROW_ERROR("Unexpected \'"+ string(1,char(in.peek())) +"\'", FuncName);
+      CoCoA_THROW_ERROR1("Unexpected \'"+ string(1,char(in.peek())) +"\' in context: " + FuncName);
     }
 
 
     // void ReadSymbolRange(std::istream& in, std::vector<symbol>& symbs)
     // {
-    //   CoCoA_THROW_ERROR(ERR::NYI, "ReadSymbolRange");
+    //   CoCoA_THROW_ERROR1(ERR::NYI);
     // }
 
   } // end of namespace anonymous
@@ -390,8 +388,8 @@ namespace CoCoA
       symbs.push_back(s);
 
       in >> std::ws; ch = in.peek();
-      if (in.eof()) break;
-      if (ch != ',') CoCoA_THROW_ERROR("Expected comma in list of symbols", FnName);
+      if (in.eof())  break;
+      if (ch != ',')  CoCoA_THROW_ERROR1("Expected comma in list of symbols");
       in.ignore(); // skip the comma
     }
     return symbs;

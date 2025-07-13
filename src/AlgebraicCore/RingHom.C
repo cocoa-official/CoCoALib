@@ -37,7 +37,7 @@ namespace CoCoA
   RingElem PartialRingHom::operator()(ConstRefRingElem x) const
   {
     if (owner(x) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadRingHomArg, "Applying PartialRingHom to RingElem");
+      CoCoA_THROW_ERROR1(ERR::BadRingHomArg);
     RingElem ans(codomain(*this));
     mySmartPtr->myApply(raw(ans), raw(x));
     return ans;
@@ -91,7 +91,7 @@ namespace CoCoA
   PartialRingHom PartialRingHom::operator()(const RingHom& theta) const
   {
     if (codomain(theta) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadCompose, "composition PartialRingHom(RingHom)");
+      CoCoA_THROW_ERROR1(ERR::BadCompose);
 // BUG BUG BUG can be clever here!!!
     return sequential(*this, theta);
   }
@@ -100,7 +100,7 @@ namespace CoCoA
   PartialRingHom PartialRingHom::operator()(const PartialRingHom& theta) const
   {
     if (codomain(theta) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadCompose, "composition PartialRingHom(PartialRingHom)");
+      CoCoA_THROW_ERROR1(ERR::BadCompose);
     return sequential(*this, theta);
   }
 
@@ -152,7 +152,7 @@ namespace CoCoA
   RingElem RingHom::operator()(ConstRefRingElem x) const
   {
     if (owner(x) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadRingHomArg, "Applying RingHom to RingElem");
+      CoCoA_THROW_ERROR1(ERR::BadRingHomArg);
     RingElem ans(codomain(*this));
     mySmartPtr->myApply(raw(ans), raw(x));
     return ans;
@@ -191,7 +191,7 @@ namespace CoCoA
     std::vector<RingElem> ans(n,zero(codomain(*this)));
     for (long i=0; i < n; ++i)
     {
-      if (owner(v[i]) != R) CoCoA_THROW_ERROR(ERR::BadRingHomArg, "Applying RingHom to RingElem in vector");
+      if (owner(v[i]) != R)  CoCoA_THROW_ERROR1(ERR::BadRingHomArg);
       mySmartPtr->myApply(raw(ans[i]),raw(v[i]));
     }
     return ans; // std::move?
@@ -220,7 +220,7 @@ namespace CoCoA
   RingHom RingHom::operator()(const RingHom& theta) const
   {
     if (codomain(theta) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadCompose, "composition  RingHom(RingHom)");
+      CoCoA_THROW_ERROR1(ERR::BadCompose);
     return domain(theta)->myCompose(*this, theta);
   }
 
@@ -228,7 +228,7 @@ namespace CoCoA
   PartialRingHom RingHom::operator()(const PartialRingHom& theta) const
   {
     if (codomain(theta) != domain(*this))
-      CoCoA_THROW_ERROR(ERR::BadCompose, "composition  RingHom(PartialRingHom)");
+      CoCoA_THROW_ERROR1(ERR::BadCompose);
     return sequential(*this, theta);
   }
 
@@ -355,7 +355,7 @@ namespace CoCoA
   PartialRingHom sequential(const PartialRingHom& phi, const PartialRingHom& theta)
   {
     if (domain(phi) != codomain(theta))
-      CoCoA_THROW_ERROR(ERR::BadCompose, "sequential(phi,theta)");
+      CoCoA_THROW_ERROR1(ERR::BadCompose);
     return PartialRingHom(new SequentialRingHomImpl(phi, theta));
   }
 

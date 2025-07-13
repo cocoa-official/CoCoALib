@@ -281,7 +281,7 @@ namespace CoCoA
 
   void RingQQImpl::myRecvTwinFloat(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingQQImpl::myRecvTwinFloat");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
   }
 
   void RingQQImpl::myNegate(RawPtr rawlhs, ConstRawPtr rawx) const
@@ -431,7 +431,7 @@ namespace CoCoA
   {
     long exp = 0; // pointless initialization to keep compiler quiet
     d = mpq_get_d_2exp(&exp, import(rawx)); // BUG, ignore possible overflow in exp
-    if (numeric_limits<double>::radix != 2) CoCoA_THROW_ERROR(ERR::NYI, "RingQQImpl::myIsDouble");
+    if (numeric_limits<double>::radix != 2)  CoCoA_THROW_ERROR1(ERR::NYI);
     if (exp < numeric_limits<double>::min_exponent) { d=0; return true; }  // ???false also for underflow???
     if (exp > numeric_limits<double>::max_exponent) return false;
     d = ldexp(d,exp);
@@ -556,7 +556,7 @@ namespace CoCoA
     const RingElem ImD = phi(D);
 
     if (!myCodomain->myIsDivisible(rawimage, raw(ImN), raw(ImD)))
-      CoCoA_THROW_ERROR(ERR::BadPartialRingHomArg, "RingQQImpl::InducedHomImpl::myApply");
+      CoCoA_THROW_ERROR1(ERR::BadPartialRingHomArg);
   }
 
 

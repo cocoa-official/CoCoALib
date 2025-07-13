@@ -30,7 +30,7 @@ namespace CoCoA
 
   std::string fold(const std::string& str, long MaxLineLen)
   {
-    if (MaxLineLen < 1) CoCoA_THROW_ERROR(ERR::BadArg, "fold: MaxLineLen must be at least 1");
+    if (MaxLineLen < 1)  CoCoA_THROW_ERROR1(ERR::ReqPolyRing);
     string ans;
     const long EndOfStr = len(str);
     long BlockStart = 0;

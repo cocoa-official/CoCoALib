@@ -53,7 +53,7 @@ namespace CoCoA
     if (sigaction(sig, &sa, myPrevSigactionPtr) != 0)
     {
       delete myPrevSigactionPtr;
-      CoCoA_THROW_ERROR("Unable to set signal handler", "SignalWatcher ctor");
+      CoCoA_THROW_ERROR1("Unable to set signal handler");
     }
 #endif
   }
