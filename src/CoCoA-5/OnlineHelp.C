@@ -639,7 +639,7 @@ void SearchRtnType(std::vector<long>& MatchingEntries, const std::string& s)
       while (!in.eof() && s != index.myTitle(found[i]))
         s = SkipToStringInTag(in, "<title>");
       if (in.eof())
-        CoCoA_THROW_ERROR1("Did not find exact title: " + index.myTitle(found[i]), "PrintCommAndFuncRtn");
+        CoCoA_THROW_ERROR1("Did not find exact title: " + index.myTitle(found[i]));
       out << "? " << s << " -- ";
       string line;
       getline(in, line);
