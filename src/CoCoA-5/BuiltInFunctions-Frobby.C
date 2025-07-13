@@ -67,10 +67,12 @@ namespace InterpreterNS {
 
   ideal FrbAlexanderDual_forC5(const ideal& I, ConstRefRingElem t)
   {
+    cinst char* const FnName = "FrbAlexanderDual";
     const ring& R = owner(t);
-    if (!IsPolyRing(R)) CoCoA_THROW_ERROR(ERR::ReqElemPolyRing, "FrbAlexanderDual_forC5");
-    if (!IsMonomial(t)) CoCoA_THROW_ERROR(ERR::BadArg, "FrbAlexanderDual_forC5");
-    if (!IsOne(LC(t))) CoCoA_THROW_ERROR(ERR::BadArg, "FrbAlexanderDual_forC5");
+    if (!IsPolyRing(R))  CoCoA_THROW_ERROR2(ERR::ReqElemPolyRing, FnName);
+    if (AmbientRing(I) != R)  CoCoA_THROW_ERROR2(ERR::MixedRings, FnName);
+    if (!IsMonomial(t) || !IsOne(LC(t)))
+      CoCoA_THROW_ERROR2("Reqire power-product (monic monomial)", FnName);
     return FrbAlexanderDual(I, LPP(t));
   }
 

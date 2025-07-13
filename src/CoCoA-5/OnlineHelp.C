@@ -49,7 +49,7 @@ namespace OnlineHelp
     {
       ifstream in(CoCoAManFileName());
       if (!in)
-        CoCoA_THROW_ERROR("CoCoA-5 manual missing (or not readable); it should be in "+CoCoAManFileName(), "OnlineHelp::OpenXMLManual()");
+        CoCoA_THROW_ERROR1("CoCoA-5 manual missing (or not readable); it should be in "+CoCoAManFileName());
       return in;
     }
     
@@ -158,7 +158,7 @@ namespace OnlineHelp
     ifstream in = OpenXMLManual();
 ///    ifstream in(CoCoAManFileName());
 ///    if (!in)
-///      CoCoA_THROW_ERROR("Cannot find XML file "+CoCoAManFileName(), "OnlineHelp::myLoad()");
+///      CoCoA_THROW_ERROR1("Cannot find XML file "+CoCoAManFileName());
 //     string line; // used only inside while loop
 //     string LastCommand;
 //     string NewCommand = "a";
@@ -175,7 +175,7 @@ namespace OnlineHelp
     out << "Loading manual file " << inFileName << "..." << std::flush;
     ifstream in(inFileName.c_str());
     if (!in)
-      CoCoA_THROW_ERROR("Cannot find input file "+inFileName, "myLoadExtraXML");
+      CoCoA_THROW_ERROR1("Cannot find input file "+inFileName);
     string line; // used only inside while loop
     string LastCommand;
     string NewCommand = "a";
@@ -310,7 +310,7 @@ namespace OnlineHelp
       if ( IsSubstring(s1, line) ) return true;
       getline(in, line);
     }
-    CoCoA_THROW_ERROR(CoCoA::ERR::ShouldNeverGetHere, "IsStr1BeforeStr2");
+    CoCoA_THROW_ERROR1(CoCoA::ERR::ShouldNeverGetHere);
     return false;
   }
 
@@ -325,7 +325,7 @@ namespace OnlineHelp
     ClosedXMLTag.replace(0, 1, "</");
     size_t close = line.find(ClosedXMLTag);
     if (close == string::npos)
-      CoCoA_THROW_ERROR(XMLTag+" closing tag not found in this line", "StringInTag");
+      CoCoA_THROW_ERROR1(XMLTag+" closing tag not found in this line");
     size_t StartPos = open + XMLTag.length();
     return line.substr(StartPos, close-StartPos);
   }
@@ -424,10 +424,10 @@ namespace OnlineHelp
   {
     while (  (!in.eof()) && !IsSubstring("-->", line) )  getline(in, line);
     if ( in.eof() )
-      CoCoA_THROW_ERROR("missing comment close tag: eof", "SkipComment");
+      CoCoA_THROW_ERROR1("missing comment close tag: eof");
     const size_t close = line.find("-->");
     if (close != line.size()-3)
-      CoCoA_THROW_ERROR("text after closed comment: \""+line+"\"", "SkipComment");
+      CoCoA_THROW_ERROR1("text after closed comment: \""+line+"\"");
   }
 
 
@@ -492,7 +492,7 @@ namespace OnlineHelp
   string s = SkipToStringInTag(in, "<title>");
   while (!in.eof() && s != title)  s = SkipToStringInTag(in, "<title>");
   if (in.eof())
-    CoCoA_THROW_ERROR("Not found exact title: " + title, "PrintSearchExact");
+    CoCoA_THROW_ERROR1("Not found exact title: " + title);
   out << "--<<<<<<<<<<<<<<( " << CleanupLine(title) << " )>>>>>>>>>>>>>>>--" << endl;
   PrintSyntax(out, title);
   string line;
@@ -613,7 +613,7 @@ void SearchRtnType(std::vector<long>& MatchingEntries, const std::string& s)
       while (!in.eof() && s != index.myTitle(found[i]))
         s = SkipToStringInTag(in, "<title>");
       if (in.eof())
-        CoCoA_THROW_ERROR("Not found exact title: " + index.myTitle(found[i]), "PrintCommAndFunc");
+        CoCoA_THROW_ERROR1("Did not find exact title: " + index.myTitle(found[i]));
       out << "? " << s << " -- ";
       string line;
       getline(in, line);
@@ -639,7 +639,7 @@ void SearchRtnType(std::vector<long>& MatchingEntries, const std::string& s)
       while (!in.eof() && s != index.myTitle(found[i]))
         s = SkipToStringInTag(in, "<title>");
       if (in.eof())
-        CoCoA_THROW_ERROR("Not found exact title: " + index.myTitle(found[i]), "PrintCommAndFuncRtn");
+        CoCoA_THROW_ERROR1("Did not find exact title: " + index.myTitle(found[i]), "PrintCommAndFuncRtn");
       out << "? " << s << " -- ";
       string line;
       getline(in, line);

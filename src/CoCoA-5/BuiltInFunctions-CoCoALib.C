@@ -107,7 +107,7 @@ DECLARE_STD_BUILTIN_FUNCTION(NumEvalUPoly, 2)
   intrusive_ptr<LIST> CoeffList = runtimeEnv->evalArgAs<LIST>(ARG(0));
   LIST::ContainerType::size_type size = CoeffList->size();
   vector<BigInt> C; C.reserve(size);
-  if (!IsVectorBigInt(C, CoeffList)) CoCoA_THROW_ERROR("Bad CoeffList","NumEvalUPoly");
+  if (!IsVectorBigInt(C, CoeffList)) CoCoA_THROW_ERROR2("Bad CoeffList","NumEvalUPoly");
   if (IsZero(q)) return new RAT(BigRat(C.front()));
   BigInt numer;
   HornerRecursiveIterQQ2(numer, C, num(q), den(q));
@@ -703,7 +703,7 @@ DECLARE_STD_BUILTIN_FUNCTION(homog, 2) {
   case 1: return Value::from(homog(RefTo<RingElem>(v), h->theRingElem));
   case 2: return Value::from(homog(RefTo<ModuleElem>(v), h->theRingElem));
   case 3: return Value::from(homog(RefTo<ideal>(v), h->theRingElem));
-  case 4: CoCoA_THROW_ERROR(ERR::NYI, "homog(module)"); break;
+  case 4: CoCoA_THROW_ERROR2(ERR::NYI, "homog(module)"); break;
 //return Value::from(homog(intrusive_ptr_cast<MODULE>(v)->theModule, h->theRingElem));
   case 5:
   {
@@ -715,7 +715,7 @@ DECLARE_STD_BUILTIN_FUNCTION(homog, 2) {
   }
   }
   throw RuntimeException(ERRORMissingCode(v),invocationExpression);
-//  CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "BuiltinFunction-homog");
+//  CoCoA_THROW_ERROR2(ERR::ShouldNeverGetHere, "BuiltinFunction-homog");
 //  return Value::from(false); // just to keep the compiler quiet
 }
 END_STD_BUILTIN_FUNCTION
@@ -726,9 +726,9 @@ DECLARE_STD_BUILTIN_FUNCTION(RandomSmallPrime, 1) {
   const char* const FnName = "RandomSmallPrime";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(RandomSmallPrime(n)); // might throw -- checks arg
 }
 END_STD_BUILTIN_FUNCTION
@@ -739,9 +739,9 @@ DECLARE_STD_BUILTIN_FUNCTION(RandomNBitPrime, 1) {
   const char* const FnName = "RandomNBitPrime";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(RandomNBitPrime(n)); // might throw -- checks arg
 }
 END_STD_BUILTIN_FUNCTION
@@ -803,7 +803,7 @@ DECLARE_STD_BUILTIN_FUNCTION(ExtGcd, 1) // TEMPORARY JAA
 //  if (l->size() == 0) return l;
   vector<BigInt> VecBigInt;
   if (IsVectorBigInt(VecBigInt, l))  return Value::from(ExtGcd(VecBigInt).myCofacs);
-  CoCoA_THROW_ERROR("Expected list of integers","ExtGcd");
+  CoCoA_THROW_ERROR2("Expected list of integers","ExtGcd");
   return Value::from(false); // just to keep compiler quiet
 }
 END_STD_BUILTIN_FUNCTION
@@ -1052,11 +1052,11 @@ DECLARE_STD_BUILTIN_FUNCTION(LF, 1) { // AMB
   intrusive_ptr<RightValue> v = runtimeEnv->evalArgAsT1orT2orT3orT4<RINGELEM, MODULEELEM, IDEAL, MODULE>(ARG(0), which);
   switch (which) {
   case 1: return Value::from(LF(RefTo<RingElem>(v)));
-  case 2: CoCoA_THROW_ERROR(ERR::NYI,"LF for MODULEELEM");
+  case 2: CoCoA_THROW_ERROR2(ERR::NYI,"LF for MODULEELEM");
     return Value::from(false); // just to keep the compiler quiet
     //return Value::from(LF(RefTo<ModuleElem>(v)));
   case 3: return Value::from(LF(RefTo<ideal>(v)));
-  case 4: CoCoA_THROW_ERROR(ERR::NYI,"LF for MODULE");
+  case 4: CoCoA_THROW_ERROR2(ERR::NYI,"LF for MODULE");
     //return Value::from(LF(RefTo<module>(v)));
     return Value::from(false); // just to keep the compiler quiet
   default: throw RuntimeException(ERRORMissingCode(v),invocationExpression);
@@ -1922,9 +1922,9 @@ DECLARE_STD_BUILTIN_FUNCTION(ChebyshevPoly, 2) {
   const char* const FnName = "ChebyshevPoly";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(ChebyshevPoly(n,x));
 }
 END_STD_BUILTIN_FUNCTION
@@ -1935,9 +1935,9 @@ DECLARE_STD_BUILTIN_FUNCTION(ChebyshevPoly2, 2) {
   const char* const FnName = "ChebyshevPoly2";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(ChebyshevPoly2(n,x));
 }
 END_STD_BUILTIN_FUNCTION
@@ -1949,9 +1949,9 @@ DECLARE_STD_BUILTIN_FUNCTION(HermitePoly, 2) {
   const char* const FnName = "HermitePoly";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(HermitePoly(n,x));
 }
 END_STD_BUILTIN_FUNCTION
@@ -1962,9 +1962,9 @@ DECLARE_STD_BUILTIN_FUNCTION(HermitePoly2, 2) {
   const char* const FnName = "HermitePoly2";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(HermitePoly2(n,x));
 }
 END_STD_BUILTIN_FUNCTION
@@ -1976,9 +1976,9 @@ DECLARE_STD_BUILTIN_FUNCTION(LaguerrePoly, 2) {
   const char* const FnName = "LaguerrePoly";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(LaguerrePoly(n,x));
 }
 END_STD_BUILTIN_FUNCTION
@@ -1990,9 +1990,9 @@ DECLARE_STD_BUILTIN_FUNCTION(BesselPoly, 2) {
   const char* const FnName = "BesselPoly";
   long n;
   if (!IsConvertible(n, N))
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(BesselPoly(n,x));
 }
 END_STD_BUILTIN_FUNCTION
@@ -2014,9 +2014,9 @@ DECLARE_STD_BUILTIN_FUNCTION(DicksonPoly, 3) {
   const char* const FnName = "DicksonPoly";
   long n;
   if (!IsConvertible(n, N) || n < 0)
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(DicksonPoly(x,n,alpha));
 }
 END_STD_BUILTIN_FUNCTION
@@ -2037,9 +2037,9 @@ DECLARE_STD_BUILTIN_FUNCTION(DicksonPoly2, 3) {
   const char* const FnName = "DicksonPoly2";
   long n;
   if (!IsConvertible(n, N) || n < 0)
-    CoCoA_THROW_ERROR(ERR::ArgTooBig, FnName);
+    CoCoA_THROW_ERROR2(ERR::ArgTooBig, FnName);
   if (n < 0)
-    CoCoA_THROW_ERROR(ERR::ReqNonNegative, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonNegative, FnName);
   return Value::from(DicksonPoly2(x,n,alpha));
 }
 END_STD_BUILTIN_FUNCTION
@@ -2049,7 +2049,8 @@ DECLARE_STD_BUILTIN_FUNCTION(SwinnertonDyerPoly, 2) { // JAA
   const RingElem x = runtimeEnv->evalArgAs<RINGELEM>(ARG(0))->theRingElem;
   intrusive_ptr<LIST> L = runtimeEnv->evalArgAs<LIST>(ARG(1));
   vector<BigRat> roots;
-  if (!IsVectorBigRat(roots, L)) CoCoA_THROW_ERROR("Expected list of INT/RAT", "SwinnertonDyerPoly");
+  if (!IsVectorBigRat(roots, L))
+    CoCoA_THROW_ERROR2("Expected list of INT/RAT", "SwinnertonDyerPoly");
   return Value::from(SwinnertonDyerPoly(x,roots));
 }
 END_STD_BUILTIN_FUNCTION
@@ -2061,9 +2062,9 @@ DECLARE_STD_BUILTIN_FUNCTION(EvalQuasiPoly, 2) {
   const BigInt N = runtimeEnv->evalArgAs<INT>(ARG(1))->theBigInt;
   const char* const FnName = "EvalQuasiPoly";
   if (QPoly.empty())
-    CoCoA_THROW_ERROR(ERR::ReqNonEmpty, FnName);
+    CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, FnName);
   if (!HasUniqueOwner(QPoly))
-    CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+    CoCoA_THROW_ERROR2(ERR::MixedRings, FnName);
   const long i = ConvertTo<long>(LeastNNegRemainder(N, len(QPoly)));
   const RingHom EvalAtN = EvalHom(owner(QPoly[i]), N);
   return Value::from(EvalAtN(QPoly[i]));

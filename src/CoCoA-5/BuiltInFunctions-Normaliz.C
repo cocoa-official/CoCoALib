@@ -312,7 +312,7 @@ DECLARE_BUILTIN_FUNCTION(NmzComputation) {
   out->setField("IsInhomogeneous", Value::from(IsInhomogeneous(C)), ARG(0).exp);
 
   } catch (const libnormaliz::NormalizException& e) {
-    CoCoA_THROW_ERROR(e.what(),"NmzComputation");
+    CoCoA_THROW_ERROR2(e.what(), "NmzComputation");
   }
 
   return out;

@@ -65,7 +65,7 @@ namespace CoCoA {
   {
     const ErrorInfo ErrMesg(ERR::OutOfRange, "fold");
     const long MaxWidth = ConvertTo<long>(MaxLineLen, ErrMesg);
-    if (MaxWidth < 1) throw ErrMesg; ///CoCoA_THROW_ERROR();
+    if (MaxWidth < 1)  throw ErrMesg; ///CoCoA_THROW_ERROR();
     return fold(str, MaxWidth);
   }
 
@@ -357,8 +357,8 @@ namespace CoCoA {
 //   {
 //     if (N == 0)  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
 // //???    const ErrorInfo ErrMesg(ERR::ArgTooBig, "FactorINT_TimeOut_forC5");
-//     long secs; if (!IsConvertible(secs, TimeLimit))  CoCoA_THROW_ERROR(ERR::ArgTooBig, "FactorINT_timeout_forC5");
-//     if (secs < 0 || secs > 10000)  CoCoA_THROW_ERROR("Time limit must be between 0 and 10000", "FactorINT_timeout_forC5");
+//     long secs; if (!IsConvertible(secs, TimeLimit))  CoCoA_THROW_ERROR2(ERR::ArgTooBig, "FactorINT_timeout");
+//     if (secs < 0 || secs > 10000)  CoCoA_THROW_ERROR2("Time limit must be between 0 and 10000", "FactorINT_timeout");
 //     return factor(N, CpuTimeLimit(secs));
 //   }
 
@@ -829,12 +829,13 @@ namespace CoCoA {
 
 //   std::vector<RingElem> minors_forC5(const BigInt& N, ConstMatrixView M)
 //   {
+//     const char* const FnName = "minors";
 //     vector<RingElem> v;
 //     size_t n;
 //     if (!IsConvertible(n, N))
-//       CoCoA_THROW_ERROR(ERR::BadRowIndex, "minors_forC5");
-//     if (n>NumRows(M))  CoCoA_THROW_ERROR(ERR::BadRowIndex, "minors_forC5");
-//     if (n>NumCols(M))  CoCoA_THROW_ERROR(ERR::BadColIndex, "minors_forC5");
+//       CoCoA_THROW_ERROR2(ERR::BadRowIndex, FnName);
+//     if (n>NumRows(M))  CoCoA_THROW_ERROR2(ERR::BadRowIndex, FnName);
+//     if (n>NumCols(M))  CoCoA_THROW_ERROR2(ERR::BadColIndex, FnName);
 //     vector<size_t> rows(n);
 //     vector<size_t> cols(n);
 // ---- we need a tuple-generator ----
