@@ -1,4 +1,4 @@
-//   Copyright (c)  2020  John Abbott,  Anna M. Bigatti
+//   Copyright (c)  2020,2025  John Abbott,  Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -25,10 +25,11 @@
 namespace CoCoA
 {
 
-  // /// WHAT TO DO HERE???  How much of errto preserve, how much to change???
-  RingHom AutomaticConversionHom(const ring& R1, const ring& R2, const ErrorInfo& err)
+  // Throws ERR::MixedRings with given context if there is no CanonicalHom
+  RingHom AutomaticConversionHom(const ring& R1, const ring& R2, const ErrorContext& ErrCtx)
   {
-    if (R1 == R2) CoCoA_THROW_ERROR(ERR::IncompatArgs, "AutomaticConversionHom: rings must be different"); // ??? get FILE/LINE from err???
+    if (R1 == R2)
+      CoCoA_THROW_ERROR_WITH_CONTEXT3(ERR::IncompatArgs, "rings must be different", ErrCtx); // ??? get FILE/LINE from err???
     try
     {
       if (RingID(R1) < RingID(R2))
@@ -37,27 +38,10 @@ namespace CoCoA
     }
     catch (const ErrorInfo&) // e.g. we do not catch Timeouts & interrupts
     {
-      ThrowException(err);
+      CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::MixedRings, ErrCtx);
     }
     return IdentityHom(R1); // NEVER EXECUTED, just to keep compiler quiet
   }
-
-
-  // RingHom AutomaticConversionHom(const ring& R1, const ring& R2, const char* const FnName)
-  // {
-  //   if (R1 == R2) CoCoA_THROW_ERROR(ERR::IncompatArgs, "AutomaticConversionHom: rings must be different");
-  //   try
-  //   {
-  //     if (RingID(R1) < RingID(R2))
-  //       return CanonicalHom(R1,R2);
-  //     return CanonicalHom(R2,R1);
-  //   }
-  //   catch (const ErrorInfo&)
-  //   {
-  //     CoCoA_THROW_ERROR("Automatic ring conversion not possible", FnName);
-  //   }
-  //   return IdentityHom(R1); // NEVER EXECUTED, just to keep compiler quiet
-  // }
 
 
 } // end of namespace CoCoA

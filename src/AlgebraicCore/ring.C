@@ -701,11 +701,10 @@ namespace CoCoA
 
   RingElem operator+(ConstRefRingElem x, ConstRefRingElem y)
   {
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem+RingElem");
     const ring& Rx = owner(x);
     const ring& Ry = owner(y);
     if (Rx == Ry)  return add_SameRing(x, y);
-    const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+    const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
     if (codomain(promote) == Ry)
       return add_SameRing(promote(x), y);
     return add_SameRing(x, promote(y));
@@ -714,11 +713,10 @@ namespace CoCoA
 
   RingElem operator-(ConstRefRingElem x, ConstRefRingElem y)
   {
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem-RingElem");
     const ring& Rx = owner(x);
     const ring& Ry = owner(y);
     if (Rx == Ry)  return sub_SameRing(x, y);
-    const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+    const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
     if (codomain(promote) == Ry)
       return sub_SameRing(promote(x), y);
     return sub_SameRing(x, promote(y));
@@ -727,11 +725,10 @@ namespace CoCoA
 
   RingElem operator*(ConstRefRingElem x, ConstRefRingElem y)
   {
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem*RingElem");
     const ring& Rx = owner(x);
     const ring& Ry = owner(y);
     if (Rx == Ry)  return mul_SameRing(x, y);
-    const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+    const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
     if (codomain(promote) == Ry)
       return mul_SameRing(promote(x), y);
     return mul_SameRing(x, promote(y));
@@ -740,11 +737,10 @@ namespace CoCoA
 
   RingElem operator/(ConstRefRingElem x, ConstRefRingElem y)
   {
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem/RingElem");
     const ring& Rx = owner(x);
     const ring& Ry = owner(y);
     if (Rx == Ry)  return div_SameRing(x, y);
-    const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+    const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
     if (codomain(promote) == Ry)
       return div_SameRing(promote(x), y);
     return div_SameRing(x, promote(y));
@@ -853,8 +849,7 @@ namespace CoCoA
     const ring& Ry = owner(y);
     if (Rx != Ry)
     {
-      CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem += RingElem");
-      const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+      const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
         CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x += promote(y); //     Rx->myAdd(raw(x), raw(x), raw(promote(y)));
@@ -871,8 +866,7 @@ namespace CoCoA
     const ring& Ry = owner(y);
     if (Rx != Ry)
     {
-      CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem -= RingElem");
-      const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+      const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
         CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x -= promote(y); //     Rx->mySub(raw(x), raw(x), raw(promote(y)));
@@ -889,9 +883,8 @@ namespace CoCoA
     const ring& Ry = owner(y);
     if (Rx != Ry)
     {
-      CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem *= RingElem");
       if (IsPolyRing(Rx) && CoeffRing(Rx) == Ry)  { PolyRing(Rx)->myMulByCoeff(raw(x),raw(y)); return x; }
-      const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+      const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
         CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x *= promote(y); //     Rx->myMul(raw(x), raw(x), raw(promote(y)));
@@ -908,9 +901,14 @@ namespace CoCoA
     const ring& Ry = owner(y);
     if (Rx != Ry)
     {
-      CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,"RingElem /= RingElem");
-      if (IsPolyRing(Rx) && CoeffRing(Rx) == Ry)  { if (IsZeroDivisor(y))  CoCoA_THROW_ERROR1(ERR::DivByZero); PolyRing(Rx)->myDivByCoeff(raw(x),raw(y)); return x; }
-      const RingHom promote = AutomaticConversionHom(Rx,Ry,ErrMixed); // throws ErrMixed if not permitted 
+      if (IsPolyRing(Rx) && CoeffRing(Rx) == Ry)
+      {
+        if (IsZeroDivisor(y))
+          CoCoA_THROW_ERROR1(ERR::DivByZero);
+        PolyRing(Rx)->myDivByCoeff(raw(x),raw(y));
+        return x;
+      }
+      const RingHom promote = AutomaticConversionHom(Rx,Ry,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
       if (codomain(promote) == Ry)
         CoCoA_THROW_ERROR1(ERR::MixedRings);
       return x /= promote(y);
@@ -1019,13 +1017,11 @@ namespace CoCoA
 
     bool IsDivisible(ConstRefRingElem num, ConstRefRingElem den, bool AllowFieldFlag)
     {
-      static const char* const FnName = "IsDivisible(RingElem,RingElem)";
-      CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings, FnName);
       const ring& Rnum = owner(num);
       const ring& Rden = owner(den);
       if (Rnum == Rden)  return IsDivisible_SameRing(num, den, AllowFieldFlag);
       // Here Rnum != Rden
-      const RingHom promote = AutomaticConversionHom(Rnum,Rden,ErrMixed); // throws ErrMixed if not permitted 
+      const RingHom promote = AutomaticConversionHom(Rnum,Rden,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
       if (codomain(promote) == Rnum)
         return IsDivisible_SameRing(num, promote(den), AllowFieldFlag);
       return IsDivisible_SameRing(promote(num), den, AllowFieldFlag);
@@ -1116,13 +1112,11 @@ namespace CoCoA
 
     bool IsDivisible(RingElem& lhs, ConstRefRingElem num, ConstRefRingElem den, bool AllowFieldFlag)
     {
-      static const char* const FnName = "IsDivisible(3args)";
-      CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings, FnName);
       const ring& Rnum = owner(num);
       const ring& Rden = owner(den);
       if (Rnum == Rden) return IsDivisible_SameRing(lhs, num, den, AllowFieldFlag);
       // Here Rnum != Rden
-      const RingHom promote = AutomaticConversionHom(Rnum,Rden,ErrMixed); // throws ErrMixed if not permitted 
+      const RingHom promote = AutomaticConversionHom(Rnum,Rden,CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
       if (codomain(promote) == Rnum)
         return IsDivisible_SameRing(lhs, num, promote(den), AllowFieldFlag);
       return IsDivisible_SameRing(lhs, promote(num), den, AllowFieldFlag);

@@ -148,7 +148,7 @@ namespace CoCoA
 
   long ExtGcd(long& CofacA, long& CofacB, const MachineInt& a, const MachineInt& b)
   {
-    if (IsZero(a) && IsZero(b)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "ExtGcd (machine int)");
+    if (IsZero(a) && IsZero(b))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     const long g = ExtendedEuclideanAlg(CofacA, CofacB, uabs(a), uabs(b));
     if (IsNegative(a)) CofacA = -CofacA;
     if (IsNegative(b)) CofacB = -CofacB;
@@ -157,7 +157,7 @@ namespace CoCoA
 
   BigInt ExtGcd(BigInt& CofacA, BigInt& CofacB, const BigInt& A, const BigInt& B)
   {
-    if (IsZero(A) && IsZero(B)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "ExtGcd (BigInt)");
+    if (IsZero(A) && IsZero(B))  CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     BigInt ans;
     mpz_gcdext(mpzref(ans), mpzref(CofacA), mpzref(CofacB), mpzref(A), mpzref(B));
     // GMP guarantees only that abs(CofacA) < abs(B), but we want 2*abs(CofacA) <= abs(B)/ans
@@ -218,7 +218,7 @@ namespace CoCoA
     if (IsZero(a) || IsZero(b)) return 0;
     const unsigned long AoverG = uabs(a)/gcd(a,b);
     if (uabs(b) > numeric_limits<long>::max()/AoverG)
-      CoCoA_THROW_ERROR(ERR::ArgTooBig, "lcm(MachineInt,MachineInt)");
+      CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     return AoverG*uabs(b); // implicit cast to long is safe (see overflow check above)
   }
 

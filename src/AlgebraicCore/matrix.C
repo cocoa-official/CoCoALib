@@ -61,17 +61,17 @@ namespace CoCoA
 
   // // Check that the row index is in range (i.e. non-neg and not too large).
   // // Throws ERR::BadRowIndex if not.
-  // void ConstMatrixViewBase::myCheckRowIndex(long i, const char* where) const
+  // void ConstMatrixViewBase::myCheckRowIndex(long i, const ErrorContext& where) const
   // {
   //   //    if (IsNegative(i) || AsUnsignedLong(i) >= myNumRows())
   //   if (i < 0 || i >= myNumRows())
-  //     CoCoA_THROW_ERROR(ERR::BadRowIndex, where);
+  //     CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadRowIndex, where);
   // }
 
-  // long ConstMatrixViewBase::myCheckRowIndex(const MachineInt& i, const char* where) const
+  // long ConstMatrixViewBase::myCheckRowIndex(const MachineInt& i, const ErrorContext& where) const
   // {
   //   if (IsNegative(i) || !IsSignedLong(i) || AsSignedLong(i) >= myNumRows())
-  //     CoCoA_THROW_ERROR(ERR::BadRowIndex, where);
+  //     CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadRowIndex, where);
   //   return AsSignedLong(i);
   // }
 
@@ -85,17 +85,17 @@ namespace CoCoA
 
   // // Check that the col index is in range (i.e. non-neg and not too large).
   // // Throws ERR::BadColIndex if not.
-  // void ConstMatrixViewBase::myCheckColIndex(long j, const char* where) const
+  // void ConstMatrixViewBase::myCheckColIndex(long j, const ErrorContext& where) const
   // {
   //   //    if (IsNegative(j) || AsUnsignedLong(j) >= myNumCols())
   //   if (j < 0 || j >= myNumCols())
-  //     CoCoA_THROW_ERROR(ERR::BadColIndex, where);
+  //     CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadColIndex, where);
   // }
 
-  // long ConstMatrixViewBase::myCheckColIndex(const MachineInt& j, const char* where) const
+  // long ConstMatrixViewBase::myCheckColIndex(const MachineInt& j, const ErrorContext& where) const
   // {
   //   if (IsNegative(j) || !IsSignedLong(j) || AsSignedLong(j) >= myNumCols())
-  //     CoCoA_THROW_ERROR(ERR::BadColIndex, where);
+  //     CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::BadColIndex, where);
   //   return AsSignedLong(j);
   // }
 
@@ -336,49 +336,44 @@ namespace CoCoA
 
   void SetEntry(MatrixView& M, const MachineInt& i, const MachineInt& j, ConstRefRingElem r)
   {
-    const char* const FnName = "SetEntry(M,i,j,r)";
-    CoCoA_STATIC_ERROR_MESG(ErrMixed, ERR::MixedRings,FnName);
     const long I = M->myCheckRowIndex(i, CoCoA_ERROR_CONTEXT);
     const long J = M->myCheckColIndex(j, CoCoA_ERROR_CONTEXT);
     if (!M->myIsWritable(I, J))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSetEntry, FnName);
-    if (owner(r) == RingOf(M)) { M->mySetEntry(I, J, r); return; }
-    const RingHom promote = AutomaticConversionHom(owner(r),RingOf(M),ErrMixed); // throws ErrMixed if not permitted 
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSetEntry);
+    if (owner(r) == RingOf(M))  { M->mySetEntry(I, J, r); return; }
+    const RingHom promote = AutomaticConversionHom(owner(r),RingOf(M),CoCoA_ERROR_CONTEXT); // throws ErrMixed if not permitted 
     if (codomain(promote) == owner(r))
-      CoCoA_THROW_ERROR("Cannot automatically map ring elem into smaller ring", FnName);
+      CoCoA_THROW_ERROR2(ERR::MixedRings,"Cannot automatically map ring elem into smaller ring");
     M->mySetEntry(I,J, promote(r));
   }
 
 
   void SetEntry(MatrixView& M, const MachineInt& i, const MachineInt& j, const MachineInt& n)
   {
-    const char* const FnName = "SetEntry(M,i,j,n)";
     const long I = M->myCheckRowIndex(i, CoCoA_ERROR_CONTEXT);
     const long J = M->myCheckColIndex(j, CoCoA_ERROR_CONTEXT);
     if (!M->myIsWritable(I, J))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSetEntry, FnName);
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSetEntry);
     M->mySetEntry(I, J, n);
   }
 
 
   void SetEntry(MatrixView& M, const MachineInt& i, const MachineInt& j, const BigInt& N)
   {
-    const char* const FnName = "SetEntry(M,i,j,N)";
     const long I = M->myCheckRowIndex(i, CoCoA_ERROR_CONTEXT);
     const long J = M->myCheckColIndex(j, CoCoA_ERROR_CONTEXT);
     if (!M->myIsWritable(I, J))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSetEntry, FnName);
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSetEntry);
     M->mySetEntry(I, J, N);
   }
 
 
   void SetEntry(MatrixView& M, const MachineInt& i, const MachineInt& j, const BigRat& Q)
   {
-    const char* const FnName = "SetEntry(M,i,j,Q)";
     const long I = M->myCheckRowIndex(i, CoCoA_ERROR_CONTEXT);
     const long J = M->myCheckColIndex(j, CoCoA_ERROR_CONTEXT);
     if (!M->myIsWritable(I, J))
-      CoCoA_THROW_ERROR(ERR::BadMatrixSetEntry, FnName);
+      CoCoA_THROW_ERROR1(ERR::BadMatrixSetEntry);
     M->mySetEntry(I, J, Q);
   }
 
@@ -542,7 +537,7 @@ namespace CoCoA
   {
     //    if (myRing() != RingOf(M)) return false;
     if (myRing() != RingOf(M))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "IamEqual");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     if (myNumRows() != NumRows(M)) return false;
     if (myNumCols() != NumCols(M)) return false;
     if (myNumCols() == 0 || myNumRows() == 0) return true;

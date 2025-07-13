@@ -45,12 +45,12 @@ namespace CoCoA
       int count = 0;
       for (int i=0; i < nrows; i++)
       {
-        if (RowUsed[i] || IsZero(M[i][col])) continue;
+        if (RowUsed[i] || IsZero(M[i][col]))  continue;
         ++count;
         if (MaxRow == -1 || CmpAbs(M[MaxRow][col], M[i][col]) < 0)
           MaxRow = i;
       }
-      if (count < 2) return MaxRow; // this is -1 if all entries are 0, o/w only 1 non-zero pivot
+      if (count < 2)  return MaxRow; // this is -1 if all entries are 0, o/w only 1 non-zero pivot
 
       // Pick randomly an unused row with non-zero entry, avoiding MaxRow
       count = RandomLong(1, count-1);
@@ -58,7 +58,7 @@ namespace CoCoA
       {
         if (RowUsed[PivotRow] || IsZero(M[PivotRow][col]) || PivotRow == MaxRow)
           continue;
-        if (--count == 0) return PivotRow;
+        if (--count == 0)  return PivotRow;
       }
       return -99; // NEVER EXECUTED; just to keep compiler quiet
     }
@@ -74,13 +74,13 @@ namespace CoCoA
       vector<vector<BigInt>> U(nrows, vector<BigInt>(nrows));
       vector<bool> RowUsed(nrows); // initially all false
       int NumRowsRemaining = nrows;
-      for (int i=0; i < nrows; ++i) U[i][i] = 1;
+      for (int i=0; i < nrows; ++i)  U[i][i] = 1;
       BigInt q; // used in inner loop (see call to quorem)
       for (int col=0; col < ncols; ++col)
       {
-        if (NumRowsRemaining == 0) break;
+        if (NumRowsRemaining == 0)  break;
         int PivotRow = PickPivotRow(M, col, RowUsed);
-        if (PivotRow < 0) continue; // happens only if col is zero
+        if (PivotRow < 0)  continue; // happens only if col is zero
         bool finished = false;
         while (!finished)
         {
@@ -92,9 +92,9 @@ namespace CoCoA
           finished = true;
           for (int i=0; i < nrows; ++i)
           {
-            if (RowUsed[i] || i == PivotRow) continue;
+            if (RowUsed[i] || i == PivotRow)  continue;
             quorem(q, M[i][col], M[i][col], M[PivotRow][col]);
-            if (IsZero(q)) continue;
+            if (IsZero(q))  continue;
             finished = false;
             for (int j=0; j < nrows; ++j)
               U[i][j] -= q*U[PivotRow][j];
@@ -112,7 +112,7 @@ namespace CoCoA
       int j = 0;
       for (int i=0; i < NumRowsRemaining; ++i, ++j)
       {
-        while (RowUsed[j]) ++j;
+        while (RowUsed[j])  ++j;
         swap(U[i],U[j]);
       }
       U.resize(NumRowsRemaining);
@@ -127,7 +127,7 @@ namespace CoCoA
   matrix LinKerZZ(ConstMatrixView M)
   {
     const ring& R = RingOf(M);
-    if (!IsZero(characteristic(R))) CoCoA_THROW_ERROR("char not 0", "LinKerZZ");
+    if (!IsZero(characteristic(R)))  CoCoA_THROW_ERROR1(ERR::ReqChar0);
     const int nrows = NumRows(M);
     const int ncols = NumCols(M);
     // Convert transpose(M) into vec<vec<BigInt>>
