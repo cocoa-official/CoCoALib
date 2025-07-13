@@ -108,7 +108,7 @@ namespace CoCoA
       {                                                                 \
         (void)invocationExpression;                                     \
         (void)runtimeEnv;                                               \
-        CoCoA_THROW_ERROR(#FnName " undefined: CoCoA was built without ExternalLib " #ExtLibName, "BuiltInFunction"); \
+        CoCoA_THROW_ERROR1(#FnName " undefined: CoCoA was built without ExternalLib " #ExtLibName); \
         return VoidValue::theInstance;                                  \
       }
 

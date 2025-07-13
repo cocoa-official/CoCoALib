@@ -332,9 +332,9 @@ DECLARE_BUILTIN_FUNCTION(syz) {
   intrusive_ptr<RightValue> v = runtimeEnv->evalArgAsT1orT2orT3<IDEAL, MODULE, LIST>(ARG(n-1), which);
   if (n==1)
     switch (which) {
-    case 1: CoCoA_THROW_ERROR(ERR::NYI, "minimal syzygies");
+    case 1: CoCoA_THROW_ERROR2(ERR::NYI, "minimal syzygies");
       return Value::from(NewFreeModule(RingZZ(),1));
-    case 2: CoCoA_THROW_ERROR(ERR::NYI, "minimal syzygies");
+    case 2: CoCoA_THROW_ERROR2(ERR::NYI, "minimal syzygies");
       return Value::from(NewFreeModule(RingZZ(),1));
     case 3: {
       //     if ()
@@ -351,9 +351,9 @@ DECLARE_BUILTIN_FUNCTION(syz) {
   // n=2
   intrusive_ptr<MODULE> M = runtimeEnv->evalArgAs<MODULE>(ARG(0));
   switch (which) {
-  case 1: CoCoA_THROW_ERROR(ERR::NYI, "minimal syzygies");
+  case 1: CoCoA_THROW_ERROR2(ERR::NYI, "minimal syzygies");
     return Value::from(NewFreeModule(RingZZ(),1));
-  case 2: CoCoA_THROW_ERROR(ERR::NYI, "minimal syzygies");
+  case 2: CoCoA_THROW_ERROR2(ERR::NYI, "minimal syzygies");
     return Value::from(NewFreeModule(RingZZ(),1));
   case 3: {
     //     if ()
@@ -517,8 +517,8 @@ DECLARE_BUILTIN_FUNCTION(FrobeniusMat) {  // AMB
   vector<PPMonoidElem> QB2pp;
   for (long i = 0; i<len(QB2); ++i)
   {
-    if (IsZero(QB2[i])) CoCoA_THROW_ERROR(ERR::ReqNonZero, "FrobeniusMat");  
-    if (!IsMonomial(QB2[i])) CoCoA_THROW_ERROR("expected list of PP", "FrobeniusMat");  
+    if (IsZero(QB2[i]))  CoCoA_THROW_ERROR2(ERR::ReqNonZero, "FrobeniusMat");  
+    if (!IsMonomial(QB2[i]))  CoCoA_THROW_ERROR1("expected list of PP in FrobeniusMat");  
     QB2pp.push_back(LPP(QB2[i]));
   }
   return Value::from(FrobeniusMat(I->theIdeal, QB2pp));
@@ -615,8 +615,8 @@ DECLARE_BUILTIN_FUNCTION(NewWeylAlgebra) {
   if (nArgs==2)
     return Value::from(NewWeylAlgebra(R->theRing, syms, vector<long>(0)));
   if (nArgs==3)
-    CoCoA_THROW_ERROR(ERR::NYI, "builtin function NewWeylAlgebra with 3 args");
-  CoCoA_THROW_ERROR(ERR::NYI, "builtin function NewWeylAlgebra with 4+ args");
+    CoCoA_THROW_ERROR2(ERR::NYI, "builtin function NewWeylAlgebra with 3 args");
+  CoCoA_THROW_ERROR2(ERR::NYI, "builtin function NewWeylAlgebra with 4+ args");
   return Value::from(long(0)); // BUG??? JUST TO KEEP COMPILER QUIET
 }
 
