@@ -72,7 +72,7 @@ namespace InterpreterNS {
     if (!IsPolyRing(R))  CoCoA_THROW_ERROR2(ERR::ReqElemPolyRing, FnName);
     if (AmbientRing(I) != R)  CoCoA_THROW_ERROR2(ERR::MixedRings, FnName);
     if (!IsMonomial(t) || !IsOne(LC(t)))
-      CoCoA_THROW_ERROR2("Reqire power-product (monic monomial)", FnName);
+      CoCoA_THROW_ERROR2(string("Reqire power-product (monic monomial) in ") + FnName);
     return FrbAlexanderDual(I, LPP(t));
   }
 
