@@ -518,7 +518,7 @@ DECLARE_BUILTIN_FUNCTION(FrobeniusMat) {  // AMB
   for (long i = 0; i<len(QB2); ++i)
   {
     if (IsZero(QB2[i]))  CoCoA_THROW_ERROR2(ERR::ReqNonZero, "FrobeniusMat");  
-    if (!IsMonomial(QB2[i]))  CoCoA_THROW_ERROR2("expected list of PP", "FrobeniusMat");  
+    if (!IsMonomial(QB2[i]))  CoCoA_THROW_ERROR1("expected list of PP in FrobeniusMat");  
     QB2pp.push_back(LPP(QB2[i]));
   }
   return Value::from(FrobeniusMat(I->theIdeal, QB2pp));
