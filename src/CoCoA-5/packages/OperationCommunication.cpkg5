@@ -1275,7 +1275,7 @@ Define CompletedOrdMat(...)
   If Len(ARGV) = 1 Then
     Return $.ExtractedOrdMat(MatConcatVer(M, RevLexMat(NumCols(M))));
   EndIf;
-  If Len(ARGV) <> 2 Then Return Error(ERR.BAD_PARAMS_NUM); EndIf;
+  If Len(ARGV) <> 2 Then Return Error("Expected 1 or 2 args"); EndIf;
   NumParams := ARGV[2];
   $.CheckParamSubMatrix(M, NumParams, NumRows(M));
   M := Submat(M, 1..(NumRows(M)), (NumParams+1)..NumCols(M));
