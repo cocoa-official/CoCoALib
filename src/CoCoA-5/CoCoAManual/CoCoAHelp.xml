@@ -6059,6 +6059,25 @@ This function returns the list of the names of the linked libraries.
   <see>VersionInfo</see>
 </seealso>
 </command>
+<!-- ===  COMMAND  =============================================== -->
+<command>
+ <title>ExtGcd</title>
+  <short_description>Extended GCD for Integers</short_description>
+<syntax>
+ExtGcd(L: <type>LIST</type> of <type>INT</type>): <rtn>INT</rtn>
+</syntax>
+<description>
+This function returns the cofactors of the extended Euclidean Algorithm.
+<example>
+/**/ ExtGcd([2,3,4]);
+[-1, 1, 0]
+</example>
+</description>
+<seealso>
+  <see>gcd</see>
+  <see>syz</see>
+</seealso>
+</command>
 <!-- ===  end CHAPTER  =============================================== -->
 </chapter_letter>
  <!-- ===  CHAPTER  =============================================== -->
@@ -19296,7 +19315,7 @@ See <ttref>rk</ttref>
 RationalSolve(L: <type>LIST</type> of <type>RINGELEM</type>): <rtn>RECORD</rtn>
 </syntax>
 <description>
-This function computes all rational solutions (aka. points)
+This function computes all rational solutions (aka. affine points)
 of a 0-dimensional polynomial system <tt>L</tt>; approximate
 real solutions can be computed using <ttref>ApproxSolve</ttref>.
 Projective solutions of a homogeneous system can be obtained
@@ -19313,6 +19332,11 @@ record[AffinePts := [[2, -2, -3],  [2, 3, 2]],  indets := [x, y, z]]
 /**/  L := [x^2+y^2-1,  x*y-1];  -- indet z not used
 /**/  RationalSolve(L);
 record[AffinePts := [],  indets := [x, y]]
+
+/**/ use ZZ/(3)[x,y]; -- also works over a finite field
+/**/ L := [x^3-y^2];
+/**/ RationalSolve(L);
+record[AffinePts := [[0, 0],  [1, 1],  [1, -1]], indets := [x,  y]]
 </example>
 </description>
 <seealso>
@@ -19344,6 +19368,11 @@ and list of the solution points.
 /**/  L := [x^3-y^2*x, x-2*z];
 /**/  RationalSolveHomog(L);
 record[ProjectivePts := [[0, 1, 0],  [1, -1, 1/2],  [1, 1, 1/2]],  indets := [x, y, z]]
+
+/**/ use ZZ/(3)[x,y];  -- also works over a finite field
+/**/ L := [x^3-y^3];
+/**/ RationalSolveHomog(L);
+record[ProjectivePts := [[1,  1]], indets := [x,  y]]
 </example>
 </description>
 <seealso>
