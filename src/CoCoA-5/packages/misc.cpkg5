@@ -181,7 +181,7 @@ EndDefine; -- IsVectHomog
 --   EndIf;
 --   X := [type(Y) = POLY Or Y <= 0 | Y In A];
 --   If MakeSet(X) <> [True] Then
---     error(ERR.BAD_PARAMS,"(integer shifts MUST be <= 0)");
+--     error("integer shifts MUST be <= 0");
 --   Else Return Tagged(A,"shifts");
 --   EndIf;
 -- EndDefine; -- Shifts
@@ -247,7 +247,7 @@ EndDefine; -- Module
 --   If K < 0 Then Return 0; EndIf;
 --   If type(N)=RINGELEM Then Return Misc.PolyBin(N,K);
 -- //  Elif IsNumber(N) Then Return Misc.PolyBin(N,K); // ????????????
---   Else error(ERR.BAD_PARAMS);
+--   Else error("Bad args");
 --   EndIf;
 -- EndDefine; -- Bin
 
@@ -262,7 +262,7 @@ Define NumComps(X)
   Elif T = IDEAL Then Return 1;
   Elif T = TAGGED("Quotient") Then Return Misc.NumComps(untagged(X));
   EndIf;
-  Return error(ERR.BAD_PARAMS);
+  Return error("Expected MODULE, IDEAL or QUOTIENT");
 EndDefine; -- NumComps
 
 
@@ -270,7 +270,7 @@ EndDefine; -- NumComps
 
 Define Comps(V)
   TopLevel ERR;
-  If type(V) <> MODULEELEM Then error(ERR.BAD_PARAMS);
+  If type(V) <> MODULEELEM Then error("Expected MODULEELEM");
   Else Return [ V[I] | I In 1..Misc.NumComps(V) ];
   EndIf;
 EndDefine; -- Comps
@@ -280,7 +280,7 @@ EndDefine; -- Comps
 -- The "old" Sum routine; good for short lists, and lists of integers.
 Define SequentialSum(L)
   TopLevel ERR;
-  If type(L) <> LIST Then error(ERR.BAD_PARAMS); EndIf;
+  If type(L) <> LIST Then error("Expected LIST"); EndIf;
   If len(L)=0 Then Return 0; EndIf;
   S := head(L);
   Foreach X In tail(L) Do
@@ -293,7 +293,7 @@ EndDefine; -- SequentialSum
 -- -- This version is faster for summing monomials (but a bit slower for lists of integers)
 -- Define Sum(L)
 --   TopLevel ERR;
---   If type(L) <> LIST Then error(ERR.BAD_PARAMS); EndIf;
+--   If type(L) <> LIST Then error("Expected LIST"); EndIf;
 --   While len(L) > 10 Do  -- the limit of 10 is not wholly arbitrary, it seems fastest.
 --     LenL := len(L);
 --     L2 := [];
@@ -311,7 +311,7 @@ EndDefine; -- SequentialSum
 
 -- Define Product(L)
 --   TopLevel ERR;
---   If type(L) <> LIST Then error(ERR.BAD_PARAMS); EndIf;
+--   If type(L) <> LIST Then error("Expected LIST"); EndIf;
 --   If len(L)=0 Then Return 1; EndIf;
 --   S := 1;
 --   Foreach X In L Do
@@ -351,7 +351,7 @@ EndDefine; -- Min
 --- THIS IS ALL WRITTEN IN C NOW (FEB 1999, JAA & MAX)
 --- -- Monomials(P:POLY) returns the list of the monomials of P
 --- Define Monomials(P)
----   If not(type(P) <= POLY) Then Return ERR.EXPECTED_POLY EndIf;
+---   If not(type(P) <= POLY) Then error("Expected POLY"); EndIf;
 ---   If P=0 Then Return [0] EndIf;
 ---   L := NewList(len(P));
 ---   For I := 1 To len(P) Do
@@ -422,7 +422,7 @@ EndDefine; -- RelDeg
 --   If type(X) <= POLY Then X := Poly(X); EndIf;
 --   If len(ARGV)=1 Then Return $builtin.Deg(X)
 --   Elif len(ARGV)=2 Then Return Misc.RelDeg(X,ARGV[2])
---   Else error(ERR.BAD_PARAMS_NUM);
+--   Else error("Expected POLY and INDET");
 --   EndIf;
 -- EndDefine; -- Deg
 
@@ -602,7 +602,7 @@ Define subst(...)
   N:=len(ARGV);
   If N=2 Then Return Misc.Subst2_top(ARGV[1],ARGV[2]); EndIf;
   If N=3 Then Return Misc.Subst3(ARGV[1],ARGV[2],ARGV[3]); EndIf;
-  Return error(ERR.BAD_PARAMS_NUM);
+  Return error("Expected 2 or 3 args");
 EndDefine; -- Subst
 
 
@@ -712,7 +712,7 @@ EndDefine; -- ImagePolyList
 --   -- E, an object
 --   -- R1, R2 strings, the names of the domain and codomain
 --   -- L = [N1,...,Nn] list of integers ...
---   If len(L) <> NumIndets(Var(R2)) Then ERR.BAD_PARAMS EndIf;
+--   If len(L) <> NumIndets(Var(R2)) Then error("Incorrect number of images") EndIf;
 --   T := type(E);
 --   If T=POLY Then Return $builtin.Map(E,R1,R2,L) EndIf;
 --   If T=LIST Then Return [Misc.Map(X,R1,R2,L)|X In E] EndIf;
@@ -789,7 +789,7 @@ Define IsSubShape(S1,S2)
     If not(IsSubset(fields(S1),fields(S2))) Then Return False;
     Else Return MakeSet([IsSubShape(S1[F],S2[F]) | F In fields(S1)])=[True];
     EndIf;
-  Elif T1 <> TYPE Then error(ERR.BAD_PARAMS);
+  Elif T1 <> TYPE Then error("Incorrect args");
   Else Return S1 <= S2;
   EndIf;
 EndDefine; -- IsSubShape

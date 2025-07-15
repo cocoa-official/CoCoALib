@@ -274,7 +274,7 @@ EndDefine;
 
 Define sorted(L)
   TopLevel ERR;
-  If type(L) <> LIST Then error(ERR.BAD_PARAMS, ": expected LIST"); EndIf;
+  If type(L) <> LIST Then error("Require LIST argument"); EndIf;
   sort(Ref L);
   Return L;
 EndDefine;
@@ -343,9 +343,9 @@ EndDefine;
 --   TopLevel ERR;
 --   If len(ARGV) = 1 Then
 --     If ARGV[1] <> [] Then Return ARGV[1][len(ARGV[1])]; EndIf;
---     Return ERR.CANNOT_APPLY_TO_EMPTY;
+--     error("Cannot apply to empty list");
 --     EndIf;
---   If len(ARGV) > 2 Then Return ERR.BAD_PARAMS_NUM; EndIf;
+--   If len(ARGV) > 2 Then error("Expected 1 or 2 args"); EndIf;
 --   Return List.Last2(ARGV[1],ARGV[2]);
 -- EndDefine; -- Last
 

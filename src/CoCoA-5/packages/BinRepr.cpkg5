@@ -74,7 +74,7 @@ Define BinExp(...)
   If shape(ARGV)=[INT, INT] Then Return $.Aux_BinExp(ARGV[1], ARGV[2]);
   Elif shape(ARGV)=[INT, INT, INT, INT] Then
     Return EvalBinExp($.Aux_BinExp(ARGV[1],ARGV[2]), ARGV[3], ARGV[4]);
-  Else error(ERR.BAD_PARAMS,"(BinExp arguments must be 2 or 4 INT)");
+  Else error("BinExp expects 2 or 4 args, all of type INT");
   EndIf;
 EndDefine;
 
@@ -86,7 +86,7 @@ EndDefine; -- EvalBinExp
 
 Define Aux_BinExp(H,N)
   TopLevel ERR;
-  If H<0 Or N<=0 Then error(ERR.BAD_PARAMS, "(BinExp(H,N), H>=0, N>0)"); EndIf;
+  If H<0 Or N<=0 Then error("BinExp(H,N): require H>=0, N>0"); EndIf;
   BE:=[];  HH:=H;  NN:=N;
   While HH <> 0 Do
     I := NN+1;  BIN := I;  --> BIN:=binomial(NN+1,NN)

@@ -325,7 +325,7 @@ Define PSerToHilbert(...)
   Elif
     len(ARGV) = 1 Then
     return $.PSerToHilbertFn(ARGV[1]);
-  Else error(ERR.BAD_PARAMS_NUM, ": 1 or 2 expected (Hilbert)");
+  Else error("Expected 1 or 2 args (Hilbert)");
   EndIf;
 EndDefine;
 
@@ -386,7 +386,7 @@ EndDefine; -- PSerRegularityIndex
 
 
 Define EvalHilbertFn(X, N)
-  TopLevel ERR;
+  if N < 0 then return 0; endif;
   QQt := RingQQt(1);
   t := RingElem(QQt, "t");
   If tag(X)=TagForHilbertFn() Then
@@ -424,7 +424,7 @@ Define EvalHilbertFn(X, N)
       return AsINT(RatResult);
     EndIf;
   EndIf;
-  error(ERR.BAD_PARAMS, "(EvalHilbertFn)");
+  error("First arg must be HilbertSeries or PSeries (EvalHilbertFn)");
 EndDefine; -- EvalHilbertFn
 
 

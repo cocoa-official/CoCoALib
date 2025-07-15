@@ -84,7 +84,7 @@ EndDefine; -- IsMonList
 
 -- Define ModuleColonVector(M,V)
 --   If NumComps(M) <> NumComps(V) Then
---     error(ERR.BAD_PARAMS,"Ranks not homogeneous")
+--     error("Ranks not homogeneous")
 --   EndIf;
 --   AuxM := Module(concat([V],M.Gens));
 --   AuxM.SyzCompsNum := 1;
@@ -242,7 +242,7 @@ EndDefine; -- RingsOf
 
 -- Define Homogenized(X,O)
 --   If type(O) = LIST Then Return [HL.Homogenized(X,Y) | Y In O];
---   Elif RingEnv(X)<>RingEnv(O) Then error(ERR.BAD_PARAMS)
+--   Elif RingEnv(X)<>RingEnv(O) Then error("Incompatible ring envs")
 --   EndIf;
 --   Using Var(RingEnv(X)) Do
 --     If type(O) = IDEAL Then Return GB.Homogenized(X,O)

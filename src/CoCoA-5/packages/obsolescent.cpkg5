@@ -163,7 +163,7 @@ enddefine; --
 --   TopLevel ERR;
 --   PrintLn "--> WARNING: \"Comp\" is obsolete (from CoCoA-5.1.0); instead please";
 --   PrintLn "--> WARNING: use [..] for indexing, or the field selector operator.";
---   If len(ARGV) = 0 Then error(ERR.BAD_PARAMS_NUM); EndIf;
+--   If len(ARGV) = 0 Then error("Need at least 1 arg"); EndIf;
 --   X := ARGV[1];
 --   L := tail(ARGV);
 --   Foreach I In L Do
