@@ -1257,7 +1257,7 @@ namespace CoCoA
                     ConstRefRingElem tol)
     {
 #ifndef CoCoA_WITH_GSL
-      CoCoA_THROW_ERROR("ExternalLib GSL not linked: VanishPoly undefined","VanishPoly");
+      CoCoA_THROW_ERROR1("ExternalLib GSL not linked: VanishPoly undefined");
       (void)(newpts);        // just to avoid tedious compiler warning
       (void)(LowDegreePoly); //
       (void)(P);             //
@@ -1266,13 +1266,13 @@ namespace CoCoA
       (void)(tol);           //
 #else
       // JAA cannot be bothered to check for "mixed rings"...
-      if (pts.empty()) CoCoA_THROW_ERROR("No points","LowDegApproxPoly");
+      if (pts.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
       const long NumPts = len(pts);
       const long dim = len(pts[0]);
-      if (dim == 0) CoCoA_THROW_ERROR("dimension zero", "LowDegApproxPoly");
+      if (dim == 0)  CoCoA_THROW_ERROR1("dimension zero");
       for (long i=1; i < NumPts; ++i)
-        if (len(pts[i]) != dim) CoCoA_THROW_ERROR("mixed dimensions", "LowDegApproxPoly");
-      if (len(tolVector) != dim) CoCoA_THROW_ERROR("tolVector wrong size", "LowDegApproxPoly");
+        if (len(pts[i]) != dim)  CoCoA_THROW_ERROR1("mixed dimensions");
+      if (len(tolVector) != dim)  CoCoA_THROW_ERROR2(ERR::BadArraySize, "tolVector wrong size");
       ring R = owner(pts[0][0]);                      
       CoCoA_ASSERT(IsOrderedDomain(R) && IsField(R)); // R must be an ordered field
   
@@ -1478,7 +1478,7 @@ namespace CoCoA
             QBG.myCornerPPIntoAvoidSet(t);
             if (KantCheck == 0) 
             {
-              CoCoA_THROW_ERROR("Method failed", "LowDegApproxPoly");
+              CoCoA_THROW_ERROR1("Method failed");
               //UpdateMatricesNBM(QBG, M, A, DiagA, V, Rho);
               //\AddToQBAndUpdate(t, QBG, Alpha, S);
               //AddToQBAndUpdate(t, QBG);
@@ -1522,9 +1522,9 @@ namespace CoCoA
 //   long dim;
 //   cin >> dim;
 //   if ( !cin )
-//     CoCoA_THROW_ERROR("Input must be a positive integer", "program");
+//     CoCoA_THROW_ERROR1(ERR::ReqPositive);
 //   if (dim < 1 || dim > 1000000)
-//     CoCoA_THROW_ERROR("Ridiculous input dimension", "main program in ex-ApproxPts1");
+//     CoCoA_THROW_ERROR1("Ridiculous input dimension");
   
 //   ring Q = RingQQ();
 //   vector<RingElem> tolVector(dim, zero(Q));
@@ -1533,7 +1533,7 @@ namespace CoCoA
 //     {
 //       double compt;
 //       cin >> compt;
-//       if (!cin || compt < 0) { CoCoA_THROW_ERROR("bad input", "main program in ex-ApproxPts1"); }
+//       if (!cin || compt < 0) { CoCoA_THROW_ERROR1("bad input"); }
 //       ConvertToRingElem(tolVector[i], compt);
 //     }
 
@@ -1541,14 +1541,14 @@ namespace CoCoA
 //   cout << "Insert the max tolerance: " << endl;
 //   double compt;
 //   cin >> compt;
-//   if (!cin || compt < 0) { CoCoA_THROW_ERROR("bad input", "main program in ex-ApproxPts1"); }
+//   if (!cin || compt < 0) { CoCoA_THROW_ERROR1("bad input"); }
 //   ConvertToRingElem(tol, compt);
 
 //   cout << "Insert the number of points to be processed: " << endl;
 //   long NumPts;
 //   cin >> NumPts;
 //   if (NumPts < 1 || NumPts > 1000000)
-//     CoCoA_THROW_ERROR("Ridiculous number of points", "main program in ex-ApproxPts1");
+//     CoCoA_THROW_ERROR1("Ridiculous number of points");
 
 //   vector<ApproxPts::PointR> Pts(NumPts, ApproxPts::PointR(dim, zero(Q)));
 //   cout << "Insert the coordinates of the points " << endl;
@@ -1558,7 +1558,7 @@ namespace CoCoA
 //     {
 //       double compt;
 //       cin >> compt;
-//       if (!cin) { CoCoA_THROW_ERROR("bad input", "main program in ex-ApproxPts1"); }
+//       if (!cin) { CoCoA_THROW_ERROR1("bad input"); }
 //       ConvertToRingElem(Pts[i][j], compt);
 //     }
 //   }

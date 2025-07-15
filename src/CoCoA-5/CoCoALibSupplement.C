@@ -65,7 +65,7 @@ namespace CoCoA {
   {
     const ErrorInfo ErrMesg(ERR::OutOfRange, "fold");
     const long MaxWidth = ConvertTo<long>(MaxLineLen, ErrMesg);
-    if (MaxWidth < 1)  throw ErrMesg; ///CoCoA_THROW_ERROR();
+    if (MaxWidth < 1)  throw ErrMesg; /// ??? CoCoA_THROW_ERROR1(ERR::OutOfRange); ????
     return fold(str, MaxWidth);
   }
 
@@ -151,7 +151,7 @@ namespace CoCoA {
   //     return IsCoprime(LPP(f), LPP(g)); // power products; NB result belongs to ring (owner(f))
 
   //   if (!IsField(CoeffRing(owner(f))))
-  //     CoCoA_THROW_ERROR("Args must be PP, or elem of ZZ or in poly ring over field", "IsCoprime_forC5");
+  //     CoCoA_THROW_ERROR1("Args must be PP, or elem of ZZ or in poly ring over field");
   //   return IsCoprime(f,g); // polys in k[x,y,...] with k a field
   // }
 

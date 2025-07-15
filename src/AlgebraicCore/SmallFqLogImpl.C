@@ -147,18 +147,18 @@ namespace CoCoA
 
   FFqLogImpl::repr_t FFqLogImpl::myAdd(repr_t x, repr_t y) const noexcept
   {
-    if (myIsZero(x)) return y;
-    if (myIsZero(y)) return x;
+    if (myIsZero(x))  return y;
+    if (myIsZero(y))  return x;
     const repr_t q = myDiv(y,x);
-    if (myIsMinusOne(q)) return 0;
+    if (myIsMinusOne(q))  return 0;
     return x + myAdd1Tbl[q-1];
   }
 
   FFqLogImpl::repr_t FFqLogImpl::mySub(repr_t x, repr_t y) const noexcept
   {
-    if (myIsZero(x)) return y;
-    if (myIsZero(y)) return x;
-    if (x == y) return 0;
+    if (myIsZero(x))  return y;
+    if (myIsZero(y))  return x;
+    if (x == y)  return 0;
     const repr_t q = myNegate(myDiv(y,x));
     return x + myAdd1Tbl[q-1];
   }
@@ -167,14 +167,14 @@ namespace CoCoA
   {
     if (myIsZero(x) || myIsZero(y)) return 0;
     const repr_t ans = x+y-1;
-    if (ans < myCard) return ans;
+    if (ans < myCard)  return ans;
     return ans - (myCard-1);
   }
   
   FFqLogImpl::repr_t FFqLogImpl::myDiv(repr_t x, repr_t y) const
   {
-    if (myIsZero(y)) CoCoA_THROW_ERROR(ERR::DivByZero, "FFqLogImpl::myDiv");
-    if (myIsZero(x)) return 0;
+    if (myIsZero(y))  CoCoA_THROW_ERROR1(ERR::DivByZero);
+    if (myIsZero(x))  return 0;
     if (x >= y) return x-y+1;
     return x + (myCard-y);
   }
@@ -182,8 +182,8 @@ namespace CoCoA
   FFqLogImpl::repr_t FFqLogImpl::myPower(repr_t x, long n) const noexcept // assumes n >= 0
   {
     CoCoA_ASSERT(n >= 0);
-    if (n == 0) return 1;
-    if (myIsZero(x)) return x;
+    if (n == 0)  return 1;
+    if (myIsZero(x))  return x;
     const long q1 = myCard-1;
     return 1 + (static_cast<long>(x-1)*(n%q1))%q1; // no overflow provided q1^2 < MaxLong
   }

@@ -502,7 +502,7 @@ static int pp_cmp(const void *arg1, const void *arg2)
     if (DuplicateRows(M)) CoCoA_THROW_ERROR2(ERR::BadArg, "points must be distinct");
     if (CoeffRing(P) != RingOf(M))
     {
-      //      CoCoA_THROW_ERROR(ERR::MixedRings, "IdealOfPoints");
+      //      CoCoA_THROW_ERROR1(ERR::MixedRings);
       return IdealOfPoints(P, CanonicalHom(RingOf(M),CoeffRing(P))( M ));
     }
     

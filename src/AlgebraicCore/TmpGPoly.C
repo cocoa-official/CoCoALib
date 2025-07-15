@@ -600,7 +600,7 @@ clog << "operator+=: result " <<myPoly<< endl;
        if (it->myGetGPolyPtr()==GPolyPtr)
          return it;
 
-     CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "Reductors::find");
+     CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
      return myReductors.end();// for compilator's sake.
    }//find
 

@@ -23,7 +23,6 @@
 #include "CoCoA/SmartPtrIRC.H"
 
 #include <vector>
-#include <string>
 #include <map>
 #include <memory>
 
@@ -95,7 +94,7 @@ namespace CoCoA
        *
        * @param fcnName
        */
-      void myInitializeAndValidatePBMill(std::string fcnName) const;
+      void myInitializeAndValidatePBMill(const ErrorContext& FnName) const;
 
       /**
        * It checks if the given ideal is homogeneous. If this is not the
@@ -103,7 +102,7 @@ namespace CoCoA
        *
        * @param fcnName
        */
-      void myValidateHomogeneous(std::string fcnName) const;
+      void myValidateHomogeneous(const ErrorContext& FnName) const;
 
       /**
        * It checks if the given polynomial ring has DegRevLexOrdering. If this is not the
@@ -111,7 +110,7 @@ namespace CoCoA
        *
        * @param fcnName
        */
-      void myValidateDegRevLexOrdering(std::string fcnName) const;
+      void myValidateDegRevLexOrdering(const ErrorContext& FnName) const;
 
       /**
        * It checks if the given ideal is monomial. If this is not the
@@ -119,7 +118,7 @@ namespace CoCoA
        *
        * @param fcnName
        */
-      void myValidateMonomialIdeal(std::string fcnName) const;
+      void myValidateMonomialIdeal(const ErrorContext& FnName) const;
 
       /**
        * It checks if the given ideal is Cohen-Macualay. If this is not the
@@ -127,7 +126,7 @@ namespace CoCoA
        *
        * @param fcnName
        */
-      void myValidateCohenMacaulay(std::string fcnName) const;
+      void myValidateCohenMacaulay(const ErrorContext& FnName) const;
 
       /**
        * It checks if the given ideal is delta-regular.

@@ -137,9 +137,10 @@ namespace CoCoA
 
   void CoprimeFactorBasis_RingElem::myAddInfo(const RingElem& X)
   {
-    if (!IsTrueGCDDomain(owner(X))) CoCoA_THROW_ERROR(ERR::NotTrueGCDDomain, "CoprimeFactorBasis_RingElem::myAddInfo");
+    if (!IsTrueGCDDomain(owner(X)))
+      CoCoA_THROW_ERROR1(ERR::NotTrueGCDDomain);
     if (!myCoprimeBasis.empty() && owner(X) != owner(myCoprimeBasis[0]))
-      CoCoA_THROW_ERROR(ERR::MixedRings, "CoprimeFactorBasis_RingElem::myAddInfo");
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
     myRefineBasis(X);
   }
   

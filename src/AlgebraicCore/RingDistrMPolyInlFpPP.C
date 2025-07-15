@@ -283,7 +283,7 @@ namespace CoCoA
 
   void RingDistrMPolyInlFpPPImpl::myRecvTwinFloat(RawPtr /*rawlhs*/, ConstRawPtr /*rawx*/) const
   {
-    CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "RingDistrMPolyInlFpPPImpl::myRecvTwinFloat");
+    CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
   }
 
 
@@ -531,23 +531,23 @@ namespace CoCoA
     void CheckCoeffRing(const ring& K)
     {
       if (!IsRingFp(K)) // check that CoeffRing is really a SmallFpImpl
-        CoCoA_THROW_ERROR(ERR::NotQuotientRing, "NewPolyRing_DMPII pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::NotQuotientRing, "NewPolyRing_DMPII pseudo ctor");
     }
     
 
     void CheckIndets(const ring& K, const std::vector<symbol>& IndetNames)
     {
       if (IndetNames.empty())
-        CoCoA_THROW_ERROR(ERR::ReqNonEmpty, "NewPolyRing_DMPII pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, "NewPolyRing_DMPII pseudo ctor");
       if (!AreGoodIndetNames(K, IndetNames))
-        CoCoA_THROW_ERROR(ERR::BadIndetNames, "NewPolyRing_DMPII pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::BadIndetNames, "NewPolyRing_DMPII pseudo ctor");
     }
 
 
     void CheckNumIndets(long n)
     {
       if (n <=0 )
-        CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPolyRing_DMPII pseudo ctor");
+        CoCoA_THROW_ERROR2(ERR::ReqPositive, "NewPolyRing_DMPII pseudo ctor");
     }
 
 
@@ -556,7 +556,7 @@ namespace CoCoA
     // {
     //   CheckNumIndets(n);
     //   if (n != len(IndetNames))
-    //     CoCoA_THROW_ERROR(ERR::BadNumIndets, "NewPolyRing_DMPII pseudo ctor");
+    //     CoCoA_THROW_ERROR2(ERR::BadNumIndets, "NewPolyRing_DMPII pseudo ctor");
     // }
     
   }  // anonymous namespace

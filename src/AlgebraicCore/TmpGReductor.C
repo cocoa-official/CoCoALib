@@ -806,7 +806,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   {
     VerboseLog VERBOSE("myDoGBasisRealSolve");
     SparsePolyRing P = myGRingInfo().myNewSPR();
-    if (!IsZZ(CoeffRing(P))) CoCoA_THROW_ERROR("must be over QQ","myDoGBasisRealSolve");
+    if (!IsZZ(CoeffRing(P)))  CoCoA_THROW_ERROR2(ERR::BadRing, "must be over QQ");
     SparsePolyRing PQQ = NewPolyRing(RingQQ(), NewSymbols(NumIndets(P)));
     RingHom P_PQQ = PolyRingHom(P, PQQ, ZZEmbeddingHom(PQQ), indets(PQQ));
     RingHom PQQ_P = PolyRingHom(PQQ, P, QQEmbeddingHom(P), indets(P));
@@ -1071,7 +1071,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
 //At the moment, no one is calling this procedure. The caller calls myDoGBasisTEST instead
 //   void GReductor::myDoSATMixGBasis()
 //   {
-//     CoCoA_THROW_ERROR(ERR::ShouldNeverGetHere, "myDoSATMixGBasis: should not be called!");
+//     CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
 //     // MOD the homog var and the module vars conflict
 //     // Input Polynomials sorted and zero polys deleted
 //     if (myPolys.empty()) return;
@@ -1940,7 +1940,7 @@ Is is here only for completeness/debug purposes.
     {
       const SparsePolyRing SPR=owner(the_p);
       if (GradingDim(SPR) != len(theY))
-        CoCoA_THROW_ERROR("incompatible GradingDim", "homog(f, y1_yn");
+        CoCoA_THROW_ERROR2(ERR::BadArg, "incompatible GradingDim");
       RingElem the_hp(SPR);
       RingElem tmp(SPR);
       degree MaxDeg(GradingDim(SPR));
@@ -1966,7 +1966,7 @@ Is is here only for completeness/debug purposes.
                      const ModuleElem& /*the_v*/,
                      const GRingInfo& /*theGRI*/)
     {
-      CoCoA_THROW_ERROR(ERR::NYI, "homogenized(ModuleElem&, ModuleElem&, const GRingInfo");
+      CoCoA_THROW_ERROR1(ERR::NYI);
     } // homogenized
 
 
