@@ -7,7 +7,7 @@
 
 VER_MAJ=0
 VER_MIN=99
-VER_PATCH=855
+VER_PATCH=880
 
 # Note this file is read by the main configure script (via the "source" command);
 # it is also read by the scripts for making releases (in src/CoCoA-5/release-files/)
