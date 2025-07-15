@@ -92,9 +92,10 @@ define RationalAffinePointsLoop(PolyList, ListX)
     MinPoly := MinPolyQuot(X, ideal(PolyList), X);
 //  endif;
 ///  println "MinPoly=",MinPoly;
+  embed := CoeffEmbeddingHom(P);
   foreach val in RationalRoots(MinPoly) do
 ///    println "Doing ",X," = ",val;
-    SubspacePts := RationalAffinePointsLoop(subst(PolyList, X, val), RemainingX);
+    SubspacePts := RationalAffinePointsLoop(subst(PolyList, X, embed(val)), RemainingX);
     if SubspacePts <> [] then
       pts := concat(pts, [concat([val], SubspacePt) | SubspacePt in SubspacePts]);
     endif;
@@ -103,9 +104,9 @@ define RationalAffinePointsLoop(PolyList, ListX)
 enddefine; -- RationalAffinePointsLoop
 
 define RootOfLinear(f)
-  if NumTerms(f) = 1 then return zero(RingOf(f)); endif;
-  phi := CoeffEmbeddingHom(RingOf(f));
-  return (LM(f) - f)/phi(LC(f));
+  if NumTerms(f) = 1 then return zero(CoeffRing(RingOf(f))); endif;
+//  phi := CoeffEmbeddingHom(RingOf(f));
+  return -ConstantCoeff(f)/LC(f);
 enddefine; -- RootOfLinear
 
 
