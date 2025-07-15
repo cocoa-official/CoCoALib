@@ -156,11 +156,11 @@ define RationalProjectivePointsLoop(PolyList, ListX)
     endif;
   endif;
   // We get here only when ListX contains more than 1 indet.
-  P := RingOf(PolyList[1]);
+  K := CoeffRing(RingOf(PolyList[1]));
   X := first(ListX);
   RemainingX := tail(ListX);
-  pts0 := [concat([0], SubspacePt) | SubspacePt in RationalProjectivePointsLoop(subst(PolyList,X,0), RemainingX)];
-  pts1 := [concat([1], AffPt) | AffPt in RationalAffinePointsLoop(subst(PolyList, X, 1), RemainingX)];
+  pts0 := [concat([zero(K)], SubspacePt) | SubspacePt in RationalProjectivePointsLoop(subst(PolyList,X,0), RemainingX)];
+  pts1 := [concat([one(K)], AffPt) | AffPt in RationalAffinePointsLoop(subst(PolyList, X, 1), RemainingX)];
   return concat(pts0, pts1);
 enddefine; -- RationalProjectivePointsLoop
 
