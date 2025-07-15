@@ -227,7 +227,7 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
       return NewRedCogPolyField(GRI.myNewSPR());
     else if ( GRI.myCoeffRingType() == CoeffEncoding::FrFldOfGCDDomain )
       return NewRedCogPolyGCD(GRI.myNewSPR());
-    else CoCoA_THROW_ERROR("Don't know what to do with these coefficients", "ChooseReductionCog");
+    else CoCoA_THROW_ERROR1("Don't know what to do with these coefficients");
     return ReductionCog(nullptr);  // just to keep the compiler quiet
   }
 
@@ -238,7 +238,7 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
       return NewRedCogGeobucketField(GRI.myNewSPR());
     else if ( GRI.myCoeffRingType() == CoeffEncoding::FrFldOfGCDDomain )
       return NewRedCogGeobucketGCD(GRI.myNewSPR());
-    else CoCoA_THROW_ERROR("Don't know what to do with these coefficients", "ChooseReductionCog");
+    else CoCoA_THROW_ERROR1("Don't know what to do with these coefficients");
     return ReductionCog(nullptr);  // just to keep the compiler quiet
   }
 

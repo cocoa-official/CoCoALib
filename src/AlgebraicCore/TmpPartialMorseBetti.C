@@ -365,11 +365,11 @@ namespace CoCoA
     {
       if (!IsStdDegRevLex(ordering(mill.myGetPPMonoid())))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
       if (!mill.IamHomogenous())
       {
-        CoCoA_THROW_ERROR("The ideal isn't homogenous", __FUNCTION__);
+        CoCoA_THROW_ERROR1(ERR::ReqHomog);
       }
       PartialMorseBetti mg(mill);
       return mg.myComputeBettiColumn(col);
@@ -380,11 +380,11 @@ namespace CoCoA
     {
       if (!IsStdDegRevLex(ordering(mill.myGetPPMonoid())))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
       if (!mill.IamHomogenous())
       {
-        CoCoA_THROW_ERROR("The ideal isn't homogenous", __FUNCTION__);
+        CoCoA_THROW_ERROR1(ERR::ReqHomog);
       }
       PartialMorseBetti mg(mill);
       return mg.myComputeDownToBettiNumber(MinRow, col);
@@ -394,11 +394,11 @@ namespace CoCoA
     {
       if (!IsStdDegRevLex(ordering(mill.myGetPPMonoid())))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
       if (!mill.IamHomogenous())
       {
-        CoCoA_THROW_ERROR("The ideal isn't homogenous", __FUNCTION__);
+        CoCoA_THROW_ERROR1(ERR::ReqHomog);
       }
       PartialMorseBetti mg(mill);
       return RingElem(RingZZ(), mg.myComputeBettiNumber(row, col));

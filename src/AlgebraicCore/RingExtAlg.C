@@ -1322,7 +1322,7 @@ namespace CoCoA
 
 //   long RingExtAlgImpl::deg(ConstRawPtr rawf) const
 //   {
-//     if (IsZero(f)) CoCoA_THROW_ERROR("RingExtAlgImpl::deg: cannot compute degree of zero polynomial");
+//     if (IsZero(f))  CoCoA_THROW_ERROR1("RingExtAlgImpl::deg: cannot compute degree of zero polynomial");
 //     if (GradingDim(myPPM) > 0)
 //       return ordering(myPPM).deg(AsWeylPoly(f).mySummands->myOrdv); //// BUG????  "valid" only if grading dim == 1
 //     //    return ???; the vector in Z^0 -- ring not graded!!!
@@ -1332,7 +1332,7 @@ namespace CoCoA
 
 //   int RingExtAlgImpl::deg(ConstRawPtr rawf, long var) const
 //   {
-//     if (IsZero(f)) CoCoA_THROW_ERROR("RingExtAlgImpl::deg: cannot compute degree of zero polynomial");
+//     if (IsZero(f))  CoCoA_THROW_ERROR1("RingExtAlgImpl::deg: cannot compute degree of zero polynomial");
 //     long d = 0;
 //     for (WeylPoly::summand* it = AsWeylPoly(f).mySummands; it != nullptr; it = it->myNext)
 //       d = max(d, ordering(myPPM).exponent(it->myOrdv, var));
@@ -1342,7 +1342,7 @@ namespace CoCoA
 
 // //    int RingExtAlgImpl::deg(ConstRawPtr rawf, const PPGrading& G) const
 // //    {
-// //      if (IsZero(f)) CoCoA_THROW_ERROR("RingExtAlgImpl::deg: cannot compute degree of zero polynomial");
+// //      if (IsZero(f))  CoCoA_THROW_ERROR1("RingExtAlgImpl::deg: cannot compute degree of zero polynomial");
 // //      int d = 0;
 // //      for (WeylPoly::summand* it = AsWeylPoly(f).mySummands; it != nullptr; it = it->myNext)
 // //        d = max(d, deg(it, G)); // CANNOT JUST USE MAX HERE!!  MUST USE LEX MAX FOR VECTORS

@@ -36,17 +36,16 @@ namespace CoCoA {
         case  TQBlockLow:   return ptr(new BlockTQ(myPolyRing(), myInvolutiveCriteria, TQPSets::Low));
         case  GBCompletion: return ptr(new CompletionGB(myPolyRing()));
       }
-      CoCoA_THROW_ERROR("Unknown strategy", __FUNCTION__);
+      CoCoA_THROW_ERROR1("Unknown strategy");
       return nullptr;
     }
 
     JanetContainer JBMill::Builder::myUseStrategy() const
     {
-      const char* const FnName = "Involutive::JBMill::Builder";
 //      myCheckEmptyInput();
-      if (myInput.empty()) CoCoA_THROW_ERROR("Empty or zero input", FnName);
+      if (myInput.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
 //      myCheckMixedRingElems();
-      if (!HasUniqueOwner(myInput)) CoCoA_THROW_ERROR(ERR::MixedRings, FnName);
+      if (!HasUniqueOwner(myInput))  CoCoA_THROW_ERROR1(ERR::MixedRings);
       std::unique_ptr<JBAlgorithm> strategy(myChooseStrategy());
       strategy->myComputer(myInput.begin(), myInput.end());
       return strategy->myOutputResult();
@@ -56,7 +55,7 @@ namespace CoCoA {
     // {
     //   if (myInput.empty())
     //   {
-    //     CoCoA_THROW_ERROR("Empty or zero input", "Involutive::JBMill::Builder");
+    //     CoCoA_THROW_ERROR1("Empty or zero input");
     //   }
     // }
 
@@ -83,7 +82,7 @@ namespace CoCoA {
     //   {
     //     if(ring != owner(*iter))
     //     {
-    //       CoCoA_THROW_ERROR(ERR::MixedRings, "Involutive::JBMill::Builder");
+    //       CoCoA_THROW_ERROR1(ERR::MixedRings);
     //     }
     //   }
     // }
@@ -593,7 +592,7 @@ hp(q) = \summe_{t \in T}((q - q_t + k_t - 1)(q - q_t))
     {
       RingElem res(owner(s));
       if (!IsFractionField(owner(s)))
-        CoCoA_THROW_ERROR(ERR::NotElemFrF, "s must be in a Fraction Field!!");
+        CoCoA_THROW_ERROR1(ERR::NotElemFrF);
 
 //        std::map<PPMonoidElem, std::vector<bool> > MultVar(myMultVars());
 //        for(std::map<PPMonoidElem,std::vector<bool> >::iterator iter = MultVar.begin(); iter != MultVar.end(); ++iter)
@@ -700,9 +699,9 @@ hp(q) = \summe_{t \in T}((q - q_t + k_t - 1)(q - q_t))
 
     std::vector< std::pair<PPMonoidElem, std::vector<bool> > > JBMill::myComplementaryDecomposition() const
     {
-      if(!IamMonomialIdeal())
+      if (!IamMonomialIdeal())
       {
-        CoCoA_THROW_ERROR("ideal isn't monomial", "myComplementaryDecomposition");
+        CoCoA_THROW_ERROR2(ERR::BadArg, "require monomial ideal");
       }
       return myComplementaryDecompositionLeadingIdeal();
     }
@@ -728,7 +727,7 @@ hp(q) = \summe_{t \in T}((q - q_t + k_t - 1)(q - q_t))
     {
       if(!IamMonomialIdeal())
       {
-        CoCoA_THROW_ERROR("ideal isn't monomial", "myStandardPairs");
+        CoCoA_THROW_ERROR2(ERR::BadArg, "require monomial ideal");
       }
 //      std::vector< std::pair<PPMonoidElem, std::vector<bool> > > CompDecomp = myComplementaryDecomposition();
       std::vector< std::pair<PPMonoidElem, std::vector<bool> > > res;
@@ -830,7 +829,7 @@ hp(q) = \summe_{t \in T}((q - q_t + k_t - 1)(q - q_t))
         }
         if((TmpChoosePoly != -1) && (ChoosePoly != 0))
         {
-          CoCoA_THROW_ERROR("Not able to compute noether normalization", "myNoetherNormalization");
+          CoCoA_THROW_ERROR1("Not able to compute noether normalization");
         }
         //construction of homomorphism
         std::vector<RingElem> xImages;
@@ -876,7 +875,7 @@ hp(q) = \summe_{t \in T}((q - q_t + k_t - 1)(q - q_t))
         {
           VarphiImage.push_back(varphi(i->myGetPol()));
         }
-        CoCoA_THROW_ERROR("FIXME", "JBMill::myNoetherNormalization");
+        CoCoA_THROW_ERROR1("FIXME");
         JBMill TmpMill(*this);
         // JBMill TmpMill = ExtendedJanetBasis(VarphiImage);
         std::pair<RingHom, std::vector<bool> > noether = TmpMill.myNoetherNormalization();

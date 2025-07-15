@@ -506,7 +506,7 @@ namespace CoCoA
     const FGModule M_fg(M, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing P(RingOf(M_fg), CoCoA_ERROR_CONTEXT);
 ////    if (!IsSparsePolyRing(RingOf(M)))
-////      CoCoA_THROW_ERROR(ERR::NotSparsePolyRing, "IsHomog(submodule)"); 
+////      CoCoA_THROW_ERROR1(ERR::NotSparsePolyRing); 
     if (GradingDim(P)==0)  CoCoA_THROW_ERROR1(ERR::ReqNonZeroGradingDim);
     if (IsZero(M_fg))  return true;
     // Now we know I is non-trivial.

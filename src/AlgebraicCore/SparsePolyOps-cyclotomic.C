@@ -362,9 +362,9 @@ namespace CoCoA
 //   RingElem cyclotomic_FabioRossi(long n, const RingElem& x)
 //   {
 //     if (n < 1)
-//       CoCoA_THROW_ERROR(ERR::ReqPositive);
+//       CoCoA_THROW_ERROR1(ERR::ReqPositive);
 //     if (!IsIndet(x))
-//       CoCoA_THROW_ERROR(ERR::ReqIndet);
+//       CoCoA_THROW_ERROR1(ERR::ReqIndet);
 //     if (n == 1)  return x-1;
 
 //     int power2 = 0;

@@ -37,7 +37,7 @@ namespace CoCoA
     {
       if (!IamPommaretBasis())
       {
-        CoCoA_THROW_ERROR("This is not a Pommaret Basis", "PBMill");
+        CoCoA_THROW_ERROR1("This is not a Pommaret Basis");
       }
     }
 
@@ -57,7 +57,7 @@ namespace CoCoA
     long PBMill::myDepth() const
     {
       long res(0);
-      if(IamHomogenous())
+      if (IamHomogenous())
       {
         map<PPMonoidElem, vector<bool> > MultVars = myMultVars();
         long depth(NumIndets(myPolyRing));
@@ -74,7 +74,7 @@ namespace CoCoA
       }
       else
       {
-        CoCoA_THROW_ERROR("Janet basis isn't a Pommaret basis or the ideal isn't homogenous", "myDepth");
+        CoCoA_THROW_ERROR1("Janet basis isn't a Pommaret basis or the ideal isn't homogenous");
       }
       return res;
     }
@@ -86,18 +86,18 @@ namespace CoCoA
 
     vector<RingElem> PBMill::mySocle() const
     {
-      if(!(IamHomogenous()))
+      if (!(IamHomogenous()))
       {
-        CoCoA_THROW_ERROR("The ideal isn't homogenous", "mySocle");
+        CoCoA_THROW_ERROR1(ERR::ReqHomog);
       }
 
-      if(!(IamCohenMacaulay()))
+      if (!(IamCohenMacaulay()))
       {
-        CoCoA_THROW_ERROR("Ideal isn't CohenMacaulay", "mySocle");
+        CoCoA_THROW_ERROR1("Ideal isn't CohenMacaulay");
       }
-      if(!(IsStdDegRevLex(ordering(myPPMValue))))
+      if (!(IsStdDegRevLex(ordering(myPPMValue))))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
 
       long min = myMinCls();
@@ -148,13 +148,13 @@ namespace CoCoA
 
     map<pair<long, long>, long> PBMill::myExtremalBettiNumbers() const
     {
-      if(!(IamHomogenous()))
+      if (!(IamHomogenous()))
       {
-        CoCoA_THROW_ERROR("Janet basis isn't homogenous", "myExtremalBettiNumbers");
+        CoCoA_THROW_ERROR1("Janet basis isn't homogenous");
       }
-      if(!(IsStdDegRevLex(ordering(myPPMValue))))
+      if (!(IsStdDegRevLex(ordering(myPPMValue))))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
 
       long CurPDim = myProjDim();
@@ -164,7 +164,7 @@ namespace CoCoA
       long numMultVars(-1);
       for(long i = 1; i != n + 1; ++i)
       {
-        if(deg < DegOfPommMultVars[i])
+        if (deg < DegOfPommMultVars[i])
         {
           deg = DegOfPommMultVars[i];
           numMultVars = i;
@@ -179,7 +179,7 @@ namespace CoCoA
         long OldCls(numMultVars);
         for(long i = 1; i != OldCls; ++i)
         {
-          if(deg < DegOfPommMultVars[i])
+          if (deg < DegOfPommMultVars[i])
           {
             deg = DegOfPommMultVars[i];
             numMultVars = i;
@@ -205,7 +205,7 @@ namespace CoCoA
     vector<RingElem> PBMill::myMaxStronglyIndependentSet() const
     {
       vector<RingElem> res;
-      if(IsOne(LPP(myBasis.myListBegin()->myGetPol())))
+      if (IsOne(LPP(myBasis.myListBegin()->myGetPol())))
       {
         return res;
       }
@@ -222,7 +222,7 @@ namespace CoCoA
 
     bool PBMill::IamCohenMacaulay() const
     {
-      if(myDepth() == myDim()) //throws an error if it is not a pommaret basis or not homogenous
+      if (myDepth() == myDim()) //throws an error if it is not a pommaret basis or not homogenous
       {
         return true;
       }
@@ -232,13 +232,13 @@ namespace CoCoA
 
     long PBMill::myRegularity() const
     {
-      if(!(IsStdDegRevLex(ordering(myPPMValue))))
+      if (!(IsStdDegRevLex(ordering(myPPMValue))))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
-      if(!IamHomogenous())
+      if (!IamHomogenous())
       {
-        CoCoA_THROW_ERROR("The ideal isn't homogenous", "myRegularity");
+        CoCoA_THROW_ERROR1(ERR::ReqHomog);
       }
 
       long MaxDeg(0);
@@ -252,13 +252,13 @@ namespace CoCoA
 
     vector<RingElem> PBMill::mySaturation() const
     {
-      if(!IamHomogenous())
+      if (!IamHomogenous())
       {
-        CoCoA_THROW_ERROR("Janet basis isn't isn't homogenous", "mySaturation");
+        CoCoA_THROW_ERROR1("Janet basis isn't isn't homogenous");
       }
-      if(!(IsStdDegRevLex(ordering(myPPMValue))))
+      if (!(IsStdDegRevLex(ordering(myPPMValue))))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
       // initialization
       multimap<long, RingElem> SepBasis = myBasisSeperatedByNumberOfMultVar();
@@ -285,13 +285,13 @@ namespace CoCoA
 
     long PBMill::mySatiety() const
     {
-      if(!IamHomogenous())
+      if (!IamHomogenous())
       {
-        CoCoA_THROW_ERROR("Janet basis isn't isn't homogenous", "mySaturation");
+        CoCoA_THROW_ERROR1("Janet basis isn't isn't homogenous");
       }
-      if(!(IsStdDegRevLex(ordering(myPPMValue))))
+      if (!(IsStdDegRevLex(ordering(myPPMValue))))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
       // maximal degree of elements with only one mult var
       return myDegForNumMultVar(1);
@@ -318,7 +318,7 @@ namespace CoCoA
       long res(0);
       for(multimap<long, RingElem>::iterator iter = MultVarSeperation.lower_bound(index); iter != MultVarSeperation.upper_bound(index); ++iter)
       {
-        if(res < StdDeg(iter->second))
+        if (res < StdDeg(iter->second))
         {
           res = StdDeg(iter->second);
         }

@@ -40,14 +40,14 @@ namespace CoCoA
       }
     }
 
-    void UniversalInvolutiveBasisContainer::myInitializeAndValidatePBMill(string fcnName) const
+    void UniversalInvolutiveBasisContainer::myInitializeAndValidatePBMill(const ErrorContext& FnName) const
     {
       if (pbMillPtr == nullptr)
       {
         myInitializeJBMill();
         if (!IamDeltaRegular())
         {
-          CoCoA_THROW_ERROR("This ideal is not delta regular", fcnName);
+          CoCoA_THROW_ERROR_WITH_CONTEXT2("This ideal is not delta regular", FnName);
         }
         // The ideal must be delta regular and the pb is not already generated
         CoCoA_ASSERT(IamDeltaRegular());
@@ -57,35 +57,35 @@ namespace CoCoA
       }
     }
 
-    void UniversalInvolutiveBasisContainer::myValidateHomogeneous(string fcnName) const
+    void UniversalInvolutiveBasisContainer::myValidateHomogeneous(const ErrorContext& FnName) const
     {
       if (!IamHomogeneous())
       {
-        CoCoA_THROW_ERROR("This ideal is not homogeneous", fcnName);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqHomog, FnName);
       }
     }
 
-    void UniversalInvolutiveBasisContainer::myValidateDegRevLexOrdering(string fcnName) const
+    void UniversalInvolutiveBasisContainer::myValidateDegRevLexOrdering(const ErrorContext& FnName) const
     {
-      if(!(IsStdDegRevLex(ordering(PPM(owner(generators.front()))))))
+      if (!(IsStdDegRevLex(ordering(PPM(owner(generators.front()))))))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, fcnName);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::PPOrder, FnName);
       }
     }
 
-    void UniversalInvolutiveBasisContainer::myValidateMonomialIdeal(string fcnName) const
+    void UniversalInvolutiveBasisContainer::myValidateMonomialIdeal(const ErrorContext& FnName) const
     {
       if (!IamMonomial())
       {
-        CoCoA_THROW_ERROR("This ideal is not monomial", fcnName);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2("Require monomial ideal", FnName);
       }
     }
 
-    void UniversalInvolutiveBasisContainer::myValidateCohenMacaulay(string fcnName) const
+    void UniversalInvolutiveBasisContainer::myValidateCohenMacaulay(const ErrorContext& FnName) const
     {
-      if(!IamCohenMacaulay())
+      if (!IamCohenMacaulay())
       {
-        CoCoA_THROW_ERROR("This ideal is not Cohen Macualay", fcnName);
+        CoCoA_THROW_ERROR_WITH_CONTEXT2("Require Cohen Macualay ideal", FnName);
       }
     }
 
@@ -221,8 +221,8 @@ namespace CoCoA
     {
       if (depth < 0)
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
-        myValidateHomogeneous(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
+        myValidateHomogeneous(CoCoA_ERROR_CONTEXT);
         depth = pbMillPtr->myDepth();
       }
       return depth;
@@ -232,8 +232,8 @@ namespace CoCoA
     {
       if (projDim < 0)
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
-        myValidateHomogeneous(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
+        myValidateHomogeneous(CoCoA_ERROR_CONTEXT);
         projDim = pbMillPtr->myProjDim();
       }
       return projDim;
@@ -243,10 +243,10 @@ namespace CoCoA
     {
       if (soclePtr == nullptr)
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
-        myValidateHomogeneous(__FUNCTION__);
-        myValidateDegRevLexOrdering(__FUNCTION__);
-        myValidateCohenMacaulay(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
+        myValidateHomogeneous(CoCoA_ERROR_CONTEXT);
+        myValidateDegRevLexOrdering(CoCoA_ERROR_CONTEXT);
+        myValidateCohenMacaulay(CoCoA_ERROR_CONTEXT);
         soclePtr = unique_ptr<vector<RingElem> >(new vector<RingElem>(pbMillPtr->mySocle()));
       }
       return *soclePtr;
@@ -256,9 +256,9 @@ namespace CoCoA
     {
       if (extremalBettiNumbers.empty())
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
-        myValidateHomogeneous(__FUNCTION__);
-        myValidateDegRevLexOrdering(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
+        myValidateHomogeneous(CoCoA_ERROR_CONTEXT);
+        myValidateDegRevLexOrdering(CoCoA_ERROR_CONTEXT);
         extremalBettiNumbers = pbMillPtr->myExtremalBettiNumbers();
       }
       return extremalBettiNumbers;
@@ -268,7 +268,7 @@ namespace CoCoA
     {
       if (regularSequence.empty())
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
         regularSequence = pbMillPtr->myRegSeq();
       }
       return regularSequence;
@@ -278,7 +278,7 @@ namespace CoCoA
     {
       if (maximalStronglyIndependentSet.empty())
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
         maximalStronglyIndependentSet = pbMillPtr->myMaxStronglyIndependentSet();
       }
       return maximalStronglyIndependentSet;
@@ -288,9 +288,9 @@ namespace CoCoA
     {
       if (regularity < 0)
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
-        myValidateHomogeneous(__FUNCTION__);
-        myValidateDegRevLexOrdering(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
+        myValidateHomogeneous(CoCoA_ERROR_CONTEXT);
+        myValidateDegRevLexOrdering(CoCoA_ERROR_CONTEXT);
         regularity = pbMillPtr->myRegularity();
       }
       return regularity;
@@ -300,9 +300,9 @@ namespace CoCoA
     {
       if (satiety < 0)
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
-        myValidateHomogeneous(__FUNCTION__);
-        myValidateDegRevLexOrdering(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
+        myValidateHomogeneous(CoCoA_ERROR_CONTEXT);
+        myValidateDegRevLexOrdering(CoCoA_ERROR_CONTEXT);
         satiety = pbMillPtr->mySatiety();
       }
       return satiety;
@@ -312,9 +312,9 @@ namespace CoCoA
     {
       if (saturation.empty())
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
-        myValidateHomogeneous(__FUNCTION__);
-        myValidateDegRevLexOrdering(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
+        myValidateHomogeneous(CoCoA_ERROR_CONTEXT);
+        myValidateDegRevLexOrdering(CoCoA_ERROR_CONTEXT);
         saturation = pbMillPtr->mySaturation();
       }
       return saturation;
@@ -324,7 +324,7 @@ namespace CoCoA
     {
       if (IsUncertain3(isCohenMacaulayRing))
       {
-        myInitializeAndValidatePBMill(__FUNCTION__);
+        myInitializeAndValidatePBMill(CoCoA_ERROR_CONTEXT);
         isCohenMacaulayRing = (myDepth() == myDimension());
       }
       return IsTrue3(isCohenMacaulayRing);

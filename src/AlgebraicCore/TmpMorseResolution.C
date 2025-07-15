@@ -261,11 +261,11 @@ namespace CoCoA
     {
       if (!IsStdDegRevLex(ordering(mill.myGetPPMonoid())))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
       if (!mill.IamHomogenous())
       {
-        CoCoA_THROW_ERROR("The ideal isn't homogenous", "JBMinimalResolution");
+        CoCoA_THROW_ERROR1(ERR::ReqHomog);
       }
       MorseResolution mg(mill);
       return mg.myComputeMinimalResolution();
@@ -280,7 +280,7 @@ namespace CoCoA
     {
       if (!IsStdDegRevLex(ordering(mill.myGetPPMonoid())))
       {
-        CoCoA_THROW_ERROR(ERR::PPOrder, "It must be the degrevlex ordering!!!");
+        CoCoA_THROW_ERROR2(ERR::PPOrder, "Require degrevlex ordering");
       }
 
       MorseResolution mg(mill);

@@ -1077,7 +1077,7 @@ namespace CoCoA
     }
     if (codim == 0)
     {
-      //  CoCoA_THROW_ERROR(ERR::BadArg, "AlgIndVarsListRec; codim = 0");
+      //  CoCoA_THROW_ERROR2(ERR::BadArg, "AlgIndVarsListRec; codim = 0");
       result.push_back(L);
       return result;
     }
