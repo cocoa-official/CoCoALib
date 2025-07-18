@@ -403,3 +403,16 @@ if gens(J) <> [1] then error("redmine 1647: obv redundant ideal generators - sum
 -- use ZZ/(101)[x,y,z,t];
 -- I := ideal(y^4 +x^2*t,  x^4 +z,  z^4 +x*t,  t^4 +y);
 -- GF := GroebnerFanIdeals(I); -- takes about 3.5 sec
+
+-------------------------------------------------------
+-- not on redmine  -- found at CoCoA School, Genoa 2025
+
+use P ::= QQ[x,y];
+f := x^3+y^2;
+use P2 ::= QQ[y];
+try
+  deg(f, y); --> used to give 3; now detects that f & y are in different rings
+  println "SHOULD NOT REACH HERE";
+UponError E do
+  -- Just discard the expected error
+endtry;

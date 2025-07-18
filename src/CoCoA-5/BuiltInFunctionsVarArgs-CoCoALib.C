@@ -84,6 +84,8 @@ DECLARE_BUILTIN_FUNCTION(deg) {  // AMB
   long i;
   if (!IsIndet(i,b->theRingElem))
     throw RuntimeException("must be an indet", ARG(1).exp);
+  if (owner(a->theRingElem) != owner(b->theRingElem))
+    throw RuntimeException("indet is in different ring from polynomial", ARG(1).exp);
   return Value::from(deg(a->theRingElem, i));
 }
 
