@@ -2170,6 +2170,11 @@ automatically when this function is called.
 ; Optional feature: syntax highlighting. doesn't work fully. 
 (add-hook 'cocoa5-comint-mode-hook 'cocoa5-syntax);; loses bindings in the menu!
 (add-hook 'cocoa5-mode-hook 'cocoa5-syntax)
+(add-hook 'cocoa5-comint-mode-hook  ;; this was suggested by ChatGPT 2025-07-23
+          (lambda ()
+            (setq font-lock-defaults '(cocoa5-font-lock-keywords))
+            (font-lock-mode 1)
+            (add-hook 'comint-output-filter-functions 'font-lock-fontify-buffer nil t)))
 
 ;(set 'pop-up-windows nil)
 
