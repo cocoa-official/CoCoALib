@@ -49,6 +49,16 @@ CoCoALib.pdf:  $(COCOA_ROOT)/configuration/version  $(DOC_SRCS)  $(AUX_DIR)/DocT
 	   sleep 2; \
 	   exit; \
 	 fi; \
+	 txt2tags --version >/dev/null 2>&1 ; \
+	 if [ $$? -ne 0 ]; \
+	 then \
+	   echo ">>>>>>>>>>>>>>>>>>>>>> WARNING <<<<<<<<<<<<<<<<<<<<<<"; \
+	   echo ">>>  Python not installed!   Please install it!   <<<"; \
+	   echo ">>>  Required for txt2tags (used to build doc)    <<<"; \
+	   echo ">>>>>>>>>>>>>>>>>>>> END WARNING <<<<<<<<<<<<<<<<<<<<"; \
+	   sleep 2; \
+	   exit; \
+	 fi; \
 	 $(MAKE)  $(TEX_DIR)/CoCoALib.tex  $(TEX_DIR)/cocoalib-doc.sty; \
 	 if [ \! -f "$(TEX_DIR)/CoCoALib.tex" ]; then echo; echo "ERROR!!!  FAILED TO MAKE $(TEX_DIR)/CoCoALib.tex"; echo; exit 1; fi; \
 	 echo "Doing LaTeX-->PDF"; \

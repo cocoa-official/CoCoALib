@@ -14,11 +14,22 @@ COCOA5_DOC_TEX_DIR=tex
 
 # Default target
 .PHONY: pdf-and-html-doc
-pdf-and-html-doc: $(COCOA5_DOC_HTML_DIR)/TimeStamp  $(COCOA5_DOC_TEX_DIR)/TimeStamp
+pdf-and-html-doc:  $(COCOA5_DOC_HTML_DIR)/TimeStamp  $(COCOA5_DOC_TEX_DIR)/TimeStamp
 
 # Target for HTML files: uses a TimeStamp to tell whether needs to be rebuilt
 $(COCOA5_DOC_HTML_DIR)/TimeStamp:  CoCoAHelp.xml  aux-files/GUI_help.xsl
-	/bin/mkdir -p $(COCOA5_DOC_HTML_DIR)
+	@command -v java >/dev/null 2>&1 || java --version >/dev/null 2>&1 ; \
+	 if [ $$? -ne 0 ]; \
+	 then \
+	   echo ">>>>>>>>>>>>>>>>>>>>>> WARNING <<<<<<<<<<<<<<<<<<<<<<"; \
+	   echo ">>>  Cannot build CoCoA-5 HTML documentation!     <<<"; \
+	   echo ">>>  Please install java (sorry!)                 <<<"; \
+	   echo ">>>>>>>>>>>>>>>>>>>> END WARNING <<<<<<<<<<<<<<<<<<<<"; \
+	   echo; \
+	   sleep 2; \
+	   exit; \
+	 fi; \
+	/bin/mkdir -p $(COCOA5_DOC_HTML_DIR); \
 	cd $(COCOA5_DOC_HTML_DIR); \
 	touch WillBecomeTimeStamp; \
 	java -jar  ../aux-files/saxon.jar  ../$(COCOA5_DOC_XML)  ../aux-files/GUI_help.xsl  CoCoAVersion="$(COCOA5_VER_MAJ).$(COCOA5_VER_MIN).$(COCOA5_VER_MINMIN)" ; \
@@ -27,7 +38,18 @@ $(COCOA5_DOC_HTML_DIR)/TimeStamp:  CoCoAHelp.xml  aux-files/GUI_help.xsl
 
 
 $(COCOA5_DOC_TEX_DIR)/TimeStamp:  CoCoAHelp.xml  aux-files/TeX.xsl  aux-files/TeX-extra-files/mybook.cls
-	/bin/mkdir -p $(COCOA5_DOC_TEX_DIR)
+	@command -v java >/dev/null 2>&1 || java --version >/dev/null 2>&1 ; \
+	 if [ $$? -ne 0 ]; \
+	 then \
+	   echo ">>>>>>>>>>>>>>>>>>>>>> WARNING <<<<<<<<<<<<<<<<<<<<<<"; \
+	   echo ">>>  Cannot build CoCoA-5 PDF documentation!      <<<"; \
+	   echo ">>>  Please install java (sorry!)                 <<<"; \
+	   echo ">>>>>>>>>>>>>>>>>>>> END WARNING <<<<<<<<<<<<<<<<<<<<"; \
+	   echo; \
+	   sleep 2; \
+	   exit; \
+	 fi; \
+	/bin/mkdir -p $(COCOA5_DOC_TEX_DIR); \
 	cd $(COCOA5_DOC_TEX_DIR); \
 	touch WillBecomeTimeStamp; \
 	java -jar ../aux-files/saxon.jar  ../$(COCOA5_DOC_XML)  ../aux-files/TeX.xsl  CoCoAVersion="$(COCOA5_VER_MAJ).$(COCOA5_VER_MIN).$(COCOA5_VER_MINMIN)"  > CoCoAManual.tex
