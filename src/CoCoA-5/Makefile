@@ -60,7 +60,7 @@ COMPILE5=$(COMPILE) $(CXXFLAGS_CUSTOM)  $(COCOA5_CXX_DEFINES)
 	$(COMPILE5) -c -o $@ $<
 
 
-CoCoAInterpreter: VersionInfo.o  CompilationDate.o
+CoCoAInterpreter:  VersionInfo.o  CompilationDate.o
 	@echo "CoCoAInterpreter: linking everything together"
 	$(COMPILE5) $(OBJS) CompilationDate.o -o CoCoAInterpreter  $(LDLIBS)  $(COCOA5_LDLIBS)  -lpthread
 	@#Next lines remove the *.dSYM directory which the Apple compiler creates
@@ -73,22 +73,22 @@ CoCoAInterpreter: VersionInfo.o  CompilationDate.o
 	fi
 
 
-VersionInfo.o: VersionInfo.C  check-version-defines  version.mk
+VersionInfo.o:  VersionInfo.C  check-version-defines  version.mk
 	@echo "Compiling VersionInfo.o (with special preprocessor flags)"
 	$(COMPILE) -c $(COCOA5_VERSION_DEFINES) -o VersionInfo.o VersionInfo.C
 
 
 .PHONY: cocoa5
-cocoa5: check-prerequisites-verbose  check-cocoalib
+cocoa5:  check-prerequisites-verbose  check-cocoalib
 	@$(MAKE) CoCoAInterpreter
 
-.PHONY: check-cocoalib
+.PHONY:  check-cocoalib
 check-cocoalib:
 	@(cd ../..; $(MAKE) -s lib)
 
 
 # This target checks that the 3 fields for the version are purely alphanumeric
-check-version-defines: check-version-defines.C  version.mk
+check-version-defines:  check-version-defines.C  version.mk
 	@$(COMPILE)  $(COCOA5_VERSION_DEFINES)  -o check-version-defines  check-version-defines.C
 	@./check-version-defines; if [ $$? -ne 0 ]; \
 	then \
@@ -116,7 +116,7 @@ check-prerequisites-verbose:
 
 
 .PHONY: check
-check: cocoa5
+check:  cocoa5
 	@cd tests; $(MAKE) -s check
 
 
@@ -124,7 +124,7 @@ check: cocoa5
 # This part is relevant only if the QT-gui is present
 
 .PHONY: Qt-gui
-Qt-gui: check-prerequisites-verbose  $(OBJS)  $(COCOA_LIB)  QCodeEdit/Makefile  C5Makefile
+Qt-gui:  check-prerequisites-verbose  $(OBJS)  $(COCOA_LIB)  QCodeEdit/Makefile  C5Makefile
 	@echo "-----------------------------------"
 	@echo ">>>>  Making the CoCoA Qt GUI  <<<<"
 	@echo "-----------------------------------"
@@ -149,7 +149,7 @@ C5Makefile:  $(COCOA_LIB)  C5.pro.in  make-c5makefile.sh
 
 
 .PHONY: install
-install: cocoa5 doc wordlist
+install:  cocoa5  doc  wordlist
 	@echo "===================================================================="
 	@echo ">>> WARNING: CoCoA-5 installation procedure is still PRELIMINARY <<<"
 	@echo "===================================================================="
@@ -165,13 +165,13 @@ install: cocoa5 doc wordlist
 	/bin/mkdir -m 755 "$$SUBDIR"; \
 	/bin/cp -r packages emacs "$$SUBDIR"; \
 	/bin/chmod 755 "$$SUBDIR/packages" "$$SUBDIR/emacs"; \
-	$(INSTALL_CMD) -m 755 cocoa5 CoCoAInterpreter "$$SUBDIR"; \
+	$(INSTALL_CMD) -m 755  cocoa5  CoCoAInterpreter "$$SUBDIR"; \
 	/bin/mkdir -m 755 "$$SUBDIR/CoCoAManual"; \
 	/bin/cp -r CoCoAManual/html  "$$SUBDIR/CoCoAManual"; \
-	$(INSTALL_CMD) -m 644 CoCoAManual/tex/CoCoAManual.pdf  "$$SUBDIR/CoCoAManual"; \
-	$(INSTALL_CMD) -m 644 CoCoAManual/CoCoAHelp.xml  "$$SUBDIR/CoCoAManual"; \
-	$(INSTALL_CMD) -m 644 CoCoAManual/wordlist.txt  "$$SUBDIR/CoCoAManual"; \
-	$(INSTALL_CMD) -m 644 ../../doc/CoCoATranslationTable.html  "$$SUBDIR/CoCoAManual"; \
+	$(INSTALL_CMD) -m 644  CoCoAManual/tex/CoCoAManual.pdf  "$$SUBDIR/CoCoAManual"; \
+	$(INSTALL_CMD) -m 644  CoCoAManual/CoCoAHelp.xml  "$$SUBDIR/CoCoAManual"; \
+	$(INSTALL_CMD) -m 644  CoCoAManual/wordlist.txt  "$$SUBDIR/CoCoAManual"; \
+	$(INSTALL_CMD) -m 644  ../../doc/CoCoATranslationTable.html  "$$SUBDIR/CoCoAManual"; \
 	/bin/rm -f "$(COCOA5_INSTALL_DIR)/cocoa5"; \
 	/bin/ln -s "$$SUBDIR/cocoa5" "$(COCOA5_INSTALL_DIR)"
 	@echo "CoCoA-5 installed in $(COCOA5_INSTALL_DIR)"
@@ -180,7 +180,7 @@ install: cocoa5 doc wordlist
 AllExamples.o: $(COCOA_ROOT)/configuration/autoconf.mk
 
 .PHONY: ManExamples
-ManExamples: cocoa5 OnlineHelp.o  PrintManExamples.o
+ManExamples:  cocoa5  OnlineHelp.o  PrintManExamples.o
 	$(COMPILE5) OnlineHelp.o  PrintManExamples.o  -o PrintManExamples $(LDLIBS)
 	/bin/rm -rf PrintManExamples.dSYM # Apple's compiler creates this dir
 	@echo "creating ManExamples-in.cocoa5 ...";
@@ -194,10 +194,10 @@ ManExamples: cocoa5 OnlineHelp.o  PrintManExamples.o
 	@echo "===================================================="
 
 
-wordlist.o: $(COCOA_ROOT)/configuration/autoconf.mk
+wordlist.o:  $(COCOA_ROOT)/configuration/autoconf.mk
 
 .PHONY: wordlist
-wordlist: $(COCOA5_WORDLIST)
+wordlist:  $(COCOA5_WORDLIST)
 
 $(COCOA5_WORDLIST):  OnlineHelp.C  wordlist.C  $(COCOA5_DOC_XML)
 	$(MAKE)  -s  OnlineHelp.o  wordlist.o
@@ -207,7 +207,7 @@ $(COCOA5_WORDLIST):  OnlineHelp.C  wordlist.C  $(COCOA5_DOC_XML)
 	@/bin/rm PrintWordlist
 
 .PHONY: doc
-doc:
+doc:  cocoa5
 	@(cd $(COCOA5_DOC_DIR); $(MAKE))
 
 
