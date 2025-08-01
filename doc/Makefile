@@ -49,13 +49,13 @@ CoCoALib.pdf:  $(COCOA_ROOT)/configuration/version  $(DOC_SRCS)  $(AUX_DIR)/DocT
 	   sleep 2; \
 	   exit; \
 	 fi; \
-	 txt2tags --version >/dev/null 2>&1 ; \
+	 ( cd txt; txt2tags -q -t tex -o /dev/null bool3.txt >/dev/null 2>&1 ) ; \
 	 if [ $$? -ne 0 ]; \
 	 then \
-	   echo ">>>>>>>>>>>>>>>>>>>>>> WARNING <<<<<<<<<<<<<<<<<<<<<<"; \
-	   echo ">>>  Python not installed!   Please install it!   <<<"; \
-	   echo ">>>  Required for txt2tags (used to build doc)    <<<"; \
-	   echo ">>>>>>>>>>>>>>>>>>>> END WARNING <<<<<<<<<<<<<<<<<<<<"; \
+	   echo ">>>>>>>>>>>>>>>>>>>>>> WARNING <<<<<<<<<<<<<<<<<<<<<<<<<"; \
+	   echo ">>>  txt2tags check failed -- python not installed?  <<<"; \
+	   echo ">>>  (txt2tags is needed to build doc)               <<<"; \
+	   echo ">>>>>>>>>>>>>>>>>>>> END WARNING <<<<<<<<<<<<<<<<<<<<<<<"; \
 	   sleep 2; \
 	   exit; \
 	 fi; \
