@@ -97,6 +97,16 @@ htmldoc:  $(COCOA_ROOT)/configuration/version  $(HTML_DIR)/cocoalib-doc.css  $(H
 	     sleep 2; \
 	     exit; \
 	   fi; \
+	 ( cd txt; txt2tags -q -t html -o /dev/null bool3.txt >/dev/null 2>&1 ) ; \
+	 if [ $$? -ne 0 ]; \
+	 then \
+	   echo ">>>>>>>>>>>>>>>>>>>>>> WARNING <<<<<<<<<<<<<<<<<<<<<<<<<"; \
+	   echo ">>>  txt2tags check failed -- python not installed?  <<<"; \
+	   echo ">>>  (txt2tags is needed to build doc)               <<<"; \
+	   echo ">>>>>>>>>>>>>>>>>>>> END WARNING <<<<<<<<<<<<<<<<<<<<<<<"; \
+	   sleep 2; \
+	   exit; \
+	 fi; \
 	   $(MAKE) -s $(DOC_HTML); \
 	 fi
 
