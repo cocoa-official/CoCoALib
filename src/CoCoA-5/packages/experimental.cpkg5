@@ -19,6 +19,10 @@ Export LegendrePoly;
 
 export Gens_Ker_Hom_Mod;
 
+export wdeg_mat;
+export IsHomog_mat;
+
+
 ------------------------------------------------------------------
 // 2024-08-13  not currently exported -- is it useful for anyone?
 define NextIndex(ref ind, limits)
@@ -474,5 +478,27 @@ define LegendrePoly(n,x)
   return sum([binomial(n,k)*binomial(n+k,k)* ((x-1)/2)^k | k in 0..n]);
 enddefine; -- LegendrePoly
   
+-------------------------------------------------------------------------------
+
+// for negative (or alternative) weights
+
+define wdeg_mat(f, WeightMat)
+  if not(type(WeightMat)=MAT) then error("arg 2 must be a matrix (of weights)"); endif;
+  if IsTerm(f) then
+    return GetCol(WeightMat * ColMat(exponents(f)), 1);
+  endif;
+  if NumRows(WeightMat)=1 then
+    return [max([GetCol(WeightMat * ColMat(exponents(t)), 1)[1] | t in support(f)])];
+  endif;
+  error("arg 1 must be a term, or a poly and arg 2 with one row");
+enddefine; -- wdeg_mat
+
+
+define IsHomog_mat(f, WeightMat)
+  if not(type(WeightMat)=MAT) then error("arg 2 must be a matrix (of weights)"); endif;
+  if f=0 then return true; endif;
+  return  len(MakeSet([ wdeg_mat(t, WeightMat) | t in support(f) ])) = 1;
+enddefine; -- IsHomog_mat
+
   
 EndPackage;
