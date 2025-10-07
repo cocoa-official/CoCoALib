@@ -65,7 +65,7 @@ namespace MathSAT
     long myNumIndetsValue;
     //    std::vector<msat_term> myIndets;
     std::vector<std::string> myIndetNames;
-    mutable msat_env myEnvValue; // need "mutable"?
+    /*mutable*/ msat_env myEnvValue; // need "mutable"?
   };
 
   void AddConstraint(env& E, RelOp, ConstMatrixView M);
