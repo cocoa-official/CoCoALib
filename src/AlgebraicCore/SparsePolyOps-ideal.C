@@ -748,7 +748,7 @@ namespace CoCoA
   
   std::vector<RingElem> SparsePolyRingBase::IdealImpl::myGBasisTrunc_compute(long TruncDeg, const CpuTimeLimit& CheckForTimeout) const
   {
-    if (TruncDeg <= 0) CoCoA_THROW_ERROR1(ERR::ReqPositive); 
+    if (TruncDeg < 0) CoCoA_THROW_ERROR1(ERR::ReqNonNegative); 
     vector<RingElem> MinGens;
     vector<RingElem> GB;
     ComputeGBasisTrunc(GB, MinGens, TruncDeg, myGensValue, CheckForTimeout);

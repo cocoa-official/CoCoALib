@@ -185,7 +185,7 @@ namespace CoCoA
       return;
     }
     SparsePolyRing SPR(owner(inGens));
-    CoCoA_ASSERT_ALWAYS(TruncDeg > 0);
+    CoCoA_ASSERT_ALWAYS(TruncDeg >= 0);
     if (!IsField(CoeffRing(SPR)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     if (GradingDim(SPR)!=1)  CoCoA_THROW_ERROR1(ERR::ReqGradingDim1);
     if (!IsHomog(inGens))  CoCoA_THROW_ERROR1(ERR::ReqHomog);
