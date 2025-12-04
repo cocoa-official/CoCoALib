@@ -26,7 +26,7 @@
 #include "CoCoA/RingHom.H"
 #include "CoCoA/error.H"
 #include "CoCoA/ideal.H"
-#include "CoCoA/FGModule.H"
+#include "CoCoA/FinGenModule.H"
 //#include "CoCoA/MatrixForOrdering.H"
 //#include "CoCoA/TmpUniversalInvolutiveBasisContainer.H"
 
@@ -237,7 +237,7 @@ namespace CoCoA
       virtual void InvNonMultVars(std::map<PPMonoidElem, std::vector<bool> >& NonMultVars) const;
       virtual void InvHilbertPol(RingElem& HilbertPol, ConstRefRingElem var) const;
       virtual void InvHilbertSeries(RingElem& HilbertSeries, ConstRefRingElem var) const;
-      virtual void InvFirstSyzygy(FGModule& syz) const;
+      virtual void InvFirstSyzygy(FinGenModule& syz) const;
       virtual long InvDimension() const;
       virtual void InvComplementaryDecomposition(std::vector<std::pair<PPMonoidElem, std::vector<bool> > >& CompDecomp) const;
       virtual long InvDepth() const;

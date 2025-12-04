@@ -59,7 +59,7 @@ SRCS=time.C assert.C utils.C  utils-gmp.C  VectorOps.C  ProgressReporter.C  Buil
      TmpGPoly.C  TmpGPair.C  TmpGReductor.C  TmpGRStats.C  TmpGOperations.C \
      SugarDegree.C  SparsePolyOps-reduce.C \
      ReductionCog.C  geobucket.C \
-     module.C  FGModule.C  FreeModule.C  submodule.C  QuotientModule.C \
+     module.C  FinGenModule.C  FreeModule.C  submodule.C  QuotientModule.C \
      ModuleOrdering.C \
      ApproxPts.C  ApproxPts2.C  TmpLDP.C \
      RingExtAlg.C  RingWeyl.C \

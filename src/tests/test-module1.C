@@ -47,14 +47,14 @@ namespace CoCoA
 //   for (int i=0; i < dim; ++i)
 //     for (int j=0; j < dim; ++j)
 //       CoCoA_ASSERT_ALWAYS(Fgens[i][j] == (i==j));
-    CoCoA_ASSERT_ALWAYS(IsFGModule(F));
+    CoCoA_ASSERT_ALWAYS(IsFinGenModule(F));
 
     const ModuleElem& e0 = Fgens[0];
     const ModuleElem& e1 = Fgens[1];
     const ModuleElem& e2 = Fgens[2];
     const ModuleElem& e3 = Fgens[3];
 
-    const FGModule M = submodule(1*e0 +2*e1 +3*e2 +4*e3, 4*e0 +3*e1 +2*e2 +1*e3);
+    const FinGenModule M = submodule(1*e0 +2*e1 +3*e2 +4*e3, 4*e0 +3*e1 +2*e2 +1*e3);
     vector<ModuleElem> Mgens = gens(M);
 
     CoCoA_ASSERT_ALWAYS(gens(M).size() == 2);

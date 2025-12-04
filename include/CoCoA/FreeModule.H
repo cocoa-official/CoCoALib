@@ -18,7 +18,7 @@
 //   You should have received a copy of the GNU General Public License
 //   along with CoCoALib.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "CoCoA/FGModule.H"
+#include "CoCoA/FinGenModule.H"
 #include "CoCoA/degree.H"
 
 namespace CoCoA
@@ -32,17 +32,17 @@ namespace CoCoA
   class ModuleOrderingCtor;   // fwd decl -- defined in ModuleOrdering.H
   class SparsePolyRing;       // fwd decl -- defined in SparsePolyRing.H
 
-  class FreeModuleBase: public FGModuleBase
+  class FreeModuleBase: public FinGenModuleBase
   {};
 
-  class FreeModule: public FGModule
+  class FreeModule: public FinGenModule
   {
   public:
     // Default copy ctor is OK.
     /*implicit*/ FreeModule(const module& M);
     FreeModule(const module& M, const ErrorContext& ErrCtx);
     explicit FreeModule(const FreeModuleBase* MPtr);
-    // Assignment is disabled because it is disabled for module & FGModule
+    // Assignment is disabled because it is disabled for module & FinGenModule
 ///???    ~FreeModule();
 
     const FreeModuleBase* operator->() const;  // allow const member fns to be called
@@ -75,17 +75,17 @@ namespace CoCoA
 
 
   inline FreeModule::FreeModule(const module& M):
-      FGModule(FreeModulePtr(M,CoCoA_ERROR_CONTEXT))
+      FinGenModule(FreeModulePtr(M,CoCoA_ERROR_CONTEXT))
   {}
 
 
   inline FreeModule::FreeModule(const module& M, const ErrorContext& ErrCtx):
-      FGModule(FreeModulePtr(M,ErrCtx))
+      FinGenModule(FreeModulePtr(M,ErrCtx))
   {}
 
 
   inline FreeModule::FreeModule(const FreeModuleBase* MPtr):
-      FGModule(MPtr)
+      FinGenModule(MPtr)
   {}
 
 //   class GradedFreeModule: public FreeModule  // copied from SparsePolyRing

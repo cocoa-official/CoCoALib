@@ -142,7 +142,7 @@ namespace CoCoA
       NotElemQuotientRing,// Operation makes sense only for elements of a quotient ring
       ReqElemSparsePolyRing,// Operation makes sense only for elements of a sparse polynomial ring
       ReqChar0,          // Characteristic must be 0
-      ReqFGModule,       // Module must be Finitely Generated, but is not
+      ReqFinGenModule,   // Module must be Finitely Generated, but is not
       ReqField,          // Ring must be a field, but is not
       NotFracField,      // Ring must be a FractionField, but is not
       ReqFreeModule,     // Module must be free, but is not

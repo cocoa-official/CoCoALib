@@ -613,7 +613,7 @@ hp(q) = \summe_{t \in T}((q - q_t + k_t - 1)(q - q_t))
       return NewFreeModuleForSyz(jb);
     }
 
-    FGModule JBMill::mySyzygy() const
+    FinGenModule JBMill::mySyzygy() const
     {
       std::vector<ModuleElem> GenSyz;
       FreeModule FModule = myMakeNewFreeModuleForSyz(); //generates the module

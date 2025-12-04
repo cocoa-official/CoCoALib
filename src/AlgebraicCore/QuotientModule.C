@@ -21,7 +21,7 @@
 #include "CoCoA/QuotientModule.H"
 
 #include "CoCoA/BigIntOps.H"
-#include "CoCoA/FGModule.H"
+#include "CoCoA/FinGenModule.H"
 #include "CoCoA/FreeModule.H"
 #include "CoCoA/MemPool.H"
 #include "CoCoA/OpenMath.H"
@@ -36,14 +36,14 @@ using std::ostream;
 namespace CoCoA
 {
 
-  class QuotientModuleImpl: public FGModuleBase
+  class QuotientModuleImpl: public FinGenModuleBase
   {
     // Two typedefs to save typing.
     typedef ModuleBase::RawPtr RawPtr;
     typedef const ModuleBase::RawPtr& ConstRawPtr;
 
   public:
-    QuotientModuleImpl(const FGModule& Mnumer, const FGModule& Mdenom);
+    QuotientModuleImpl(const FinGenModule& Mnumer, const FinGenModule& Mdenom);
     long myNumCompts() const override;
     const ring& myRing() const override;
     const FreeModule& myAmbientFreeModule() const override;
@@ -74,8 +74,8 @@ namespace CoCoA
 
   private: // data members
     const FreeModule myM;
-    const FGModule myNumer;
-    const FGModule myDenom;
+    const FinGenModule myNumer;
+    const FinGenModule myDenom;
     std::vector<ModuleElem> myGensArray;
     mutable bool myTidyGensIsValid;
     mutable std::vector<ModuleElem> myTidyGensArray;
@@ -84,7 +84,7 @@ namespace CoCoA
 
 
 
-  QuotientModuleImpl::QuotientModuleImpl(const FGModule& Mnumer, const FGModule& Mdenom):
+  QuotientModuleImpl::QuotientModuleImpl(const FinGenModule& Mnumer, const FinGenModule& Mdenom):
       myM(AmbientFreeModule(Mnumer)),
       myNumer(Mnumer),
       myDenom(Mdenom)
@@ -225,8 +225,8 @@ namespace CoCoA
   { return myM->myIsEqual(rawv, raww); }
 
 
-  FGModule NewQuotientModule(const FGModule& Mnumer, const FGModule& Mdenom)
-  { return FGModule(new QuotientModuleImpl(Mnumer, Mdenom)); }
+  FinGenModule NewQuotientModule(const FinGenModule& Mnumer, const FinGenModule& Mdenom)
+  { return FinGenModule(new QuotientModuleImpl(Mnumer, Mdenom)); }
 
 
 }  // end of namespace CoCoA

@@ -17,7 +17,7 @@
 For normal use there are only a few functions of interest:
 
 :  ``NewFreeModule(R, NumCompts)``
-    creates an object of type FGModule representing the free module of
+    creates an object of type FinGenModule representing the free module of
     dimension NumCompts over the ring R.
 
 :  ``FreeModule(M)``
@@ -34,7 +34,7 @@ For normal use there are only a few functions of interest:
 
 
 :  ``NewFreeModule(R, NumCompts, shifts)``
-    creates an object of type FGModule representing the free module of
+    creates an object of type FinGenModule representing the free module of
     dimension NumCompts over the ring R.  R must be a PolyRing, and
     shifts is a vector<degree> containing NumCompts elements, the i-th
     element being the shift applied to degrees of values in the i-th
@@ -45,7 +45,7 @@ For normal use there are only a few functions of interest:
 %======================================================================
 
 I shall suppose that the maintainer documentation for modules and
-FGModules has already been read and digested.  It could also be helpful
+FinGenModules has already been read and digested.  It could also be helpful
 to have read ring.txt since the "design philosophy" here imitates that
 used for rings.
 

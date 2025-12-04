@@ -38,7 +38,7 @@ namespace CoCoA
 	class degree;
 	class ideal;
 	class matrix;
-	class FGModule;
+	class FinGenModule;
 	class module;
 	class ModuleElem;
 	class ring;
@@ -149,8 +149,8 @@ namespace CoCoA
   long NumCompts_forC5(const module& M);
   ModuleElem NewFreeModuleElem(const module& M, const std::vector<RingElem>& v);
   const std::vector<ModuleElem>& CanonicalBasis_forC5(const module& F);
-  FGModule SubmoduleCols_forC5(const module& F, ConstMatrixView M);
-  FGModule SubmoduleRows_forC5(const module& F, ConstMatrixView M);
+  FinGenModule SubmoduleCols_forC5(const module& F, ConstMatrixView M);
+  FinGenModule SubmoduleRows_forC5(const module& F, ConstMatrixView M);
 
   // Delete me if you want to (by Nico Mexis)
   RingElem GraeffeN_forC5(ConstRefRingElem f, const BigInt& N);

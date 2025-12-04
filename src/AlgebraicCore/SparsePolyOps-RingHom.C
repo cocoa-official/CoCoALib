@@ -27,7 +27,7 @@
 #include "CoCoA/CpuTimeLimit.H"
 #include "CoCoA/DUPFp.H"
 #include "CoCoA/DenseMatrix.H" // for MultiplicationMat/myDiv
-#include "CoCoA/FGModule.H"  // for myGcd
+#include "CoCoA/FinGenModule.H"  // for myGcd
 #include "CoCoA/MatrixOps.H" // for LinSolve
 #include "CoCoA/MatrixView.H" // for ZeroMat
 #include "CoCoA/OpenMath.H"
