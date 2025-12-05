@@ -64,7 +64,7 @@ namespace CoCoA
     vector<ModuleElem> g;
     g.push_back(x*e[0] + z*e[1]);
     g.push_back(z*e[0] + y*e[1]);
-    FGModule M = submodule(FM, g);
+    FinGenModule M = submodule(FM, g);
     cout << "TidyGens(M) = " << TidyGens(M) << endl;
     // [Vector(z, y), Vector(x, z), Vector(0, xy - z^2)];
   }
@@ -81,7 +81,7 @@ namespace CoCoA
     vector<ModuleElem> g;
     g.push_back(x*e[0] + z*e[1]);
     g.push_back(z*e[0] + y*e[1]);
-    FGModule M = submodule(FM, g);
+    FinGenModule M = submodule(FM, g);
     cout << "TidyGens(M) = " << TidyGens(M) << endl;
     // [Vector(z, y), Vector(x, z)];
   }

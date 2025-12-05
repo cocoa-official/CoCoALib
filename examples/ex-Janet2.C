@@ -144,7 +144,7 @@ void program()
   cout << mill.myHilbertSeries(qx) << endl << endl;
 
   cout << "generators of the first syzygy" << endl;
-  FGModule firstSyz = mill.mySyzygy();
+  FinGenModule firstSyz = mill.mySyzygy();
 
   vector<ModuleElem> gensFirstSyz = gens(firstSyz);
   for(vector<ModuleElem>::iterator iter = gensFirstSyz.begin(); iter != gensFirstSyz.end(); ++iter)

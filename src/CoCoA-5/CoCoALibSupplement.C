@@ -870,14 +870,14 @@ namespace CoCoA {
 
   long NumCompts_forC5(const module& M)
   {
-    if (!IsFGModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
+    if (!IsFinGenModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFinGenModule);
     return NumCompts(M);
   }
 
 
   ModuleElem NewFreeModuleElem(const module& M, const vector<RingElem>& v)
   {
-    if (!IsFreeModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
+    if (!IsFreeModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFinGenModule);
     const vector<ModuleElem>& e = gens(M);
     if (len(e) != len(v))  CoCoA_THROW_ERROR1(ERR::IncompatDims);
     ModuleElem res(M);
@@ -888,21 +888,21 @@ namespace CoCoA {
 
   const std::vector<ModuleElem>& CanonicalBasis_forC5(const module& F)
   {
-    if (!IsFreeModule(F))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
+    if (!IsFreeModule(F))  CoCoA_THROW_ERROR1(ERR::ReqFinGenModule);
     return CanonicalBasis(FreeModule(F));
   }
   
 
-  FGModule SubmoduleCols_forC5(const module& F, ConstMatrixView M)
+  FinGenModule SubmoduleCols_forC5(const module& F, ConstMatrixView M)
   {
-    if (!IsFreeModule(F))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
+    if (!IsFreeModule(F))  CoCoA_THROW_ERROR1(ERR::ReqFinGenModule);
     return SubmoduleCols(F, M);
   }
 
 
-  FGModule SubmoduleRows_forC5(const module& F, ConstMatrixView M)
+  FinGenModule SubmoduleRows_forC5(const module& F, ConstMatrixView M)
   {
-    if (!IsFreeModule(F))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
+    if (!IsFreeModule(F))  CoCoA_THROW_ERROR1(ERR::ReqFinGenModule);
     return SubmoduleRows(F, M);
   }
 

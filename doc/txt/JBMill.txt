@@ -58,7 +58,7 @@ In the following let ``elem`` be a ``RingElem``.
 - ``myHilbertPol(elem)`` -- ``elem`` must be a single indent. The method computes the Hilbert polynomial of the ideal in terms of ``elem``.
 - ``myHilbertFunc(n)`` -- ``n`` must be a ``BigInt``. The method computes the dimension of P/I in degree ``n``.
 - ``myHilbertSeries(elem)`` -- ``elem`` must be a single indent of a fraction field. The method computes the Hilbert series of the ideal in terms of ``elem``.
-- ``mySyzygy()`` -- Compute the first involutive syzygy and returns a ``FGModule``.
+- ``mySyzygy()`` -- Compute the first involutive syzygy and returns a ``FinGenModule``.
 - ``myDim()`` -- Computes the dimension of P/I.
 - ``myCls(ppelem)`` -- Computes the class of ``ppelem`` which is of type ``PPMonoidElem``. the class starts counting at ``0`` up to ``n - 1``. The cls of ``1`` is ``-1``. It returns a ``long``.
 - ``myMinCls()`` -- Computes the minimal class of all LPP's of the Janet basis as long.

@@ -410,7 +410,7 @@ void test_mySyzygy(){
   pols.push_back(x[0]);
   JBMill mill(JBMill::Builder().setInput(pols));
 
-  FGModule firstSyz = mill.mySyzygy();
+  FinGenModule firstSyz = mill.mySyzygy();
   vector<ModuleElem> gensFirstSyz = gens(firstSyz);
   CoCoA_ASSERT_ALWAYS(0 == gensFirstSyz.size());
 }
@@ -548,7 +548,7 @@ void test_TrivialJB(){
   //Test -- JBNormalForm
   CoCoA_ASSERT_ALWAYS(IsZero(OneMill.myJNormalForm(elem)));
   //Test -- JBSyzygy
-  FGModule firstSyz = OneMill.mySyzygy();
+  FinGenModule firstSyz = OneMill.mySyzygy();
   std::vector<ModuleElem> gensFirstSyz = gens(firstSyz);
   CoCoA_ASSERT_ALWAYS(0 == gensFirstSyz.size());
   //Test -- JBDim

@@ -125,8 +125,8 @@ namespace CoCoA
   class FreeModuleImpl: public FreeModuleBase
   {
     // Two typedefs to save typing.
-    typedef FGModuleBase::RawPtr RawPtr;
-    typedef FGModuleBase::ConstRawPtr ConstRawPtr;
+    typedef FinGenModuleBase::RawPtr RawPtr;
+    typedef FinGenModuleBase::ConstRawPtr ConstRawPtr;
 
   protected:
     friend FreeModule NewFreeModule(const ring& R, long NumCompts);
@@ -438,8 +438,8 @@ namespace CoCoA
   class FreeModuleSpPRImpl: public FreeModuleImpl
   {
     // should I use RawPtrs? it would make the code uglier
-    //    typedef FGModuleBase::RawPtr RawPtr;
-    //    typedef FGModuleBase::ConstRawPtr ConstRawPtr;
+    //    typedef FinGenModuleBase::RawPtr RawPtr;
+    //    typedef FinGenModuleBase::ConstRawPtr ConstRawPtr;
 
     class CmpBase
     {
@@ -977,21 +977,21 @@ namespace CoCoA
 
 //   ConstRefRingElem FreeModuleElem::operator[](long pos) const
 //   {
-// //     if (!IsFGModule(owner(*this)))
-// //       CoCoA_THROW_ERROR2(ERR::NotFGModule, "FreeModuleElem[pos]");
-//     if (pos < 0 || pos >= NumCompts(AsFGModule(owner(*this))))
+// //     if (!IsFinGenModule(owner(*this)))
+// //       CoCoA_THROW_ERROR2(ERR::NotFinGenModule, "FreeModuleElem[pos]");
+//     if (pos < 0 || pos >= NumCompts(AsFinGenModule(owner(*this))))
 //       CoCoA_THROW_ERROR2(ERR::BadComptIndex, "FreeModuleElem[pos]");
-//     return AsFGModule(owner(*this))->myCompt(raw(*this), pos);
+//     return AsFinGenModule(owner(*this))->myCompt(raw(*this), pos);
 //   }
 
 
 //   RingElem& FreeModuleElem::operator[](long pos)
 //   {
-// //     if (!IsFGModule(owner(*this)))
-// //       CoCoA_THROW_ERROR2(ERR::NotFGModule, "FreeModuleElem[pos]");
-//     if (pos < 0 || pos >= NumCompts(AsFGModule(owner(*this))))
+// //     if (!IsFinGenModule(owner(*this)))
+// //       CoCoA_THROW_ERROR2(ERR::NotFinGenModule, "FreeModuleElem[pos]");
+//     if (pos < 0 || pos >= NumCompts(AsFinGenModule(owner(*this))))
 //       CoCoA_THROW_ERROR2(ERR::BadComptIndex, "FreeModuleElem[pos]");
-//     return AsFGModule(owner(*this))->myCompt(raw(*this), pos);
+//     return AsFinGenModule(owner(*this))->myCompt(raw(*this), pos);
 //   }
 
 

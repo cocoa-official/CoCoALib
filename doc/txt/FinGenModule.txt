@@ -1,19 +1,19 @@
-      FGModule
+      FinGenModule
       Copyright (c)  2005  John Abbott,  Anna M. Bigatti
       GNU Free Documentation License, Version 1.2
 %!includeconf: ../aux-txt2tags/config.t2t
-      TeXTitle{FGModule}{John Abbott}
+      TeXTitle{FinGenModule}{John Abbott}
 
 
 
-== User documentation for FGModule ==
+== User documentation for FinGenModule ==
 %======================================================================
 
-``FGModule`` is a reference counting smart pointer to an object of type
-``FGModuleBase``.  Its value represents a Finitely Generated
-Module.  Most modules in CoCoALib will probably actually be ``FGModules``.
+``FinGenModule`` is a reference counting smart pointer to an object of type
+``FinGenModuleBase``.  Its value represents a Finitely Generated
+Module.  Most modules in CoCoALib will probably actually be ``FinGenModules``.
 
-Let ``v`` be a ``ModuleElem`` belonging to an ``FGModule``.  Then
+Let ``v`` be a ``ModuleElem`` belonging to an ``FinGenModule``.  Then
 we can access the various components of ``v`` using a syntax like that
 for indexing into a ``std::vector``.  Thus ``v[n]`` gives the ``n``-th
 component (which will be a ``RingElem``.
@@ -23,7 +23,7 @@ component (which will be a ``RingElem``.
 - [ex-module1.C   ../../examples/index.html#ex-module1.C]
 -
 
-== Maintainer documentation for FGModule ==
+== Maintainer documentation for FinGenModule ==
 %======================================================================
 
 Um.
@@ -34,8 +34,8 @@ Um.
 
 Documentation does not exist.
 
-There was a suggestion to merge module.* with FGModule.* based on
-the reasoning that in practice all modules will (probably) be FGModules,
+There was a suggestion to merge module.* with FinGenModule.* based on
+the reasoning that in practice all modules will (probably) be FinGenModules,
 so the distinction is rather pointless.
 
-FGModule.C is jolly small -- probably some code is missing.
+FinGenModule.C is jolly small -- probably some code is missing.
