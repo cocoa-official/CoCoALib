@@ -1510,7 +1510,7 @@ intrusive_ptr<RingDefinition> Parser::parseRingDefinition() {
 				}
                                   // fall through
 				default:
-					throw UnexpectedTokenException("Expecting PosTo, ToPos, Lex, Xel, DegLex, DegRevLex, Ord or Elim", lastToken);
+					throw UnexpectedTokenException("Expecting Lex, Xel, DegLex, or DegRevLex", lastToken);
 				}
 			}
 		}
