@@ -20,7 +20,7 @@
 //   along with CoCoALib.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "CoCoA/PolyRing.H"
-#include "CoCoA/FGModule.H"
+#include "CoCoA/FinGenModule.H"
 
 #include <map>
 #include <vector>
@@ -45,7 +45,7 @@ namespace CoCoA
     std::map<PPMonoidElem, std::vector<bool> > NonMultVars(const ideal& I);
     RingElem HilbertPol(const ideal& I, ConstRefRingElem var);
     RingElem HilbertSeries(const ideal& I, ConstRefRingElem var);
-    FGModule FirstSyzygy(const ideal& I);
+    FinGenModule FirstSyzygy(const ideal& I);
     long Dimension(const ideal& I);
     std::vector<std::pair<PPMonoidElem, std::vector<bool> > > ComplementaryDecomposition(const ideal& I);
     long Depth(const ideal& I);

@@ -1,0 +1,32 @@
+%=== HTML ===========================================================
+%!options(html): --toc   --style=cocoalib-doc.css
+
+%%% ignore TeXTitle and put a link to the index page
+%!postproc(html):  TeXTitle{(.*?)}{(.*?)}  '<center><a href="index.html">CoCoALib Documentation Index</a></center>'
+
+%%% copyright symbol
+%!postproc(html):  'Copyright \(c\)'  '&copy;'
+
+%%% make [[..]] into links
+%!preproc(html): '\[\[([a-zA-Z0-9-]+) ([a-zA-Z0-9-]+)\]\]' '[``\1`` \2 \1.html#\2]'
+%!preproc(html): '\[\[(.*?)\]\]'   '[``\1`` \1.html]'
+
+%=== TeX ============================================================
+%!options(tex): --toc --enum-title
+
+%%% change size
+%!style(tex): a4paper
+%!style(tex): cocoalib-doc.sty
+%!postproc(tex): {a4paper} [a4paper]{geometry}
+%!postproc(tex): blue,colorlinks=true blue
+
+%%% make section and label
+%!postproc(tex):  TeXTitle\\{(.*?)\\}\\{(.*?)\\}  '\\section{\1 (\2)}  \\label{sec:\1}'
+
+%%% make [[..]] into links
+%!postproc(tex): '\[\[(debug\\_new)\]\]'   '\\texttt{\1} (Sec.\\ref{sec:debug-new})'
+%!postproc(tex): '\[\[(leak\\_checker)\]\]' '\\texttt{\1} (Sec.\\ref{sec:leak-checker})'
+%!preproc(tex): '\[\[([a-zA-Z0-9-]+) ([a-zA-Z0-9-]+)\]\]'   '[[\1!@#\2]]'
+%!postproc(tex): '\[\[([a-zA-Z0-9-]+)!@\\#([a-zA-Z0-9-]+)\]\]'  '\\texttt{\1} \2 (Sec.\\ref{sec:\1})'
+%!postproc(tex): '\[\[([a-zA-Z0-9-]+)\]\]'  '\\texttt{\1} (Sec.\\ref{sec:\1})'
+%!postproc(tex): ' "'  ' ``'

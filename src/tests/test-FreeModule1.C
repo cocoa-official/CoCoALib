@@ -55,7 +55,7 @@ namespace CoCoA
 //   for (long i=0; i < dim; ++i)
 //     for (long j=0; j < dim; ++j)
 //       CoCoA_ASSERT_ALWAYS(Fgens[i][j] == (i==j));
-    CoCoA_ASSERT_ALWAYS(IsFGModule(F));
+    CoCoA_ASSERT_ALWAYS(IsFinGenModule(F));
 
 
     ModuleElem v1 = (x[0]-x[1])*e[0] + (x[0]*x[0]-x[1]*x[2])*e[1]

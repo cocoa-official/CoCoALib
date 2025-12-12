@@ -12,11 +12,11 @@ const string ShortDescription =
   "some simple arithmetic.                                              \n";
 
 const string LongDescription =
-  "This program illustrates basic operations on BigInt values, showing that   \n"
-  "they can be used much like normal C++ ints except that there is a almost   \n"
-  "no limit on the magnitude of the values.                                   \n"
-  "NB If you need extreme efficiency then use the GMP library directly.       \n"
-  "Contrast this example with ex-RingZZ1.                                     \n";
+  "This program illustrates basic operations on BigInt values, showing that \n"
+  "they can be used much like normal C++ ints except that there is a almost \n"
+  "no limit on the magnitude of the values.                                 \n"
+  "NB If you need extreme efficiency then use the GMP library directly.     \n"
+  "Contrast this example with ex-RingZZ1.                                   \n";
 //-----------------------------------------------------------------------------
 
 
@@ -31,8 +31,8 @@ namespace CoCoA
 
     BigInt N1;       // default ctor, initial value is 0.
     BigInt N2(99);   // ctor from a machine integer.
-//BigInt N2 = 99;  *** WARNING: this syntax DOES NOT WORK *** (it won't even compile!)
-    BigInt N3 = BigIntFromString("12345678901234567890"); // ctor from string or C string
+    //BigInt N2 = 99;  *** THIS SYNTAX DOES NOT WORK *** (it won't compile!)
+    BigInt N3 = BigIntFromString("12345678901234567890"); // ctor from string
 
     // Basic arithmetic: the usual syntax works.
     // You can do arithmetic between BigInts and machine integers too.

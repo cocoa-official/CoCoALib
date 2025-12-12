@@ -29,32 +29,32 @@ namespace CoCoA
 {
 
   class ConstMatrixView;  // forward declaration -- defined in MatrixView.H
-  class FGModule;    // forward declaration -- defined in FGModule.H
-  class FreeModule;    // forward declaration -- defined in FGModule.H
+  class FinGenModule;    // forward declaration -- defined in FinGenModule.H
+  class FreeModule;    // forward declaration -- defined in FinGenModule.H
   class ModuleElem;  // forward declaration -- defined in module.H
   class RingElem;  // forward declaration -- defined in ring.H
   class ideal;  // forward declaration -- defined in ideal.H
   class module;  // forward declaration -- defined in module.H
 
-  FGModule submodule(const FGModule& M, const std::vector<ModuleElem>& gens);
-  FGModule submodule(const std::vector<ModuleElem>& gens);
-  FGModule submodule(const ModuleElem& v1);
-  FGModule submodule(const ModuleElem& v1, const ModuleElem& v2);
-  FGModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3);
-  FGModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3, const ModuleElem& v4);
-  FGModule SubmoduleCols(const FGModule& F, ConstMatrixView M);
-  FGModule SubmoduleRows(const FGModule& F, ConstMatrixView M);
-  FGModule SubmoduleOfMinGens(const FGModule& F);
-  FGModule syz(const std::vector<RingElem>& g);
-  FGModule syz(const FreeModule& F, const std::vector<RingElem>& g);
-  FGModule SyzOfGens(const FreeModule& F, const ideal& I);
-  FGModule SyzOfGens(const FreeModule& F, const FGModule& N);
-  FGModule SyzOfGens(const ideal& I);
-  FGModule SyzOfGens(const FGModule& N);
+  FinGenModule submodule(const FinGenModule& M, const std::vector<ModuleElem>& gens);
+  FinGenModule submodule(const std::vector<ModuleElem>& gens);
+  FinGenModule submodule(const ModuleElem& v1);
+  FinGenModule submodule(const ModuleElem& v1, const ModuleElem& v2);
+  FinGenModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3);
+  FinGenModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3, const ModuleElem& v4);
+  FinGenModule SubmoduleCols(const FinGenModule& F, ConstMatrixView M);
+  FinGenModule SubmoduleRows(const FinGenModule& F, ConstMatrixView M);
+  FinGenModule SubmoduleOfMinGens(const FinGenModule& F);
+  FinGenModule syz(const std::vector<RingElem>& g);
+  FinGenModule syz(const FreeModule& F, const std::vector<RingElem>& g);
+  FinGenModule SyzOfGens(const FreeModule& F, const ideal& I);
+  FinGenModule SyzOfGens(const FreeModule& F, const FinGenModule& N);
+  FinGenModule SyzOfGens(const ideal& I);
+  FinGenModule SyzOfGens(const FinGenModule& N);
   bool IsElem(const ModuleElem& v, const module& M);
   bool IsContained(const module& M, const module& N);
   bool IsHomog(const module& M);
-  FGModule LT(const module& M);
+  FinGenModule LT(const module& M);
 
 } // end of namespace CoCoA
 

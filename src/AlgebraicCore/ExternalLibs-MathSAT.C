@@ -103,13 +103,12 @@ namespace CoCoA
                                   const std::vector<std::string>& MSIndetNames)
       {
         msat_term res = msat_make_number(MSE, "0");
-        mpq_t q;
-        mpq_init(q);
+        BigRat q;
         long v;
         for (SparsePolyIter iter=BeginIter(L); !IsEnded(iter); ++iter)
         {
-          mpq_set(q, mpqref(ConvertTo<BigRat>(coeff(iter))));
-          msat_term c = msat_make_mpq_number(MSE, q);
+          q = ConvertTo<BigRat>(coeff(iter));
+          msat_term c = msat_make_mpq_number(MSE, mpqref(q));
           if (IsOne(PP(iter)))  res = msat_make_plus(MSE, res, c);
           else
           {
@@ -130,17 +129,16 @@ namespace CoCoA
                              const std::vector<std::string>& MSIndetNames)
       {
         CoCoA_ASSERT_ALWAYS(i>=0 && i<NumRows(M));
-        mpq_t q;
-        mpq_init(q);
+        BigRat q;
         long v = NumCols(M);
         --v;
         // change sign to constant term: 1 2 3 ==> 1*x+2*y 3 <=> 0
-        mpq_set(q, mpqref(ConvertTo<BigRat>(M(i,v))));
-        msat_term res = msat_make_mpq_number(MSE, q);
+        q = ConvertTo<BigRat>(M(i,v));
+        msat_term res = msat_make_mpq_number(MSE, mpqref(q));
         for (--v; v>=0; --v)
         {
-          mpq_set(q, mpqref(ConvertTo<BigRat>(M(i,v))));
-          msat_term c = msat_make_mpq_number(MSE, q);
+          q = ConvertTo<BigRat>(M(i,v));
+          msat_term c = msat_make_mpq_number(MSE, mpqref(q));
           msat_term x = IndetToMathSAT(MSE, MSIndetNames[v]);
           res = msat_make_plus(MSE, res, msat_make_times(MSE, c, x));
         }
@@ -228,7 +226,7 @@ namespace CoCoA
 //                       "/Users/bigatti/Desktop/trace.smt2");
       // MathSAT debug ------------------------------------------
       myEnvValue = msat_create_env(cfg);
-      msat_destroy_config(cfg);
+      msat_destroy_config(cfg); // no longer needed after creating of myEnvValue
     }
 
 
@@ -400,6 +398,7 @@ namespace CoCoA
         long idx = MathSAT::GetCoeffIndetIndex(t);
         SetEntry(M,  idx,0,   ans);
       }
+      msat_destroy_model_iterator(it);
       //VERBOSE(91) << "while total time = " << CpuTime()-t0 << endl;
       return M;
     }

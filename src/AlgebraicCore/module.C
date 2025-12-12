@@ -20,7 +20,7 @@
 
 #include "CoCoA/module.H"
 
-#include "CoCoA/FGModule.H"
+#include "CoCoA/FinGenModule.H"
 #include "CoCoA/FreeModule.H"
 #include "CoCoA/error.H"
 #include "CoCoA/ring.H"
@@ -87,10 +87,10 @@ namespace CoCoA
   ConstRefRingElem ModuleElem::operator[](long pos) const
   {
     const module& M = owner(*this);
-    if (!IsFGModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFGModule);
+    if (!IsFinGenModule(M))  CoCoA_THROW_ERROR1(ERR::ReqFinGenModule);
     if (pos < 0 || pos >= NumCompts(M))
       CoCoA_THROW_ERROR1(ERR::BadIndex);
-    return FGModulePtr(M)->myCompt(raw(*this), pos);
+    return FinGenModulePtr(M)->myCompt(raw(*this), pos);
   }
 
 

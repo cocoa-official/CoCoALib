@@ -90,7 +90,7 @@ namespace CoCoA
     return IdealOfMinGens(I);
   }
 
-  FGModule minimalize(const FGModule& M)
+  FinGenModule minimalize(const FinGenModule& M)
   {
     LogObsolescentFn("minimalize", "use \"SubmoduleOfMinGens\"");
     return SubmoduleOfMinGens(M);

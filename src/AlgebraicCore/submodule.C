@@ -42,7 +42,7 @@ using std::vector;
 namespace CoCoA
 {
 
-  class SubmoduleImpl: public FGModuleBase
+  class SubmoduleImpl: public FinGenModuleBase
   {
     // Two typedefs to save typing.
     typedef ModuleBase::RawPtr RawPtr;
@@ -215,7 +215,7 @@ namespace CoCoA
 
   bool IsElem(const ModuleElem& v, const module& M)
   {
-    CoCoA_ASSERT(IsFGModule(M));
+    CoCoA_ASSERT(IsFinGenModule(M));
     if (owner(v) != AmbientFreeModule(M))  CoCoA_THROW_ERROR1(ERR::MixedModules);
     //    return I->IhaveElem(raw(r));
     //??? for FGmodule only 
@@ -270,11 +270,11 @@ namespace CoCoA
 
   //-- pseudo-ctors
 
-  FGModule submodule(const FGModule& M, const std::vector<ModuleElem>& gens)
-  { return FGModule(new SubmoduleImpl(M, gens)); }
+  FinGenModule submodule(const FinGenModule& M, const std::vector<ModuleElem>& gens)
+  { return FinGenModule(new SubmoduleImpl(M, gens)); }
 
 
-  FGModule submodule(const std::vector<ModuleElem>& gens)
+  FinGenModule submodule(const std::vector<ModuleElem>& gens)
   {
     if (gens.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     if (!HasUniqueOwner(gens))  CoCoA_THROW_ERROR1(ERR::MixedModules);
@@ -282,7 +282,7 @@ namespace CoCoA
   }
 
 
-  FGModule submodule(const ModuleElem& v1)
+  FinGenModule submodule(const ModuleElem& v1)
   {
     vector<ModuleElem> gens;
     gens.push_back(v1);
@@ -290,7 +290,7 @@ namespace CoCoA
   }
   
 
-  FGModule submodule(const ModuleElem& v1, const ModuleElem& v2)
+  FinGenModule submodule(const ModuleElem& v1, const ModuleElem& v2)
   {
     vector<ModuleElem> gens;
     gens.push_back(v1);gens.push_back(v2);
@@ -298,7 +298,7 @@ namespace CoCoA
   }
   
 
-  FGModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3)
+  FinGenModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3)
   {
     vector<ModuleElem> gens;
     gens.push_back(v1);gens.push_back(v2);gens.push_back(v3);
@@ -306,7 +306,7 @@ namespace CoCoA
   }
   
 
-  FGModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3, const ModuleElem& v4)
+  FinGenModule submodule(const ModuleElem& v1, const ModuleElem& v2, const ModuleElem& v3, const ModuleElem& v4)
   {
     vector<ModuleElem> gens;
     gens.push_back(v1);gens.push_back(v2);gens.push_back(v3);gens.push_back(v4);
@@ -314,7 +314,7 @@ namespace CoCoA
   }
   
 
-  FGModule SubmoduleCols(const FGModule& F, ConstMatrixView M)
+  FinGenModule SubmoduleCols(const FinGenModule& F, ConstMatrixView M)
   {
     const std::vector<ModuleElem>& e = gens(F);
     const long nrows = NumRows(M);
@@ -324,11 +324,11 @@ namespace CoCoA
     for (long i=0; i<nrows; ++i)
       for (long j=0; j<ncols; ++j)
         g[j] += M(i,j) * e[i];
-    return FGModule(new SubmoduleImpl(F, g));
+    return FinGenModule(new SubmoduleImpl(F, g));
   }
   
 
-  FGModule SubmoduleRows(const FGModule& F, ConstMatrixView M)
+  FinGenModule SubmoduleRows(const FinGenModule& F, ConstMatrixView M)
   {
     const std::vector<ModuleElem>& e = gens(F);
     const long nrows = NumRows(M);
@@ -342,14 +342,14 @@ namespace CoCoA
   }
 
 
-  FGModule SubmoduleOfMinGens(const FGModule& F)
+  FinGenModule SubmoduleOfMinGens(const FinGenModule& F)
   {
     if (IsFreeModule(F)) return F;
     return submodule(AmbientFreeModule(F), MinGens(F));
   }
   
 
-  matrix GensAsRows(const FGModule& Mod)
+  matrix GensAsRows(const FinGenModule& Mod)
   {
     const std::vector<ModuleElem>& g = gens(Mod);
     matrix M = NewDenseMat(RingOf(Mod), len(g), NumCompts(Mod));
@@ -362,7 +362,7 @@ namespace CoCoA
   }
   
 
-  matrix GensAsCols(const FGModule& Mod)
+  matrix GensAsCols(const FinGenModule& Mod)
   {
     const std::vector<ModuleElem>& g = gens(Mod);
     matrix M = NewDenseMat(RingOf(Mod), NumCompts(Mod), len(g));
@@ -402,11 +402,11 @@ namespace CoCoA
   } // anonymous
   
 
-  FGModule syz(const std::vector<RingElem>& g)
+  FinGenModule syz(const std::vector<RingElem>& g)
   { return syz(NewFreeModuleForSyz(g, CoCoA_ERROR_CONTEXT), g); }
 
 
-  FGModule syz(const FreeModule& F, const std::vector<RingElem>& g)
+  FinGenModule syz(const FreeModule& F, const std::vector<RingElem>& g)
   {
     if (g.empty())  CoCoA_THROW_ERROR1(ERR::ReqNonEmpty);
     if (!IsField(CoeffRing(RingOf(F))))  CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
@@ -434,11 +434,11 @@ namespace CoCoA
   }
 
 
-  FGModule SyzOfGens(const FreeModule& F, const ideal& I)
+  FinGenModule SyzOfGens(const FreeModule& F, const ideal& I)
   { return syz(F, gens(I)); }
 
 
-  FGModule SyzOfGens(const FreeModule& F, const FGModule& N)
+  FinGenModule SyzOfGens(const FreeModule& F, const FinGenModule& N)
   {
     if (!IsField(CoeffRing(RingOf(F))))  CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
     if (NumCompts(F)!=len(gens(N)))  CoCoA_THROW_ERROR1(ERR::IncompatDims);
@@ -462,7 +462,7 @@ namespace CoCoA
   }
   
 
-  FGModule SyzOfGens(const ideal& I)
+  FinGenModule SyzOfGens(const ideal& I)
   {
     if (!IsField(CoeffRing(RingOf(I))))
       CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
@@ -476,7 +476,7 @@ namespace CoCoA
   }
   
 
-  FGModule SyzOfGens(const FGModule& N)
+  FinGenModule SyzOfGens(const FinGenModule& N)
   {
     if (!IsField(CoeffRing(RingOf(N))))
       CoCoA_THROW_ERROR2(ERR::NYI, "coeffs not in a field");//???
@@ -493,7 +493,7 @@ namespace CoCoA
   bool IsContained(const module& M, const module& N)
   {
     if (!IsSparsePolyRing(RingOf(M)))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
-    const FGModule M_fg(M, CoCoA_ERROR_CONTEXT);
+    const FinGenModule M_fg(M, CoCoA_ERROR_CONTEXT);
     const vector<ModuleElem>& g = gens(M_fg);
     for (long i=0; i < len(g); ++i)
       if (!IsElem(g[i], N)) return false;
@@ -503,7 +503,7 @@ namespace CoCoA
 
   bool IsHomog(const module& M)
   {
-    const FGModule M_fg(M, CoCoA_ERROR_CONTEXT);
+    const FinGenModule M_fg(M, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing P(RingOf(M_fg), CoCoA_ERROR_CONTEXT);
 ////    if (!IsSparsePolyRing(RingOf(M)))
 ////      CoCoA_THROW_ERROR1(ERR::NotSparsePolyRing); 
@@ -521,9 +521,9 @@ namespace CoCoA
   // intersection
 
 
-  FGModule LT(const module& M)
+  FinGenModule LT(const module& M)
   {
-    const FGModule M_fg(M, CoCoA_ERROR_CONTEXT);
+    const FinGenModule M_fg(M, CoCoA_ERROR_CONTEXT);
     const SparsePolyRing P(RingOf(M_fg), CoCoA_ERROR_CONTEXT);
 //// if (!IsSparsePolyRing(RingOf(M)))  CoCoA_THROW_ERROR1(ERR::NotSparsePolyRing);
 ////    const SparsePolyRing P = RingOf(M); 
@@ -541,7 +541,7 @@ namespace CoCoA
   }
 
 
-//   FGModule SubmoduleOfGBasis(const module& M)
+//   FinGenModule SubmoduleOfGBasis(const module& M)
 //   {
 //     ideal J(RingOf(I), GBasis(I));
 //     SetGBasisAsGens(J);

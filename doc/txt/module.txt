@@ -9,7 +9,7 @@
 == User documentation for the classes module, ModuleBase, ModuleElem ==
 %======================================================================
 
-You may also wish to look at the documentation for [[FGModule]]
+You may also wish to look at the documentation for [[FinGenModule]]
 the type which represents (explicitly) Finitely Generated Modules.
 
 The classes ``module``, ``ModuleBase`` and ``ModuleElem`` are closely linked
@@ -74,7 +74,7 @@ v *= r                     v /= r
 v1 == v2                   v1 != v2
 IsZero(v1)                 cout << v1
 
-v[pos]  // throws if the module is not FGModule 
+v[pos]  // throws if the module is not FinGenModule 
 ```
 
 In every case it is an error to combine/compare ``ModuleElems`` belonging to

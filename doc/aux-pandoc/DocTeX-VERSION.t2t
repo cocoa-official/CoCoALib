@@ -1,6 +1,6 @@
-    CoCoALib-VERSION_NUMBER documentation
+    CoCoALib-0.99855 documentation
     John Abbott and Anna M. Bigatti
-    DATE_OF_CREATION
+    2025-07-31
 
 %!target: tex
 %!includeconf: config.t2t
@@ -49,7 +49,7 @@
 %----- F -----
 %!include: ../txt/factor.txt
 %!include: ../txt/factorization.txt
-%!include: ../txt/FinGenModule.txt
+%!include: ../txt/FGModule.txt
 %!include: ../txt/FieldIdeal.txt
 %!include: ../txt/FloatApprox.txt
 %!include: ../txt/FractionField.txt

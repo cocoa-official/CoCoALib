@@ -16,29 +16,29 @@
 //   along with CoCoALib.  If not, see <http://www.gnu.org/licenses/>.
 
 
-// Source code for classes FGModule and FGModuleBase
+// Source code for classes FinGenModule and FinGenModuleBase
 
-#include "CoCoA/FGModule.H"
+#include "CoCoA/FinGenModule.H"
 #include "CoCoA/utils.H" // for len
 
 
 namespace CoCoA
 {
 
-  const FGModuleBase* FGModulePtr(const module& M)
-  { return dynamic_cast<const FGModuleBase*>(M.myRawPtr()); }
+  const FinGenModuleBase* FinGenModulePtr(const module& M)
+  { return dynamic_cast<const FinGenModuleBase*>(M.myRawPtr()); }
 
   
-  const FGModuleBase* FGModulePtr(const module& M, const ErrorContext& ErrCtx)
+  const FinGenModuleBase* FinGenModulePtr(const module& M, const ErrorContext& ErrCtx)
   {
-    const FGModuleBase* ptr = FGModulePtr(M);
+    const FinGenModuleBase* ptr = FinGenModulePtr(M);
     if (ptr == nullptr)
-      CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqFGModule, ErrCtx);
+      CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqFinGenModule, ErrCtx);
     return ptr;
   }
 
 
-  bool FGModuleBase::IamZero() const
+  bool FinGenModuleBase::IamZero() const
   {
     const std::vector<ModuleElem>& g = myGens();
     for (long i=0; i<len(g); ++i)

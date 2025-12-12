@@ -22,9 +22,9 @@
 namespace CoCoA
 {
 
-  class FGModule; // forward declaration -- defined in FGModule.H
+  class FinGenModule; // forward declaration -- defined in FinGenModule.H
 
-  FGModule NewQuotientModule(const FGModule& Mnumer, const FGModule& Mdenom);
+  FinGenModule NewQuotientModule(const FinGenModule& Mnumer, const FinGenModule& Mdenom);
 
 } // end of namespace CoCoA
 

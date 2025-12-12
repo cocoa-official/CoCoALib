@@ -799,7 +799,7 @@ example of how to use BOOST pools.
 </task>
 
 <!-- ===  TASK  =============================================== -->
-<task>  <title>Module and FGModule</title>
+<task>  <title>Module and FinGenModule</title>
 <high-priority>false</high-priority>
 <authors>Abbott+Bigatti</authors>
 <status>inactive</status>
@@ -807,8 +807,8 @@ example of how to use BOOST pools.
 <lastnews-date>2008-02-11</lastnews-date>
 <compl-date></compl-date>
   <description>
-Decide whether <code>module</code> and <code>FGModule</code> should be
-merged or kept distinct.  Note that the documentation for <code>FGModule</code>
+Decide whether <code>module</code> and <code>FinGenModule</code> should be
+merged or kept distinct.  Note that the documentation for <code>FinGenModule</code>
 is largely absent.  A considerable overhaul is needed.  Time est.: 3 weeks.
   </description>
 </task>

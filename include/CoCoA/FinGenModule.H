@@ -1,5 +1,5 @@
-#ifndef CoCoA_FGModule_H
-#define CoCoA_FGModule_H
+#ifndef CoCoA_FinGenModule_H
+#define CoCoA_FinGenModule_H
 
 //   Copyright (c)  2004-2009  John Abbott,  Anna M. Bigatti
 
@@ -27,7 +27,7 @@
 //using std::vector;
 
 
-// Header file for the classes FGModule and FGModuleBase
+// Header file for the classes FinGenModule and FinGenModuleBase
 // FG = Finitely Generated (i.e. submodules and quotients of free modules).
 
 namespace CoCoA
@@ -36,24 +36,24 @@ namespace CoCoA
   class FreeModule;   // fwd decl -- defined in FreeModule.H
   class matrix;       // fwd decl -- defined in matrix.H
 
-  class FGModuleBase; // forward declaration
-  class FGModule: public module
+  class FinGenModuleBase; // forward declaration
+  class FinGenModule: public module
   {
   public:
     // Default copy ctor is OK.
-    /*implicit*/ FGModule(const module& M);
-    FGModule(const module& M, const ErrorContext& ErrCtx);
-    explicit FGModule(const FGModuleBase* MPtr);   //??? public???
+    /*implicit*/ FinGenModule(const module& M);
+    FinGenModule(const module& M, const ErrorContext& ErrCtx);
+    explicit FinGenModule(const FinGenModuleBase* MPtr);   //??? public???
     // Assignment effectively disabled (because CoCoA::module has no assignment)
     // default dtor is fine
 
-    const FGModuleBase* myModulePtr() const;
-    const FGModuleBase* operator->() const;  // allow const member fns to be called
+    const FinGenModuleBase* myModulePtr() const;
+    const FinGenModuleBase* operator->() const;  // allow const member fns to be called
   };
 
 
 
-  class FGModuleBase: public ModuleBase
+  class FinGenModuleBase: public ModuleBase
   {
   public:
     typedef ModuleRawPtr RawPtr;
@@ -71,72 +71,72 @@ namespace CoCoA
 
   long NumCompts(const module& M); // inline
   long NumCompts(const ModuleElem& v); // inline
-  const std::vector<ModuleElem>& gens(const FGModule& M); // inline
-  const std::vector<ModuleElem>& MinGens(const FGModule& M, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit()); // inline
-  const std::vector<ModuleElem>& TidyGens(const FGModule& M, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit()); // inline
-  bool IsFGModule(const module& M);
-  const FGModuleBase* FGModulePtr(const module& M);
-  const FGModuleBase* FGModulePtr(const module& M, const ErrorContext& ErrCtx);
+  const std::vector<ModuleElem>& gens(const FinGenModule& M); // inline
+  const std::vector<ModuleElem>& MinGens(const FinGenModule& M, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit()); // inline
+  const std::vector<ModuleElem>& TidyGens(const FinGenModule& M, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit()); // inline
+  bool IsFinGenModule(const module& M);
+  const FinGenModuleBase* FinGenModulePtr(const module& M);
+  const FinGenModuleBase* FinGenModulePtr(const module& M, const ErrorContext& ErrCtx);
 
-  matrix GensAsRows(const FGModule& M);
-  matrix GensAsCols(const FGModule& M);
+  matrix GensAsRows(const FinGenModule& M);
+  matrix GensAsCols(const FinGenModule& M);
 
 
   /////////////////////////////////////////////////////////////////////////////
   // Inline functions
 
 
-  inline bool IsFGModule(const module& M)
-  { return FGModulePtr(M) != nullptr; }
+  inline bool IsFinGenModule(const module& M)
+  { return FinGenModulePtr(M) != nullptr; }
 
 
-  inline FGModule::FGModule(const module& M):
-      module(FGModulePtr(M,CoCoA_ERROR_CONTEXT))
+  inline FinGenModule::FinGenModule(const module& M):
+      module(FinGenModulePtr(M,CoCoA_ERROR_CONTEXT))
   {}
 
-  inline FGModule::FGModule(const module& M, const ErrorContext& ErrCtx):
-      module(FGModulePtr(M,ErrCtx))
+  inline FinGenModule::FinGenModule(const module& M, const ErrorContext& ErrCtx):
+      module(FinGenModulePtr(M,ErrCtx))
   {}
 
 
-  inline FGModule::FGModule(const FGModuleBase* MPtr):
+  inline FinGenModule::FinGenModule(const FinGenModuleBase* MPtr):
       module(MPtr)
   {}
 
 
-  inline const FGModuleBase* FGModule::myModulePtr() const
-  { return static_cast<const FGModuleBase*>(myRawPtr()); }
+  inline const FinGenModuleBase* FinGenModule::myModulePtr() const
+  { return static_cast<const FinGenModuleBase*>(myRawPtr()); }
 
 
-  inline const FGModuleBase* FGModule::operator->() const
-  { return static_cast<const FGModuleBase*>(myRawPtr()); }
+  inline const FinGenModuleBase* FinGenModule::operator->() const
+  { return static_cast<const FinGenModuleBase*>(myRawPtr()); }
 
 
   inline long NumCompts(const module& M)
-  { return FGModulePtr(M,CoCoA_ERROR_CONTEXT)->myNumCompts(); }
+  { return FinGenModulePtr(M,CoCoA_ERROR_CONTEXT)->myNumCompts(); }
 
 
   inline long NumCompts(const ModuleElem& v)
   { return NumCompts(owner(v)); }
 
 
-  inline const FreeModule& AmbientFreeModule(const FGModule& M)
+  inline const FreeModule& AmbientFreeModule(const FinGenModule& M)
   { return M->myAmbientFreeModule(); }
 
 
-  inline const std::vector<ModuleElem>& gens(const FGModule& M)
+  inline const std::vector<ModuleElem>& gens(const FinGenModule& M)
   { return M->myGens(); }
 
 
-  inline long NumGens(const FGModule& M)
+  inline long NumGens(const FinGenModule& M)
   { return len(M->myGens()); }
 
 
-  inline const std::vector<ModuleElem>& MinGens(const FGModule& M, const CpuTimeLimit& CheckForTimeout)
+  inline const std::vector<ModuleElem>& MinGens(const FinGenModule& M, const CpuTimeLimit& CheckForTimeout)
   { return M->myMinGens(CheckForTimeout); }
 
 
-  inline const std::vector<ModuleElem>& TidyGens(const FGModule& M, const CpuTimeLimit& CheckForTimeout)
+  inline const std::vector<ModuleElem>& TidyGens(const FinGenModule& M, const CpuTimeLimit& CheckForTimeout)
   { return M->myTidyGens(CheckForTimeout); }
 
 } // end of namespace CoCoA

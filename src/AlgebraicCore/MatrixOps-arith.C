@@ -63,7 +63,8 @@ namespace CoCoA
         CheckForInterrupt("Matrix multiplication");
         RingElem tmp(Rleft);
         for (long k=0; k < N; ++k)
-          tmp += Mleft(i,k)*Mright(k,j);
+          if (!IsZero(Mleft(i,k)) && !IsZero(Mright(k,j))) // helpful if matrix is somewhat "sparse"
+            tmp += Mleft(i,k)*Mright(k,j);
         SetEntry(ans, i, j, tmp);
       }
     return ans;

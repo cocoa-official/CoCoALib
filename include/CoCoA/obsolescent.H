@@ -51,7 +51,7 @@ namespace CoCoA
 
   // Added 2017-11-20
   ideal minimalize(const ideal& I);       // use IdealOfMinGens
-  FGModule minimalize(const FGModule& M); // use SubmoduleOfMinGens
+  FinGenModule minimalize(const FinGenModule& M); // use SubmoduleOfMinGens
   
 
   // Added 2018-09-29

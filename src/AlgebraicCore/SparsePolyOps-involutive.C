@@ -26,7 +26,7 @@
 #include "CoCoA/CpuTimeLimit.H"
 #include "CoCoA/DUPFp.H"
 #include "CoCoA/DenseMatrix.H" // for MultiplicationMat/myDiv
-#include "CoCoA/FGModule.H"  // for myGcd
+#include "CoCoA/FinGenModule.H"  // for myGcd
 #include "CoCoA/MatrixOps.H" // for LinSolve
 #include "CoCoA/MatrixView.H" // for ZeroMat
 #include "CoCoA/OpenMath.H"
@@ -167,12 +167,12 @@ namespace CoCoA
   }
 
 
-  FGModule Involutive::FirstSyzygy(const ideal& I)
+  FinGenModule Involutive::FirstSyzygy(const ideal& I)
   {
     if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
     const SparsePolyRingBase::IdealImpl* const ptrI =
       SparsePolyRingBase::IdealImpl::ourGetPtr(I);
-    FGModule syz = NewFreeModule(RingOf(I), 1); // fake initialization
+    FinGenModule syz = NewFreeModule(RingOf(I), 1); // fake initialization
     ptrI->InvFirstSyzygy(syz);
     return syz;
   }
@@ -326,7 +326,7 @@ namespace CoCoA
   { HilbertSeries = myInvBasisContainerPtr->myHilbertSeries(var); }
 
 
-  void SparsePolyRingBase::IdealImpl::InvFirstSyzygy(FGModule& syz) const
+  void SparsePolyRingBase::IdealImpl::InvFirstSyzygy(FinGenModule& syz) const
   { syz = myInvBasisContainerPtr->myFirstSyzygy(); }
 
 

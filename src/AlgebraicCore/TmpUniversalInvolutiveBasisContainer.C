@@ -177,12 +177,12 @@ namespace CoCoA
       }
     }
 
-    FGModule UniversalInvolutiveBasisContainer::myFirstSyzygy() const
+    FinGenModule UniversalInvolutiveBasisContainer::myFirstSyzygy() const
     {
       if (firstSyzygyPtr == nullptr)
       {
         myInitializeJBMill();
-        firstSyzygyPtr = unique_ptr<FGModule>(new FGModule(jbMillPtr->mySyzygy()));
+        firstSyzygyPtr = unique_ptr<FinGenModule>(new FinGenModule(jbMillPtr->mySyzygy()));
       }
       return *firstSyzygyPtr;
     }
