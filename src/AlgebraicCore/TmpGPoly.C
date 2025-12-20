@@ -664,18 +664,17 @@ clog << "operator+=: result " <<myPoly<< endl;
 //   }
 
 
-  // forward declaration of class GPoly needed.
-  void monic(std::list<GPoly>& GPL)
-  {
-    if (GPL.empty())
-      return;
-    const SparsePolyRing P(owner(GPL));
-    for (GPoly& g: GPL)
-    {
-      g.myPolyValue= monic(g.myPolyValue);
-      g.myLCValue = one(P);
-    }
-  }//monic
+  // // forward declaration of class GPoly needed.
+  // void MakeMonic(std::list<GPoly>& GPL)
+  // {
+  //   if (GPL.empty())  return;
+  //   const SparsePolyRing P(owner(GPL));
+  //   for (GPoly& g: GPL)
+  //   {
+  //     g.myPolyValue= monic(g.myPolyValue);
+  //     g.myLCValue = one(P);
+  //   }
+  // } // MakeMonic
 
 
   SparsePolyRing owner(const PolyList& thePL)
@@ -722,20 +721,20 @@ clog << "operator+=: result " <<myPoly<< endl;
     }
   }//PolyVector2PolyList
 
-  // power(y_1y_2..y_k,d_1d_2..d_k)=y_1^d_1y_2^d_2..y_k^d_k
-  void power(RingElem& theResult,
-             const std::vector<RingElem>& theV,
-             const degree& the_d)
-  {
-    CoCoA_ASSERT(len(theV)==GradingDim(the_d));
-     CoCoA_ASSERT(GradingDim(owner(theResult))==GradingDim(the_d));
-     const SparsePolyRing SPR=owner(theResult);
-     theResult=one(SPR);
-     if (theV.empty())
-       return;
-     for (long j=0; j < GradingDim(SPR); ++j)
-       theResult*=power(theV[j],the_d[j]);
-  }//power
+  // // power(y_1y_2..y_k,d_1d_2..d_k)=y_1^d_1y_2^d_2..y_k^d_k
+  // void power(RingElem& theResult,
+  //            const std::vector<RingElem>& theV,
+  //            const degree& the_d)
+  // {
+  //   CoCoA_ASSERT(len(theV)==GradingDim(the_d));
+  //    CoCoA_ASSERT(GradingDim(owner(theResult))==GradingDim(the_d));
+  //    const SparsePolyRing SPR=owner(theResult);
+  //    theResult=one(SPR);
+  //    if (theV.empty())
+  //      return;
+  //    for (long j=0; j < GradingDim(SPR); ++j)
+  //      theResult*=power(theV[j],the_d[j]);
+  // }//power
 
 
 }// end namespace cocoa

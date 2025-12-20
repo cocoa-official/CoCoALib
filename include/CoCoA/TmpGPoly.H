@@ -164,7 +164,7 @@ typedef std::list<GPoly> GPolyList;
                                                                    // GPoly if we are using the Dynamic Algorithm. NEVER use it if you can avoid it
 
     void myUpdateLenLPPLCDegComp();
-    friend void monic(std::list<GPoly>&);
+    ///    friend void MakeMonic(std::list<GPoly>&);
     //    friend void ChooseReduction(char r='g');   ///< 'g' = geobucket; 'b' = basic;
 
     /**@name Private functions defined in reduce.C*/
@@ -192,11 +192,11 @@ typedef std::list<GPoly> GPolyList;
   //  std::vector<GPoly*>::const_iterator FindReducer(const geobucket&, const std::vector<GPoly*>& G);
 
 
-   void monic(PolyList&);
-   void monic(GPolyList&);
-   void power(RingElem& theResult,
-               const std::vector<RingElem>& theV,
-               const degree& the_d);
+  //  void MakeMonic(PolyList&);
+  //  void MakeMonic(GPolyList&);
+  // void power(RingElem& theResult,   /// 20251212 is this really used?
+  //              const std::vector<RingElem>& theV,
+  //              const degree& the_d);
 
   // -------------------- inline functions -------------------- //
 

@@ -122,6 +122,24 @@ namespace CoCoA
   }//ComputeGBasis
 
 
+  namespace // anonymous
+  { // namespace // anonymous ----------------------------------------------
+    
+    void MakeMonic(PolyList& PL)
+    {
+      for (RingElem& g: PL)  g = monic(g);
+    }
+
+
+    bool IsEveryWDegLtEq(const PolyList& F, long D)
+    {
+      for (auto& f:F)  if (wdeg(f)[0] > D) return false;
+      return true;
+    }
+    
+  } // namespace // anonymous ----------------------------------------------
+  
+
   void ComputeGBasis(PolyList& outGB, PolyList& outMinGens, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout)
   {
     if (inGens.empty())
@@ -152,7 +170,7 @@ namespace CoCoA
       outGB.clear();//just to remember to clean this up
       outMinGens.clear();//just to remember to clean this up
       outGB = WithDenominator1Hom(TmpGB, SPR);
-      monic(outGB);  //  2016-11-22: make monic
+      MakeMonic(outGB);  //  2016-11-22: make monic
       outMinGens = WithDenominator1Hom(TmpMinGens, SPR);
     }
     else
@@ -167,15 +185,6 @@ namespace CoCoA
   }//ComputeGBasis
   
 
-  namespace { // anonymous
-    bool NoWDegGt(const PolyList& F, long D)
-    {
-      for (auto& f:F)  if (wdeg(f)[0] > D) return false;
-      return true;
-    }
-  }
-  
-    
   void ComputeGBasisTrunc(PolyList& outGB, PolyList& outMinGens, long& TruncDeg, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout)
   {
     if (inGens.empty())
@@ -185,7 +194,7 @@ namespace CoCoA
       return;
     }
     SparsePolyRing SPR(owner(inGens));
-    CoCoA_ASSERT_ALWAYS(TruncDeg >= 0);
+    CoCoA_ASSERT_ALWAYS(TruncDeg >= 0); // user TruncDeg must be >=0
     if (!IsField(CoeffRing(SPR)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     if (GradingDim(SPR)!=1)  CoCoA_THROW_ERROR1(ERR::ReqGradingDim1);
     if (!IsHomog(inGens))  CoCoA_THROW_ERROR1(ERR::ReqHomog);
@@ -197,27 +206,31 @@ namespace CoCoA
       GRingInfo GRI(Rx, IsHomogGrD0(inGens),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
       GReductor GBR(GRI, WithoutDenominators(inGens, Rx));
-      GBR.mySetTruncDeg(TruncDeg);
+      GBR.mySetTruncDeg(TruncDeg); // input value
+      //---------------------------------------------------
       GBR.myDoGBasis();// homog input standard alg interred
       PolyList TmpGB;
       PolyList TmpMinGens;
       GBR.myCopyGBasis(TmpGB);
-      if (NoWDegGt(inGens, TruncDeg)) GBR.myCopyMinGens(TmpMinGens);
+      if (IsEveryWDegLtEq(inGens, TruncDeg)) GBR.myCopyMinGens(TmpMinGens);
       outGB = WithDenominator1Hom(TmpGB, SPR);
-      monic(outGB);  //  2016-11-22: make monic
+      MakeMonic(outGB);  //  2016-11-22: make monic
       outMinGens = WithDenominator1Hom(TmpMinGens, SPR);
-      if (GBR.myTruncDeg() == 0)  TruncDeg = 0;
+      if (GBR.myTruncDeg() == GBR.ourNoTruncValue)
+        TruncDeg = GBR.ourNoTruncValue; // inform that GB is complete
     }
     else
     {
       GRingInfo GRI(SPR,IsHomogGrD0(inGens),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
       GReductor GBR(GRI, inGens);
-      GBR.mySetTruncDeg(TruncDeg);
+      GBR.mySetTruncDeg(TruncDeg); // input value
+      //---------------------------------------------------
       GBR.myDoGBasis();// homog input standard alg interred
       GBR.myCopyGBasis(outGB);
       outMinGens.clear();//just to remember to clean this up
-      if (NoWDegGt(inGens, TruncDeg)) GBR.myCopyMinGens(outMinGens);
-      if (GBR.myTruncDeg() == 0)  TruncDeg = 0;
+      if (IsEveryWDegLtEq(inGens, TruncDeg)) GBR.myCopyMinGens(outMinGens);
+      if (GBR.myTruncDeg() == GBR.ourNoTruncValue)
+        TruncDeg = GBR.ourNoTruncValue; // inform that GB is complete
     }
   }//ComputeGBasisTrunc
   
@@ -322,7 +335,7 @@ namespace CoCoA
       if (GradingDim(SPR)>0 && IsHomog(inGens)) GBR.myCopyMinGens(TmpMinGens);
       outGB.clear();//just to remember to clean this up
       outGB = WithDenominator1Hom(TmpGB, SPR);
-      monic(outGB);  //  2016-11-22: make monic
+      MakeMonic(outGB);  //  2016-11-22: make monic
     }
     else
     {
