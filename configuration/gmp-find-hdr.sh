@@ -34,6 +34,7 @@ else
   GMP_INC_DIR1="$GMP_LIB_DIR_DIR"/include
   GMP_INC_DIR2="$GMP_LIB_DIR_DIR_DIR/include"
   GMP_INC_DIR3="$GMP_LIB_DIR_DIR_DIR/include/$PLATFORM"
+  GMP_INC_DIR4="$GMP_INCLUDE_DIR"
   if [ -f "$GMP_INC_DIR1/gmp.h" ]
   then
     GMP_INC_DIR="$GMP_INC_DIR1"
@@ -43,8 +44,11 @@ else
   elif [ -n "$PLATFORM" -a -f "$GMP_INC_DIR3/gmp.h" ]
   then
     GMP_INC_DIR="$GMP_INC_DIR3"
+  elif [ -f "$GMP_INC_DIR4/gmp.h" ]
+  then
+    GMP_INC_DIR="$GMP_INC_DIR4"
   else
-    echo "ERROR: Cannot find GMP header for $GMP_LIB; searched in $GMP_INC_DIR1 and $GMP_INC_DIR2 and $GMP_INC_DIR3   $SCRIPT_NAME"   > /dev/stderr
+    echo "ERROR: Cannot find GMP header for $GMP_LIB; searched in $GMP_INC_DIR1 and $GMP_INC_DIR2 and $GMP_INC_DIR3 and $GMP_INC_DIR4   $SCRIPT_NAME"   > /dev/stderr
     exit 3
   fi
 fi
