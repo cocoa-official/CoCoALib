@@ -1100,7 +1100,7 @@ namespace CoCoA
     InputPolys.push_back(x*y*z*t-power(h,4));
     ComputeDynamicGBasis(GB, InputPolys);
     ComputeGBasis(GB1, outMinGens, InputPolys);
-    monic(GB);
+    MakeMonic(GB);
     cout << "C4_h  =  [" << GB1 << "]\n"<<endl;
 
 /*
