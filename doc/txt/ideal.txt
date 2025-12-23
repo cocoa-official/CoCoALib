@@ -91,7 +91,7 @@ program crash, wrong result, or poorer run-time performance)
 - ``GBasisTrunc(I,d)`` -- returns a Groebner basis for ``I`` using the term-ordering
                      of the polynomial ring in which ``I`` resides,
                      the computation is truncated after completing degree ``d``;
-		                 the basis is stored inside ``I`` only if the whole
+		     the basis is stored inside ``I`` only if the whole
                      computation was completed.
 - ``GBasisByHomog(I)``   -- same as ``GBasis(I)`` but using homog-GB-dehomog algorithm
 - ``ReducedGBasis(I)``   -- like ``GBasis`` but guarantees that the result is a reduced basis.
