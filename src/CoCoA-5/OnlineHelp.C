@@ -122,6 +122,7 @@ namespace OnlineHelp
   std::string LowerCase(const std::string& str);
   bool IsStr1BeforeStr2(std::ifstream& in, const std::string& s1, const std::string& s2);
   std::string StringInTag(const std::string& line, const std::string& XMLTag);
+  std::string StringInTag(const std::string& line, const std::string& XMLTag, size_t& pos);
   std::string SkipToStringInTag(std::ifstream& in, const std::string& XMLTag);
   std::string CleanupLine(const std::string& line);
   std::string CleanupKeyword(const std::string& key);
@@ -275,13 +276,14 @@ namespace OnlineHelp
   void index::entry::myAddSyntax(std::ifstream& in)
   {
     string line;
+    string s;
     getline(in, line);
     while ((!in.eof()) && (!IsSubstring("</syntax>",line)))
     {
-      if (IsSubstring("<type>", line))
-        myAddType(StringInTag(line, "<type>"));
-      if (IsSubstring("<rtn>", line))
-        myAddRtnType(StringInTag(line, "<rtn>"));
+      size_t pos=0;
+      while ( (s=StringInTag(line, "<type>", pos)) != "")  myAddType(s);
+      pos=0;
+      while ( (s=StringInTag(line, "<rtn>", pos)) != "")  myAddRtnType(s);
       mySyntaxValue += "--> ";
       mySyntaxValue += CleanupLine(line);
       mySyntaxValue += "\n";
@@ -318,16 +320,21 @@ namespace OnlineHelp
   // only for opening and closing tag in the same line
   std::string StringInTag(const std::string& line, const std::string& XMLTag)
   {
-    size_t open;
-    if ( (open=line.find(XMLTag)) == string::npos) return "";
+    size_t pos=0;
+    return StringInTag(line, XMLTag, pos);
+  }
 
+
+  std::string StringInTag(const std::string& line, const std::string& XMLTag, size_t& pos)
+  {
+    if ( (pos=line.find(XMLTag, pos)) == string::npos)  // moving pos
+      return "";  // XMLTag not found in line
+    size_t StartPos = pos + XMLTag.length();
     string ClosedXMLTag = XMLTag;
     ClosedXMLTag.replace(0, 1, "</");
-    size_t close = line.find(ClosedXMLTag);
-    if (close == string::npos)
+    if ((pos=line.find(ClosedXMLTag, pos)) == string::npos)  // moving pos
       CoCoA_THROW_ERROR1(XMLTag+" closing tag not found in this line");
-    size_t StartPos = open + XMLTag.length();
-    return line.substr(StartPos, close-StartPos);
+    return line.substr(StartPos, pos-StartPos);
   }
 
 
@@ -620,7 +627,7 @@ void SearchRtnType(std::vector<long>& MatchingEntries, const std::string& s)
       while (!IsSubstring("<short_description>", line))  getline(in, line);
       out << StringInTag(line, "<short_description>") << endl;
     }
-    out << "--==================<>===================--" << endl;
+    //    out << "--==================<>===================--" << endl;
   }
 
 
@@ -646,7 +653,7 @@ void SearchRtnType(std::vector<long>& MatchingEntries, const std::string& s)
       while (!IsSubstring("<short_description>", line))  getline(in, line);
       out << StringInTag(line, "<short_description>") << endl;
     }
-    out << "--==================<>===================--" << endl;
+    //    out << "--==================<>===================--" << endl;
   }
 
 
@@ -981,7 +988,7 @@ std::vector<std::string> WordList()
   std::vector<string> WL;
   getline(in, line);
   while (!in.eof())
-  {
+  {  // accept also "---- function ----"?  "---- package ----"?
     while (!IsSubstring("<command>", line) && !in.eof())  getline(in, line);
     WL.push_back(SkipToStringInTag(in, "<title>"));
     getline(in, line);
