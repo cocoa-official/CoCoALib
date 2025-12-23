@@ -176,6 +176,7 @@ namespace CoCoA
   
     RichHom MakeRichHom_H(const RingHom& Phi) // returns many things (look for RichHom to see in detail, what will be returned)
     {
+      VerboseLog VERBOSE("MakeRichHom_H");
       CoCoA_ASSERT(IsPolyRingOrQuotient(domain(Phi)));
       CoCoA_ASSERT(IsPolyRingOrQuotient(codomain(Phi)));
       ring R;
@@ -215,6 +216,8 @@ namespace CoCoA
                                                SymbolRange("x",0,NumR-1)),
                                         symbols("HomogIndet")),
                                  NewMatrixOrdering(ElimHomogMat(LongRange(0,NumS-1), RowMat(W)),1));
+      VERBOSE(90) << "Ring for hom: OrdMat is "
+                  << OrdMat(ordering(PPM(SRh))) << std::endl;
       const vector<RingElem>  SIndetsSRh = indets(SRh, "t");
       PPMonoidElem MinSIndetSRh = LPP(SIndetsSRh[0]);
       for (int i=1; i < len(SIndetsSRh); ++i)

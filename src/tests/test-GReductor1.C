@@ -81,7 +81,7 @@ namespace CoCoA
     PolyList MinGens;
     ComputeGBasis(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==4);
-    monic(GB);
+    MakeMonic(GB);
     cout << "C4_h = " << GB << "\n"<<endl;
   }
 
@@ -98,7 +98,7 @@ namespace CoCoA
     PolyList MinGens;
     ComputeGBasis(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==0);
-    monic(GB);
+    MakeMonic(GB);
     cout << "C4 = " << GB << "\n"<<endl;
   }
 
@@ -114,7 +114,7 @@ namespace CoCoA
     PolyList MinGens;
     ComputeGBasis(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==3);
-    monic(GB);
+    MakeMonic(GB);
     cout << "Curve_h = " << GB << "\n"<<endl;
   }
 
@@ -130,7 +130,7 @@ namespace CoCoA
     PolyList MinGens;
     ComputeGBasis(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==0);
-    monic(GB);
+    MakeMonic(GB);
     cout << "Curve = " << GB << "\n" << endl;
   }
 

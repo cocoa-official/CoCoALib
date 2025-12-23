@@ -122,6 +122,7 @@ public:
     long myTruncDeg() const {return myTruncDegValue;}
 //A24    long GetNReductions() const {return myStat.myNReductions;};
     void mySetTruncDeg(long TruncDeg) { myTruncDegValue = TruncDeg; }
+    static constexpr long ourNoTruncValue = -1;  // no GB truncation
 //////    void mySetSPoly(GPoly& p){mySPoly=p;};// Sets the SPoly  not used
     void myDoGBasisRealSolve();
     void myDoGBasisSelfSatCore(); ///< dehomog algorithm

@@ -754,7 +754,7 @@ namespace CoCoA
     ComputeGBasisTrunc(GB, MinGens, TruncDeg, myGensValue, CheckForTimeout);
     if (!MinGens.empty()) // MinGens is non-empty only if ideal is homog
       myMinGensValue = MinGens;
-    if (TruncDeg != 0) // GBasis is actually truncated
+    if (TruncDeg != GReductor::ourNoTruncValue)  // 20251213 AMB
       return GB;
     IhaveGBasisValue = true;
     swap(myGBasisValue, GB);

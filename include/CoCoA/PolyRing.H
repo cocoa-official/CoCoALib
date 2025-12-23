@@ -156,6 +156,7 @@ namespace CoCoA
   bool IsSqFree(ConstRefRingElem f);              ///< true iff f is square-free (coeffs must be in field)
   RingElem deriv(ConstRefRingElem f, ConstRefRingElem x); ///< derivative of f w.r.t. x, x must be an indeterminate
   RingElem deriv(ConstRefRingElem f, long var);   ///< here var is the index of the indeterminate
+  void MakeMonic(std::vector<RingElem>& v);       // might throw
 
   //----- RingHom --------------------------------------------------
   RingHom PolyRingHom(const PolyRing& domain, const ring& codomain, RingHom CoeffHom, const std::vector<RingElem>& IndetImages); // R[x] -> S, defined by CoeffHom: R->S and x->IndetImages

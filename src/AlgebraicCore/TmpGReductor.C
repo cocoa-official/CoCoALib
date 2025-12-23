@@ -148,7 +148,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
         myPolys.push_back(GPoly(g,myGRingInfoValue));
     }
     myPolys.sort(BoolCmpLPPGPoly);
-    myTruncDegValue = 0;    
+    myTruncDegValue = ourNoTruncValue;
   } //  GReductor ctor
 
 
@@ -169,7 +169,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   {
     myPolys=TheInputGPolys;
     myCtorAux(theBuchbergerOpType);
-    myTruncDegValue = 0;
+    myTruncDegValue = ourNoTruncValue;
 
     // If you want to remove zeros and/or sort your input GPolys.
     // GPoly Zero(zero(myPolyRing),myGRingInfoValue,Component(LPP(zero(myPolyRing),myGRingInfoValue)),0);
@@ -707,9 +707,9 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
         //     myTrueReductors.myBorelReductorsUpdateInNextDegree();
       }
       myUpdateIncomingWDeg();
-      if (myTruncDeg() != 0)
+      if (myTruncDeg() != ourNoTruncValue)
       {
-        if (myPairs.empty())  mySetTruncDeg(0); // GB is complete
+        if (myPairs.empty())  mySetTruncDeg(ourNoTruncValue); // GB complete
         else
           if (myTruncDeg() < myIncomingWDeg[0])
           {
@@ -1746,18 +1746,6 @@ Is is here only for completeness/debug purposes.
   } // DeEmbedPolyList
 			
       				
-   void monic(PolyList& PL)
-   {
-     if (PL.empty())
-       return;
-//     const SparsePolyRing P(owner(PL));
-//     PPMonoidElem tmp(PPM(P));
-     for (RingElem& g: PL)
-//     for (PolyList::iterator it=PL.begin();it!=PL.end();++it)
-       g = monic(g);///???       g /= monomial(P,LC(g),tmp);
-   }
-
-
     void PolyList2GPolyListClear(PolyList& thePL,
                                  GPolyList& theGPL,
                                  const GRingInfo& theGRI)

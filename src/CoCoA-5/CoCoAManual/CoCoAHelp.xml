@@ -7338,20 +7338,21 @@ The coefficient ring must be a field.
 </description>
 <seealso>
   <see>GBasis timeout</see>
+  <see>GBasisTrunc</see>
+  <see>GBasisByHomog</see>
+  <see>HasGBasis</see>
 </seealso>
 <types>
   <type>groebner</type>
   <type>groebner-basic</type>
+  <type>interrupt</type>
+  <type>verbosity</type>
 </types>
 <keys>
   <key>buchberger</key>
   <key>grobner basis</key>
   <key>groebner basis</key>
 </keys>
-<types>
-  <type>interrupt</type>
-  <type>verbosity</type>
-</types>
 </command>
 <!-- ===  COMMAND  =============================================== -->
 <command>
@@ -7401,6 +7402,9 @@ GBasisByHomog(I: <type>IDEAL</type>): <rtn>LIST</rtn>
 Same as <ttref>GBasis</ttref>, but it is computed by homogenizing the
 input generators, and then dehomogenizing the output.
 <par/>
+NOTE: it makes a difference only if the generators of <tt>I</tt> are
+not all homogeneous.
+<par/>
 From version 5.4.2 works with all term-orderings.
 <example>
 /**/  use R ::= QQ[x,y];
@@ -7424,6 +7428,54 @@ From version 5.4.2 works with all term-orderings.
   <type>interrupt</type>
   <type>verbosity</type>
 </types>
+</command>
+<!-- ===  COMMAND  =============================================== -->
+<command>
+  <title>GBasisTrunc</title>
+  <short_description>calculate a homog Groebner basis up to the given degree</short_description>
+<syntax>
+GBasisTrunc(I: <type>IDEAL</type>, TruncDeg: <type>INT</type>): <rtn>LIST</rtn>
+</syntax>
+<description>
+Same as <ttref>GBasis</ttref>, but the result is guaranteed to be
+complete only up to and including degree <tt>TruncDeg</tt>, 
+so the computation might be considerably faster.
+<par/>
+NOTE: the generators of <tt>I</tt> must be homogeneous.
+<par/>
+If the computation actually gives the complete Groebner basis,
+then it is stored in <tt>I</tt>, and <ttref>HasGBasis</ttref> will give <tt>true</tt>.
+<par/>
+From version 5.4.2.
+<example>
+/**/  use R ::= QQ[x,y,z];
+/**/  I := ideal(x^4 -x*y^3, x^3-y*z^2);
+/**/ GBasisTrunc(I,4);
+[x^3 -y*z^2,  x*y^3 -x*y*z^2]
+/**/ HasGBasis(I);  --> the truncated GBasis is NOT stored in I
+false
+/**/ GBasis(I);
+[x^3 -y*z^2,  x*y^3 -x*y*z^2,  y^4*z^2 -y^2*z^4]
+/**/ HasGBasis(I);  --> the complete GBasis is stored in I
+true
+/**/ GBasisTrunc(I,4);  --> not recomputed: returns the stored GB
+[x^3 -y*z^2,  x*y^3 -x*y*z^2,  y^4*z^2 -y^2*z^4]
+</example>
+</description>
+<seealso>
+  <see>GBasis</see>
+  <see>GBasis timeout</see>
+</seealso>
+<types>
+  <type>groebner</type>
+  <type>interrupt</type>
+  <type>verbosity</type>
+</types>
+<keys>
+  <key>truncated grobner basis</key>
+  <key>truncated groebner basis</key>
+  <key>truncation</key>
+</keys>
 </command>
 <!-- ===  COMMAND  =============================================== -->
 <command>

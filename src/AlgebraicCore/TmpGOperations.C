@@ -152,7 +152,7 @@ namespace CoCoA
       outGB.clear();//just to remember to clean this up
       outMinGens.clear();//just to remember to clean this up
       outGB = WithDenominator1Hom(TmpGB, SPR);
-      monic(outGB);  //  2016-11-22: make monic
+      MakeMonic(outGB);  //  2016-11-22: make monic
       outMinGens = WithDenominator1Hom(TmpMinGens, SPR);
     }
     else
@@ -167,15 +167,18 @@ namespace CoCoA
   }//ComputeGBasis
   
 
-  namespace { // anonymous
-    bool NoWDegGt(const PolyList& F, long D)
+  namespace // anonymous
+  { // namespace // anonymous ----------------------------------------------
+    
+    bool IsEveryWDegLtEq(const PolyList& F, long D)
     {
       for (auto& f:F)  if (wdeg(f)[0] > D) return false;
       return true;
     }
-  }
-  
     
+  } // namespace // anonymous ----------------------------------------------
+  
+
   void ComputeGBasisTrunc(PolyList& outGB, PolyList& outMinGens, long& TruncDeg, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout)
   {
     if (inGens.empty())
@@ -184,40 +187,43 @@ namespace CoCoA
       outMinGens.clear();
       return;
     }
-    SparsePolyRing SPR(owner(inGens));
-    CoCoA_ASSERT_ALWAYS(TruncDeg >= 0);
-    if (!IsField(CoeffRing(SPR)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
-    if (GradingDim(SPR)!=1)  CoCoA_THROW_ERROR1(ERR::ReqGradingDim1);
+    const SparsePolyRing P(owner(inGens));
+    CoCoA_ASSERT_ALWAYS(TruncDeg >= 0); // user TruncDeg must be >=0
+    if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
+    if (GradingDim(P)!=1)  CoCoA_THROW_ERROR1(ERR::ReqGradingDim1);
     if (!IsHomog(inGens))  CoCoA_THROW_ERROR1(ERR::ReqHomog);
     bool IsSatAlg=false;
-    if (IsFractionFieldOfGCDDomain(CoeffRing(SPR)))
+    if (IsFractionFieldOfGCDDomain(CoeffRing(P)))
     {
-      const ring R = BaseRing(CoeffRing(SPR));
-      SparsePolyRing Rx = NewPolyRing(R, symbols(PPM(SPR)), ordering(PPM(SPR)));
-      GRingInfo GRI(Rx, IsHomogGrD0(inGens),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
+      //---------------------------------------------------
+      const SparsePolyRing Rx = NewPolyRing(BaseRing(CoeffRing(P)), symbols(PPM(P)), ordering(PPM(P)));
+      GRingInfo GRI(Rx, IsHomogGrD0(inGens), IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
       GReductor GBR(GRI, WithoutDenominators(inGens, Rx));
-      GBR.mySetTruncDeg(TruncDeg);
+      GBR.mySetTruncDeg(TruncDeg); // input value
+      //---------------------------------------------------
       GBR.myDoGBasis();// homog input standard alg interred
       PolyList TmpGB;
       PolyList TmpMinGens;
       GBR.myCopyGBasis(TmpGB);
-      if (NoWDegGt(inGens, TruncDeg)) GBR.myCopyMinGens(TmpMinGens);
-      outGB = WithDenominator1Hom(TmpGB, SPR);
-      monic(outGB);  //  2016-11-22: make monic
-      outMinGens = WithDenominator1Hom(TmpMinGens, SPR);
-      if (GBR.myTruncDeg() == 0)  TruncDeg = 0;
+      outGB = WithDenominator1Hom(TmpGB, P);
+      MakeMonic(outGB);  //  2016-11-22: make monic
+      if (IsEveryWDegLtEq(inGens, TruncDeg)) GBR.myCopyMinGens(TmpMinGens);
+      outMinGens = WithDenominator1Hom(TmpMinGens, P);
+      TruncDeg = GBR.myTruncDeg(); // update TruncDeg (if changed/complete)
     }
     else
     {
-      GRingInfo GRI(SPR,IsHomogGrD0(inGens),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
+      //---------------------------------------------------
+      GRingInfo GRI(P, IsHomogGrD0(inGens), IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
       GReductor GBR(GRI, inGens);
-      GBR.mySetTruncDeg(TruncDeg);
+      GBR.mySetTruncDeg(TruncDeg); // input value
+      //---------------------------------------------------
       GBR.myDoGBasis();// homog input standard alg interred
       GBR.myCopyGBasis(outGB);
       outMinGens.clear();//just to remember to clean this up
-      if (NoWDegGt(inGens, TruncDeg)) GBR.myCopyMinGens(outMinGens);
-      if (GBR.myTruncDeg() == 0)  TruncDeg = 0;
+      if (IsEveryWDegLtEq(inGens, TruncDeg)) GBR.myCopyMinGens(outMinGens);
+      TruncDeg = GBR.myTruncDeg(); // update TruncDeg (if changed/complete)
     }
   }//ComputeGBasisTrunc
   
@@ -322,7 +328,7 @@ namespace CoCoA
       if (GradingDim(SPR)>0 && IsHomog(inGens)) GBR.myCopyMinGens(TmpMinGens);
       outGB.clear();//just to remember to clean this up
       outGB = WithDenominator1Hom(TmpGB, SPR);
-      monic(outGB);  //  2016-11-22: make monic
+      MakeMonic(outGB);  //  2016-11-22: make monic
     }
     else
     {
