@@ -7438,8 +7438,8 @@ GBasisTrunc(I: <type>IDEAL</type>, TruncDeg: <type>INT</type>): <rtn>LIST</rtn>
 </syntax>
 <description>
 Same as <ttref>GBasis</ttref>, but the result is guaranteed to be
-complete only up to degree <tt>TruncDeg</tt>, so the computation might be
-considerably faster.
+complete only up to and including degree <tt>TruncDeg</tt>, 
+so the computation might be considerably faster.
 <par/>
 NOTE: the generators of <tt>I</tt> must be homogeneous.
 <par/>
