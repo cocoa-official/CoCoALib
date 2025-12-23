@@ -122,18 +122,6 @@ namespace CoCoA
   }//ComputeGBasis
 
 
-  namespace // anonymous
-  { // namespace // anonymous ----------------------------------------------
-    
-    bool IsEveryWDegLtEq(const PolyList& F, long D)
-    {
-      for (auto& f:F)  if (wdeg(f)[0] > D) return false;
-      return true;
-    }
-    
-  } // namespace // anonymous ----------------------------------------------
-  
-
   void ComputeGBasis(PolyList& outGB, PolyList& outMinGens, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout)
   {
     if (inGens.empty())
@@ -177,6 +165,18 @@ namespace CoCoA
       if (GradingDim(SPR)>0 && IsHomog(inGens)) GBR.myCopyMinGens(outMinGens);
     }          
   }//ComputeGBasis
+  
+
+  namespace // anonymous
+  { // namespace // anonymous ----------------------------------------------
+    
+    bool IsEveryWDegLtEq(const PolyList& F, long D)
+    {
+      for (auto& f:F)  if (wdeg(f)[0] > D) return false;
+      return true;
+    }
+    
+  } // namespace // anonymous ----------------------------------------------
   
 
   void ComputeGBasisTrunc(PolyList& outGB, PolyList& outMinGens, long& TruncDeg, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout)
