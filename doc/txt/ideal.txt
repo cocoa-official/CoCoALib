@@ -88,6 +88,11 @@ program crash, wrong result, or poorer run-time performance)
                      of the polynomial ring in which ``I`` resides; the basis
                      is stored inside ``I``, so will not be recomputed in the
                      future);  equivalent to ``TidyGens``.
+- ``GBasisTrunc(I,d)`` -- returns a Groebner basis for ``I`` using the term-ordering
+                     of the polynomial ring in which ``I`` resides,
+                     the computation is truncated after completing degree ``d``;
+		     the basis is stored inside ``I`` only the whole
+                     computation was completed.
 - ``GBasisByHomog(I)``   -- same as ``GBasis(I)`` but using homog-GB-dehomog algorithm
 - ``ReducedGBasis(I)``   -- like ``GBasis`` but guarantees that the result is a reduced basis.
 - ``GBasis_Timeout(I, Tmax)``   -- like ``GBasis`` but will throw an ``InterruptedByTimeout`` object if computation takes longer than ``Tmax`` seconds.
