@@ -187,7 +187,7 @@ namespace CoCoA
       outMinGens.clear();
       return;
     }
-    SparsePolyRing P(owner(inGens));
+    const SparsePolyRing P(owner(inGens));
     CoCoA_ASSERT_ALWAYS(TruncDeg >= 0); // user TruncDeg must be >=0
     if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     if (GradingDim(P)!=1)  CoCoA_THROW_ERROR1(ERR::ReqGradingDim1);
@@ -196,7 +196,7 @@ namespace CoCoA
     if (IsFractionFieldOfGCDDomain(CoeffRing(P)))
     {
       //---------------------------------------------------
-      SparsePolyRing Rx = NewPolyRing(BaseRing(CoeffRing(P)), symbols(PPM(P)), ordering(PPM(P)));
+      const SparsePolyRing Rx = NewPolyRing(BaseRing(CoeffRing(P)), symbols(PPM(P)), ordering(PPM(P)));
       GRingInfo GRI(Rx, IsHomogGrD0(inGens), IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
       GReductor GBR(GRI, WithoutDenominators(inGens, Rx));
