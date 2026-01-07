@@ -20,9 +20,9 @@ TYPE
 --> To see all 12 matches for "type":
  ?? type
 --<<<<<<<<<<<<<<( Commands and Functions returning TYPE )>>>>>>>>>>>>>>>--
+? CurrentTypes -- lists all data types
 ? shape -- extended list of types involved in an expression
 ? type -- the data type of an expression
---==================<>===================--
 --============( end Commands and Functions returning TYPE )=============--
 --<<<<<<<<<<<<<<( CheckArgTypes )>>>>>>>>>>>>>>>--
 --> CheckArgTypes(Ltype: LIST of TYPE, Larg: LIST)
