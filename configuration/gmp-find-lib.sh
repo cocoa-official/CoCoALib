@@ -32,13 +32,14 @@ fi
 # List of directories under which libgmp.a and/or libgmp.so is normally found.
 ARCH=$(uname -m)      #so far seen:  x86_64, aarch64, i686, i386
 
-# First try pkg-config
+
+STD_GMP_LIBDIRS="/usr/local/lib /usr/lib /usr/lib/$ARCH-linux-gnu /usr/lib64
+                 /usr/lib32 /usr/lib/i386-linux-gnu /opt/homebrew/lib
+                 /opt/local/lib /sw/lib /usr/sfw/lib"
+
+# Also try pkg-config
 if command -v pkg-config >/dev/null 2>&1 && pkg-config --exists gmp; then
-    STD_GMP_LIBDIRS=$(pkg-config --libs-only-L gmp | sed 's/-L//g')
-else
-    STD_GMP_LIBDIRS="/usr/local/lib /usr/lib /usr/lib/$ARCH-linux-gnu \
-                 /usr/lib64 /usr/lib32 /usr/lib/i386-linux-gnu \
-                 /opt/homebrew/lib /opt/local/lib /sw/lib /usr/sfw/lib"
+    STD_GMP_LIBDIRS="$(pkg-config --variable=libdir gmp 2>/dev/null) $STD_GMP_LIBDIRS"
 fi
 
 LIBGMPPATHS=libgmp-paths

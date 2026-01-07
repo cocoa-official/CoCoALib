@@ -31,20 +31,20 @@ then
   GMP_INC_DIR="$GMP_LIB_DIR_DIR"
 else
   # GMP is installed -- have to check two possible locations for the header file
-  GMP_INC_DIR1="$GMP_LIB_DIR_DIR"/include
-  GMP_INC_DIR2="$GMP_LIB_DIR_DIR_DIR/include"
-  GMP_INC_DIR3="$GMP_LIB_DIR_DIR_DIR/include/$PLATFORM"
-  GMP_INC_DIR4="$(pkg-config --cflags gmp | sed 's/-I//g')"
-  if [ -f "$GMP_INC_DIR1/gmp.h" ]
+  GMP_INC_DIR1="$(pkg-config --variable=includedir gmp 2>/dev/null)"
+  GMP_INC_DIR2="$GMP_LIB_DIR_DIR"/include
+  GMP_INC_DIR3="$GMP_LIB_DIR_DIR_DIR/include"
+  GMP_INC_DIR4="$GMP_LIB_DIR_DIR_DIR/include/$PLATFORM"
+  if [ -n "$GMP_INC_DIR1" ] && [ -f "$GMP_INC_DIR1/gmp.h" ]
   then
     GMP_INC_DIR="$GMP_INC_DIR1"
   elif [ -f "$GMP_INC_DIR2/gmp.h" ]
   then
     GMP_INC_DIR="$GMP_INC_DIR2"
-  elif [ -n "$PLATFORM" -a -f "$GMP_INC_DIR3/gmp.h" ]
+  elif [ -f "$GMP_INC_DIR3/gmp.h" ]
   then
     GMP_INC_DIR="$GMP_INC_DIR3"
-  elif [ -f "$GMP_INC_DIR4/gmp.h" ]
+  elif [ -n "$PLATFORM" -a -f "$GMP_INC_DIR4/gmp.h" ]
   then
     GMP_INC_DIR="$GMP_INC_DIR4"
   else
