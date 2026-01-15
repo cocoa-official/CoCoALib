@@ -280,65 +280,62 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
 
   
 // This procedure may be substituted by a transform_if
-  void GReductor::myCopyGBasis(PolyList& GBasis)
+  void GReductor::myCopyGBasis(PolyList& outG)
   {
-    GBasis.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
-      if (IsActive(*ptr))
-        GBasis.push_back((*ptr).myPoly());
+      if (IsActive(*ptr))  outG.push_back((*ptr).myPoly());
   }
 
 
-  void GReductor::myCopyMinGens(PolyList& MinGens)
+  void GReductor::myCopyMinGens(PolyList& outG)
   {
-    MinGens.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
-      if (IsMinimalGen(*ptr))
-        MinGens.push_back((*ptr).myPoly());
+      if (IsMinimalGen(*ptr))  outG.push_back((*ptr).myPoly());
   }
 
 
  // This procedure may be substituted by a transform_if
-  void GReductor::myCopyGBasis(GPolyList& GBasis)
+  void GReductor::myCopyGBasis(GPolyList& outG)
   {
-    GBasis.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
-      if (IsActive(*ptr))
-        GBasis.push_back((*ptr));
+      if (IsActive(*ptr))  outG.push_back((*ptr));
   }
   
 
 // This procedure may be substituted by a transform_if
-  void GReductor::myGBasisClear(GPolyList& theGBasis)
+  void GReductor::myGBasisClear(GPolyList& outG)
   {
-    theGBasis.clear();
+    outG.clear();
     for (auto& ptr: myGB)
       if (IsActive(*ptr))
       {
         GPoly Zero(myGRingInfoValue);
-        theGBasis.push_back(Zero);
-        theGBasis.back().AssignClear(*ptr);
+        outG.push_back(Zero);
+        outG.back().AssignClear(*ptr);
       }
     myGB.clear();
   }
 
 
-  void GReductor::myCopyGBasis(VectorList& GBasis)
+  void GReductor::myCopyGBasis(VectorList& outG)
   {
-    GBasis.clear();
+    outG.clear();
     if (myGB.empty()) return;
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))
-        GBasis.push_back(DeEmbedPoly((*ptr).myPoly(),myGRingInfoValue));
+        outG.push_back(DeEmbedPoly((*ptr).myPoly(), myGRingInfoValue));
   }
 
 
-  void GReductor::myCopyMinGens(VectorList& MinGens)
+  void GReductor::myCopyMinGens(VectorList& outG)
   {
-    MinGens.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))
-        MinGens.push_back(DeEmbedPoly((*ptr).myPoly(),myGRingInfoValue));
+        outG.push_back(DeEmbedPoly((*ptr).myPoly(), myGRingInfoValue));
   }
 
 

@@ -222,7 +222,6 @@ namespace CoCoA
 
       GBR.myDoGBasis();// homog input standard alg interred
       GBR.myCopyGBasis(outGB);
-      outMinGens.clear();//just to remember to clean this up
       if (IsEveryWDegLtEq(inGens, TruncDeg)) GBR.myCopyMinGens(outMinGens);
       TruncDeg = GBR.myTruncDeg(); // update TruncDeg (if changed/complete)
     }
@@ -289,7 +288,6 @@ namespace CoCoA
       PolyList tmpMinGens;
       GBR.myCopyGBasis(tmpGB);
       if (GradingDim(P)>0 && IsHomog(inGens)) GBR.myCopyMinGens(tmpMinGens);
-      outGB.clear();//just to remember to clean this up
       outGB = WithDenominator1Hom(tmpGB, P);
       MakeMonic(outGB);  //  2016-11-22: make monic
     }
@@ -643,16 +641,14 @@ namespace CoCoA
     }
     
     
-    bool AreEqualLPPsIter(std::vector<PolyList::const_iterator>& theV1,
-                          std::vector<PolyList::const_iterator>& theV2)
-    {
-      const long lenV1 = len(theV1);
-      const long lenV2 = len(theV2);
-      if (lenV1 != lenV2)  return false;
-      stable_sort(theV1.begin(), theV1.end(), ByLPP);
-      stable_sort(theV2.begin(), theV2.end(), ByLPP);
-      for (int i=0; i!=lenV1; ++i)
-        if (LPP(*(theV1[i])) != LPP(*(theV2[i])))  return false;
+    bool AreEqualLPPsIter(std::vector<PolyList::const_iterator>& v1,
+                          std::vector<PolyList::const_iterator>& v2)
+    {  // Auxiliary: v1 and v2 have same length
+      stable_sort(v1.begin(), v1.end(), ByLPP);
+      stable_sort(v2.begin(), v2.end(), ByLPP);
+      const long len1 = len(v1);
+      for (int i=0; i!=len1; ++i)
+        if (LPP(*(v1[i])) != LPP(*(v2[i])))  return false;
       return true;
     }
     
@@ -660,13 +656,14 @@ namespace CoCoA
     // Useful when you have I\subset J and you want to check I==J
     bool AreEqualLPPs(const PolyList& inGens1, const PolyList& inGens2)
     {
-      std::vector<PolyList::const_iterator> V1,V2;
+      if (len(inGens1) != len(inGens2))  return false;
+      std::vector<PolyList::const_iterator> v1,v2;
       for (PolyList::const_iterator it=inGens1.begin(); it!=inGens1.end(); ++it)
-        V1.push_back(it);
+        v1.push_back(it);
       for (PolyList::const_iterator it=inGens2.begin(); it!=inGens2.end(); ++it)
-        V2.push_back(it);
-      return AreEqualLPPsIter(V1,V2);
-    }    
+        v2.push_back(it);
+      return AreEqualLPPsIter(v1,v2);
+    }
     
   } // anonymous namespace
   
@@ -705,7 +702,7 @@ namespace CoCoA
   } // namespace anonymous
   
 
-  void ComputeSaturationHomogByPP(PolyList& outPL,
+  void ComputeSaturationHomogByPP(PolyList& outGens,
                                   const PolyList& inGens,
                                   ConstRefPPMonoidElem t,
                                   const CpuTimeLimit& CheckForTimeout)
@@ -720,7 +717,7 @@ namespace CoCoA
     std::vector<symbol> names;  for (long i=0; i<NumX; ++i) { names.push_back(IndetSymbol(P,i)); }
     VERBOSE(90) << "GrDim = " << GrDim << "   W = " << GradingMat(P) << std::endl;
     matrix WRL0 = NewDenseMat(ConcatVer(GradingMat(P), ZeroMat(RingZZ(), 1, NumIndets(P))));
-    PolyList tmpPL = inGens;
+    PolyList tmpGens = inGens;
     PolyList MinGens; // unused
     std::vector<long> expv = exponents(t);
     for (long i=0; i<NumIndets(P); ++i)
@@ -730,29 +727,29 @@ namespace CoCoA
         SetEntry(WRL0, GrDim,i, -1);
         ring PzDegRevLex = NewPolyRing(K, names, NewMatrixOrdering(MakeTermOrdMat(WRL0), GrDim));
         SetEntry(WRL0, GrDim,i, 0);
-        RingHom phi = PolyAlgebraHom(owner(tmpPL[0]), PzDegRevLex, indets(PzDegRevLex));
-        ComputeGBasis(tmpPL, MinGens, phi(tmpPL), CheckForTimeout);
-        for (RingElem& g: tmpPL)  g = SatByIndet(g,i);
+        RingHom phi = PolyAlgebraHom(owner(tmpGens[0]), PzDegRevLex, indets(PzDegRevLex));
+        ComputeGBasis(tmpGens, MinGens, phi(tmpGens), CheckForTimeout);
+        for (RingElem& g: tmpGens)  g = SatByIndet(g,i);
       }
-    RingHom phi = PolyAlgebraHom(owner(tmpPL[0]), P, indets(P));
-//    tmpPL = phi(tmpPL);
-    for (auto& g:tmpPL)
+    RingHom phi = PolyAlgebraHom(owner(tmpGens[0]), P, indets(P));
+//    tmpGens = phi(tmpGens);
+    for (auto& g:tmpGens)
     {
       if ( IsZero(g) )  CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
       if ( IsConstant(g) ) // redmine #1647
       {
-        tmpPL.clear();
+        tmpGens.clear();
         VERBOSE(99) << "g is constant" << std::endl; /////////////////
-        tmpPL.push_back(one(P));
+        tmpGens.push_back(one(P));
         break;
       }
       g = phi(g);
     }
-    swap(outPL, tmpPL);
+    swap(outGens, tmpGens);
   } // ComputeSaturationHomogByPP
 
 
-  void ComputeSaturationByPrincipal(PolyList& outPL,
+  void ComputeSaturationByPrincipal(PolyList& outGens,
                                     const PolyList& inGens,
                                     ConstRefRingElem f,
                                     const CpuTimeLimit& CheckForTimeout)
@@ -762,13 +759,13 @@ namespace CoCoA
     // non-homogeneous
     if (IsInvertible(f))
     {
-      PolyList tmpPL(inGens);
-      swap(outPL, tmpPL);
+      PolyList tmpGens(inGens);
+      swap(outGens, tmpGens);
       return;
     }
     if (IsMonomial(f) /*IsPP*/ && IsHomog(inGens))
     {
-      ComputeSaturationHomogByPP(outPL, inGens, LPP(f), CheckForTimeout);
+      ComputeSaturationHomogByPP(outGens, inGens, LPP(f), CheckForTimeout);
       return;
     }
     const SparsePolyRing P = owner(inGens);
@@ -779,25 +776,25 @@ namespace CoCoA
     std::vector<RingElem> x = indets(P);
     x.push_back(one(P));
     RingHom NewPToP = PolyAlgebraHom(NewP, P, x);
-    PolyList tmpPL = PToNewP(inGens);
+    PolyList tmpGens = PToNewP(inGens);
     // 2023-05-02: JAA: would be better to detect & handle specially when f is monomial!!
     // If f is not monomial & we can factorize, do a succession of saturations...
     //    if (!IsMonomial(f) && IsQQ(CoeffRing(P)))
     if (IsQQ(CoeffRing(P)))
     {
       const std::vector<RingElem> F = factor(f).myFactors();//const factorization<RingElem> F=factor(f);
-      ComputeSaturationByIrred(tmpPL, PToNewP(F[0]), CheckForTimeout);
+      ComputeSaturationByIrred(tmpGens, PToNewP(F[0]), CheckForTimeout);
       for (long i=1; i<len(F); ++i)
-        ComputeSaturationByIrred(tmpPL, PToNewP(F[i]), CheckForTimeout);
+        ComputeSaturationByIrred(tmpGens, PToNewP(F[i]), CheckForTimeout);
     }
     else // 2023-05-02: JAA: would be better to use radical(f) below.
-      ComputeSaturationByIrred(tmpPL, PToNewP(f), CheckForTimeout);
-    tmpPL = NewPToP(tmpPL);
-    swap(outPL, tmpPL);
+      ComputeSaturationByIrred(tmpGens, PToNewP(f), CheckForTimeout);
+    tmpGens = NewPToP(tmpGens);
+    swap(outGens, tmpGens);
   } // ComputeSaturationByPrincipal
 
 
-  void ComputeSaturation(PolyList& theSaturationResult,
+  void ComputeSaturation(PolyList& outGens,
                          const PolyList& inGens1,
                          const PolyList& inGens2,
                          const CpuTimeLimit& CheckForTimeout)
@@ -805,34 +802,34 @@ namespace CoCoA
     VerboseLog VERBOSE("ComputeSaturation");
     VERBOSE(99) << "-- called --" << std::endl;
     if (inGens1.empty() && inGens2.empty())
-      CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, "both lists are empty");
-    if (inGens2.empty())
-    {
-      theSaturationResult.clear();// this or swap? this look better
-      theSaturationResult.push_back(one(owner(inGens1)));
-      return;
-    }
+      CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, "both inGens1 and inGens2 are empty");
     if (inGens1.empty())
     {
-      theSaturationResult.clear();
+      outGens.clear();
+      return;
+    }
+    if (inGens2.empty())
+    {
+      outGens.clear();// this or swap? this look better
+      outGens.push_back(one(owner(inGens1)));
       return;
     }
 
-    PolyList tmpPL2;
+    PolyList tmpGens;
     if (len(inGens2)==1)
-      ComputeSaturationByPrincipal(tmpPL2, inGens1, inGens2.front(), CheckForTimeout);
+      ComputeSaturationByPrincipal(tmpGens, inGens1, inGens2.front(), CheckForTimeout);
     else
     {
-      PolyList tmpPL1;
-      ComputeColon(tmpPL1, inGens1, inGens2, CheckForTimeout);
-      ComputeColon(tmpPL2, tmpPL1, inGens2, CheckForTimeout);
-      while (!AreEqualLPPs(tmpPL1, tmpPL2))
+      PolyList aux;
+      ComputeColon(aux, inGens1, inGens2, CheckForTimeout);
+      ComputeColon(tmpGens, aux, inGens2, CheckForTimeout);
+      while (!AreEqualLPPs(aux, tmpGens))
       {
-        swap(tmpPL1,tmpPL2);
-        ComputeColon(tmpPL2, tmpPL1, inGens2, CheckForTimeout);
+        swap(aux, tmpGens);
+        ComputeColon(tmpGens, aux, inGens2, CheckForTimeout);
       }
     }
-    swap(theSaturationResult,tmpPL2);
+    swap(outGens, tmpGens);
   }//ComputeSaturation
 
 
