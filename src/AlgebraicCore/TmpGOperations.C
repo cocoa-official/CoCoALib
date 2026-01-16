@@ -280,8 +280,6 @@ namespace CoCoA
       GBR.myDoGBasisRealSolve();// homog input standard alg interred
       PolyList GB_tmp = WithDenominator1Hom(GBR.myExportGBasis(), P);
       MakeMonic(GB_out);  //  2016-11-22: make monic
-      PolyList MinGens_tmp;
-      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_tmp = GBR.myExportMinGens(); // ?? RealSolve
       swap(GB_out, GB_tmp);
     }
     else
