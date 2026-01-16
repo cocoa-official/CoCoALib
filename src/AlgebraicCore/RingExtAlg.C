@@ -976,21 +976,14 @@ namespace CoCoA
   {
     if (IhaveGBasis()) return myGBasisValue;
     CoCoA_ASSERT(myGBasisValue.empty());
-    vector<RingElem> GensList, GBList;
-    GensList.insert(GensList.end(), myGensValue.begin(), myGensValue.end());
     bool IsHomog=false;
     bool IsSatAlg=false;
     GRingInfo GRI(myP, IsHomog, IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
     GBCriteria criteria(GBCriteria::DontUseCoprime, GBCriteria::UseGM,
                         GBCriteria::UseBack, GBCriteria::DontUseDiv);
-    GReductor GR(GRI, GensList,
-                 GReductor::AffineAlg,
-                 //                 Reductors::DontUseBorel, GReductor::DontUseDynamicAlg,
-                 criteria);
+    GReductor GR(GRI, myGens(), GReductor::AffineAlg, criteria);
     GR.myDoGBasis();
-    //    GR.myDoAFFGBasis();
-    GR.myCopyGBasis(GBList);
-    myGBasisValue.insert(myGBasisValue.end(), GBList.begin(), GBList.end());
+    myGBasisValue = GR.myExportGBasis();
     IhaveGBasisValue = true;
     return myGBasisValue;
   }

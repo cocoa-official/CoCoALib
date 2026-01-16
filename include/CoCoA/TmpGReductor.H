@@ -99,8 +99,8 @@ public:
     void mySetBuchbergerOpType(const BuchbergerOpTypeFlag theBuchbergerOpType) 
         {myBuchbergerOpType=theBuchbergerOpType;}
 
-    void myCopyGBasis(PolyList&);// GB output
-    void myCopyMinGens(PolyList&);// GB output
+    std::vector<RingElem> myExportGBasis();
+    std::vector<RingElem> myExportMinGens();
     void myCopyGBasis_GPoly(GPolyList&);// GB output in GPoly form
     void myGBasisClear(GPolyList&); ///< GB output in GPoly form
     void myCopyGBasis_module(VectorList& outGBasis);
