@@ -145,12 +145,12 @@ namespace CoCoA
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
       GReductor GBR(GRI, WithoutDenominators(G_in, Rx));
       GBR.myDoGBasis();// homog input standard alg interred
-      PolyList GB_tmp = GBR.myExportGBasis();
+      PolyList GB_tmp = WithDenominator1Hom(GBR.myExportGBasis());
       PolyList MinGens_tmp;
-      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_tmp = GBR.myExportMinGens();
-      GB_out = WithDenominator1Hom(GB_tmp, P);
-      MakeMonic(GB_out);  //  2016-11-22: make monic
-      MinGens_out = WithDenominator1Hom(MinGens_tmp, P);
+      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_tmp = WithDenominator1Hom(GBR.myExportMinGens());
+      MakeMonic(GB_tmp);  //  2016-11-22: make monic
+      swap(GB_out, GB_tmp);
+      swap(MinGens_out, MinGens_tmp);
     }
     else
     {
@@ -279,7 +279,7 @@ namespace CoCoA
       GReductor GBR(GRI, WithoutDenominators(G_in, Rx));
       GBR.myDoGBasisRealSolve();// homog input standard alg interred
       PolyList GB_tmp = WithDenominator1Hom(GBR.myExportGBasis(), P);
-      MakeMonic(GB_out);  //  2016-11-22: make monic
+      MakeMonic(GB_tmp);  //  2016-11-22: make monic
       swap(GB_out, GB_tmp);
     }
     else
