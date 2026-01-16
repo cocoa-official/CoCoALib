@@ -101,10 +101,10 @@ public:
 
     void myCopyGBasis(PolyList&);// GB output
     void myCopyMinGens(PolyList&);// GB output
-    void myCopyGBasis(GPolyList&);// GB output in GPoly form
+    void myCopyGBasis_GPoly(GPolyList&);// GB output in GPoly form
     void myGBasisClear(GPolyList&); ///< GB output in GPoly form
-    void myCopyGBasis(VectorList& outGBasis);
-    void myCopyMinGens(VectorList& outMinGens);
+    void myCopyGBasis_module(VectorList& outGBasis);
+    void myCopyMinGens_module(VectorList& outMinGens);
     void myDoAFFGBasis(); // I am working on sugar selection strategies
     void myDoGBasis();
     void myDoGBasisTEST();
@@ -194,9 +194,9 @@ public:
     FreeModule MakeNewFreeModuleForSyz(const GPolyList& GPL);
     FreeModule MakeNewFreeModuleForSyz(const VectorList& VL);
     FreeModule MakeNewFreeModuleForSyz(const PolyList& PL);
-    SparsePolyRing MakeElimRingFromOld(const SparsePolyRing& theOldP,
-                                       const std::vector<long>& theElimVars,
-				       const bool IsHomog);
+    SparsePolyRing MakeElimRing(const SparsePolyRing& P,
+                                const std::vector<long>& theElimVars,
+                                const bool IsHomog);
     SparsePolyRing MakeNewPRingFromModulePosFirst(const FreeModule& FM,
 					          bool HomogInput);
 

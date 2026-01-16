@@ -280,65 +280,62 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
 
   
 // This procedure may be substituted by a transform_if
-  void GReductor::myCopyGBasis(PolyList& GBasis)
+  void GReductor::myCopyGBasis(PolyList& outG)
   {
-    GBasis.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
-      if (IsActive(*ptr))
-        GBasis.push_back((*ptr).myPoly());
+      if (IsActive(*ptr))  outG.push_back((*ptr).myPoly());
   }
 
 
-  void GReductor::myCopyMinGens(PolyList& MinGens)
+  void GReductor::myCopyMinGens(PolyList& outG)
   {
-    MinGens.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
-      if (IsMinimalGen(*ptr))
-        MinGens.push_back((*ptr).myPoly());
+      if (IsMinimalGen(*ptr))  outG.push_back((*ptr).myPoly());
   }
 
 
  // This procedure may be substituted by a transform_if
-  void GReductor::myCopyGBasis(GPolyList& GBasis)
+  void GReductor::myCopyGBasis_GPoly(GPolyList& outG)
   {
-    GBasis.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
-      if (IsActive(*ptr))
-        GBasis.push_back((*ptr));
+      if (IsActive(*ptr))  outG.push_back((*ptr));
   }
   
 
 // This procedure may be substituted by a transform_if
-  void GReductor::myGBasisClear(GPolyList& theGBasis)
+  void GReductor::myGBasisClear(GPolyList& outG)
   {
-    theGBasis.clear();
+    outG.clear();
     for (auto& ptr: myGB)
       if (IsActive(*ptr))
       {
         GPoly Zero(myGRingInfoValue);
-        theGBasis.push_back(Zero);
-        theGBasis.back().AssignClear(*ptr);
+        outG.push_back(Zero);
+        outG.back().AssignClear(*ptr);
       }
     myGB.clear();
   }
 
 
-  void GReductor::myCopyGBasis(VectorList& GBasis)
+  void GReductor::myCopyGBasis_module(VectorList& outG)
   {
-    GBasis.clear();
+    outG.clear();
     if (myGB.empty()) return;
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))
-        GBasis.push_back(DeEmbedPoly((*ptr).myPoly(),myGRingInfoValue));
+        outG.push_back(DeEmbedPoly((*ptr).myPoly(), myGRingInfoValue));
   }
 
 
-  void GReductor::myCopyMinGens(VectorList& MinGens)
+  void GReductor::myCopyMinGens_module(VectorList& outG)
   {
-    MinGens.clear();
+    outG.clear();
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))
-        MinGens.push_back(DeEmbedPoly((*ptr).myPoly(),myGRingInfoValue));
+        outG.push_back(DeEmbedPoly((*ptr).myPoly(), myGRingInfoValue));
   }
 
 
@@ -2011,23 +2008,23 @@ Is is here only for completeness/debug purposes.
   } // PPMonoidElem2IndexList
 
 
-  SparsePolyRing MakeElimRingFromOld(const SparsePolyRing& theOldP,
-                                     const std::vector<long>& IndetsToElim,
-                                     const bool IsHomog)
+  SparsePolyRing MakeElimRing(const SparsePolyRing& P,
+                              const std::vector<long>& IndetsToElim,
+                              const bool IsHomog)
   {
-    ConstMatrixView weights = GradingMat(theOldP);
+    ConstMatrixView weights = GradingMat(P);
 
     matrix NewOrdMat = ElimMat(IndetsToElim, weights);
     long NewGrDim = 0;
-    if (GradingDim(theOldP) != 0 && IsHomog)
+    if (GradingDim(P) != 0 && IsHomog)
     {
       NewOrdMat = ElimHomogMat(IndetsToElim, weights);
-      NewGrDim = GradingDim(theOldP);
+      NewGrDim = GradingDim(P);
     }
 
     const PPOrdering& NewOrd = NewMatrixOrdering(NewOrdMat, NewGrDim);
-    vector<symbol> IndetNames = NewSymbols(NumIndets(theOldP));
-    SparsePolyRing NewP=NewPolyRing(CoeffRing(theOldP),IndetNames,NewOrd);
+    vector<symbol> IndetNames = NewSymbols(NumIndets(P));
+    SparsePolyRing NewP=NewPolyRing(CoeffRing(P),IndetNames,NewOrd);
     return NewP;
   } // MakeElimRingFromOld
 
