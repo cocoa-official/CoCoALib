@@ -145,12 +145,9 @@ namespace CoCoA
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
       GReductor GBR(GRI, WithoutDenominators(G_in, Rx));
       GBR.myDoGBasis();// homog input standard alg interred
-      PolyList GB_tmp;
+      PolyList GB_tmp = GBR.myExportGBasis();
       PolyList MinGens_tmp;
-      GBR.myCopyGBasis(GB_tmp);
-      if (GradingDim(P)>0 && IsHomog(G_in)) GBR.myCopyMinGens(MinGens_tmp);
-      GB_out.clear();//just to remember to clean this up
-      MinGens_out.clear();//just to remember to clean this up
+      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_tmp = GBR.myExportMinGens();
       GB_out = WithDenominator1Hom(GB_tmp, P);
       MakeMonic(GB_out);  //  2016-11-22: make monic
       MinGens_out = WithDenominator1Hom(MinGens_tmp, P);
@@ -160,8 +157,8 @@ namespace CoCoA
       GRingInfo GRI(P,IsHomogGrD0(G_in),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
       GReductor GBR(GRI, G_in);
       GBR.myDoGBasis();// homog input standard alg interred
-      GBR.myCopyGBasis(GB_out);
-      if (GradingDim(P)>0 && IsHomog(G_in)) GBR.myCopyMinGens(MinGens_out);
+      GB_out = GBR.myExportGBasis();
+      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_out = GBR.myExportMinGens();
     }          
   }//ComputeGBasis
   
@@ -202,13 +199,12 @@ namespace CoCoA
       GBR.mySetTruncDeg(TruncDeg); // input value
       //---------------------------------------------------
       GBR.myDoGBasis();// homog input standard alg interred
-      PolyList GB_tmp;
+      PolyList GB_tmp = WithDenominator1Hom(GBR.myExportGBasis(), P);
       PolyList MinGens_tmp;
-      GBR.myCopyGBasis(GB_tmp);
-      GB_out = WithDenominator1Hom(GB_tmp, P);
-      MakeMonic(GB_out);  //  2016-11-22: make monic
-      if (IsEveryWDegLtEq(G_in, TruncDeg)) GBR.myCopyMinGens(MinGens_tmp);
-      MinGens_out = WithDenominator1Hom(MinGens_tmp, P);
+      MakeMonic(GB_tmp);  //  2016-11-22: make monic
+      if (IsEveryWDegLtEq(G_in, TruncDeg)) MinGens_tmp = WithDenominator1Hom(GBR.myExportMinGens(), P);
+      swap(GB_out, GB_tmp);
+      swap(MinGens_out, MinGens_tmp);
       TruncDeg = GBR.myTruncDeg(); // update TruncDeg (if changed/complete)
     }
     else
@@ -220,8 +216,8 @@ namespace CoCoA
       //---------------------------------------------------
 
       GBR.myDoGBasis();// homog input standard alg interred
-      GBR.myCopyGBasis(GB_out);
-      if (IsEveryWDegLtEq(G_in, TruncDeg)) GBR.myCopyMinGens(MinGens_out);
+      GB_out = GBR.myExportGBasis();
+      if (IsEveryWDegLtEq(G_in, TruncDeg)) MinGens_out = GBR.myExportMinGens();
       TruncDeg = GBR.myTruncDeg(); // update TruncDeg (if changed/complete)
     }
   }//ComputeGBasisTrunc
@@ -251,15 +247,14 @@ namespace CoCoA
       GReductor GBR(GRI, WithoutDenominators(G_in, Rx),
                     GReductor::SaturatingAlg);
       GBR.myDoGBasisSelfSatCore();// homog input standard algorithm interred
-      GBR.myCopyGBasis(GB_tmp);
-      GB_tmp = WithDenominator1Hom(GB_tmp, P);
+      GB_tmp = WithDenominator1Hom(GBR.myExportGBasis(), P);
     }
     else
     {
       GRingInfo GRI(P, IsHomogGrD0(G_in), true/*IsSatAlg*/, NewDivMaskEvenPowers(), CheckForTimeout);
       GReductor GBR(GRI, G_in, GReductor::SaturatingAlg);
       GBR.myDoGBasisSelfSatCore();// homog input standard algorithm interred
-      GBR.myCopyGBasis(GB_tmp);
+      GB_tmp = GBR.myExportGBasis();
     }
     swap(GB_out, GB_tmp);
   } // ComputeGBasisSelfSatCore
@@ -283,19 +278,18 @@ namespace CoCoA
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
       GReductor GBR(GRI, WithoutDenominators(G_in, Rx));
       GBR.myDoGBasisRealSolve();// homog input standard alg interred
-      PolyList GB_tmp;
-      PolyList MinGens_tmp;
-      GBR.myCopyGBasis(GB_tmp);
-      if (GradingDim(P)>0 && IsHomog(G_in)) GBR.myCopyMinGens(MinGens_tmp);
-      GB_out = WithDenominator1Hom(GB_tmp, P);
+      PolyList GB_tmp = WithDenominator1Hom(GBR.myExportGBasis(), P);
       MakeMonic(GB_out);  //  2016-11-22: make monic
+      PolyList MinGens_tmp;
+      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_tmp = GBR.myExportMinGens(); // ?? RealSolve
+      swap(GB_out, GB_tmp);
     }
     else
     {
       GRingInfo GRI(P,IsHomogGrD0(G_in),false/*IsSatAlg*/,NewDivMaskEvenPowers(), CheckForTimeout);
       GReductor GBR(GRI, G_in);
       GBR.myDoGBasisRealSolve();
-      GBR.myCopyGBasis(GB_out);
+      GB_out = GBR.myExportGBasis();
     }          
   } // ComputeGBasisRealSolve
 
@@ -350,7 +344,7 @@ namespace CoCoA
     bool IsHomogGrD0PL = (GradingDim(P)==0 ? false : IsHomogGrD0(G_in));
     if (!IsHomogGrD0PL)  CoCoA_THROW_ERROR1(ERR::ReqHomog);
     bool IsSatAlg = false;
-    SparsePolyRing P_new=MakeElimRing(P,IndexList, IsHomogGrD0PL);
+    SparsePolyRing P_new = MakeElimRing(P,IndexList, IsHomogGrD0PL);
     RingHom OldToNew = PolyAlgebraHom(P, P_new, indets(P_new));
     RingHom NewToOld = PolyAlgebraHom(P_new, P, indets(P));
     PPMonoidElem ElimIndsProd = LPP(OldToNew(monomial(P,inds)));
@@ -390,25 +384,21 @@ namespace CoCoA
       return;
     }
     bool IsSatAlg=false;
-    VectorList SyzResult;
     ModOrdTypeForcing MOType;
     if (IsHomogGrD0(G_in))
       MOType=WDegPosTO;
     else
       MOType=PosWDegTO;
     const FreeModule FM=owner(G_in);
-    const SparsePolyRing P_new(MakeNewPRingFromModule(FM,MOType));
     const SparsePolyRing P(RingOf(FM));
+    const SparsePolyRing P_new(MakeNewPRingFromModule(FM,MOType));
     // Note: the GRI should build itself SyzFM and P_new from the data and deduce FM and P.
     //       All the embedding/deembedding functions should be members of GRI.
     GRingInfo GRI(P_new,P,FM,SyzFM,IsHomogGrD0(G_in),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
-    GPolyList EmbeddedPolys=SyzEmbedVectorList(G_in,GRI);
-    GReductor GBR(GRI, EmbeddedPolys);
+    GReductor GBR(GRI, SyzEmbedVectorList(G_in,GRI));
     GBR.myDoGBasis();
-    PolyList OutputPolyList;
-    GBR.myCopyGBasis(OutputPolyList);
-    SyzResult=DeEmbedPolyList(OutputPolyList,GRI,NumCompts(FM));
-    swap(theSyzResult,SyzResult);
+    VectorList syz_tmp = DeEmbedPolyList(GBR.myExportGBasis(), GRI,NumCompts(FM));
+    swap(theSyzResult, syz_tmp);
     return;
   }//ComputeSyz
 
@@ -436,9 +426,7 @@ namespace CoCoA
     GPolyList EmbeddedPolys=SyzEmbedPolyList(G_in,GRI);
     GReductor GBR(GRI, EmbeddedPolys);
     GBR.myDoGBasis();
-    PolyList OutputPolyList;
-    GBR.myCopyGBasis(OutputPolyList);
-    SyzResult=DeEmbedPolyList(OutputPolyList,GRI,1);
+    SyzResult = DeEmbedPolyList(GBR.myExportGBasis(), GRI,1);
     swap(theSyzResult,SyzResult);
     return;
   }//ComputeSyz
@@ -460,9 +448,7 @@ namespace CoCoA
     GPolyList EmbeddedPolys=IntEmbedVectorLists(G_in1,G_in2,GRI);
     GReductor GBR(GRI, EmbeddedPolys);
     GBR.myDoGBasis();// homog input standard alg interred
-    PolyList OutputPolyList;
-    GBR.myCopyGBasis(OutputPolyList);
-    IntersectionResult=DeEmbedPolyList(OutputPolyList,GRI,NumCompts(FM));
+    IntersectionResult = DeEmbedPolyList(GBR.myExportGBasis(), GRI,NumCompts(FM));
     swap(IntersectionResult,theIntersectionResult);
     return;
   }//ComputeIntersection
@@ -482,9 +468,7 @@ namespace CoCoA
     GPolyList EmbeddedPolys=IntEmbedPolyLists(G_in1,G_in2,GRI);
     GReductor GBR(GRI, EmbeddedPolys);
     GBR.myDoGBasis();// homog input standard alg interred
-    PolyList OutputPolyList;
-    GBR.myCopyGBasis(OutputPolyList);
-    IntersectionResult=DeEmbedPolyListToPL(OutputPolyList,GRI,1);
+    IntersectionResult = DeEmbedPolyListToPL(GBR.myExportGBasis(), GRI, 1);
     swap(theIntersectionResult,IntersectionResult);
     return;
   }//ComputeIntersection
@@ -510,9 +494,7 @@ namespace CoCoA
     GPolyList EmbeddedPolys=ColonEmbedVectorLists(G_in1,G_in2,GRI);
     GReductor GBR(GRI, EmbeddedPolys);
     GBR.myDoGBasis();// homog input standard alg interred
-    PolyList OutputPolyList;
-    GBR.myCopyGBasis(OutputPolyList);
-    ColonResult=DeEmbedPolyListToPL(OutputPolyList,GRI,NumCompts(FM));
+    ColonResult = DeEmbedPolyListToPL(GBR.myExportGBasis(), GRI, NumCompts(FM));
     swap(ColonResult,theColonResult);
     return;
   }//ComputeColonByPrincipal
@@ -576,9 +558,7 @@ namespace CoCoA
     GPolyList EmbeddedPolys=ColonEmbedPolyLists(G_in1, std::vector<RingElem>(1,f), GRI);
     GReductor GBR(GRI, EmbeddedPolys);
     GBR.myDoGBasis();// homog input standard alg interred
-    PolyList OutputPolyList;
-    GBR.myCopyGBasis(OutputPolyList);
-    tmpColonResult = DeEmbedPolyListToPL(OutputPolyList, GRI, 1);
+    tmpColonResult = DeEmbedPolyListToPL(GBR.myExportGBasis(), GRI, 1);
     swap(theResult, tmpColonResult);
     return;
   }//ComputeColonByPrincipal

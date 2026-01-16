@@ -280,19 +280,38 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
 
   
 // This procedure may be substituted by a transform_if
-  void GReductor::myCopyGBasis(PolyList& outG)
+  // void GReductor::myCopyGBasis(PolyList& outG)
+  // {
+  //   outG.clear();
+  //   for (const auto& ptr: myGB)
+  //     if (IsActive(*ptr))  outG.push_back((*ptr).myPoly());
+  // }
+
+
+  // void GReductor::myCopyMinGens(PolyList& outG)
+  // {
+  //   outG.clear();
+  //   for (const auto& ptr: myGB)
+  //     if (IsMinimalGen(*ptr))  outG.push_back((*ptr).myPoly());
+  // }
+
+
+// This procedure may be substituted by a transform_if
+  std::vector<RingElem> GReductor::myExportGBasis()
   {
-    outG.clear();
+    std::vector<RingElem> GB;
     for (const auto& ptr: myGB)
-      if (IsActive(*ptr))  outG.push_back((*ptr).myPoly());
+      if (IsActive(*ptr))  GB.push_back((*ptr).myPoly());
+    return GB;
   }
 
 
-  void GReductor::myCopyMinGens(PolyList& outG)
+  std::vector<RingElem> GReductor::myExportMinGens()
   {
-    outG.clear();
+    std::vector<RingElem> G;
     for (const auto& ptr: myGB)
-      if (IsMinimalGen(*ptr))  outG.push_back((*ptr).myPoly());
+      if (IsMinimalGen(*ptr))  G.push_back((*ptr).myPoly());
+    return G;
   }
 
 
