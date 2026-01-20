@@ -29,7 +29,7 @@
 namespace CoCoA
 {
 
-  RingElem cyclotomic(long n, ConstRefRingElem x);  ///< need n >= 1 and x must be an indet
+  RingElem CyclotomicPoly(long n, ConstRefRingElem x);  ///< need n >= 1 and x must be an indet
 
   //----------------------
   // Below are fns to detect if a poly is cyclo

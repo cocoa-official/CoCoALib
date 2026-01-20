@@ -916,11 +916,11 @@ namespace CoCoA {
   }
 
   
-  RingElem cyclotomic_forC5(const BigInt& N, ConstRefRingElem x)
+  RingElem CyclotomicPoly_forC5(const BigInt& N, ConstRefRingElem x)
   {
     long n;
     if (!IsConvertible(n, N))  CoCoA_THROW_ERROR1(ERR::ArgTooBig);
-    return cyclotomic(n, x);
+    return CyclotomicPoly(n, x);
   }
 
   

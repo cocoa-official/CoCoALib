@@ -207,4 +207,12 @@ namespace CoCoA
   }
 
 
+  // 2026  (v0.99880)
+
+  RingElem cyclotomic(long n, ConstRefRingElem x)
+  {
+    LogObsolescentFn("cyclotomic", "use \"CyclotomicPoly\"");
+    return CyclotomicPoly(n, x);
+  }
+  
 } // end of namespace CoCoA

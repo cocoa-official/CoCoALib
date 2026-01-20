@@ -9,6 +9,7 @@ export AllReducedGroebnerBases;
 ///export AffPoincare;
 export Bin;
 export ColumnVectors;
+export cyclotomic;
 ///export Comp;
 export Fact;
 ///export FloatApprox10;
@@ -560,4 +561,9 @@ define GBasisTimeout(I, t)
 enddefine; -- GBasisTimeout
 
 
+define cyclotomic(N, x)
+  PrintOBSOLESCENT("cyclotomic", "CyclotomicPoly", $.CoCoA_5_4_4);
+  return CyclotomicPoly(N, x);
+enddefine; -- cyclotomic
+  
 endpackage; -------------------------------------------------------------

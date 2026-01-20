@@ -154,7 +154,7 @@ namespace CoCoA
 
   // Delete me if you want to (by Nico Mexis)
   RingElem GraeffeN_forC5(ConstRefRingElem f, const BigInt& N);
-  RingElem cyclotomic_forC5(const BigInt& N, ConstRefRingElem x); // x must be indet
+  RingElem CyclotomicPoly_forC5(const BigInt& N, ConstRefRingElem x); // x must be indet
   BigInt CyclotomicIndex_forC5(ConstRefRingElem f);
   BigInt CyclotomicTest_forC5(ConstRefRingElem f);
   BigInt LRSDegeneracyOrder_forC5(ConstRefRingElem f);

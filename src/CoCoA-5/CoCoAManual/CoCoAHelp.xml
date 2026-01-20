@@ -4313,27 +4313,6 @@ This function lists all CoCoA data types.
 </command>
 <!-- ===  COMMAND  =============================================== -->
 <command>
-  <title>cyclotomic</title>
-  <short_description>n-th cyclotomic polynomial</short_description>
-<syntax>
-cyclotomic(n: <type>INT</type>, x: <type>RINGELEM</type>): <rtn>RINGELEM</rtn>
-</syntax>
-<description>
-This function computes the <tt>n</tt>-th cyclotomic polynomial (in the
-indeterminate <tt>x</tt>).
-<example>
-/**/  use QQ[z];
-/**/  cyclotomic(4,z);
-z^2 + 1
-</example>
-</description>
-<seealso>
-  <see>CyclotomicIndex, CyclotomicTest</see>
-  <see>CyclotomicFactorIndices</see>
-</seealso>
-</command>
-<!-- ===  COMMAND  =============================================== -->
-<command>
   <title>CyclotomicFactorIndices</title>
   <short_description>find indices of cyclotomic factors of a polynomial</short_description>
 <syntax>
@@ -4363,7 +4342,7 @@ record[RemainingFactor:=1, factors := [z^4+z^2+1, z^2+1], multiplicities := [1, 
 </example>
 </description>
 <seealso>
-  <see>cyclotomic</see>
+  <see>CyclotomicPoly</see>
   <see>CyclotomicIndex, CyclotomicTest</see>
   <see>factor</see>
 </seealso>
@@ -4397,12 +4376,36 @@ value even if the input polynomial is not cyclotomic.
 </example>
 </description>
 <seealso>
-  <see>cyclotomic</see>
+  <see>CyclotomicPoly</see>
   <see>CyclotomicFactorIndices</see>
 </seealso>
 <keys>
   <key>IsCyclotomic</key>
   <key>test for cyclotomicity</key>
+</keys>
+</command>
+<!-- ===  COMMAND  =============================================== -->
+<command>
+  <title>CyclotomicPoly</title>
+  <short_description>n-th cyclotomic polynomial</short_description>
+<syntax>
+CyclotomicPoly(n: <type>INT</type>, x: <type>RINGELEM</type>): <rtn>RINGELEM</rtn>
+</syntax>
+<description>
+This function computes the <tt>n</tt>-th cyclotomic polynomial (in the
+indeterminate <tt>x</tt>).
+<example>
+/**/  use QQ[z];
+/**/  CyclotomicPoly(4,z);
+z^2 + 1
+</example>
+</description>
+<seealso>
+  <see>CyclotomicIndex, CyclotomicTest</see>
+  <see>CyclotomicFactorIndices</see>
+</seealso>
+<keys>
+  <key>cyclotomic polynomial</key>
 </keys>
 </command>
 <!-- ===  end CHAPTER  =============================================== -->
@@ -11589,7 +11592,7 @@ false
 </example>
 </description>
 <seealso>
-  <see>cyclotomic</see>
+  <see>CyclotomicPoly</see>
   <see>CyclotomicIndex, CyclotomicTest</see>
   <see>IsLRSDegenerateOrder</see>
   <see>LRSDegeneracyOrder</see>
@@ -11620,7 +11623,7 @@ false
 </example>
 </description>
 <seealso>
-  <see>cyclotomic</see>
+  <see>CyclotomicPoly</see>
   <see>CyclotomicIndex, CyclotomicTest</see>
   <see>IsLRSDegenerate</see>
   <see>LRSDegeneracyOrder</see>
@@ -13635,7 +13638,7 @@ The function <tt>LRSDegeneracyOrders</tt> returns a list of all <tt>k</tt>;
 this function may take a long time.
 <par/>
 Note: some polynomials are LRS-degenerate for several orders, for instance
-<tt>cyclotomic(3,x)*cyclotomic(5,x)</tt>.
+<tt>CyclotomicPoly(3,x)*CyclotomicPoly(5,x)</tt>.
 <par/>
 In Cipu, Diouf, Mignotte the property was called just <em>degenerate</em>.
 <example>
@@ -13650,7 +13653,7 @@ In Cipu, Diouf, Mignotte the property was called just <em>degenerate</em>.
 <seealso>
   <see>IsLRSDegenerate</see>
   <see>IsLRSDegenerateOrder</see>
-  <see>cyclotomic</see>
+  <see>CyclotomicPoly</see>
   <see>CyclotomicIndex, CyclotomicTest</see>
 </seealso>
 <keys>

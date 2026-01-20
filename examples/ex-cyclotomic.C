@@ -33,7 +33,7 @@ namespace CoCoA
         SparsePolyRing P = NewPolyRing(RingZZ(), symbols("x")); // ZZ[x];
 
         // Calculate the 8-th cyclotomic polynomial Phi(8)
-        RingElem f = cyclotomic(8, indet(P,0));
+        RingElem f = CyclotomicPoly(8, indet(P,0));
         unsigned long fc = CyclotomicIndex(f);
         if (fc)
             cout << "The polynomial " << f << " is the " << fc << "-th cyclotomic." << endl;
