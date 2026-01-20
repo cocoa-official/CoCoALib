@@ -901,6 +901,7 @@ namespace CoCoA
       vector<long> ReducedCandidateList;
       for (long k:  CandidateCycloIndices)
       {
+        CheckForInterrupt("FindCycloFactor: k-loop");
         if (k < 3)  continue; // skip 1 & 2, if present
         if (k > 6 && IsOne(Valf_reduced))   break;
         if (EvalPtNumer == 2 && EvalPtDenom == 1 && k == 6 && Valf%3 == 0)
