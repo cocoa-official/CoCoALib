@@ -48,27 +48,27 @@ namespace CoCoA
 
 // The second argument is the list of indices of the
 // indeterminates that will be eliminated
-void ComputeElim(VectorList&,const VectorList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
-void ComputeElim(PolyList&,const PolyList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  void ComputeElim(VectorList&,const VectorList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
+  PolyList ComputeElim(const PolyList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
   void ComputeSyz(VectorList&, const FreeModule&, const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   void ComputeSyz(VectorList&, const FreeModule&, const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-void ComputeIntersection(VectorList&,const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-void ComputeIntersection(PolyList&,const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  void ComputeIntersection(VectorList&,const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeIntersection(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-void ComputeColonByPrincipal(PolyList&, const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-void ComputeColonByPrincipal(PolyList&, const PolyList&, ConstRefRingElem f, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-void ComputeColonByPrincipal(VectorList&, const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeColonByPrincipal(const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeColonByPrincipal(const PolyList&, ConstRefRingElem f, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  void ComputeColonByPrincipal(VectorList&, const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-void ComputeColon(PolyList&,const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-void ComputeColon(PolyList&,const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit() );
+  PolyList ComputeColon(const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeColon(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit() );
 void ComputeColon(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
 void ComputeSaturationByPrincipal(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-void ComputeSaturationByPrincipal(PolyList&, const PolyList&, ConstRefRingElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeSaturationByPrincipal(const PolyList&, ConstRefRingElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-void ComputeSaturation(PolyList&,const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeSaturation(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 void ComputeSaturation(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
 void ComputeHomogenization(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented

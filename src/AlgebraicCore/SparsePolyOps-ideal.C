@@ -561,8 +561,9 @@ namespace CoCoA
       return;
     }
     if (!OverField)  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
-    ComputeIntersection(myGensValue, myGensValue, gens(J));
+    std::vector<RingElem> IntGens = ComputeIntersection(myGensValue, gens(J));
     myReset(); // can we recover some info?
+    swap(myGensValue, IntGens);
   }
 
 
@@ -582,7 +583,7 @@ namespace CoCoA
       const RingElem Z(zero(myRing()));
       myGensValue.erase(remove(myGensValue.begin(), myGensValue.end(),Z),
                         myGensValue.end());
-      ComputeColon(myGensValue, myGensValue, gens(J));
+      myGensValue = ComputeColon(myGensValue, gens(J));
     }
     myReset(); // can we recover some info?
   }
@@ -594,7 +595,7 @@ namespace CoCoA
     if (IsZero(J))
       myGensValue = vector<RingElem>{one(myRing())};
     else
-      ComputeSaturation(myGensValue, myGensValue, gens(J));
+      myGensValue = ComputeSaturation(myGensValue, gens(J));
     myReset();
   }
 
@@ -628,8 +629,7 @@ namespace CoCoA
       if (!IsIndet(x))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
       ElimIndetsProd *= LPP(x);
     }
-    std::vector<RingElem> ElimGens;
-    ComputeElim(ElimGens, gens(I), ElimIndetsProd);
+    std::vector<RingElem> ElimGens = ComputeElim(gens(I), ElimIndetsProd);
     myReset(); // can we recover some info from I?
     swap(myGensValue, ElimGens);
   }
