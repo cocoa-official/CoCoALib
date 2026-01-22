@@ -23,7 +23,7 @@ including tests for LRS-degeneracy.  Several contributions from Nico Mexis.
 Let ``f`` be a ``RingElem`` representing a univariate polynomial in a polynomial
 ring ``P`` (with characteristic 0).  Let ``n`` be a positive integer.
 
-- ``cyclotomic(n,x)`` -- returns the ``n``-th cyclotomic polynomial in the indet ``x``
+- ``CyclotomicPoly(n,x)`` -- returns the ``n``-th cyclotomic polynomial in the indet ``x``
 - ``CyclotomicTest(f)`` -- returns an ``unsigned long n`` indicating that ``f`` is the ``n``-th cyclotomic polynomial; if ``f`` is not cyclotomic, it returns 0.
 - ``CyclotomicIndex(f)`` -- if ``f`` is cyclotomic, returns ``n`` its index.  If ``f`` is not cyclotomic it may return 0 or some other value.  Faster than ``CyclotomicTest``.
 
@@ -55,6 +55,9 @@ ring ``P`` (with characteristic 0).  Let ``n`` be a positive integer.
 
 == Main changes ==
 %======================================================================
+
+**2026**
+- January (v0.99860): renamed cyclotomic to CyclotomicPoly
 
 **2023**
 - December (v0.99821): major update to cyclotomic; other fns are new

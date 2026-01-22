@@ -48,7 +48,7 @@ namespace CoCoA
     CoCoA_ASSERT_ALWAYS(CyclotomicTest(one(P)) == 0);
     CoCoA_ASSERT_ALWAYS(CyclotomicIndex(one(P)) == 0);
 
-    RingElem f = cyclotomic(8, indet(P,0));
+    RingElem f = CyclotomicPoly(8, indet(P,0));
     CoCoA_ASSERT_ALWAYS(CyclotomicTest(f) == 8);
     CoCoA_ASSERT_ALWAYS(CyclotomicIndex(f) == 8);
 
@@ -85,7 +85,7 @@ namespace CoCoA
 
     for (unsigned long i = 1; i < 500; ++i)
     {
-      const RingElem f = cyclotomic(i, x);
+      const RingElem f = CyclotomicPoly(i, x);
       CoCoA_ASSERT_ALWAYS(CyclotomicTest(f) == i);
       CoCoA_ASSERT_ALWAYS(CyclotomicIndex(f) == i);
       CoCoA_ASSERT_ALWAYS(CyclotomicTest(2*f) == 0);
@@ -116,7 +116,7 @@ namespace CoCoA
 
     for (long i = 6; i < 100; ++i) // deliberately skip 1,2,3,4,5 (because 6 often appears as false positive)
     {
-      const RingElem f = cyclotomic(i, x);
+      const RingElem f = CyclotomicPoly(i, x);
       vector<long> CFI = CyclotomicFactorIndices(f);
       CoCoA_ASSERT_ALWAYS(len(CFI) == 1 && CFI[0] == i);
       CFI = CyclotomicFactorIndices(f*NastyFactor1);
@@ -136,7 +136,7 @@ namespace CoCoA
       vector<long> expected(len(*it));
       std::transform((*it).begin(), (*it).end(), expected.begin(), [](int i){ return i+1;});
       RingElem f = one(Px);
-      for (int j: expected)  f *= cyclotomic(j,x);
+      for (int j: expected)  f *= CyclotomicPoly(j,x);
       const vector<long> indices = CyclotomicFactorIndices(f);
       CoCoA_ASSERT_ALWAYS(indices == expected);
     }

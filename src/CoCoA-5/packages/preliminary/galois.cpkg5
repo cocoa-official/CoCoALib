@@ -1,6 +1,7 @@
 Package $galois
 
-export GaloisCyclotomic;
+// 2026-01-20 export GaloisCyclotomic;  // superseded by built-in function
+export skip;  // 2026-01-20  So why do we still have this package?
 
 Alias Galois := $galois,
       GB := $gb,
@@ -29,7 +30,7 @@ Define Man()
   PrintLn "    Galois.Info(  F: POLY, P: LIST): NULL";
   PrintLn "    Galois.Eval(  F: POLY, Val: POLY, Conds: IDEAL): POLY";
   PrintLn "    Galois.Factor(F: POLY, MinPoly: POLY): LIST";
-  PrintLn "    Galois.Cyclotomic(N: INT, X:INDET): POLY";
+//  PrintLn "    Galois.Cyclotomic(N: INT, X:INDET): POLY";
   PrintLn "";
   PrintLn "DESCRIPTION";
   PrintLn "";
@@ -60,10 +61,10 @@ Define Man()
   PrintLn "    where F_1^N_1 ... F_r^N_r = F and the F_i are monic and irreducible";
   PrintLn "    or a rational number.";
   PrintLn "";
-  PrintLn "                Cyclotomic(N, X);";
-  PrintLn "    computes the N-th cyclotomic polynomial (i.e. the polynomial whose";
-  PrintLn "    roots are the N-th primitive roots of unity) in the indeterminate X.";
-  PrintLn "";
+//  PrintLn "                Cyclotomic(N, X);";
+//  PrintLn "    computes the N-th cyclotomic polynomial (i.e. the polynomial whose";
+//  PrintLn "    roots are the N-th primitive roots of unity) in the indeterminate X.";
+//  PrintLn "";
   PrintLn "For more information, see the article:";
   PrintLn "D.La Macchia, F.Rossi, On Computational Galois Theory.";
   PrintLn "An algorithm to solve a cyclic equation.  To appear.";
@@ -71,9 +72,9 @@ Define Man()
   PrintLn ">EXAMPLES<";
   PrintLn "    Alias Galois := $contrib/galois;";
   PrintLn "";
-  PrintLn "    Use QQ[w];";
-  PrintLn "    Galois.Cyclotomic(12, w);";
-  PrintLn "";
+//  PrintLn "    Use QQ[w];";
+//  PrintLn "    Galois.Cyclotomic(12, w);";
+//  PrintLn "";
   PrintLn "    Use QQ[x,i];";
   PrintLn "    Galois.Factor(x^4+1, i^2+1);";
   PrintLn "";
@@ -167,20 +168,20 @@ EndDefine; -- Eval
 
 ---------<>---------
 
-Define GaloisCyclotomic(K, W)
-  If Shape([K, W]) <> [INT, RINGELEM] Then
-    Error("Cyclotomic: arguments must be an INT and an indeterminate");
-  EndIf;
-  If Not(W) IsIn Indets() Then
-    Error("Cyclotomic: second argument must be an indeterminate");
-  EndIf;
-  If K = 1 Then Return W-1; EndIf;                        -- K is 1
-  L := Galois.Divisors(K);
-  If L = [1] Then Return Sum([W^I| I In 0..(K-1)]); EndIf;-- K is prime
-  M := Galois.Maxdiv(L);
-  If Len(M) = 1 Then Return (W^K-1)/(W^M[1]-1); EndIf;    -- K is prime power
-  Return GCD([ (W^K-1)/(W^D-1) | D In M ]);               -- general case
-EndDefine; -- Cyclotomic
+-- Define GaloisCyclotomic(K, W)
+--   If Shape([K, W]) <> [INT, RINGELEM] Then
+--     Error("Cyclotomic: arguments must be an INT and an indeterminate");
+--   EndIf;
+--   If Not(W) IsIn Indets() Then
+--     Error("Cyclotomic: second argument must be an indeterminate");
+--   EndIf;
+--   If K = 1 Then Return W-1; EndIf;                        -- K is 1
+--   L := Galois.Divisors(K);
+--   If L = [1] Then Return Sum([W^I| I In 0..(K-1)]); EndIf;-- K is prime
+--   M := Galois.Maxdiv(L);
+--   If Len(M) = 1 Then Return (W^K-1)/(W^M[1]-1); EndIf;    -- K is prime power
+--   Return GCD([ (W^K-1)/(W^D-1) | D In M ]);               -- general case
+-- EndDefine; -- Cyclotomic
 
 
 ---------<>---------
@@ -243,22 +244,22 @@ Define PolyDiv(F, G)
 EndDefine; -- PolyDiv
 
 
-/* piu` diretta, ma piu` lenta: da rivedere */
-Define CyclotomicJAA(N, X)
-  Ans := NewList(N);
-  Ans[1] := X-1;
-  For I := 2 To N Do
-    If Mod(N, I) = 0 Then
-      F := X^I-1;
-      G := 1;
-      For J := 1 To I-1 Do
-        If Mod(I, J) = 0 Then G := G*Ans[J]; EndIf;
-      EndFor;
-      Ans[I] := F/G;
-    EndIf;
-  EndFor;
-  Return Ans[N];
-EndDefine; -- CyclotomicJAA
+-- /* piu` diretta, ma piu` lenta: da rivedere */
+-- Define CyclotomicJAA(N, X)
+--   Ans := NewList(N);
+--   Ans[1] := X-1;
+--   For I := 2 To N Do
+--     If Mod(N, I) = 0 Then
+--       F := X^I-1;
+--       G := 1;
+--       For J := 1 To I-1 Do
+--         If Mod(I, J) = 0 Then G := G*Ans[J]; EndIf;
+--       EndFor;
+--       Ans[I] := F/G;
+--     EndIf;
+--   EndFor;
+--   Return Ans[N];
+-- EndDefine; -- CyclotomicJAA
 
 
 ------------------------------------------
@@ -267,7 +268,7 @@ EndDefine; -- CyclotomicJAA
 -- W.
 
 Define Mo_w(K, G, W)
-  Return NR(G, [Galois.Cyclotomic(K, W)]);
+  Return NR(G, [CyclotomicPoly(K, W)]);
 EndDefine; -- Mo_w
 
 
@@ -368,7 +369,7 @@ EndDefine; -- AuxFactor
 /* matrice di trasformazione per un ciclo lungo N x=By.*/
 
 Define Blocco(N, W)
-  Cycl := Galois.Cyclotomic(N, W);
+  Cycl := CyclotomicPoly(N, W);
   Return Mat([ [ NR(W^((N-I)*J), [Cycl]) | I In 0..(N-1)] | J In 0..(N-1)]);
 EndDefine; -- Blocco
 
@@ -377,7 +378,7 @@ EndDefine; -- Blocco
 /*Funzione che calcola l`inversa di Blocco(N, W)*/
 
 Define BloccoInv(N, W)
-  Cycl := Galois.Cyclotomic(N, W);
+  Cycl := CyclotomicPoly(N, W);
   Return (1/N)*Mat([ [ NR(W^(I*J), [Cycl]) | I In 0..(N-1)] | J In 0..(N-1)]);
 EndDefine; -- BloccoInv
 
@@ -575,7 +576,7 @@ EndDefine; -- ByDeg
 --   PrintLn "   where w is a primitive ", MCM, "-th root of unity over Q);";
 
 --   C := Coefficients(F, Reversed([x^D | D In 0..(N-1)]));
---   Cycl := QQt::Galois.Cyclotomic(MCM, t);
+--   Cycl := QQt::CyclotomicPoly(MCM, t);
 
 --   AuxGaloisRing_xrw ::= QQ[x[0..(N-1)],r,w], Lex;
 
@@ -712,7 +713,7 @@ EndDefine; -- ByDeg
 --   N := Deg(F);
 --   C := Coefficients(F, Reversed([x^D | D In 0..(N-1)]));
 --   MCM := LCM([ Len(H) | H In P ]);
---   Cycl := QQt::Galois.Cyclotomic(MCM, t);
+--   Cycl := QQt::CyclotomicPoly(MCM, t);
 
 --   AuxGaloisRing_xrw ::= QQ[x[0..(N-1)],r,w], Lex;
 

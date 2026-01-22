@@ -9,6 +9,7 @@ export AllReducedGroebnerBases;
 ///export AffPoincare;
 export Bin;
 export ColumnVectors;
+export cyclotomic;
 ///export Comp;
 export Fact;
 ///export FloatApprox10;
@@ -69,7 +70,7 @@ enddefine; --
 
 define PrintOBSOLESCENT(ObsolescentName, UseInsteadName, version)
   if IsDefined(version) then  v := " from "+version; else v := ""; endif;
-  str := "--> WARNING: \"" + ObsolescentName + "\" obsolescent" + v +
+  str := "--> WARNING: \"" + ObsolescentName + "\" is OBSOLESCENT" + v +
          "\n--> WARNING: use   \"" + UseInsteadName + "\"   instead";  
   PrintLn str;
 enddefine; -- 
@@ -560,4 +561,9 @@ define GBasisTimeout(I, t)
 enddefine; -- GBasisTimeout
 
 
+define cyclotomic(N, x)
+  PrintOBSOLESCENT("cyclotomic", "CyclotomicPoly", $.CoCoA_5_4_2);
+  return CyclotomicPoly(N, x);
+enddefine; -- cyclotomic
+  
 endpackage; -------------------------------------------------------------
