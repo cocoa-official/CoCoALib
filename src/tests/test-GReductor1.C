@@ -79,7 +79,7 @@ namespace CoCoA
     InputPolys.push_back(x*y*z*t-power(h,4));
     PrintInfo("C4_h", P, InputPolys);
     PolyList MinGens;
-    ComputeGBasis(GB, MinGens, InputPolys);
+    ComputeGBasis2(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==4);
     MakeMonic(GB);
     cout << "C4_h = " << GB << "\n"<<endl;
@@ -96,7 +96,7 @@ namespace CoCoA
     InputPolys.push_back(x*y*z*t - 1);
     PrintInfo("C4", P, InputPolys);
     PolyList MinGens;
-    ComputeGBasis(GB, MinGens, InputPolys);
+    ComputeGBasis2(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==0);
     MakeMonic(GB);
     cout << "C4 = " << GB << "\n"<<endl;
@@ -112,7 +112,7 @@ namespace CoCoA
     InputPolys.push_back(power(t,7)-power(z,7));
     PrintInfo("Curve_h", P, InputPolys);
     PolyList MinGens;
-    ComputeGBasis(GB, MinGens, InputPolys);
+    ComputeGBasis2(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==3);
     MakeMonic(GB);
     cout << "Curve_h = " << GB << "\n"<<endl;
@@ -128,7 +128,7 @@ namespace CoCoA
     InputPolys.push_back(power(x[0],7) - x[3]);
     PrintInfo("Curve", P, InputPolys);
     PolyList MinGens;
-    ComputeGBasis(GB, MinGens, InputPolys);
+    ComputeGBasis2(GB, MinGens, InputPolys);
     CoCoA_ASSERT_ALWAYS(len(MinGens)==0);
     MakeMonic(GB);
     cout << "Curve = " << GB << "\n" << endl;

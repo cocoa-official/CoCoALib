@@ -341,11 +341,6 @@ public:
     std::vector<std::vector<degree> > DegStructure(const ModuleElem&);
     std::vector<std::vector<degree> > DegStructure(const PolyList&);
     std::vector<std::vector<std::vector<degree> > > DegStructure(const VectorList&);
-    PolyList MakePolyList(ConstRefRingElem);
-    VectorList MakeVectorList(const ModuleElem&);
-    RingElem CoeffCommonDenominator(ConstRefRingElem f);
-    PolyList WithoutDenominators(const PolyList& PL, SparsePolyRing Rx);
-    PolyList WithDenominator1Hom(const PolyList& PL, SparsePolyRing P);
 
 
 }// end namespace cocoa

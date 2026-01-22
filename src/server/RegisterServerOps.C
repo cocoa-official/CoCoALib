@@ -101,7 +101,7 @@ namespace CoCoA
     ~ModuleGBasis() {};
     void myOutputSelf(std::ostream& out) const { out << "ModuleGBasis"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute()  {VectorList NoUse; ComputeGBasis(myResVL, NoUse, myInVL);}
+    void myCompute()  {VectorList NoUse; ComputeGBasis2(myResVL, NoUse, myInVL);}
     void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
     void myClear() { myInVL.clear(); myResVL.clear(); }
   private:
@@ -117,28 +117,28 @@ namespace CoCoA
   }
 
 
-  // ---- CoCoA/GOperations.H  by  M.Caboara ----
-  class ModuleLT: public ServerOpBase
-  {
-  public:
-    ModuleLT(): ServerOpBase(CoCoALib_groebner()) {};
-    ~ModuleLT() {};
-    void myOutputSelf(std::ostream& out) const { out << "ModuleLT"; }
-    void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeLT(myResVL, myInVL); }
-    void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
-    void myClear() { myInVL.clear(); myResVL.clear(); }
-  private:
-    VectorList myInVL, myResVL;
-  };
+  // // ---- CoCoA/GOperations.H  by  M.Caboara ----
+  // class ModuleLT: public ServerOpBase
+  // {
+  // public:
+  //   ModuleLT(): ServerOpBase(CoCoALib_groebner()) {};
+  //   ~ModuleLT() {};
+  //   void myOutputSelf(std::ostream& out) const { out << "ModuleLT"; }
+  //   void myReadArgs(std::istream& in, int NumArgs);
+  //   void myCompute() { myResVL = ComputeLT(myInVL); }
+  //   void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
+  //   void myClear() { myInVL.clear(); myResVL.clear(); }
+  // private:
+  //   VectorList myInVL, myResVL;
+  // };
 
 
-  void ModuleLT::myReadArgs(std::istream& in, int NumArgs)
-  {
-    CoCoA_ASSERT(NumArgs<10);  // ??? fix with allowed values
-    const FreeModule FM(ReadFreeModule(in, GetTag));
-    ReadVectorList(in, myInVL, FM, GetTag);
-  }
+  // void ModuleLT::myReadArgs(std::istream& in, int NumArgs)
+  // {
+  //   CoCoA_ASSERT(NumArgs<10);  // ??? fix with allowed values
+  //   const FreeModule FM(ReadFreeModule(in, GetTag));
+  //   ReadVectorList(in, myInVL, FM, GetTag);
+  // }
 
   // ---- CoCoA/GOperations.H  by  M.Caboara ----
   class ModuleSyzygy: public ServerOpBase
@@ -148,7 +148,7 @@ namespace CoCoA
     ~ModuleSyzygy() {};
     void myOutputSelf(std::ostream& out) const { out << "ModuleSyzygy"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeSyz(myResVL, NewFreeModuleForSyz(myInVL), myInVL); }
+    void myCompute() { myResVL = ComputeSyz(NewFreeModuleForSyz(myInVL), myInVL); }
     void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
     void myClear() { myInVL.clear(); myResVL.clear(); }
   private:
@@ -171,7 +171,7 @@ namespace CoCoA
     ~ModuleIntersection() {};
     void myOutputSelf(std::ostream& out) const { out << "ModuleIntersection"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeIntersection(myResVL, myInVL1, myInVL2); }
+    void myCompute() { myResVL = ComputeIntersection(myInVL1, myInVL2); }
     void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
     void myClear() { myInVL1.clear(); myInVL2.clear(); myResVL.clear(); }
   private:
@@ -220,7 +220,7 @@ namespace CoCoA
     ~ModuleSaturation() {};
     void myOutputSelf(std::ostream& out) const { out << "ModuleSaturation"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeSaturation(myResVL, myInVL, myInPL); }
+    void myCompute() { myResVL = ComputeSaturation(myInVL, myInPL); }
     void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
     void myClear() { myInVL.clear(); myInPL.clear(); myResVL.clear(); }
   private:
@@ -319,7 +319,7 @@ namespace CoCoA
     ~ModuleElim() {};
     void myOutputSelf(std::ostream& out) const { out << "ModuleElim"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeElim(myResVL, myInVL, *myInElimPPPtr); }
+    void myCompute() { myResVL = ComputeElim(myInVL, *myInElimPPPtr); }
     void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
     void myClear() { myInVL.clear(); myInElimPPPtr.reset(0); myResVL.clear(); }
   private:
@@ -349,7 +349,7 @@ namespace CoCoA
     ~ModuleHomog() {};
     void myOutputSelf(std::ostream& out) const { out << "ModuleHomog"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeHomogenization(myResVL, myInVL, myInHomIndets); }
+    void myCompute() { myResVL = ComputeHomogenization(myInVL, myInHomIndets); }
     void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
     void myClear() { myInVL.clear(); myInHomIndets.clear(); myResVL.clear(); }
   private:
@@ -375,7 +375,7 @@ namespace CoCoA
     ~IdealGBasis() {};
     void myOutputSelf(std::ostream& out) const { out << "IdealGBasis"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { PolyList tmp; ComputeGBasis(myResPL, tmp, myInPL); }
+    void myCompute() { PolyList tmp; ComputeGBasis2(myResPL, tmp, myInPL); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInPL.clear(); myResPL.clear(); }
   private:
@@ -398,7 +398,7 @@ namespace CoCoA
     ~IdealSATGBasis() {};
     void myOutputSelf(std::ostream& out) const { out << "IdealSATGBasis"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeGBasisSelfSatCore(myResPL, myInPL); }
+    void myCompute() { myResPL = ComputeGBasisSelfSatCore(myInPL); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInPL.clear(); myResPL.clear(); }
   private:
@@ -435,42 +435,42 @@ namespace CoCoA
 //     ReadPolyList(in, myInPL, P, GetTag);
 //   }
 
-  // ---- CoCoA/GOperations.H  by  M.Caboara ----
-  class IdealLT: public ServerOpBase
-  {
-  public:
-    IdealLT(): ServerOpBase(CoCoALib_groebner()) {};
-    ~IdealLT() {};
-    void myOutputSelf(std::ostream& out) const { out << "IdealLT"; }
-    void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeLT(myResPL, myInPL); }
-    void myWriteResult(std::ostream& out) const;
-    void myClear() { myInPL.clear(); myResPL.clear(); }
-  private:
-    PolyList myInPL, myResPL;
-    //    ideal myOutIdeal;
-  };
+  // // ---- CoCoA/GOperations.H  by  M.Caboara ----
+  // class IdealLT: public ServerOpBase
+  // {
+  // public:
+  //   IdealLT(): ServerOpBase(CoCoALib_groebner()) {};
+  //   ~IdealLT() {};
+  //   void myOutputSelf(std::ostream& out) const { out << "IdealLT"; }
+  //   void myReadArgs(std::istream& in, int NumArgs);
+  //   void myCompute() { myResPL = ComputeLT(myInPL); }
+  //   void myWriteResult(std::ostream& out) const;
+  //   void myClear() { myInPL.clear(); myResPL.clear(); }
+  // private:
+  //   PolyList myInPL, myResPL;
+  //   //    ideal myOutIdeal;
+  // };
 
 
-  void IdealLT::myReadArgs(std::istream& in, int NumArgs)
-  {
-    CoCoA_ASSERT(NumArgs==2);
-    const SparsePolyRing P(ReadPolyRing(in, GetTag));
-    ReadPolyList(in, myInPL, P, GetTag);
-  }
+  // void IdealLT::myReadArgs(std::istream& in, int NumArgs)
+  // {
+  //   CoCoA_ASSERT(NumArgs==2);
+  //   const SparsePolyRing P(ReadPolyRing(in, GetTag));
+  //   ReadPolyList(in, myInPL, P, GetTag);
+  // }
 
 
-  void IdealLT::myWriteResult(std::ostream& out) const
-  {
-    // this function will be nicer when ComputeLT "returns" an ideal
-    if (myResPL.empty())
-      out << ourVarName4 << " := ideal()";
-    else
-    {
-      out << ourVarName4 << " := ";
-      WriteIdeal(out, ideal(myResPL));
-    }
-  }
+  // void IdealLT::myWriteResult(std::ostream& out) const
+  // {
+  //   // this function will be nicer when ComputeLT "returns" an ideal
+  //   if (myResPL.empty())
+  //     out << ourVarName4 << " := ideal()";
+  //   else
+  //   {
+  //     out << ourVarName4 << " := ";
+  //     WriteIdeal(out, ideal(myResPL));
+  //   }
+  // }
   
 
   // ---- CoCoA/GOperations.H  by  M.Caboara ----
@@ -481,7 +481,7 @@ namespace CoCoA
     ~IdealSyzygy() {};
     void myOutputSelf(std::ostream& out) const { out << "IdealSyzygy"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeSyz(myResVL, NewFreeModuleForSyz(myInPL), myInPL); }
+    void myCompute() { myResVL = ComputeSyz(NewFreeModuleForSyz(myInPL), myInPL); }
     void myWriteResult(std::ostream& out) const { WriteVectorListInVar(out, ourVarName4, myResVL); }
     void myClear() { myInPL.clear(); myResVL.clear(); }
   private:
@@ -574,7 +574,7 @@ namespace CoCoA
     ~IdealHomog() {};
     void myOutputSelf(std::ostream& out) const { out << "IdealHomog"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeHomogenization(myResPL, myInPL, myInHomIndets); }
+    void myCompute() { myResPL = ComputeHomogenization(myInPL, myInHomIndets); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInPL.clear(); myInHomIndets.clear(); myResPL.clear(); }
   private:
@@ -1293,7 +1293,7 @@ class MVTProjDimLB: public ServerOpBase
       //      RegisterOp("TestSocket",           ServerOp(new TestSocket()));
       // ideal
       RegisterOp("F5",                   ServerOp(new F5GBasis()));
-      RegisterOp("ideal_LT",             ServerOp(new IdealLT()));
+      //      RegisterOp("ideal_LT",             ServerOp(new IdealLT()));
       RegisterOp("ideal_colon_ideal",    ServerOp(new ColonIdId()));
       RegisterOp("ideal_elim",           ServerOp(new IdealElim()));
       RegisterOp("ideal_groebner",       ServerOp(new IdealGBasis()));
@@ -1304,7 +1304,7 @@ class MVTProjDimLB: public ServerOpBase
       RegisterOp("ideal_saturation",     ServerOp(new IdealSaturation()));
       RegisterOp("ideal_syzygy",         ServerOp(new IdealSyzygy()));
       // module
-      RegisterOp("module_LT",            ServerOp(new ModuleLT()));
+      //      RegisterOp("module_LT",            ServerOp(new ModuleLT()));
       RegisterOp("module_colon_module",  ServerOp(new ColonModMod()));
       RegisterOp("module_elim",          ServerOp(new ModuleElim()));
       RegisterOp("module_groebner",      ServerOp(new ModuleGBasis()));

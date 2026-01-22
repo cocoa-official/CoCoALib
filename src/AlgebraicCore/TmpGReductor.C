@@ -2118,61 +2118,7 @@ Is is here only for completeness/debug purposes.
 
 */
 
-    PolyList MakePolyList(ConstRefRingElem the_p)
-    {
-      PolyList L;
-      L.push_back(the_p);
-      return L;
-    } // MakePolyList
 
-    VectorList MakeVectorList(const ModuleElem& the_v)
-    {
-     VectorList L;
-      L.push_back(the_v);
-      return L;
-    } // MakeVectorList
-
-
-  PolyList WithoutDenominators(const PolyList& PL, SparsePolyRing Rx)
-  {
-    if (PL.empty()) return PL;
-    CoCoA_ASSERT(HasUniqueOwner(PL));
-    const SparsePolyRing Kx(owner(PL));
-    CoCoA_ASSERT(IsFractionFieldOfGCDDomain(CoeffRing(Kx)));
-    CoCoA_ASSERT(BaseRing(CoeffRing(Kx)) == CoeffRing(Rx));
-    CoCoA_ASSERT(ordering(PPM(Kx)) == ordering(PPM(Rx)));
-    PolyList outPL;
-    std::vector<long> expv(NumIndets(Rx));
-    RingElem f(Rx);
-    for (const RingElem& p: PL)
-    {
-      const RingElem d(CommonDenom(p));
-      f = 0;
-      for (SparsePolyIter i=BeginIter(p); !IsEnded(i); ++i)
-        PushBack(f, (d/den(coeff(i))*num(coeff(i))), exponents(expv,PP(i))); // same PPO
-        //        f += monomial(Rx, (d/den(coeff(i))*num(coeff(i))), e);
-      outPL.push_back(f);
-    }
-    return outPL;
-  } // WithoutDenominators
-
-
-  PolyList WithDenominator1Hom(const PolyList& PL, SparsePolyRing Kx)
-  {
-    CoCoA_ASSERT(IsFractionField(CoeffRing(Kx)));
-    if (PL.empty()) return PL;
-    CoCoA_ASSERT(HasUniqueOwner(PL));
-    const SparsePolyRing Rx(owner(PL));
-    CoCoA_ASSERT(BaseRing(CoeffRing(Kx)) == CoeffRing(Rx));
-    CoCoA_ASSERT(ordering(PPM(Kx)) == ordering(PPM(Rx)));
-    PolyList outPL;
-    // outPL.reserve(len(PL)); // if PL is a vector
-    const RingHom EmbedIntoFrF = EmbeddingHom(CoeffRing(Kx));
-    const RingHom EmbedCoeff   = CoeffEmbeddingHom(Kx);
-    const RingHom phi = PolyRingHom(Rx, Kx, EmbedCoeff(EmbedIntoFrF), indets(Kx));
-    //    transform(PL.begin(), PL.end(), back_inserter(outPL), phi);
-    return phi(PL);
-  } // WithDenominator1Hom
 
 // void ReadInt(std::istream& in, int& the_int,SkipTagType ST)
 // {

@@ -122,7 +122,7 @@ namespace CoCoA
     if (myTidyGensIsValid) return myTidyGensValue;
     CoCoA_ASSERT(myTidyGensValue.empty());
     //    if (IamZero()) return myTidyGensValue;
-    ComputeGBasis(myTidyGensValue, myMinGensValue, myGens(), CheckForTimeout);
+    ComputeGBasis2(myTidyGensValue, myMinGensValue, myGens(), CheckForTimeout);
     myTidyGensIsValid = true;
     return myTidyGensValue;
   }
@@ -419,8 +419,7 @@ namespace CoCoA
       if (!IsZero(g[i]))
         g_non0.push_back(g[i]);
     }
-    vector<ModuleElem> SyzVec_non0;
-    ComputeSyz(SyzVec_non0, F, g_non0);
+    vector<ModuleElem> SyzVec_non0 = ComputeSyz(F, g_non0);
     if (len(g_non0)==len(g))  return submodule(F, SyzVec_non0);
     const std::vector<ModuleElem>& e = gens(F);
     //-- syzygies of zero gens
@@ -447,8 +446,7 @@ namespace CoCoA
     //-- remove zero gens
     for (long i=0; i<len(g); ++i)
       if (!IsZero(g[i]))  g_non0.push_back(g[i]);
-    vector<ModuleElem> SyzVec_non0;
-    ComputeSyz(SyzVec_non0, F, g_non0);
+    vector<ModuleElem> SyzVec_non0 = ComputeSyz(F, g_non0);
     if (len(g_non0)==len(g))  return submodule(F, SyzVec_non0);
     const std::vector<ModuleElem>& e = gens(F);
     //-- syzygies of zero gens
