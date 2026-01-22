@@ -333,7 +333,7 @@ Define MinSubsetOfGens(X)
 EndDefine;
 
 
--- Define cyclotomic(K, x)
+-- Define CyclotomicPoly(K, x)
 --   If shape([K, x]) <> [INT, RINGELEM] Then
 --     error("Args must be an INT and an indeterminate");
 --   EndIf;

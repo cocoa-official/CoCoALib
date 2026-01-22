@@ -95,6 +95,9 @@ namespace CoCoA
   std::size_t SizeInBase(const BigInt& N, long base);
 
 
+// Added 2026-01-20 (0.99880)
+  RingElem cyclotomic(long n, ConstRefRingElem x);
+
 } // end of namespace CoCoA
 
 #endif
