@@ -4313,6 +4313,14 @@ This function lists all CoCoA data types.
 </command>
 <!-- ===  COMMAND  =============================================== -->
 <command>
+  <title>cyclotomic [OBSOLESCENT]</title>
+  <short_description>[OBSOLESCENT] renamed to CyclotomicPoly</short_description>
+<description>
+Renamed to <ttref>CyclotomicPoly</ttref>.
+</description>
+</command>
+<!-- ===  COMMAND  =============================================== -->
+<command>
   <title>CyclotomicFactorIndices</title>
   <short_description>find indices of cyclotomic factors of a polynomial</short_description>
 <syntax>
