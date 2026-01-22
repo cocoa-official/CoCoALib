@@ -499,13 +499,13 @@ namespace CoCoA
     CoCoA_ASSERT_ALWAYS(IsLRSDegenerateOrder(f*g,3));
   }
 
-  void bug_20231222_cyclotomic()
+  void bug_20231222_CyclotomicPoly()
   {
     ring P = NewPolyRing(RingZZ(), symbols("x"));
     const RingElem x = indet(P,0);
-    RingElem c3 = cyclotomic(3,x);
-    RingElem c4 = cyclotomic(4,x);
-    RingElem c6 = cyclotomic(6,x);
+    RingElem c3 = CyclotomicPoly(3,x);
+    RingElem c4 = CyclotomicPoly(4,x);
+    RingElem c6 = CyclotomicPoly(6,x);
     vector<long> L = CyclotomicFactorIndices(c3*c4*c6);
 
     CoCoA_ASSERT_ALWAYS(L[0] == 3);
@@ -552,7 +552,7 @@ namespace CoCoA
     bug_20221219_rank();
     redmine1725();
     bug_20231209_LRS();
-    bug_20231222_cyclotomic();
+    bug_20231222_CyclotomicPoly();
     redmine1790();
 
     TestSundry();

@@ -423,7 +423,7 @@ namespace CoCoA
 
   // Calls CycloPrefix then builds the actual poly.
   // TODO make a version which uses CRT to allow larger indices?
-  RingElem cyclotomic(long n, ConstRefRingElem x)
+  RingElem CyclotomicPoly(long n, ConstRefRingElem x)
   {
     if (n < 1)
       CoCoA_THROW_ERROR1(ERR::ReqPositive);
@@ -812,8 +812,8 @@ namespace CoCoA
 //             g = gcd(g, Valf_reduced);
 //             if (IsOne(g)) { /*clog << '*';*/ continue; }
 //             Valf_reduced = CoprimeFactor(Valf_reduced, g);
-// //        const BigInt ValCyclo = EvalAt(cyclotomic(k,x),EvalPtNumer,EvalPtDenom);///ConvertTo<BigInt>(evaluate(cyclotomic(k,x)));
-//             if (/*EvalPtNumer != 2 ||*/ IsDivisible(Valf,EvalAt(cyclotomic(k,x),EvalPtNumer,EvalPtDenom)))
+// //        const BigInt ValCyclo = EvalAt(CyclotomicPoly(k,x),EvalPtNumer,EvalPtDenom);///ConvertTo<BigInt>(evaluate(CyclotomicPoly(k,x)));
+//             if (/*EvalPtNumer != 2 ||*/ IsDivisible(Valf,EvalAt(CyclotomicPoly(k,x),EvalPtNumer,EvalPtDenom)))
 //               ReducedCandidateList.push_back(k);
 //             if (IsOne(Valf_reduced))  break;
 //           }
@@ -901,6 +901,7 @@ namespace CoCoA
       vector<long> ReducedCandidateList;
       for (long k:  CandidateCycloIndices)
       {
+        CheckForInterrupt("FindCycloFactor: k-loop");
         if (k < 3)  continue; // skip 1 & 2, if present
         if (k > 6 && IsOne(Valf_reduced))   break;
         if (EvalPtNumer == 2 && EvalPtDenom == 1 && k == 6 && Valf%3 == 0)
@@ -908,7 +909,7 @@ namespace CoCoA
         const BigInt g = gcd(Valf_reduced,  power(EvalPtNumer,k) - power(EvalPtDenom,k));
         if (IsOne(g))  continue;
         Valf_reduced = CoprimeFactor(Valf_reduced, g);
-        if (IsDivisible(Valf, EvalAt(cyclotomic(k,x),EvalPtNumer,EvalPtDenom)))
+        if (IsDivisible(Valf, EvalAt(CyclotomicPoly(k,x),EvalPtNumer,EvalPtDenom)))
           ReducedCandidateList.push_back(k);
       }
       if (LastIter)  return ReducedCandidateList;
@@ -1030,7 +1031,7 @@ namespace CoCoA
       // MAY GIVE FALSE POSITIVE { long sum = 0; for (long k: CandidateIndices) sum += EulerTotient(k); if (sum == deg(F[i])) { ...???... }}
       for (long k: CandidateIndices)
       {
-        const RingElem phi_k = cyclotomic(k,x);
+        const RingElem phi_k = CyclotomicPoly(k,x);
         if (!IsDivisible(F[i], phi_k)) continue;
         ans.myAppend(phi_k, m[i]);
       }
