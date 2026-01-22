@@ -60,19 +60,36 @@ namespace CoCoA
   }
 
   // ex-bug: ideal with 0 generator
-  void test2()
+  void TestColon()
   {
     SparsePolyRing P(NewPolyRing(RingQQ(), symbols("x,y")));
     const RingElem x = indet(P,0);
     const RingElem y = indet(P,1);
-    CoCoA_ASSERT_ALWAYS(colon(ideal(zero(P)), ideal(x))==ideal(zero(P)));
     CoCoA_ASSERT_ALWAYS(colon(ideal(x*y), ideal(x))==ideal(y));
     CoCoA_ASSERT_ALWAYS(colon(ideal(x*y, x*x), ideal(x))==ideal(y,x));
     CoCoA_ASSERT_ALWAYS(colon(ideal((x+1)*y, y*y), ideal(x+1))==ideal(y));
     CoCoA_ASSERT_ALWAYS(colon(ideal((x+1)*y, (x+1)*(x+1)), ideal(x+1))==ideal(y,x+1));
+    // check on 0s:
+    CoCoA_ASSERT_ALWAYS(colon(ideal(zero(P)), ideal(x))==ideal(zero(P)));
     CoCoA_ASSERT_ALWAYS(colon(ideal(x+1, zero(P)), ideal(one(P)))==ideal(x+1));
     CoCoA_ASSERT_ALWAYS(colon(ideal((x+1)*y, zero(P)), ideal(zero(P)))==ideal(one(P)));
     CoCoA_ASSERT_ALWAYS(colon(ideal(zero(P)), ideal(zero(P)))==ideal(one(P)));
+  }
+
+  void TestSaturation()  // 2026-01-21 naive test: copied frm colon
+  {
+    SparsePolyRing P(NewPolyRing(RingQQ(), symbols("x,y")));
+    const RingElem x = indet(P,0);
+    const RingElem y = indet(P,1);
+    CoCoA_ASSERT_ALWAYS(saturate(ideal(x*y), ideal(x))==ideal(y));
+    CoCoA_ASSERT_ALWAYS(saturate(ideal(x*y, x*x), ideal(x))==ideal(one(P)));
+    CoCoA_ASSERT_ALWAYS(saturate(ideal((x+1)*y, y*y), ideal(x+1))==ideal(y));
+    CoCoA_ASSERT_ALWAYS(saturate(ideal((x+1)*y, (x+1)*(x+1)), ideal(x+1))==ideal(one(P)));
+    // check on 0s:
+    CoCoA_ASSERT_ALWAYS(saturate(ideal(zero(P)), ideal(x))==ideal(zero(P)));
+    CoCoA_ASSERT_ALWAYS(saturate(ideal(x+1, zero(P)), ideal(one(P)))==ideal(x+1));
+    CoCoA_ASSERT_ALWAYS(saturate(ideal((x+1)*y, zero(P)), ideal(zero(P)))==ideal(one(P)));
+    CoCoA_ASSERT_ALWAYS(saturate(ideal(zero(P)), ideal(zero(P)))==ideal(one(P)));
   }
 
   void TestMinGens()
@@ -121,7 +138,8 @@ namespace CoCoA
     GlobalManager CoCoAFoundations;
   
     test1();
-    test2();
+    TestColon();
+    TestSaturation();
     TestMinGens();
     TestIntersection();
     TestSubmodule1();

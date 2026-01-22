@@ -46,8 +46,7 @@ namespace CoCoA
   void ComputeGBasis(VectorList& outGB, VectorList& outMinGens, const VectorList& inGens, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   void ComputeGBasisFrameWork(PolyList&, const PolyList&);
 
-// The second argument is the list of indices of the
-// indeterminates that will be eliminated
+  // second arg is the product of the indets to be eliminated
   void ComputeElim(VectorList&,const VectorList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
   PolyList ComputeElim(const PolyList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
@@ -57,16 +56,9 @@ namespace CoCoA
   void ComputeIntersection(VectorList&,const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   PolyList ComputeIntersection(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-  PolyList ComputeColonByPrincipal(const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  PolyList ComputeColonByPrincipal(const PolyList&, ConstRefRingElem f, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  void ComputeColonByPrincipal(VectorList&, const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-
   PolyList ComputeColon(const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   PolyList ComputeColon(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit() );
-void ComputeColon(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-
-void ComputeSaturationByPrincipal(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  PolyList ComputeSaturationByPrincipal(const PolyList&, ConstRefRingElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  void ComputeColon(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
   PolyList ComputeSaturation(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 void ComputeSaturation(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
