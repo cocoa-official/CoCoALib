@@ -195,7 +195,7 @@ namespace CoCoA
     ~ColonModMod() {};
     void myOutputSelf(std::ostream& out) const { out << "ColonModMod"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeColon(myResPL, myInVL1, myInVL2); }
+    void myCompute() { myResPL = ComputeColon(myInVL1, myInVL2); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInVL1.clear(); myInVL2.clear(); myResPL.clear(); }
   private:
@@ -246,7 +246,7 @@ namespace CoCoA
     ~IdealSaturation() {};
     void myOutputSelf(std::ostream& out) const { out << "IdealSaturation"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeSaturation(myResPL, myInPL1, myInPL2); }
+    void myCompute() { myResPL = ComputeSaturation(myInPL1, myInPL2); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInPL1.clear(); myInPL2.clear(); myResPL.clear(); }
   private:
@@ -295,7 +295,7 @@ namespace CoCoA
     ~ColonIdId() {};
     void myOutputSelf(std::ostream& out) const { out << "ColonIdId"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeColon(myResPL, myInPL1, myInPL2); }
+    void myCompute() { myResPL = ComputeColon(myInPL1, myInPL2); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInPL1.clear(); myInPL2.clear(); myResPL.clear(); }
   private:
@@ -505,7 +505,7 @@ namespace CoCoA
     ~IdealIntersection() {};
     void myOutputSelf(std::ostream& out) const { out << "IdealIntersection"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeIntersection(myResPL, myInPL1, myInPL2); }
+    void myCompute() { myResPL = ComputeIntersection(myInPL1, myInPL2); }
     //    void myCompute() { myOutIdeal := intersect(myInI1, myInI2); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInPL1.clear(); myInPL2.clear(); myResPL.clear(); }
@@ -540,7 +540,7 @@ namespace CoCoA
     ~IdealElim() {};
     void myOutputSelf(std::ostream& out) const { out << "IdealElim"; }
     void myReadArgs(std::istream& in, int NumArgs);
-    void myCompute() { ComputeElim(myResPL, myInPL, *myInElimPPPtr); }
+    void myCompute() { myResPL = ComputeElim(myInPL, *myInElimPPPtr); }
     void myWriteResult(std::ostream& out) const { WritePolyListInVar(out, ourVarName4, myResPL); }
     void myClear() { myInPL.clear(); myResPL.clear(); myInElimPPPtr.reset(0); }
   private:
