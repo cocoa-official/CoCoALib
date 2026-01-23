@@ -117,12 +117,8 @@ namespace CoCoA
       const SparsePolyRing Rx(owner(F));
       CoCoA_ASSERT(BaseRing(CoeffRing(Kx)) == CoeffRing(Rx));
       CoCoA_ASSERT(ordering(PPM(Kx)) == ordering(PPM(Rx)));
-      PolyList outF;
-      outF.reserve(len(F));
-      const RingHom EmbedIntoFrF = EmbeddingHom(CoeffRing(Kx));
-      const RingHom EmbedCoeff   = CoeffEmbeddingHom(Kx);
-      const RingHom phi = PolyRingHom(Rx, Kx, EmbedCoeff(EmbedIntoFrF), indets(Kx));
-      //    transform(F.begin(), F.end(), back_inserter(outF), phi);
+      const RingHom RToK = EmbeddingHom(CoeffRing(Kx));
+      const RingHom phi = PolyRingHom(Rx, Kx, RToK, indets(Kx));
       return phi(F);
     }
 
