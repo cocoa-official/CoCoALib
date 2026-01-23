@@ -86,7 +86,7 @@ namespace CoCoA
     }
 
 
-    PolyList WithoutDenom(const PolyList& F, SparsePolyRing Rx)
+    PolyList KxToRx(const PolyList& F, SparsePolyRing Rx)
     {
       if (F.empty()) return F;
       CoCoA_ASSERT(HasUniqueOwner(F));
@@ -94,23 +94,22 @@ namespace CoCoA
       CoCoA_ASSERT(IsFractionFieldOfGCDDomain(CoeffRing(Kx)));
       CoCoA_ASSERT(BaseRing(CoeffRing(Kx)) == CoeffRing(Rx));
       CoCoA_ASSERT(ordering(PPM(Kx)) == ordering(PPM(Rx)));
-      PolyList outF;
+      PolyList F_Rx;
+      RingElem f_Rx(Rx);
       std::vector<long> expv(NumIndets(Rx));
-      RingElem f(Rx);
-      for (const RingElem& p: F)
+      for (const RingElem& f: F)
       {
-        const RingElem d(CommonDenom(p));
-        f = 0;
-        for (SparsePolyIter i=BeginIter(p); !IsEnded(i); ++i)
-          PushBack(f, d/den(coeff(i))*num(coeff(i)), exponents(expv,PP(i))); // same PPO
-        //        f += monomial(Rx, (d/den(coeff(i))*num(coeff(i))), e);
-        outF.push_back(f);
+        const RingElem d(CommonDenom(f));
+        f_Rx = 0;
+        for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
+          PushBack(f_Rx, num(d*coeff(it)), exponents(expv,PP(it))); // same ord
+        F_Rx.push_back(f_Rx);
       }
-      return outF;
+      return F_Rx;
     }
 
 
-    PolyList WithDenom1Hom(const PolyList& F, SparsePolyRing Kx)
+    PolyList RxToKx(const PolyList& F, SparsePolyRing Kx)
     {
       CoCoA_ASSERT(IsFractionField(CoeffRing(Kx)));
       if (F.empty()) return F;
@@ -183,8 +182,8 @@ namespace CoCoA
     SparsePolyRing P(owner(G_in));
     // MAX: Adding to ComputeGBasis2 for modules should suffice.
     // The new ring should be created by MakeNewPRingFromModule
-    // and the embeddings:  WithoutDenom by EmbedVectorList
-    //                   :  WithDenom1Hom by DeEmbedPolyList
+    // and the embeddings:  KxToRx by EmbedVectorList
+    //                   :  RxToKx by DeEmbedPolyList
     if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     bool IsSatAlg=false;
     if (IsFractionFieldOfGCDDomain(CoeffRing(P)))
@@ -193,11 +192,11 @@ namespace CoCoA
       SparsePolyRing Rx = NewPolyRing(R, symbols(PPM(P)), ordering(PPM(P)));
       GRingInfo GRI(Rx, IsHomogGrD0(G_in),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
-      GReductor GBR(GRI, WithoutDenom(G_in, Rx));
+      GReductor GBR(GRI, KxToRx(G_in, Rx));
       GBR.myDoGBasis();// homog input standard alg interred
-      PolyList GB_tmp = WithDenom1Hom(GBR.myExportGBasis(), P);
+      PolyList GB_tmp = RxToKx(GBR.myExportGBasis(), P);
       PolyList MinGens_tmp;
-      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_tmp = WithDenom1Hom(GBR.myExportMinGens(), P);
+      if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_tmp = RxToKx(GBR.myExportMinGens(), P);
       MakeMonic(GB_tmp);  //  2016-11-22: make monic
       swap(GB_out, GB_tmp);
       swap(MinGens_out, MinGens_tmp);
@@ -245,14 +244,14 @@ namespace CoCoA
       const SparsePolyRing Rx = NewPolyRing(BaseRing(CoeffRing(P)), symbols(PPM(P)), ordering(PPM(P)));
       GRingInfo GRI(Rx, IsHomogGrD0(G_in), IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
-      GReductor GBR(GRI, WithoutDenom(G_in, Rx));
+      GReductor GBR(GRI, KxToRx(G_in, Rx));
       GBR.mySetTruncDeg(TruncDeg); // input value
       //---------------------------------------------------
       GBR.myDoGBasis();// homog input standard alg interred
-      PolyList GB_tmp = WithDenom1Hom(GBR.myExportGBasis(), P);
+      PolyList GB_tmp = RxToKx(GBR.myExportGBasis(), P);
       PolyList MinGens_tmp;
       MakeMonic(GB_tmp);  //  2016-11-22: make monic
-      if (IsEveryWDegLtEq(G_in, TruncDeg)) MinGens_tmp = WithDenom1Hom(GBR.myExportMinGens(), P);
+      if (IsEveryWDegLtEq(G_in, TruncDeg)) MinGens_tmp = RxToKx(GBR.myExportMinGens(), P);
       swap(GB_out, GB_tmp);
       swap(MinGens_out, MinGens_tmp);
       TruncDeg = GBR.myTruncDeg(); // update TruncDeg (if changed/complete)
@@ -279,8 +278,8 @@ namespace CoCoA
     SparsePolyRing P(owner(G));
     // MAX: Adding to ComputeGBasis for modules should suffice.
     // The new ring should be created by MakeNewPRingFromModule
-    // and the embeddings:  WithoutDenom by EmbedVectorList
-    //                   :  WithDenom1Hom by DeEmbedPolyList
+    // and the embeddings:  KxToRx by EmbedVectorList
+    //                   :  RxToKx by DeEmbedPolyList
     if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     if (IsFractionFieldOfGCDDomain(CoeffRing(P)))
     {
@@ -288,9 +287,9 @@ namespace CoCoA
       SparsePolyRing Rx = NewPolyRing(R, symbols(PPM(P)), ordering(PPM(P)));
       GRingInfo GRI(Rx, IsHomogGrD0(G), true/*IsSatAlg*/, NewDivMaskEvenPowers(), CheckForTimeout);
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
-      GReductor GBR(GRI, WithoutDenom(G, Rx), GReductor::SaturatingAlg);
+      GReductor GBR(GRI, KxToRx(G, Rx), GReductor::SaturatingAlg);
       GBR.myDoGBasisSelfSatCore();// homog input standard algorithm interred
-      return WithDenom1Hom(GBR.myExportGBasis(), P);
+      return RxToKx(GBR.myExportGBasis(), P);
     }
     else
     {
@@ -314,9 +313,9 @@ namespace CoCoA
       SparsePolyRing Rx = NewPolyRing(R, symbols(PPM(P)), ordering(PPM(P)));
       GRingInfo GRI(Rx, IsHomogGrD0(G), false/*IsSatAlg*/,NewDivMaskEvenPowers(), CheckForTimeout);
       GRI.mySetCoeffRingType(CoeffEncoding::FrFldOfGCDDomain);
-      GReductor GBR(GRI, WithoutDenom(G, Rx));
+      GReductor GBR(GRI, KxToRx(G, Rx));
       GBR.myDoGBasisRealSolve();// homog input standard alg interred
-      PolyList GB_tmp = WithDenom1Hom(GBR.myExportGBasis(), P);
+      PolyList GB_tmp = RxToKx(GBR.myExportGBasis(), P);
       MakeMonic(GB_tmp);  //  2016-11-22: make monic
       return GB_tmp;
     }
