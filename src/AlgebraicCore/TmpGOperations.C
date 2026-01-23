@@ -325,6 +325,41 @@ namespace CoCoA
   }
 
 
+  namespace
+  { // namespace // anonymous ----------------------------------------------
+
+    std::vector<long> PPIndices(ConstRefPPMonoidElem t)
+    {
+      std::vector<long> indices;
+      std::vector<long> tmp = exponents(t);
+      for (long i=0; i < len(tmp); ++i)
+        if (tmp[i]!=0)  indices.push_back(i);
+      return indices;
+    }
+
+
+    SparsePolyRing MakeElimRing(const SparsePolyRing& P,
+                                const std::vector<long>& IndetsToElim,
+                                const bool IsHomog)
+    {
+      ConstMatrixView weights = GradingMat(P);
+
+      matrix NewOrdMat = ElimMat(IndetsToElim, weights);
+      long NewGrDim = 0;
+      if (GradingDim(P) != 0 && IsHomog)
+      {
+        NewOrdMat = ElimHomogMat(IndetsToElim, weights);
+        NewGrDim = GradingDim(P);
+      }
+
+      const PPOrdering& NewOrd = NewMatrixOrdering(NewOrdMat, NewGrDim);
+      std::vector<symbol> IndetNames = NewSymbols(NumIndets(P));
+      return NewPolyRing(CoeffRing(P), IndetNames, NewOrd);
+    }
+
+    
+  } // namespace // anonymous ----------------------------------------------
+
   PolyList ComputeElim(const PolyList& G, ConstRefPPMonoidElem inds,
                        const CpuTimeLimit& CheckForTimeout)
   {
@@ -332,10 +367,8 @@ namespace CoCoA
     VERBOSE(99) << "-- called --" << std::endl;
     if (G.empty())  return G;
     const SparsePolyRing P = owner(G);
-    std::vector<long> IndexList=PPMonoidElem2IndexList(inds);
-    bool HomogInput = false;
-    if  (GradingDim(P)!=0 && IsHomog(G)) HomogInput = true;
-    SparsePolyRing P_new=MakeElimRing(P, IndexList, HomogInput);
+    bool HomogInput = (GradingDim(P)!=0 && IsHomog(G));
+    SparsePolyRing P_new=MakeElimRing(P, PPIndices(inds), HomogInput);
     RingHom PToNew = PolyAlgebraHom(P, P_new, indets(P_new));
     RingHom NewToP = PolyAlgebraHom(P_new, P, indets(P));
     PolyList NewGens;
@@ -364,16 +397,15 @@ namespace CoCoA
   RingElem ComputeElimFirst(const PolyList& G, ConstRefPPMonoidElem inds,
                             const CpuTimeLimit& CheckForTimeout)
   {
-    const SparsePolyRing P=owner(G);
-    std::vector<long> IndexList=PPMonoidElem2IndexList(inds);
-    bool IsHomogGrD0PL = (GradingDim(P)==0 ? false : IsHomogGrD0(G));
-    if (!IsHomogGrD0PL)  CoCoA_THROW_ERROR1(ERR::ReqHomog);
+    const SparsePolyRing P = owner(G);
+    if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
+    bool HomogInput = (GradingDim(P)!=0 && IsHomogGrD0(G));
+    if (!HomogInput)  CoCoA_THROW_ERROR1(ERR::ReqHomog);
     bool IsSatAlg = false;
-    SparsePolyRing P_new = MakeElimRing(P,IndexList, IsHomogGrD0PL);
+    SparsePolyRing P_new = MakeElimRing(P, PPIndices(inds), HomogInput);
     RingHom OldToNew = PolyAlgebraHom(P, P_new, indets(P_new));
     RingHom NewToOld = PolyAlgebraHom(P_new, P, indets(P));
     PPMonoidElem ElimIndsProd = LPP(OldToNew(monomial(P,inds)));
-    if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     if (IsFractionFieldOfGCDDomain(CoeffRing(P)))
       CoCoA_THROW_ERROR2(ERR::NYI, "Only for FFp");
     else

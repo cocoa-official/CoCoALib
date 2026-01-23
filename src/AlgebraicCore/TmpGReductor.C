@@ -2017,35 +2017,35 @@ Is is here only for completeness/debug purposes.
 //   } // IndexList2PPMonoidElem
 
 
-  std::vector<long> PPMonoidElem2IndexList(ConstRefPPMonoidElem thePP)
-  {
-    std::vector<long> IndexList;
-    std::vector<long> tmp = exponents(thePP);
-    for (long i=0; i < len(tmp); ++i)
-      if (tmp[i]!=0)  IndexList.push_back(i);
-    return IndexList;
-  } // PPMonoidElem2IndexList
+  // std::vector<long> PPMonoidElem2IndexList(ConstRefPPMonoidElem thePP)
+  // {
+  //   std::vector<long> IndexList;
+  //   std::vector<long> tmp = exponents(thePP);
+  //   for (long i=0; i < len(tmp); ++i)
+  //     if (tmp[i]!=0)  IndexList.push_back(i);
+  //   return IndexList;
+  // } // PPMonoidElem2IndexList
 
 
-  SparsePolyRing MakeElimRing(const SparsePolyRing& P,
-                              const std::vector<long>& IndetsToElim,
-                              const bool IsHomog)
-  {
-    ConstMatrixView weights = GradingMat(P);
+  // SparsePolyRing MakeElimRing(const SparsePolyRing& P,
+  //                             const std::vector<long>& IndetsToElim,
+  //                             const bool IsHomog)
+  // {
+  //   ConstMatrixView weights = GradingMat(P);
 
-    matrix NewOrdMat = ElimMat(IndetsToElim, weights);
-    long NewGrDim = 0;
-    if (GradingDim(P) != 0 && IsHomog)
-    {
-      NewOrdMat = ElimHomogMat(IndetsToElim, weights);
-      NewGrDim = GradingDim(P);
-    }
+  //   matrix NewOrdMat = ElimMat(IndetsToElim, weights);
+  //   long NewGrDim = 0;
+  //   if (GradingDim(P) != 0 && IsHomog)
+  //   {
+  //     NewOrdMat = ElimHomogMat(IndetsToElim, weights);
+  //     NewGrDim = GradingDim(P);
+  //   }
 
-    const PPOrdering& NewOrd = NewMatrixOrdering(NewOrdMat, NewGrDim);
-    vector<symbol> IndetNames = NewSymbols(NumIndets(P));
-    SparsePolyRing NewP=NewPolyRing(CoeffRing(P),IndetNames,NewOrd);
-    return NewP;
-  } // MakeElimRingFromOld
+  //   const PPOrdering& NewOrd = NewMatrixOrdering(NewOrdMat, NewGrDim);
+  //   vector<symbol> IndetNames = NewSymbols(NumIndets(P));
+  //   SparsePolyRing NewP=NewPolyRing(CoeffRing(P),IndetNames,NewOrd);
+  //   return NewP;
+  // } // MakeElimRingFromOld
 
 
     bool IsHomog(const PolyList& PL)

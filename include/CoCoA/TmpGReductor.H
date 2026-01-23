@@ -194,9 +194,9 @@ public:
     FreeModule MakeNewFreeModuleForSyz(const GPolyList& GPL);
     FreeModule MakeNewFreeModuleForSyz(const VectorList& VL);
     FreeModule MakeNewFreeModuleForSyz(const PolyList& PL);
-    SparsePolyRing MakeElimRing(const SparsePolyRing& P,
-                                const std::vector<long>& theElimVars,
-                                const bool IsHomog);
+    // SparsePolyRing MakeElimRing(const SparsePolyRing& P,
+    //                             const std::vector<long>& theElimVars,
+    //                             const bool IsHomog);
     SparsePolyRing MakeNewPRingFromModulePosFirst(const FreeModule& FM,
 					          bool HomogInput);
 
@@ -331,10 +331,10 @@ public:
     void homogenized(ModuleElem& the_hv,
                      const ModuleElem& the_v,
                      const GRingInfo& theGRI);
-    std::vector<long> PolyList2IndexList(const PolyList&);
-    PPMonoidElem IndexList2PPMonoidElem(const PPMonoid&,
-                                        const std::vector<long>&);
-    std::vector<long> PPMonoidElem2IndexList(ConstRefPPMonoidElem);
+  //    std::vector<long> PolyList2IndexList(const PolyList&);
+  //    PPMonoidElem IndexList2PPMonoidElem(const PPMonoid&,
+  //                                        const std::vector<long>&);
+  //  std::vector<long> PPMonoidElem2IndexList(ConstRefPPMonoidElem);
     bool IsHomog(const PolyList&);
     bool IsHomog(const VectorList&);
     std::vector<degree> DegStructure(ConstRefRingElem);
