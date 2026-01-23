@@ -202,10 +202,8 @@ namespace CoCoA
     if (!IsSparsePolyRing(RingOf(I)))  CoCoA_THROW_ERROR1(ERR::ReqSparsePolyRing);
     if (AreGensMonomial(I)) return I;
     if (IsZero(I)) return I;
-    std::vector<RingElem> HomogIdealGens;
     std::vector<RingElem> v(1,x);
-    ComputeHomogenization(HomogIdealGens, gens(I), v);
-    return ideal(HomogIdealGens);
+    return ideal(ComputeHomogenization(gens(I), v));
   }
 
 
@@ -730,7 +728,7 @@ namespace CoCoA
     myGBasis_EasyCases();
     if (IhaveGBasis()) return myGBasisValue;
     vector<RingElem> MinGens;
-    ComputeGBasis(myGBasisValue, MinGens, myGensValue, CheckForTimeout);
+    ComputeGBasis2(myGBasisValue, MinGens, myGensValue, CheckForTimeout);
     if (!MinGens.empty()) // non-trivial MinGens is non-empty only if ideal is homog
       myMinGensValue = MinGens;
     IhaveGBasisValue = true;
@@ -751,7 +749,7 @@ namespace CoCoA
     if (TruncDeg < 0) CoCoA_THROW_ERROR1(ERR::ReqNonNegative); 
     vector<RingElem> MinGens;
     vector<RingElem> GB;
-    ComputeGBasisTrunc(GB, MinGens, TruncDeg, myGensValue, CheckForTimeout);
+    ComputeGBasisTrunc2(GB, MinGens, TruncDeg, myGensValue, CheckForTimeout);
     if (!MinGens.empty()) // MinGens is non-empty only if ideal is homog
       myMinGensValue = MinGens;
     if (TruncDeg != GReductor::ourNoTruncValue)  // 20251213 AMB
@@ -861,22 +859,18 @@ namespace CoCoA
     if (OverField && IhaveMonomialGens()) return myGBasis_MonId();
     CoCoA_ASSERT(myGBasisValue.empty());
     if (IamZero()) return myGBasisValue;
-    vector<RingElem> GBSelfSat;
-    ComputeGBasisSelfSatCore(GBSelfSat, myGensValue);
-    return GBSelfSat;
+    return ComputeGBasisSelfSatCore(myGensValue);
   }
 
 
   std::vector<RingElem> SparsePolyRingBase::IdealImpl::myGBasisRealSolve() const
   {
     if (IamZero()) return myGBasisValue;
-    vector<RingElem> GBRealSolve;
-    ComputeGBasisRealSolve(GBRealSolve, myGensValue);
-    return GBRealSolve;
+    return ComputeGBasisRealSolve(myGensValue);
   }
 
 
-  namespace 
+  namespace // anonymous --------------------------------
   {
     long MaxDeg(const std::vector<RingElem>& F)
     {
@@ -884,7 +878,7 @@ namespace CoCoA
       for (const auto& f:F)  if ( (d=ConvertTo<long>(wdeg(f)[0])) > D)  D = d;
       return D;
     }
-  }
+  } // namespace // anonymous --------------------------------
   
   
   const std::vector<RingElem>& SparsePolyRingBase::IdealImpl::myMinGens() const

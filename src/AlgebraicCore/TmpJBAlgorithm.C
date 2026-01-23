@@ -167,7 +167,7 @@ namespace CoCoA
       std::vector<RingElem> groebnerBasis;
       std::vector<RingElem> minGens;
       // computation of GBasis
-      ComputeGBasis(groebnerBasis, minGens, inputVec);
+      ComputeGBasis2(groebnerBasis, minGens, inputVec);
       // if GBasis is one our ideal is trivial an we can skip everything else.
       if(len(groebnerBasis) == 1 && IsConstant(groebnerBasis[0]))
       {

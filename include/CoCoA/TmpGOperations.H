@@ -37,41 +37,55 @@ namespace CoCoA
   class ModuleElem;           // forward declaration -- defined in PPMonoid.H
   class RingElem;             // forward declaration -- defined in ring.H
 
-  void ComputeGBasis(PolyList& outGB, PolyList& outMinGens, const PolyList& , const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  void ComputeGBasisTrunc(PolyList& outGB, PolyList& outMinGens, long& TruncDeg, const PolyList& , const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  void ComputeGBasisSelfSatCore(PolyList& outGB, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  void ComputeGBasisRealSolve(PolyList& outGB, const PolyList& inGens, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  //  void ComputeSATMixGBasis(PolyList& outGB, const PolyList& inGens);
+  // "2" because they "return" 2 arguments GB_out and MinGens_out
+  void ComputeGBasis2(PolyList& GB_out, PolyList& MinGens_out,
+                      const PolyList& , const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  void ComputeGBasisTrunc2(PolyList& GB_out, PolyList& MinGens_out,
+                           long& TruncDeg, const PolyList& , const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  void ComputeGBasis2(VectorList& GB_out, VectorList& MinGens_out,
+                      const VectorList& G_in, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-  void ComputeGBasis(VectorList& outGB, VectorList& outMinGens, const VectorList& inGens, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  void ComputeGBasisFrameWork(PolyList&, const PolyList&);
+  PolyList ComputeGBasisSelfSatCore(const PolyList& G, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeGBasisRealSolve(const PolyList& G, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-  // second arg is the product of the indets to be eliminated
-  void ComputeElim(VectorList&,const VectorList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
-  PolyList ComputeElim(const PolyList&,ConstRefPPMonoidElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  // second arg is product of the indets to be eliminated
+  VectorList ComputeElim(const VectorList& G, ConstRefPPMonoidElem IndetProd,
+                         const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
+  PolyList ComputeElim(const PolyList& G, ConstRefPPMonoidElem IndetProd,
+                       const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  RingElem ComputeElimFirst(const PolyList& G, ConstRefPPMonoidElem IndetProd,
+                            const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-  void ComputeSyz(VectorList&, const FreeModule&, const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  void ComputeSyz(VectorList&, const FreeModule&, const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  VectorList ComputeSyz(const FreeModule& FM, const VectorList& G,
+                        const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  VectorList ComputeSyz(const FreeModule& FM, const PolyList& G,
+                        const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-  void ComputeIntersection(VectorList&,const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  PolyList ComputeIntersection(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  VectorList ComputeIntersection(const VectorList& G1, const VectorList& G2,
+                                 const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeIntersection(const PolyList& G1, const PolyList& G2,
+                               const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-  PolyList ComputeColon(const VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-  PolyList ComputeColon(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit() );
-  void ComputeColon(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeColon(const VectorList& G1, const VectorList& G2,
+                        const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeColon(const PolyList& G1, const PolyList& G2,
+                        const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit() );
+  VectorList ComputeColon(const VectorList& G1, const PolyList& G2,
+                          const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-  PolyList ComputeSaturation(const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-void ComputeSaturation(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  PolyList ComputeSaturation(const PolyList& G1, const PolyList& G2,
+                             const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  VectorList ComputeSaturation(const VectorList& G1, const PolyList& G2,
+                               const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-void ComputeHomogenization(VectorList&,const VectorList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
-void ComputeHomogenization(PolyList&,const PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
+  VectorList ComputeHomogenization(const VectorList&, const PolyList&,
+                                   const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
+  PolyList ComputeHomogenization(const PolyList&, const PolyList&,
+                                 const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
 
-bool RadicalMembership(const PolyList&,ConstRefRingElem, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  bool RadicalMembership(const PolyList&,ConstRefRingElem,
+                         const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
-void ComputeLT(VectorList&,const VectorList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());///< Not yet implemented
-void ComputeLT(PolyList&,const PolyList&, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
-
-  RingElem ComputeElimFirst(const PolyList& inPL, ConstRefPPMonoidElem inds, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
 }// end namespace cocoa
 
