@@ -8,27 +8,20 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v6
 
- #   - name: Install necessary packages
- #     uses: awalsh128/cache-apt-pkgs-action@v1
- #     with:
- #       packages: libgmp-dev libboost-dev libboost-filesystem-dev libboost-system-dev libreadline-dev gcc g++ make
- #       execute_install_scripts: true
- #       version: 1.0
+      - name: Install necessary packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgmp-dev libboost-dev libboost-filesystem-dev libboost-system-dev libreadline-dev gcc g++ make
 
-    - name: Install necessary packages
-      run: |
-        sudo apt update
-        sudo apt install libgmp-dev libboost-dev libboost-filesystem-dev libboost-system-dev libreadline-dev gcc g++ make
+      - name: Configure build
+        run: ./configure
 
-    - name: Configure build
-      run: ./configure
-
-    - name: Compile and run tests
-      run: |
-        make -j8 check examples server
-        pushd src/CoCoA-5
-        make -j8 check wordlist
-        popd
+      - name: Compile and run tests
+        run: |
+          make -j8 check examples server
+          pushd src/CoCoA-5
+          make -j8 check wordlist
+          popd
