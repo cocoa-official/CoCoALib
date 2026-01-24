@@ -21,7 +21,7 @@ jobs:
 
       - name: Compile and run tests
         run: |
-          make -j8 check examples server
+          make -j4 check examples server
           pushd src/CoCoA-5
-          make -j8 check wordlist
+          make -j4 check wordlist
           popd
