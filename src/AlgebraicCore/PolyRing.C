@@ -40,8 +40,6 @@
 #include "CoCoA/utils.H"  // for len
 
 #include <functional>
-using std::not1;    // for AreMonomials
-using std::ptr_fun; // for AreMonomials
 //#include <vector>
 using std::vector;
 
@@ -236,18 +234,13 @@ namespace CoCoA
   }
 
 
-  bool AreMonomials(const std::vector<RingElem>& v)
+  bool AreMonomials(const std::vector<RingElem>& F)
   {
-    // morally:  return find_if(v.begin(), v.end(), not1(IsMonomial)) == v.end();
-    if (!HasUniqueOwner(v))  CoCoA_THROW_ERROR1(ERR::MixedRings);
-    const long n = len(v);
-    for (long i=0; i < n; ++i)
-      if (!IsMonomial(v[i]))  return false;
+    // C++17: return find_if(F.begin(),F.end(),std::not_fn(CoCoA::IsHomog))==F.end();
+    if (!HasUniqueOwner(F))  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    for (const auto& f: F)
+      if (!IsMonomial(f))  return false;
     return true;
-//  We *DO NOT USE* STL algorithm because ptr_fun fails when args are references.
-//     return find_if(v.begin(), v.end(),
-//                    not1(ptr_fun(static_cast<bool(*)(const RingElemAlias&)>(CoCoA::IsMonomial))))
-//       == v.end(); 
   }
 
 

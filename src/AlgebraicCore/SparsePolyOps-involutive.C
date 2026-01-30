@@ -56,9 +56,6 @@
 using std::max;     // for MaxExponent, StdDeg
 using std::remove;  // for myColon
 using std::sort;    // for AreGoodIndetNames, QuotientBasisSorted
-#include <functional>
-using std::not1;    // for AreLPPSqFree
-using std::ptr_fun; // for AreLPPSqFree
 #include <iostream>
 // using std::ostream in SparsePolyRingBase::myOutput
 #include <iterator>

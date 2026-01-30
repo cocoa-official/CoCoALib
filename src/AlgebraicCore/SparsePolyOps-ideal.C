@@ -57,9 +57,6 @@
 //using std::max;     // for MaxExponent, StdDeg
 using std::remove;  // for myColon
 using std::sort;    // for AreGoodIndetNames
-//#include <functional>
-//using std::not1;    // for AreLPPSqFree
-//using std::ptr_fun; // for AreLPPSqFree
 #include <iostream>
 // using std::ostream in SparsePolyRingBase::myOutput
 //#include <iterator>
@@ -334,20 +331,13 @@ namespace CoCoA
   
   namespace // anonymous --------------------------------
   {
-    bool AreLPPSqFree(const std::vector<RingElem>& v)
+    bool AreLPPSqFree(const std::vector<RingElem>& F)
     {
-      const long n = len(v);
-      for (long i=0; i < n; ++i)
-        if (!IsSqFree(LPP(v[i]))) return false;
+      for (const auto& f: F)
+        if (!IsSqFree(LPP(f))) return false;
       return true;
-//   We *DO NOT USE* STL algorithm because std::ptr_fun does not work if the fn has formal params which are of reference type
-//       return find_if(v.begin(), v.end(),
-//                      not1(ptr_fun(CoCoA::IsSqFreeLPP)))
-// 	//                     not1(ptr_fun(static_cast<bool(*)(ConstRefRingElem)>(CoCoA::IsRadLPP))))
-//         == v.end();
     }
-
-    } // anonymous end ----------------------------------
+  } // anonymous end ----------------------------------
 
 
   bool SparsePolyRingBase::IdealImpl::IhaveGBasis() const
