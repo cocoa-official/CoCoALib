@@ -36,8 +36,6 @@ using std::vector;
 #include <algorithm>
 using std::max;
 //using std::swap;
-#include <functional>
-using std::ptr_fun;
 #include <iostream>
 using std::ostream;
 #include<iterator>
@@ -934,9 +932,9 @@ namespace CoCoA
   }
 
 
-  bool IsHomog(const std::vector<ModuleElem>& F)
+  bool IsHomog(const std::vector<ModuleElem>& L)
   {
-    for (const auto& v: F)
+    for (const auto& v: L) // C++17: find_if... not_fn...
       if (!IsHomog(v))  return false;
     return true;
   }

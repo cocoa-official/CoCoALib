@@ -40,9 +40,8 @@ namespace CoCoA
 
   bool FinGenModuleBase::IamZero() const
   {
-    const std::vector<ModuleElem>& g = myGens();
-    for (long i=0; i<len(g); ++i)
-      if (!IsZero(g[i])) return false;
+    for (const auto& g: myGens())  // C++17: find_if... not_fn
+      if (!IsZero(g)) return false;
     return true;
   }
 

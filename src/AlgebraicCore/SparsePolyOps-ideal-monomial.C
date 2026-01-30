@@ -41,9 +41,6 @@
 
 #include <algorithm>
 using std::swap;
-#include <functional>
-using std::not1;    // for IsMonomial
-using std::ptr_fun; // for IsMonomial
 #include <iostream>
 // using std::ostream in SparsePolyRingBase::myOutput
 #include <list>
