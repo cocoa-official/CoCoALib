@@ -934,6 +934,14 @@ namespace CoCoA
   }
 
 
+  bool IsHomog(const std::vector<ModuleElem>& F)
+  {
+    for (const auto& v: F)
+      if (!IsHomog(v))  return false;
+    return true;
+  }
+
+
   FreeModule NewFreeModuleForSyz(const std::vector<RingElem>& L, const ErrorContext& ErrCtx)
   {
     if (L.empty()) CoCoA_THROW_ERROR_WITH_CONTEXT2(ERR::ReqNonEmpty, ErrCtx);

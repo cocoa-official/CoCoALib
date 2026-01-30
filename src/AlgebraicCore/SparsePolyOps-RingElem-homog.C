@@ -89,6 +89,19 @@ namespace CoCoA
   }
 
 
+  bool IsHomog(const std::vector<RingElem>& F)
+  {
+    for (const RingElem& f: F)
+      if (!IsHomog(f))  return false;
+    return true;
+    //We *DO NOT USE* STL algorithm because ptr_fun fails when fun has arg of reference type.
+    //       return find_if(v.begin(), v.end(),
+    //                      not1(ptr_fun(static_cast<bool(*)(ConstRefRingElem)>
+    //                                   (CoCoA::IsHomog))))
+    //         == v.end();
+  }
+
+  
   bool IsHomogPartial(ConstRefRingElem f, long n)  // assumes n >= 0
   {
     CheckElemSparsePolyRing(f, CoCoA_ERROR_CONTEXT);
