@@ -40,7 +40,7 @@ namespace CoCoA
 
   bool FinGenModuleBase::IamZero() const
   {
-    for (const auto g: myGens())  // C++17: find_if... not_fn
+    for (const auto& g: myGens())  // C++17: find_if... not_fn
       if (!IsZero(g)) return false;
     return true;
   }
