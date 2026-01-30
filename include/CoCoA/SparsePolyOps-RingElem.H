@@ -76,6 +76,7 @@ namespace CoCoA
   int CmpWDeg(ConstRefRingElem f1, ConstRefRingElem f2);
   int CmpWDegPartial(ConstRefRingElem f1, ConstRefRingElem f2, long GrDim);  // assumes 0 <= GrDim
   bool IsHomog(ConstRefRingElem f);
+  bool IsHomog(const std::vector<RingElem>& F);
   bool IsHomogPartial(ConstRefRingElem f, long GrDim);    // assumes 0 <= GrDim
   RingElem homog(ConstRefRingElem f, ConstRefRingElem h); ///< homogenize f with indet h (GrDim=1, wdeg(h)=1)
   RingElem LF(ConstRefRingElem f);

@@ -117,6 +117,7 @@ namespace CoCoA
   long deg(const ModuleElem& v);  
   int CmpWDeg(const ModuleElem& v1, const ModuleElem& v2);
   bool IsHomog(const ModuleElem& v);
+  bool IsHomog(const std::vector<ModuleElem>& F);
   ModuleElem homog(const ModuleElem& v, ConstRefRingElem h);
 
   FreeModule NewFreeModuleForSyz(const std::vector<RingElem>& L, const ErrorContext& ErrCtx);

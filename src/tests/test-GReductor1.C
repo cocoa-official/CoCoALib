@@ -29,25 +29,20 @@
 #include "CoCoA/RingFp.H"
 #include "CoCoA/RingQQ.H"
 #include "CoCoA/SparsePolyRing.H"
+#include "CoCoA/SparsePolyOps-RingElem.H" // for IsHomog
 #include "CoCoA/TmpGOperations.H"
 #include "CoCoA/TmpGPoly.H"
 #include "CoCoA/VectorOps.H"
 #include "CoCoA/submodule.H"
 #include "CoCoA/symbol.H"
 
-#include <algorithm>
-using std::find_if;
-#include <functional>
-using std::not1;
-using std::ptr_fun;
 #include <iostream>
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::boolalpha;
 #include <string>
-#include <vector>
-using std::vector;
+//using std::vector;
 
 //----------------------------------------------------------------------
 // Test for Buchberger's Algorithm 
@@ -57,7 +52,7 @@ using std::vector;
 namespace CoCoA
 {
 
-  void PrintInfo(const std::string& s, const SparsePolyRing& P, const vector<RingElem>& InputPolys)
+  void PrintInfo(const std::string& s, const SparsePolyRing& P, const std::vector<RingElem>& InputPolys)
   {
     cout << "Executing test " << s << endl << P << "   ";
     cout << "GradingDim = " << GradingDim(P) << "   ";
@@ -121,7 +116,7 @@ namespace CoCoA
   // expecting P to have 5 indeterminates
   void testCurve(SparsePolyRing P)
   {
-    const vector<RingElem>& x = indets(P);
+    const std::vector<RingElem>& x = indets(P);
     PolyList InputPolys, GB;
     InputPolys.push_back(power(x[0],3) - x[1]);
     InputPolys.push_back(power(x[0],5) - x[2]);
@@ -149,7 +144,7 @@ namespace CoCoA
     ring ZZmod = NewZZmod(101);  
   
     // Cyclic 4
-    const vector<symbol> X = SymbolRange("x", 0, 4);
+    const std::vector<symbol> X = SymbolRange("x", 0, 4);
     SparsePolyRing P(NewPolyRing_DMPI(ZZmod, X));
     SparsePolyRing Q(NewPolyRing_DMPII(ZZmod, X));
     SparsePolyRing R(NewPolyRing(RingQQ(), NewSymbols(5)));
@@ -172,7 +167,7 @@ namespace CoCoA
     //testC4(LexR,"NewPolyRing Q");
     
     // Curve
-    const vector<symbol> Y = SymbolRange("x", 0 ,3);
+    const std::vector<symbol> Y = SymbolRange("x", 0 ,3);
     SparsePolyRing P1(NewPolyRing_DMPI(ZZmod, Y));
     SparsePolyRing Q1(NewPolyRing_DMPII(ZZmod, Y));
     SparsePolyRing R1(NewPolyRing(RingQQ(), NewSymbols(4)));

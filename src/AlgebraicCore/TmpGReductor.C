@@ -46,13 +46,10 @@
 
 #include <algorithm>
 using std::for_each;
-//using std::find_if;  // for IsHomog
 #include <functional>
 using std::binary_function;
 using std::less;
 using std::mem_fun_ref; // for calling GPair::complete on GPairList
-using std::not1;    // for IsHomog
-using std::ptr_fun; // for IsHomog
 #include <iostream>
 using std::ostream;
 using std::endl;
@@ -1899,32 +1896,6 @@ Is is here only for completeness/debug purposes.
     } // DeEmbedPolyList theOutputPL
 
 
-//     void SyzEmbedGPolyList(GPolyList& theGPL)
-//     {
-//       const GRingInfo& GRI(GetGRI(theGPL));
-//       long k=NumCompts(GRI.myFreeModule());
-//       for (GPolyList::iterator it=theGPL.begin() ; it!=theGPL.end() ; ++it,++k)
-//       { // Added by JAA 2012/10/11
-//         RingElem EkY = GRI.myE(k)*GRI.myY(wdeg(*it));
-//         (*it).myAppendClear(EkY);
-//       }
-//     } // SyzEmbedGPolyList
-
-
-//     void IntEmbedGPolyList(GPolyList& theGPL1, GPolyList& theGPL2)
-//     {
-//       CoCoA_ASSERT(GetGRI(theGPL1)==GetGRI(theGPL1));
-//       if (theGPL1.empty() || theGPL2.empty()) return;
-//       const GRingInfo& GRI(GetGRI(theGPL1));
-//       long k = NumCompts(GRI.myFreeModule());
-
-//       for (GPolyList::iterator it=theGPL2.begin();it!=theGPL2.end();++it,++k)
-//       { // Added by JAA 2012/10/11
-//         RingElem EmbeddedPoly = it->myPoly()*GRI.myE(k);
-//         (*it).myAppendClear(EmbeddedPoly);
-//       }
-//       theGPL1.splice(theGPL1.begin(),theGPL2);
-//     } // IntEmbedGPolyList
 
 
     void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
@@ -1974,159 +1945,5 @@ Is is here only for completeness/debug purposes.
     } // homogenized
 
 
-/*
-      const FreeModule NewFM=owner(the_hv);
-      the_hv=zero(NewFM);
-      const std::vector<ModuleElem>& e = gens(NewFM);
-      degree maxdegree=wdeg(the_v);
-      for (long i=0;i<NumCompts(owner(the_v));++i)
-        for (SparsePolyIter it=BeginIter(the_v[i]); !IsEnded(it); ++it)
-          the_hv=the_hv+
-                   e[i]*(theGRI.myOldP2NewP())(monomial(theGRI.myNewSPR(),coeff(it),PP(it)))
-                   *theGRI.myY(maxdegree-wdeg(PP(it)));
-    } // Homogenize
-*/
-
-//     std::vector<long> PolyList2IndexList(const PolyList& thePL)
-//     {
-//       std::vector<long> outPL;
-//       std::vector<long> tmp;
-//       long i=0;
-
-// //      for (PolyList::const_iterator it=thePL.begin();it!=thePL.end();++it)
-//       for (const auto& p: thePL)
-//       {
-//         SparsePolyIter it_p=BeginIter(p);
-//         exponents(tmp,PP(it_p));
-//         i=0;
-//         while (i!=len(tmp) && tmp[i]==0) ++i;
-//         CoCoA_ASSERT(i!=len(tmp));
-//         outPL.push_back(i);
-//       }
-//       return outPL;
-//     }
-
-
-//   PPMonoidElem IndexList2PPMonoidElem(const PPMonoid& thePPM,
-//                                       const std::vector<long>& theIL)
-//   {
-//     PPMonoidElem t(thePPM);
-//     for (std::vector<long>::const_iterator it=theIL.begin();it!=theIL.end();++it)
-//       t*=indet(thePPM,*it);
-//     return t;
-//   } // IndexList2PPMonoidElem
-
-
-  // std::vector<long> PPMonoidElem2IndexList(ConstRefPPMonoidElem thePP)
-  // {
-  //   std::vector<long> IndexList;
-  //   std::vector<long> tmp = exponents(thePP);
-  //   for (long i=0; i < len(tmp); ++i)
-  //     if (tmp[i]!=0)  IndexList.push_back(i);
-  //   return IndexList;
-  // } // PPMonoidElem2IndexList
-
-
-  // SparsePolyRing MakeElimRing(const SparsePolyRing& P,
-  //                             const std::vector<long>& IndetsToElim,
-  //                             const bool IsHomog)
-  // {
-  //   ConstMatrixView weights = GradingMat(P);
-
-  //   matrix NewOrdMat = ElimMat(IndetsToElim, weights);
-  //   long NewGrDim = 0;
-  //   if (GradingDim(P) != 0 && IsHomog)
-  //   {
-  //     NewOrdMat = ElimHomogMat(IndetsToElim, weights);
-  //     NewGrDim = GradingDim(P);
-  //   }
-
-  //   const PPOrdering& NewOrd = NewMatrixOrdering(NewOrdMat, NewGrDim);
-  //   vector<symbol> IndetNames = NewSymbols(NumIndets(P));
-  //   SparsePolyRing NewP=NewPolyRing(CoeffRing(P),IndetNames,NewOrd);
-  //   return NewP;
-  // } // MakeElimRingFromOld
-
-
-    bool IsHomog(const PolyList& PL)
-    {
-// HINT: CAN USE std::all_of here
-      // morally:  return find_if(v.begin(), v.end(), not1(IsHomog)) == v.end();
-      for (const RingElem& p: PL)
-        if (!IsHomog(p))  return false;
-      return true;
-//    We *DO NOT USE* STL algorithm because ptr_fun fails when fun has arg of reference type.
-//       return find_if(v.begin(), v.end(),
-//                      not1(ptr_fun(static_cast<bool(*)(ConstRefRingElem)>
-//                                   (CoCoA::IsHomog))))
-//         == v.end();
-    }
-
-
-
-    bool IsHomog(const VectorList& VL)
-    {
-      for (const auto& v: VL)
-        if (!IsHomog(v))  return false;
-      return true;
-    }
-
-
-/////////////////
-/*
-    std::vector<degree> DegStructure(ConstRefRingElem the_p)
-    {
-      std::vector<degree> L;
-      for (SparsePolyIter it=BeginIter(the_p);!IsEnded(it); ++it)
-        L.push_back(wdeg(PP(it)));
-      return L;
-    } // DegStructure
-
-   std::vector<std::vector<degree> > DegStructure(const ModuleElem& the_v)
-    {
-      std::vector<std::vector<degree> > L;
-      std::vector<degree> tmp;
-      const FreeModule FM=owner(the_v);
-      const std::vector<degree> S=shifts(FM);
-      for (long i=0;i<NumCompts(owner(the_v));++i)
-      {
-        tmp.clear();
-        for (SparsePolyIter it=BeginIter(the_v[i]);!IsEnded(it); ++it)
-            tmp.push_back(wdeg(PP(it))+S[i]);
-        L.push_back(tmp);
-      }
-      return L;								
-    } // DegStructure
-
-    std::vector<std::vector<degree> > DegStructure(const PolyList& thePL)
-    {
-      std::vector<std::vector<degree> > L;
-      for (PolyList::const_iterator it=thePL.begin();it!=thePL.end();++it)
-          L.push_back(DegStructure(*it));
-      return L;
-    } // DegStructure
-
-
-
-    std::vector<std::vector<std::vector<degree> > > DegStructure(const VectorList& theVL)
-    {
-      std::vector<std::vector<std::vector<degree> > > L;
-      for (VectorList::const_iterator it=theVL.begin();it!=theVL.end();++it)
-          L.push_back(DegStructure(*it));
-      return L;
-    } // DegStructure
-
-*/
-
-
-
-// void ReadInt(std::istream& in, int& the_int,SkipTagType ST)
-// {
-//   if (ST == GetTag) SkipTag(in, "<int>");
-//   in >> the_int;
-//   SkipTag(in, "</int>");
-// } // ReadInt
-
-//////////////////
 
 } // end namespace cocoa
