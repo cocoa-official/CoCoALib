@@ -322,8 +322,8 @@ namespace CoCoA
 
   bool SparsePolyRingBase::IdealImpl::IamZero() const
   {
-    for (long i=0; i<len(myGens()); ++i)
-      if (!IsZero(myGens()[i])) return false;
+    for (const auto& f: myGens())
+      if (!IsZero(f)) return false;
     return true;
   }
 
@@ -457,17 +457,17 @@ namespace CoCoA
   bool SparsePolyRingBase::IdealImpl::IamZeroDim() const
   {
     const vector<RingElem>& GB = myTidyGens(NoCpuTimeLimit());
-    const long GBlen = len(GB);
-    const int nvars = NumIndets(myRing());
-    vector<bool> AlreadySeen(nvars);
+    const int n = NumIndets(myRing());
+    if (len(GB) < n) return false;
+    vector<bool> AlreadySeen(n);
     int NumIndetPowers = 0;
     long index; BigInt IgnoreExp; // for rtn vals from IsIndetPosPower
-    for (long i=0; i < GBlen; ++i)
+    for (const auto& g: GB)
     {
-      if (IsIndetPosPower(index, IgnoreExp, LPP(GB[i])) && !AlreadySeen[index])
+      if (IsIndetPosPower(index, IgnoreExp, LPP(g)) && !AlreadySeen[index])
       {
         AlreadySeen[index] = true;
-        if (++NumIndetPowers == nvars) return true;
+        if (++NumIndetPowers == n) return true;
       }
     }
     return false;
@@ -813,27 +813,25 @@ namespace CoCoA
     const RingHom phi =PolyAlgebraHom(P,Ph,vector<RingElem>(X.begin(),X.begin()+n));
     std::vector<RingElem> v = indets(P);  v.push_back(one(P));
     const RingHom dehom = PolyAlgebraHom(Ph,P,v);
-    const std::vector<RingElem>& g = myGens();
     std::vector<RingElem> gh; // use transform here???
-    for (long i=0; i<len(g); ++i)
-      if (!IsZero(g[i]))
-        gh.push_back(homog(phi(g[i]), h));
+    for (const auto& f: myGens())
+      if (!IsZero(f))
+        gh.push_back(homog(phi(f), h));
     std::vector<RingElem> GB = dehom( GBasis(ideal(gh),CheckForTimeout) );
     gh.clear();
     // interreduce GB
     std::vector<RingElem> GBaux;
     sort(GB.begin(), GB.end(), LPPLessThan);
     //    PPVector LT_GB(PPM(P), NewDivMaskEvenPowers());
-    PPWithMask LT_GBi(one(PPM(P)), NewDivMaskEvenPowers());
+    PPWithMask LT_g(one(PPM(P)), NewDivMaskEvenPowers());
     PPVector LT_GB_min(PPM(P), NewDivMaskEvenPowers());
-    for (long i=0; i<len(GB); ++i)
+    for (const auto& g: GB)
     {
-      //      PushBack(LT_GB, LPP(GB[i]));
-      LT_GBi = LPP(GB[i]);
-      if (!IsDivisible(LT_GBi, LT_GB_min))
+      LT_g = LPP(g);
+      if (!IsDivisible(LT_g, LT_GB_min))
       {
-        PushBack(LT_GB_min, LT_GBi);
-        GBaux.push_back(monic(NR(GB[i], GBaux)));
+        PushBack(LT_GB_min, LT_g);
+        GBaux.push_back(monic(NR(g, GBaux)));
       }
     }
     swap(myGBasisValue, GBaux);
@@ -891,14 +889,6 @@ namespace CoCoA
       CoCoA_THROW_ERROR2(ERR::ReqSparsePolyRing, "ring of I");
     if (IsZero(I) || IsOne(I)) return false;
     // Now we know I is non-trivial.
-//     const SparsePolyRing P = RingOf(I);
-//     const vector<RingElem>& GB = TidyGens(I);
-//     const long GBlen = len(GB); // MUST BE A REDUCED GBASIS !!!
-//     long NumIndetPowers = 0;
-//     for (long i=0; i < GBlen; ++i)
-//       if (IsIndetPosPower(LPP(GB[i])))
-//         ++NumIndetPowers;
-//     return (NumIndetPowers == NumIndets(P));
     return SparsePolyRingBase::IdealImpl::ourGetPtr(I)->IamZeroDim();
   }
 

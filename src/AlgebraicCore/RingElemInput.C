@@ -273,11 +273,8 @@ namespace CoCoA
       if (!TermList.empty())
       {
         sort(TermList.begin(), TermList.end(), CmpLPP);
-        const long nterms = len(TermList);
-        for (long i=0; i < nterms; ++i)
-          ans += TermList[i];
-        if (IsZero(gbk))
-          return ans;
+        for (const auto& t: TermList)  ans += t;
+        if (IsZero(gbk))  return ans;
         gbk.myAddClear(ans, NumTerms(ans));
       }
 

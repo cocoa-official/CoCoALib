@@ -639,9 +639,8 @@ namespace CoCoA
       myPreimageIdeal(ReducingIdeal(RmodI))
   {
     vector<RingElem> OverGens;
-    const long ngens = len(gens);
-    for (long i=0; i < ngens; ++i)
-      OverGens.push_back(RmodI->myCanonicalRepr(raw(gens[i])));
+    for (const auto& f: gens)
+      OverGens.push_back(RmodI->myCanonicalRepr(raw(f)));
     myPreimageIdeal += ideal(ReprRing(RmodI), OverGens);
     SetTidyGensFromPreimageIdeal();
     //    IamPrime3Flag = uncertain3;   // default value
@@ -786,11 +785,10 @@ namespace CoCoA
   {
     vector<RingElem> NewTidyGens;
     const vector<RingElem>& OverGens = TidyGens(myPreimageIdeal);
-    const long ngens = len(OverGens);
-    for (long i=0; i < ngens; ++i)
+    for (const auto& f: OverGens)
     {
       RingElem g(myR);
-      myR->myReduction(raw(g), raw(OverGens[i]));
+      myR->myReduction(raw(g), raw(f));
       if (!IsZero(g))
         NewTidyGens.push_back(g);
     }
@@ -825,8 +823,8 @@ namespace CoCoA
   QuotientRing NewQuotientRing(const ring& R, const std::vector<std::string>& L)
   {
     std::vector<RingElem> gensI;
-    for (long i=0; i<len(L); ++i)
-      gensI.push_back(RingElem(R, L[i]));
+    for (const auto& s: L)
+      gensI.push_back(RingElem(R, s));
     return NewQuotientRing(R, ideal(R, gensI));
   }
   
