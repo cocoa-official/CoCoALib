@@ -313,9 +313,9 @@ namespace CoCoA
       const RingElem h(RingOf(I), "HomogIndet");
       const ring& P_h = owner(h); // same as RingOf(I)
       std::vector<RingElem> gensH;
-      for (long i=0; i<len(gens(I)); ++i)
-        if (!IsZero(gens(I)[i]))
-          gensH.push_back(homog(gens(I)[i], h));
+      for (const auto& f: gens(I))
+        if (!IsZero(f))
+          gensH.push_back(homog(f, h));
       //      std::cout << gensH << std::endl;
       VERBOSE(90) << "about to make RGBh" << std::endl;
       const vector<RingElem> RGBh = ReducedGBasis(ideal(P_h,gensH));

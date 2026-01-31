@@ -82,9 +82,8 @@ namespace CoCoA
   {
     // NewFieldIdeal has already checked that the args are good.
     bool AllZero = true;
-    const long n = len(gens);
-    for (long i=0; i < n; ++i)
-      if (!IsZero(gens[i])) { AllZero = false; break; }
+    for (const auto& g: gens)
+      if (!IsZero(g)) { AllZero = false; break; }
     if (!AllZero) myTidyGensValue.push_back(one(myR));
     IamPrime3Flag = IamMaximal3Flag = AllZero;
   }
@@ -200,9 +199,8 @@ namespace CoCoA
     // Check that k is indeed a field, and that all gens belong to k
     if (!IsField(k))
       CoCoA_THROW_ERROR1(ERR::ReqField);
-    const long n = len(gens);
-    for (long i=0; i < n; ++i)
-      if (owner(gens[i]) != k)
+    for (const auto& g: gens)
+      if (owner(g) != k)
         CoCoA_THROW_ERROR1(ERR::MixedRings);
     return ideal(new FieldIdealImpl(k, gens));
   }
