@@ -823,8 +823,8 @@ namespace CoCoA
   QuotientRing NewQuotientRing(const ring& R, const std::vector<std::string>& L)
   {
     std::vector<RingElem> gensI;
-    for (const auto& s: L)
-      gensI.push_back(RingElem(R, s));
+    for (const auto& str: L)
+      gensI.push_back(RingElem(R, str));
     return NewQuotientRing(R, ideal(R, gensI));
   }
   
