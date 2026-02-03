@@ -709,9 +709,8 @@ namespace CoCoA
   {
     myTidyGensIsValid = false;
     if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR2(ERR::NYI, "non-field CoeffRing");
-    const long ngens = len(gens);
-    for (long i=0; i < ngens; ++i)
-      if (owner(gens[i]) != myP)  CoCoA_THROW_ERROR1(ERR::MixedRings);
+    for (const auto& g: gens)
+      if (owner(g) != myP)  CoCoA_THROW_ERROR1(ERR::MixedRings);
   }
 
 
@@ -722,10 +721,7 @@ namespace CoCoA
   bool DenseUPolyRingBase::IdealImpl::IamZero() const
   {
     if (myTidyGensIsValid) return myTidyGensValue.empty();
-    const vector<RingElem>& g = myGensValue;
-    const long ngens = len(g);
-    for (long i=0; i < ngens; ++i)
-      if (!IsZero(g[i])) return false;
+    for (const auto& g: myGensValue)  if (!IsZero(g)) return false;
     return true;
   }
 
@@ -856,12 +852,11 @@ namespace CoCoA
     if (myTidyGensIsValid) return myTidyGensValue;
     CoCoA_ASSERT(myTidyGensValue.empty());
     RingElem g(myP);
-    const long ngens = len(myGensValue);
     CheckForTimeout.myReset(IterationVariability::high);
-    for (long i=0; i < ngens; ++i)
+    for (const auto& g_i: myGensValue)
     {
       CheckForTimeout("DenseUPolyRingBase::IdealImpl::myTidyGens"); // could this ever be useful?
-      myP->myGcd(raw(g), raw(g), raw(myGensValue[i]));
+      myP->myGcd(raw(g), raw(g), raw(g_i));
       if (IsInvertible(g)) break; // gcd is 1
     }
     if (!IsZero(g))  myTidyGensValue.push_back(g);

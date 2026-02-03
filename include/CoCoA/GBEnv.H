@@ -39,13 +39,6 @@ namespace CoCoA
     enum type {Field, FrFldOfGCDDomain};
   }
 
-// Two utilities for GRingInfo ctors
-
-  RingHom CreateNewP2OldPRingHom(const SparsePolyRing& theNewSPR,
-                                 const SparsePolyRing& theOldSPR);
-
-  RingHom CreateOldP2NewPRingHom(const SparsePolyRing& theNewSPR,
-                                 const SparsePolyRing& theOldSPR);
 
 //-- class GRingInfo --------------------------------------------------*/
 
