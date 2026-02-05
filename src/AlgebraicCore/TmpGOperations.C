@@ -90,7 +90,7 @@ namespace CoCoA
     {
       if (F.empty()) return F;
       CoCoA_ASSERT(HasUniqueOwner(F));
-      const SparsePolyRing Kx(owner(F));
+      const SparsePolyRing Kx(owner(F[0]));
       CoCoA_ASSERT(IsFractionFieldOfGCDDomain(CoeffRing(Kx)));
       CoCoA_ASSERT(BaseRing(CoeffRing(Kx)) == CoeffRing(Rx));
       CoCoA_ASSERT(ordering(PPM(Kx)) == ordering(PPM(Rx)));
@@ -114,7 +114,7 @@ namespace CoCoA
       CoCoA_ASSERT(IsFractionField(CoeffRing(Kx)));
       if (F.empty()) return F;
       CoCoA_ASSERT(HasUniqueOwner(F));
-      const SparsePolyRing Rx(owner(F));
+      const SparsePolyRing Rx(owner(F[0]));
       CoCoA_ASSERT(BaseRing(CoeffRing(Kx)) == CoeffRing(Rx));
       CoCoA_ASSERT(ordering(PPM(Kx)) == ordering(PPM(Rx)));
       const RingHom RToK = EmbeddingHom(CoeffRing(Kx));
@@ -136,7 +136,7 @@ namespace CoCoA
       MinGens_out.clear();
       return;
     }
-    const FreeModule FM=owner(G_in);
+    const FreeModule FM=owner(G_in[0]);
     const SparsePolyRing P_new(MakeNewPRingFromModule(FM));
     const SparsePolyRing P(RingOf(FM));
     if (!IsField(CoeffRing(P)))
@@ -175,7 +175,7 @@ namespace CoCoA
       MinGens_out.clear();
       return;
     }
-    SparsePolyRing P(owner(G_in));
+    SparsePolyRing P(owner(G_in[0]));
     // MAX: Adding to ComputeGBasis2 for modules should suffice.
     // The new ring should be created by MakeNewPRingFromModule
     // and the embeddings:  KxToRx by EmbedVectorList
@@ -229,7 +229,7 @@ namespace CoCoA
       MinGens_out.clear();
       return;
     }
-    const SparsePolyRing P(owner(G_in));
+    const SparsePolyRing P(owner(G_in[0]));
     CoCoA_ASSERT_ALWAYS(TruncDeg >= 0); // user TruncDeg must be >=0
     if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     if (GradingDim(P)!=1)  CoCoA_THROW_ERROR1(ERR::ReqGradingDim1);
@@ -271,7 +271,7 @@ namespace CoCoA
   {
     if (G.empty()) return G;
     //    bool IsSatAlg=true;
-    SparsePolyRing P(owner(G));
+    SparsePolyRing P(owner(G[0]));
     // MAX: Adding to ComputeGBasis for modules should suffice.
     // The new ring should be created by MakeNewPRingFromModule
     // and the embeddings:  KxToRx by EmbedVectorList
@@ -300,7 +300,7 @@ namespace CoCoA
   PolyList ComputeGBasisRealSolve(const PolyList& G, const CpuTimeLimit& CheckForTimeout)
   {
     if (G.empty()) return G;
-    SparsePolyRing P(owner(G));
+    SparsePolyRing P(owner(G[0]));
     if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     if (characteristic(P)!=0)  CoCoA_THROW_ERROR1(ERR::ReqChar0);
     if (IsFractionFieldOfGCDDomain(CoeffRing(P)))
@@ -366,7 +366,7 @@ namespace CoCoA
     VerboseLog VERBOSE("ComputeElim");
     VERBOSE(99) << "-- called --" << std::endl;
     if (G.empty())  return G;
-    const SparsePolyRing P = owner(G);
+    const SparsePolyRing P = owner(G[0]);
     bool HomogInput = (GradingDim(P)!=0 && IsHomog(G));
     SparsePolyRing P_new=MakeElimRing(P, PPIndices(inds), HomogInput);
     RingHom PToNew = PolyAlgebraHom(P, P_new, indets(P_new));
@@ -397,7 +397,7 @@ namespace CoCoA
   RingElem ComputeElimFirst(const PolyList& G, ConstRefPPMonoidElem inds,
                             const CpuTimeLimit& CheckForTimeout)
   {
-    const SparsePolyRing P = owner(G);
+    const SparsePolyRing P = owner(G[0]);
     if (!IsField(CoeffRing(P)))  CoCoA_THROW_ERROR1(ERR::ReqCoeffsInField);
     bool HomogInput = (GradingDim(P)!=0 && IsHomogGrD0(G));
     if (!HomogInput)  CoCoA_THROW_ERROR1(ERR::ReqHomog);
@@ -436,7 +436,7 @@ namespace CoCoA
     if (G.empty())  return G;
     bool IsSatAlg=false;
     ModOrdTypeForcing MOType = (IsHomogGrD0(G) ? WDegPosTO : PosWDegTO);
-    const FreeModule FM=owner(G);
+    const FreeModule FM = owner(G[0]);
     const SparsePolyRing P(RingOf(FM));
     const SparsePolyRing P_new(MakeNewPRingFromModule(FM,MOType));
     // Note: the GRI should build itself SyzFM and P_new from the data and deduce FM and P.
@@ -456,7 +456,7 @@ namespace CoCoA
     if (G.empty()) return VectorList{zero(SyzFM)};
     bool IsSatAlg=false;
     ModOrdTypeForcing MOType = (IsHomogGrD0(G) ? WDegPosTO : PosWDegTO);
-    const SparsePolyRing P(owner(G));
+    const SparsePolyRing P(owner(G[0]));
     const SparsePolyRing P_new(MakeNewPRingForSimpleEmbedding(P,MOType));
     GRingInfo GRI(P_new,P,SyzFM,IsHomogGrD0(G),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
     GReductor GBR(GRI, SyzEmbedPolyList(G,GRI));
@@ -469,7 +469,7 @@ namespace CoCoA
                                  const CpuTimeLimit& CheckForTimeout)
   {
     bool IsSatAlg=false;
-    const FreeModule FM=owner(G1);
+    const FreeModule FM = owner(G1[0]);
     //const SparsePolyRing P_new(MakeNewPRingFromModule(FM,WDegPosTO));
     bool HomogInput = IsHomogGrD0(G1) && IsHomogGrD0(G2);
     const SparsePolyRing P_new(MakeNewPRingFromModulePosFirst(FM,HomogInput));
@@ -486,7 +486,8 @@ namespace CoCoA
                                const CpuTimeLimit& CheckForTimeout)
   {
     bool IsSatAlg=false;
-    const SparsePolyRing P(owner(G1));
+    if (G1.empty())  return G1;
+    const SparsePolyRing P(owner(G1[0]));
     const bool HomogInput = IsHomogGrD0(G1) && IsHomogGrD0(G2);
     const SparsePolyRing P_new(MakeNewPRingForSimpleEmbeddingPosFirst(P, HomogInput));
     GRingInfo GRI(P_new, P, HomogInput,
@@ -503,11 +504,11 @@ namespace CoCoA
     PolyList ComputeColonByPrincipal(const VectorList& G1, const ModuleElem& v,
                                      const CpuTimeLimit& CheckForTimeout)
     {
-      CoCoA_ASSERT_ALWAYS(!G1.empty());  // Anna togli always
+      CoCoA_ASSERT(!G1.empty()); // guaranteed by ComputeColon
       bool IsSatAlg=false;
       if (!IsHomogGrD0(G1))  CoCoA_THROW_ERROR2(ERR::NYI, "non-homog");
       if (!IsHomogGrD0(v))  CoCoA_THROW_ERROR2(ERR::NYI, "non-homog");
-      const FreeModule FM = owner(G1);
+      const FreeModule FM = owner(G1[0]);
       const SparsePolyRing P_new(MakeNewPRingFromModule(FM,WDegPosTO));
       const SparsePolyRing P(RingOf(FM));
       GRingInfo GRI(P_new,P,FM,FM,IsHomogGrD0(G1)&&IsHomogGrD0(v),
@@ -521,11 +522,11 @@ namespace CoCoA
     PolyList ComputeColonByPrincipal(const PolyList& G, ConstRefRingElem f,
                                      const CpuTimeLimit& CheckForTimeout)
     {
-      CoCoA_ASSERT_ALWAYS(!G.empty());  //-- Anna  togli always
+      CoCoA_ASSERT(!G.empty()); // guaranteed by ComputeColon
       PolyList tmpColonResult;
       if (IsZero(f))  return std::vector<RingElem>{one(owner(f))};
       bool IsSatAlg=false;
-      const SparsePolyRing P(owner(G));
+      const SparsePolyRing P(owner(G[0]));
       const SparsePolyRing P_new(MakeNewPRingForSimpleEmbeddingPosFirst(P,IsHomogGrD0(G)&&IsHomogGrD0(f)));
       GRingInfo GRI(P_new, P, IsHomogGrD0(G) && IsHomogGrD0(f),
                     IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
@@ -551,7 +552,7 @@ namespace CoCoA
   {
     if (G1.empty() && G2.empty())
       CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, "both lists are empty");
-    if (G2.empty())  return std::vector<RingElem>{one(RingOf(owner(G1)))};
+    if (G2.empty())  return std::vector<RingElem>{one(RingOf(owner(G1[0])))};
     if (G1.empty())  return std::vector<RingElem>{};
     PolyList aux;
     VectorList::const_iterator it=G2.begin();
@@ -571,7 +572,7 @@ namespace CoCoA
   {
     if (G1.empty() && G2.empty())
       CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, "both lists are empty");
-    if (G2.empty()) return std::vector<RingElem>{one(owner(G1))};
+    if (G2.empty()) return std::vector<RingElem>{one(owner(G1[0]))};
     if (G1.empty()) return G1;
     PolyList aux;
     PolyList::const_iterator it=G2.begin();
@@ -581,7 +582,8 @@ namespace CoCoA
       {
         aux = ComputeColonByPrincipal(G1, *it, CheckForTimeout);
         tmpColon = ComputeIntersection(tmpColon, aux, CheckForTimeout);
-        if (tmpColon.empty()) break;
+        CoCoA_ASSERT_ALWAYS(!tmpColon.empty());
+      //        if (tmpColon.empty()) break;
       }
     return tmpColon;
   }
@@ -658,7 +660,7 @@ namespace CoCoA
       VerboseLog VERBOSE("ComputeSaturationHomogByPP");
       VERBOSE(99) << "-- called --" << std::endl;
       //    if (IsZero(I))  return ideal(zero(Ph));
-      const ring& P = owner(G);
+      const ring& P = owner(G[0]);
       const ring& K = CoeffRing(P); // CoCoA_ASSERT(IsField(k));
       const long GrDim = GradingDim(P);
       const long NumX = NumIndets(P);
@@ -702,7 +704,7 @@ namespace CoCoA
       if (IsInvertible(f))  return G;
       if (IsMonomial(f) /*IsPP*/ && IsHomog(G))
         return ComputeSaturationHomogByPP(G, LPP(f), CheckForTimeout);
-      const SparsePolyRing P = owner(G);
+      const SparsePolyRing P = owner(G[0]);
       const SparsePolyRing P_new = NewPolyRing(CoeffRing(P),
                                                NewSymbols(NumIndets(P)+1));
       const std::vector<RingElem>& x_new = indets(P_new);
@@ -745,7 +747,7 @@ namespace CoCoA
     VERBOSE(99) << "-- called --" << std::endl;
     if (G1.empty() && G2.empty())
       CoCoA_THROW_ERROR2(ERR::ReqNonEmpty, "both G1 and G2 are empty");
-    if (G2.empty())  return std::vector<RingElem>{one(owner(G1))};
+    if (G2.empty())  return std::vector<RingElem>{one(owner(G1[0]))};
     if (G1.empty())  return G1;
     if (len(G2)==1)
       return ComputeSaturationByPrincipal(G1, G2.front(), CheckForTimeout);

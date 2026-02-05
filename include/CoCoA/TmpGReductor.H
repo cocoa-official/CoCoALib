@@ -184,7 +184,6 @@ public:
    void monic(PolyList&);
 
    const GRingInfo& GetGRI(const GPolyList& theGPL);
-   FreeModule owner(const VectorList& theVL);
 
     enum ModOrdTypeForcing {NoForcing,PosWDegTO,WDegTOPos,WDegPosTO};
     SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);

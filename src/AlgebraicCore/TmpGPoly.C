@@ -552,14 +552,9 @@ clog << "operator+=: result " <<myPoly<< endl;
 
   const PPMonoid& PPM(const Reductors& red)
   {
-    return PPM(owner(red));
+    return PPM(red.myGRingInfo().myNewSPR());
   }
 
-
-  const SparsePolyRing& owner(const Reductors& red)
-  {
-    return red.myGRingInfo().myNewSPR();
-  }
 
   void Reductors::Insert(GPoly* p, const long count)
   {
@@ -677,30 +672,12 @@ clog << "operator+=: result " <<myPoly<< endl;
   // } // MakeMonic
 
 
-  SparsePolyRing owner(const PolyList& thePL)
-  {
-    CoCoA_ASSERT(!thePL.empty());
-    return owner(*thePL.begin());
-  }//owner
-
-  SparsePolyRing owner(const GPolyList& theGPL)
-  {
-    CoCoA_ASSERT(!theGPL.empty());
-    return owner(*theGPL.begin());
-  }//owner
-
-//  SparsePolyRing owner(const  std::vector<RingElem>& thePV)
-//   {
-//     CoCoA_ASSERT(!thePV.empty());
-//     return owner(*thePV.begin());
-//   }//owner
-
   void PolyList2PolyVectorClear(PolyList& thePL,std::vector<RingElem>& thePV)
   {
     thePV.clear();
     if (thePL.empty())
       return;
-    const SparsePolyRing P(owner(thePL));
+    const SparsePolyRing P(owner(thePL[0]));
     for (RingElem& g: thePL)
     {
       thePV.push_back(one(P));
@@ -713,7 +690,7 @@ clog << "operator+=: result " <<myPoly<< endl;
     thePL.clear();
     if (thePV.empty())
       return;
-    const SparsePolyRing P(owner(thePV));
+    const SparsePolyRing P(owner(thePV[0]));
     for (RingElem& g: thePV)
     {
       thePL.push_back(one(P));

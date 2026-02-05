@@ -31,9 +31,11 @@
 #include "CoCoA/RingQQ.H"
 #include "CoCoA/RingZZ.H"
 #include "CoCoA/SparsePolyOps-ideal.H"
+#include "CoCoA/SparsePolyOps-RingElem.H"
 #include "CoCoA/SparsePolyRing.H"
 #include "CoCoA/TmpGOperations.H"
 #include "CoCoA/VectorOps.H"
+//#include "CoCoA/degree.H"
 #include "CoCoA/matrix.H"
 #include "CoCoA/submodule.H"
 #include "CoCoA/symbol.H"
@@ -155,32 +157,52 @@ namespace CoCoA
   }
   
 
-  // -------------------------------
-  // -- TEST
-  // Test := Record[Id := "cocoa5-08", Descr := "Intersection5"];
+  // Test := Record[Id := "cocoa5-08", Descr := "Intersection5"];  
+  void test8()
+  {
+    // Use QQ[x,y,z], Weights(1,2,1);
+    matrix W = NewDenseMat(RowMat(RingElems(RingZZ(), "1, 2, 1")));
+    PolyRing P = NewPolyRingWeights(RingQQ(), symbols("x,y,z"), W);
+    // I := Ideal(x*y, z^2);
+    // J := Ideal(y*z, x-z);
+    ideal I(RingElems(P, "x*y, z^2"));
+    ideal J(RingElems(P, "y*z, x-z"));
+    ideal IJ(RingElems(P, "x*y,  y*z^2,  x*z^2 -z^3"));
+    CoCoA_ASSERT_ALWAYS("cocoa5-8" && IJ == intersect(I,J));
+  }
 
-  // Test.Input :="
-  // Use QQ[x,y,z], Weights(1,2,1);
-  // I := Ideal(x*y, z^2);
-  // J := Ideal(y*z, x-z);
-  // I5 := Intersection5(I, J);
-  // I4 := Intersection(I, J);
-  // I4 = I5;
-  // ";    CoCoAServerRegister(Test, 1 /* times True */);
-
-  // -------------------------------
-  // -- TEST
+  
   // Test := Record[Id := "cocoa5-09", Descr := "Intersection5 ModuleShifts"];
-
-  // Test.Input :="
-  // Use QQ[x,y,z], Weights(1,2,1);
-  // M := Module([x^2*y, 0], [x*z^2, 0], [-x*z + x^2, -z + x]);
-  // N := Module([x*z^2, 0], [x*y*z, y*z], [-x*z + x^2, -z + x]);
-  // I5 := Intersection5x(M, N, Record[ModuleShifts := [[1,2]]]);
-  // I4 := Intersection(M, N);
-  // I4 = I5;
-  // ";    CoCoAServerRegister(Test, 1 /* times True */);
-
+  // NYI -- ready for when "intersect" for modules is implemented
+  void test9()
+  {
+    // Use QQ[x,y,z], Weights(1,2,1);
+    matrix W = NewDenseMat(RowMat(RingElems(RingZZ(), "1, 2, 1")));
+    PolyRing P = NewPolyRingWeights(RingQQ(), symbols("x,y,z"), W);
+    RingElem x = indet(P,0),  y = indet(P,1),  z = indet(P,2);
+    std::vector<degree> sh; // [1,2]
+    sh.push_back(wdeg(x));
+    sh.push_back(wdeg(y));
+    FreeModule FM = NewFreeModule(P, sh);
+    const vector<ModuleElem>& e = gens(FM);
+    // M := Module([x^2*y, 0], [x*z^2, 0], [-x*z + x^2, -z + x]);
+    vector<ModuleElem> G;
+    G.push_back((power(x,2)*y)*e[0]);
+    G.push_back((x*power(z,2))*e[0]);
+    G.push_back((-x*z + power(x,2))*e[0] +(-z + x)*e[1]);
+    FinGenModule M = submodule(FM, G);
+    // N := Module([x*z^2, 0], [x*y*z, y*z], [-x*z + x^2, -z + x]);
+    vector<ModuleElem> F;
+    F.push_back(G[1]);
+    F.push_back(x*y*z*e[0] + y*z*e[1]);
+    F.push_back(G[2]);
+    FinGenModule N = submodule(FM, F);
+    // I5 := Intersection5x(M, N, Record[ModuleShifts := [[1,2]]]);
+    //    FinGenModule MN = intersect(M,N);  // NYI 2026-02-04 AMB
+    //    cout << "M inters N = " << MN << endl;
+  }
+  
+  
   // -------------------------------
   // -- TEST
   // Test := Record[Id := "cocoa5-10", Descr := "Intersection5 Module"];
@@ -238,10 +260,10 @@ namespace CoCoA
   //[Id = "cocoa5-28",Descr = "Homogenized5 "];
   void test28()
   {
-// Use Q[x,y,z,h];
-// I := Ideal(x^2y+xy+1, xy^2+y^2+1);
-// X := Homogenized5([h],I);
-// X = Ideal(x - y, y^3 + y^2h + h^3);
+    // Use Q[x,y,z,h];
+    // I := Ideal(x^2y+xy+1, xy^2+y^2+1);
+    // X := Homogenized5([h],I);
+    // X = Ideal(x - y, y^3 + y^2h + h^3);
     SparsePolyRing P = NewPolyRing(RingQQ(), symbols("x,y,z,h"));
     RingElem x = RingElem(P,2);
     RingElem y = RingElem(P,3);
@@ -280,8 +302,16 @@ namespace CoCoA
     test1();
     test2();
     test3();
+    //test4();
+    //test5();
+    //test6();
     test7();  // elim
+    test8();  // intersect
+    //test9(); // intersect module NYI
+    //test10();
     test11();
+    //test26(); // homog
+    test28(); // homog
     test30();
   }
 

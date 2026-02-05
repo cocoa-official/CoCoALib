@@ -1251,14 +1251,6 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   } // ModOrdType
 
 
-  FreeModule owner(const VectorList& theVL)
-  {
-    CoCoA_ASSERT(!theVL.empty());
-    return owner(*theVL.begin());
-  } // owner
-
-
-
 // similar functions now moved into FreeModule.C
 // FreeModule MakeNewFreeModuleForSyz2(const GPolyList& theGPL)
 // {
@@ -1607,7 +1599,7 @@ Is is here only for completeness/debug purposes.
                                 const VectorList& theVL2,
                                 const GRingInfo& theGRI)
   {
-    const long NC = NumCompts(owner(theVL1));
+    const long NC = NumCompts(owner(theVL1[0]));
     //const SparsePolyRing NewP=theGRI.myNewSPR();
     GPolyList FirstPart=EmbedVectorList(theVL1, theGRI);
     GPolyList SecondPart=EmbedVectorList(theVL2, theGRI);
@@ -1628,7 +1620,7 @@ Is is here only for completeness/debug purposes.
     GPolyList FirstPart;
     if (theVL1.empty())
       return FirstPart;
-    const long NC = NumCompts(owner(theVL1));
+    const long NC = NumCompts(owner(theVL1[0]));
     // const SparsePolyRing NewP=theGRI.myNewSPR();
     FirstPart=EmbedVectorList(theVL1, theGRI);
     GPoly GP1=EmbedVector(theVL2.front(), theGRI);
@@ -1771,20 +1763,18 @@ Is is here only for completeness/debug purposes.
     } // PolyList2GPolyListClear
 
 
-    void GPolyList2PolyListClear(GPolyList& theGPL,PolyList& thePL)
+    void GPolyList2PolyListClear(GPolyList& GPL, PolyList& PL)
     {
-      thePL.clear();
-      if (theGPL.empty())
-        return;
-      const SparsePolyRing SPR=owner(theGPL);
-      for (GPoly& g: theGPL)
-//      for (GPolyList::iterator it=theGPL.begin();it!=theGPL.end();++it)
+      PL.clear();
+      if (GPL.empty())  return;
+      const SparsePolyRing P=owner(*GPL.begin());
+      for (GPoly& g: GPL)
       {
-        thePL.push_back(one(SPR));
-        swap(thePL.back(),g.myPolyValue);
+        PL.push_back(zero(P));  // was PL.push_back(one(P));
+        swap(PL.back(), g.myPolyValue);
       }
-      theGPL.clear();
-    } // GPolyList2PolyListClear
+      GPL.clear();
+    }
 
 
     void PolyList2GPolyList(const PolyList& thePL,
@@ -1848,19 +1838,18 @@ Is is here only for completeness/debug purposes.
     } // DeEmbedPolyList theOutputVL
 
 
+  // AMB 2026-02-05: I guess this one has never been called: test properly
     void DeEmbedPolyList(VectorList& theOutputVL,
                          const GPolyList& theGPL,
-			 const long ComponentsLimit) // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
+                         const long ComponentsLimit)
+    // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
     {
       theOutputVL.clear();
-      if (theGPL.empty())
-        return;
-      const FreeModule FM=owner(theOutputVL);
+      if (theGPL.empty())  return;
+      const FreeModule FM=owner(theOutputVL[0]); // after theOutputVL.clear() ??? 
       const GRingInfo& GRI(GetGRI(theGPL));
       ModuleElem tmp(FM);
       for (const GPoly& g: theGPL)
-//      GPolyList::const_iterator it;
-//      for (it=theGPL.begin();it!=theGPL.end();++it)
       if (GRI.myComponent(LPPForDiv(g)) <= GRI.myComponent(ComponentsLimit))			
        {
          DeEmbedPoly(tmp,g,ComponentsLimit);
