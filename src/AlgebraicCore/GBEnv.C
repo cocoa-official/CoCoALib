@@ -54,8 +54,8 @@ namespace CoCoA
   namespace // anonymous
   { // namespace // anonymous ----------------------------------------
 
-    RingHom CreateNewP2OldPRingHom(const SparsePolyRing& P_new,
-                                   const SparsePolyRing& P_orig)
+    RingHom WorkToOrigRingHom(const SparsePolyRing& P_new,
+                              const SparsePolyRing& P_orig)
     {
       if (P_new==P_orig)  return  IdentityHom(P_new);
       std::vector<RingElem> images = indets(P_orig);  // x[i] |-> x[i]
@@ -66,8 +66,8 @@ namespace CoCoA
     }
 
     
-    RingHom CreateOldP2NewPRingHom(const SparsePolyRing& P_new,
-                                   const SparsePolyRing& P_orig)
+    RingHom OrigToWorkRingHom(const SparsePolyRing& P_new,
+                              const SparsePolyRing& P_orig)
     {
       if (P_new==P_orig)  return  IdentityHom(P_new);
       std::vector<RingElem> images;
@@ -148,8 +148,8 @@ namespace CoCoA
     myPPMValue(NewPPMonoidEv(symbols(PPM(P_new)), ordering(PPM(P_new)))),
     myFreeModuleValue(theFM),
     myOutputFreeModuleValue(theOutputFM),
-    myNewP2OldPValue(CreateNewP2OldPRingHom(myNewSPRValue,myOldSPRValue)),
-    myOldP2NewPValue(CreateOldP2NewPRingHom(myNewSPRValue,myOldSPRValue)),
+    myNewP2OldPValue(WorkToOrigRingHom(myNewSPRValue,myOldSPRValue)),
+    myOldP2NewPValue(OrigToWorkRingHom(myNewSPRValue,myOldSPRValue)),
     myDivMaskRuleValue(DivMaskR),
     IamModuleValue(P_new!=P_orig),
     myTimeoutChecker(CheckForTimeout)
@@ -188,8 +188,8 @@ namespace CoCoA
     myPPMValue(NewPPMonoidEv(symbols(PPM(P_new)), ordering(PPM(P_new)))),
     myFreeModuleValue(NewFreeModule(P_new,1)),
     myOutputFreeModuleValue(theOutputFM),
-    myNewP2OldPValue(CreateNewP2OldPRingHom(myNewSPRValue,myOldSPRValue)),
-    myOldP2NewPValue(CreateOldP2NewPRingHom(myNewSPRValue,myOldSPRValue)),
+    myNewP2OldPValue(WorkToOrigRingHom(myNewSPRValue,myOldSPRValue)),
+    myOldP2NewPValue(OrigToWorkRingHom(myNewSPRValue,myOldSPRValue)),
     myDivMaskRuleValue(DivMaskR),
     IamModuleValue(P_new!=P_orig),
     myTimeoutChecker(CheckForTimeout)
@@ -212,8 +212,8 @@ namespace CoCoA
     myPPMValue(NewPPMonoidEv(symbols(PPM(P_new)), ordering(PPM(P_new)))),
     myFreeModuleValue(NewFreeModule(P_new,1)),
     myOutputFreeModuleValue(NewFreeModule(P_new,1)),
-    myNewP2OldPValue(CreateNewP2OldPRingHom(myNewSPRValue,myOldSPRValue)),
-    myOldP2NewPValue(CreateOldP2NewPRingHom(myNewSPRValue,myOldSPRValue)),
+    myNewP2OldPValue(WorkToOrigRingHom(myNewSPRValue,myOldSPRValue)),
+    myOldP2NewPValue(OrigToWorkRingHom(myNewSPRValue,myOldSPRValue)),
     myDivMaskRuleValue(DivMaskR),
     IamModuleValue(P_new!=P_orig),
     myTimeoutChecker(CheckForTimeout)
@@ -334,20 +334,14 @@ long ModuleVarIndex(const SparsePolyRing& P)
 }//ModuleVarIndex
 
 
-bool AreCompatible(const GRingInfo& theGRI1,const GRingInfo& theGRI2)
+bool AreCompatible(const GRingInfo& GRI1,const GRingInfo& GRI2)
 {
-  if (theGRI1.myNewSPRValue==theGRI2.myNewSPRValue
-        &&
-      theGRI1.myOldSPRValue==theGRI2.myOldSPRValue
-        &&
-      theGRI1.myPPMValue==theGRI2.myPPMValue
-      )
+  return (GRI1.myNewSPRValue == GRI2.myNewSPRValue &&
+          GRI1.myOldSPRValue == GRI2.myOldSPRValue &&
+          GRI1.myPPMValue == GRI2.myPPMValue);
        //&& // I want to do this, the == operator is not there
-         //theGRI1.myDivMaskRuleValue==theGRI2.myDivMaskRuleValue
-    return true;
-  else
-    return false;
-}//AreCompatible
+         //GRI1.myDivMaskRuleValue==GRI2.myDivMaskRuleValue
+}
 
 
 // A member field?
@@ -359,13 +353,15 @@ std::vector<RingElem> GRingInfo::myY()const
   return Y;
 }//myY()
 
+
+ // AMB 2026-02-05: This function only returns false.  ???
  // Grdim>=2, order matrix first row is 0,..,0,1
  bool GRingInfo::DetermineIfMyGradingIsPosPlus(const SparsePolyRing& theSPR)
  {
    // This checks if indeed the order is a PosPlus.
    // Another option is to SET this field at the right time.
    // Slightly more efficient, but more risky.
-   return false;
+   return false; // <---- return false  ??? always ???
    if (GradingDim(theSPR)<1)
      return false;
    ConstMatrixView OrdM = OrdMat(ordering(PPM(theSPR)));
