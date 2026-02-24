@@ -101,33 +101,23 @@ public:
 
     std::vector<RingElem> myExportGBasis();
     std::vector<RingElem> myExportMinGens();
-    void myCopyGBasis_GPoly(GPolyList&);// GB output in GPoly form
-    void myGBasisClear(GPolyList&); ///< GB output in GPoly form
+
     void myCopyGBasis_module(VectorList& outGBasis);
     void myCopyMinGens_module(VectorList& outMinGens);
     void myDoAFFGBasis(); // I am working on sugar selection strategies
     void myDoGBasis();
-    void myDoGBasisTEST();
+
     RingElem myDoGBasisElimFirst(ConstRefPPMonoidElem ElimIndsProd);
     void myReduceCurrentSPoly();
     void myPrepareGBasis();
     void myFinalizeGBasis();//Last operations (stats at the moment) immediately before shutting down a GB computation
     void myDoGBasis(const int ReductionNumber); // Performs ReductionNumber reductions, -1 means unlimited
-    void myReduceUntilNonZeroRedSPoly(); // Reduces until an SPoly does not reduces to zero. Stop immediately when that happens (no updates)
-    // void myReduceUntilWrongLPPFound(RefPPMonoidElem,
-    //                                 std::vector<RingElem>& );
-//A24    GPoly GetSPoly()const{return mySPoly;};// Reads the SPoly
-//A24    void GetCandidateGBasis(PolyList&)const;// the polys computed up to now and the non processed generators
     long myAge() const {return myAgeValue;}
     long myTruncDeg() const {return myTruncDegValue;}
-//A24    long GetNReductions() const {return myStat.myNReductions;};
     void mySetTruncDeg(long TruncDeg) { myTruncDegValue = TruncDeg; }
     static constexpr long ourNoTruncValue = -1;  // no GB truncation
-//////    void mySetSPoly(GPoly& p){mySPoly=p;};// Sets the SPoly  not used
     void myDoGBasisRealSolve();
     void myDoGBasisSelfSatCore(); ///< dehomog algorithm
-    ////    void _myDoSATGBasis(); ///< dehomog algorithm
-    ////    void myDoSATMixGBasis(); ///< dehomog mix algorithm
     void myStampaPPGB(std::ostream&)const; ///< print ?
     void myStampaGB(std::ostream&)const; ///< print ?
     void myStampaPairs(std::ostream&)const; ///< print ?
@@ -136,14 +126,9 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const GReductor& GR);
     const SparsePolyRing& myPRing()const{return myGRingInfoValue.myNewSPR();};
     const GRingInfo& myGRingInfo()const{return myGRingInfoValue;};
-//A24    void Rebuild(const PolyList&);///< rebuild the GReductor initliazinig it with the PL
-/// not used?    void myUpdateBasisOnly();///<Updates the Basis only.
     void myCreatePairs();// this should be const, but this requires
                                    //the GPair ctor to be const, and I have to think about that
     void myCreateInputPolyPairs(GPolyList&);
-///    void myDoGBasisByBatch();//Tmp, DYNAMIC
-///    void myPrepareGBasisPairsExcluded();//Tmp, DYNAMIC
-///    void myBuildNewPairsAll(GPairList&);//Tmp, DYNAMIC
 
   private:
     long myGMInsert(GPairList&,GPair);
@@ -201,24 +186,6 @@ public:
 
     SparsePolyRing MakeNewPRingForSimpleEmbeddingPosFirst(const SparsePolyRing& OldP,
                                                           bool HomogInput);
-    // Embed p in the CompIndex component, grading given by the embedding
-    GPoly EmbedPoly(ConstRefRingElem p,
-                    const GRingInfo& theGRI,
-                    const long CompIndex);
-    // Embed p in the CompIndex component, grading given by the_d
-    GPoly EmbedPoly(ConstRefRingElem p,
-                    const GRingInfo& theGRI,
-                    const degree& the_d,
-                    const long CompIndex);
-
-   // Embed v
-    GPoly EmbedVector(const ModuleElem& v,
-    		      const GRingInfo& theGRI);
-
-   // Embed v starting from the StartingFromCompIndex component
-    GPoly EmbedVector(const ModuleElem& v,
-                      const GRingInfo& theGRI,
-                      const long StartingFromCompIndex);
 
    // Embed theVL
     GPolyList EmbedVectorList(const VectorList& theVL,
@@ -228,21 +195,8 @@ public:
                               const GRingInfo& theGRI,
                               const long StartingFromCompIndex);
 
-    // Just transform the PolyList in a GPolyList
-    GPolyList EmbedPolyList(PolyList& thePL,
-                            const GRingInfo& theGRI);
 
 
-    GPolyList EmbedPolyList(const PolyList& thePL,
-                            const GRingInfo& theGRI,
-                            const degree& the_d,
-                            const long CompIndex);
-
-    // Embed with the shifts Shifts
-    GPolyList EmbedPolyList(const PolyList& InputPolyList,
-                            const GRingInfo& theGRI,
-                            const long CompIndex);
-			
     // The embedding used in syzygy computations
     GPolyList SyzEmbedVectorList(const VectorList& InputVectorList,
                                  const GRingInfo& theGRI);
@@ -275,12 +229,6 @@ public:
 
     void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp);
 
-  ModuleElem DeEmbedPoly(ConstRefRingElem p,
-                         const GRingInfo& theGRI,
-                         const long ComponentsLimit); // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
-		
-    ModuleElem DeEmbedPoly(ConstRefRingElem p,
-                           const GRingInfo& theGRI);
 
     VectorList DeEmbedPolyList(const PolyList& PL,
                                const GRingInfo& theGRI);
@@ -321,11 +269,6 @@ public:
                                  const GRingInfo& theGRI,
                                  const long ComponentsLimit); // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
 
-
-    void PolyList2GPolyList(const PolyList&,GPolyList&,const GRingInfo&);
-    void GPolyList2PolyList(const GPolyList&,PolyList&);
-    void PolyList2GPolyListClear(PolyList&,GPolyList&,const GRingInfo&);
-    void GPolyList2PolyListClear(GPolyList&,PolyList&);
     RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& the_Y); ///< hp = hom(p,y) in the ring with the y's
     void homogenized(ModuleElem& the_hv,
                      const ModuleElem& the_v,

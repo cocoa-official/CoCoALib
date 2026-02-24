@@ -192,12 +192,6 @@ typedef std::list<GPoly> GPolyList;
   //  std::vector<GPoly*>::const_iterator FindReducer(const geobucket&, const std::vector<GPoly*>& G);
 
 
-  //  void MakeMonic(PolyList&);
-  //  void MakeMonic(GPolyList&);
-  // void power(RingElem& theResult,   /// 20251212 is this really used?
-  //              const std::vector<RingElem>& theV,
-  //              const degree& the_d);
-
   // -------------------- inline functions -------------------- //
 
   inline ConstRefPPMonoidElem LPPForDiv(const GPoly& f)
@@ -304,9 +298,6 @@ typedef std::list<GPoly> GPolyList;
 
   };// End class Reductors
 
-
-  void PolyList2PolyVectorClear(PolyList&,std::vector<RingElem>&);
-  void PolyVector2PolyListClear(std::vector<RingElem>&,PolyList&);
 
 }// end namespace cocoa
 
