@@ -126,8 +126,6 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const GReductor& GR);
     const SparsePolyRing& myPRing()const{return myGRingInfoValue.myNewSPR();};
     const GRingInfo& myGRingInfo()const{return myGRingInfoValue;};
-    void myCreatePairs();// this should be const, but this requires
-                                   //the GPair ctor to be const, and I have to think about that
     void myCreateInputPolyPairs(GPolyList&);
 
   private:
@@ -166,26 +164,19 @@ public:
 
   };// End class GReductor
 
-   void monic(PolyList&);
 
    const GRingInfo& GetGRI(const GPolyList& theGPL);
 
-    enum ModOrdTypeForcing {NoForcing,PosWDegTO,WDegTOPos,WDegPosTO};
+    enum ModOrdTypeForcing {NoForcing, PosWDegTO, WDegTOPos, WDegPosTO};
     SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);
-    SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM,ModOrdTypeForcing MOType);
+    SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM, ModOrdTypeForcing MOType);
     SparsePolyRing MakeNewPRingForSimpleEmbedding(const SparsePolyRing& theOldP);
-    SparsePolyRing MakeNewPRingForSimpleEmbedding(const SparsePolyRing& theOldP,ModOrdTypeForcing MOType);
+    SparsePolyRing MakeNewPRingForSimpleEmbedding(const SparsePolyRing& theOldP, ModOrdTypeForcing MOType);
     FreeModule MakeNewFreeModuleForSyz(const GPolyList& GPL);
     FreeModule MakeNewFreeModuleForSyz(const VectorList& VL);
     FreeModule MakeNewFreeModuleForSyz(const PolyList& PL);
-    // SparsePolyRing MakeElimRing(const SparsePolyRing& P,
-    //                             const std::vector<long>& theElimVars,
-    //                             const bool IsHomog);
-    SparsePolyRing MakeNewPRingFromModulePosFirst(const FreeModule& FM,
-					          bool HomogInput);
-
-    SparsePolyRing MakeNewPRingForSimpleEmbeddingPosFirst(const SparsePolyRing& OldP,
-                                                          bool HomogInput);
+    SparsePolyRing MakeNewPRingFromModulePosFirst(const FreeModule& FM, bool HomogInput);
+    SparsePolyRing MakeNewPRingForSimpleEmbeddingPosFirst(const SparsePolyRing& OldP, bool HomogInput);
 
    // Embed theVL
     GPolyList EmbedVectorList(const VectorList& theVL,
