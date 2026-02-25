@@ -170,13 +170,9 @@ public:
     enum ModOrdTypeForcing {NoForcing, PosWDegTO, WDegTOPos, WDegPosTO};
     SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);
     SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM, ModOrdTypeForcing MOType);
-    SparsePolyRing MakeNewPRingForSimpleEmbedding(const SparsePolyRing& theOldP);
-    SparsePolyRing MakeNewPRingForSimpleEmbedding(const SparsePolyRing& theOldP, ModOrdTypeForcing MOType);
-    FreeModule MakeNewFreeModuleForSyz(const GPolyList& GPL);
-    FreeModule MakeNewFreeModuleForSyz(const VectorList& VL);
-    FreeModule MakeNewFreeModuleForSyz(const PolyList& PL);
-    SparsePolyRing MakeNewPRingFromModulePosFirst(const FreeModule& FM, bool HomogInput);
-    SparsePolyRing MakeNewPRingForSimpleEmbeddingPosFirst(const SparsePolyRing& OldP, bool HomogInput);
+    SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& theOldP, ModOrdTypeForcing MOType);
+    SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM, bool HomogInput);
+    SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP, bool HomogInput);
 
    // Embed theVL
     GPolyList EmbedVectorList(const VectorList& theVL,
@@ -229,14 +225,6 @@ public:
                                const long ComponentsLimit); // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
 
 
-
-    void DeEmbedPoly(ModuleElem& theOutputP,
-                     const GPoly& the_gp,
-                     const long ComponentsLimit); // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
-		
-    void DeEmbedPoly(ModuleElem& theOutputP,
-                     GPoly& the_gp);
-
     void DeEmbedPolyList(VectorList& theOutputVL,
                          GPolyList& theGPL);
 
@@ -244,17 +232,9 @@ public:
                          const GPolyList& theGPL,
                          const long ComponentsLimit); // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
 
-    void DeEmbedPoly(RingElem& theOutputP,
-                      GPoly& the_gp); // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
-
     void DeEmbedPolyList(PolyList& theOutputPL,
                          GPolyList& theGPL,
                          const long ComponentsLimit); // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
-
-    // input are embedded polys, output true (OldP) Polys
-    // this is done directly and not passing through a VectorList to avoid copying
-    RingElem DeEmbedPolyToP(ConstRefRingElem the_p,
-                            const GRingInfo& theGRI);
 
     PolyList DeEmbedPolyListToPL(const PolyList& PL,
                                  const GRingInfo& theGRI,

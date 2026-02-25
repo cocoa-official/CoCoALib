@@ -70,37 +70,14 @@ namespace CoCoA
 {
   //  int GReductor::ourDefaultStatLevel = -1;
 
-  // This function produces a new PolyRing using
-  // NewPolyRing_DMPII or NewPolyRing_DMPI
-  // according to the char.
-  // Used internally, indets names are always x[]
-//   SparsePolyRing NewSparsePolyRing(const ring& CoeffRing,
-//                                    const vector<symbol>& IndetNames,
-//                                    const PPOrdering& ord)
-//   {
-//     if (IsRingFp(CoeffRing)) // special case for SmallFpImpl
-//       return NewPolyRing_DMPII(CoeffRing, IndetNames, ord);
-//     else
-//       return NewPolyRing_DMPI(CoeffRing, IndetNames, ord);
-//   } // NewSparsePolyRing
 
 
   const GRingInfo& GetGRI(const GPolyList& theGPL)
   {
     CoCoA_ASSERT(!theGPL.empty());
     return theGPL.begin()->myGRingInfo();
-  } // GRI
-
-
-/*  perhaps useless
-bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
-  {
-    CoCoA_ASSERT(!IsZero(f));//BUG HUNTING  ???
-    CoCoA_ASSERT(!IsZero(g));//BUG HUNTING  ???
-    const SparsePolyRing P = owner(f);
-    return P->myCmpLPP(raw(f), raw(g))>0;
   }
-  */
+
 
   bool BoolCmpLPPGPoly(const GPoly& f, const GPoly& g)
   {
@@ -275,30 +252,13 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
     out<<endl;
   } // myStampaReductors
 
-  
-// This procedure may be substituted by a transform_if
-  // void GReductor::myCopyGBasis(PolyList& outG)
-  // {
-  //   outG.clear();
-  //   for (const auto& ptr: myGB)
-  //     if (IsActive(*ptr))  outG.push_back((*ptr).myPoly());
-  // }
-
-
-  // void GReductor::myCopyMinGens(PolyList& outG)
-  // {
-  //   outG.clear();
-  //   for (const auto& ptr: myGB)
-  //     if (IsMinimalGen(*ptr))  outG.push_back((*ptr).myPoly());
-  // }
-
 
 // This procedure may be substituted by a transform_if
   std::vector<RingElem> GReductor::myExportGBasis()
   {
     std::vector<RingElem> GB;
     for (const auto& ptr: myGB)
-      if (IsActive(*ptr))  GB.push_back((*ptr).myPoly());
+      if (IsActive(*ptr))  GB.push_back(poly(*ptr));
     return GB;
   }
 
@@ -307,50 +267,58 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   {
     std::vector<RingElem> G;
     for (const auto& ptr: myGB)
-      if (IsMinimalGen(*ptr))  G.push_back((*ptr).myPoly());
+      if (IsMinimalGen(*ptr))  G.push_back(poly(*ptr));
     return G;
   }
 
 
   namespace { // anonymous    //-- DeEmbedding --------------------------
-    
+
+    // some copies are unavoidable when deembedding
+    // ComponentsLimit: the component in p that goes to the 0 component of the output vector v.
+    // Lesser components of p go to higher component of v    
+    void DeEmbedPoly(ModuleElem& theOutputV,
+                     const GPoly& the_gp,
+                     const long ComponentsLimit)
+    {
+      const FreeModule FM=owner(theOutputV);
+      const GRingInfo& GRI=the_gp.myGRingInfo();
+      theOutputV=zero(FM);
+      const std::vector<ModuleElem>& e = gens(FM);
+      const RingHom& phi=GRI.myNewP2OldP();
+      for (SparsePolyIter i=BeginIter(poly(the_gp)); !IsEnded(i); ++i)
+        theOutputV+=phi(monomial(GRI.myNewSPR(),coeff(i),PP(i)))*
+                    e[GRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for cocoa4compatibility
+    } // DeEmbedPoly  theOutputV
+
+
     ModuleElem DeEmbedPoly(ConstRefRingElem p,
                            const GRingInfo& theGRI,
                            const long ComponentsLimit) // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
     {
-      //std::clog<<"DeEmbedPoly:start"<<endl;
-      //std::clog<<"DeEmbedPoly:p  "<<p<<endl;
-      //std::clog<<"DeEmbedPoly:theGRI  "<<theGRI<<endl;
       const SparsePolyRing OldP=theGRI.myOldSPR();
       const SparsePolyRing NewP=theGRI.myNewSPR();
       const FreeModule FM=theGRI.myOutputFreeModule();
       ModuleElem v(FM);
-      
-      //std::clog<<"DeEmbedPoly:v  "<<v<<endl;
-      //std::clog<<"DeEmbedPoly:theGRI.myNewP2OldP()  "<<theGRI.myNewP2OldP()<<endl;
-      //std::clog<<"DeEmbedPoly:theGRI.myOldP2NewP()  "<<theGRI.myOldP2NewP()<<endl;
       
       const std::vector<ModuleElem>& e = gens(FM);
       
       RingElem tmp(OldP);
       for (SparsePolyIter i=BeginIter(p); !IsEnded(i); ++i)
       {
-        //std::clog<<"DeEmbedPoly:ComponentsLimit  "<<ComponentsLimit<<endl;
-        //std::clog<<"DeEmbedPoly:PP(i)  "<<PP(i)<<endl;
         tmp=theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
         CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit < NumCompts(FM));
-        //std::clog<<"DeEmbedPoly:monomial(NewP,coeff(i),PP(i))  "<<monomial(NewP,coeff(i),PP(i))<<endl;
-        //std::clog<<"DeEmbedPoly:tmp  "<<tmp<<endl;
-        //std::clog<<"DeEmbedPoly:theGRI.myPhonyComponent(PP(i))-ComponentsLimit  "<<theGRI.myPhonyComponent(PP(i))-ComponentsLimit<<endl;
-        //std::clog<<"DeEmbedPoly:theGRI.myPhonyComponent(PP(i)) "<<theGRI.myPhonyComponent(PP(i))<<endl;
-        //std::clog<<"DeEmbedPoly:theGRI.myComponent(PP(i)) "<<theGRI.myComponent(PP(i))<<endl;
         v+=tmp*e[theGRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for coco4compatibility
       }
-      //std::clog<<"DeEmbedPoly:v "<<v<<endl;
-      //std::clog<<"DeEmbedPoly:end"<<endl;
       return v;
     }
 
+
+    void DeEmbedPoly(RingElem& theOutputP, const GPoly& the_gp)
+    { theOutputP = the_gp.myGRingInfo().myNewP2OldP()(poly(the_gp)); }
+
+    RingElem DeEmbedPolyToP(ConstRefRingElem p, const GRingInfo& theGRI)
+    { return theGRI.myNewP2OldP()(p); }
 
     ModuleElem DeEmbedPoly(ConstRefRingElem p, const GRingInfo& theGRI)
     { return DeEmbedPoly(p, theGRI, 0); }
@@ -365,7 +333,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
     if (myGB.empty()) return;
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))
-        outG.push_back(DeEmbedPoly((*ptr).myPoly(), myGRingInfoValue));
+        outG.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
   }
 
 
@@ -374,7 +342,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
     outG.clear();
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))
-        outG.push_back(DeEmbedPoly((*ptr).myPoly(), myGRingInfoValue));
+        outG.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
   }
 
 
@@ -784,7 +752,7 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
       if (!IsZero(mySPoly))
       {
 //        RingElem RadSPoly = radical(P_PQQ(mySPoly.myPoly()));
-        RingElem RadSPoly = RealRadical(P_PQQ(mySPoly.myPoly()));
+        RingElem RadSPoly = RealRadical(P_PQQ(poly(mySPoly)));
         if (deg(RadSPoly) < deg(mySPoly.myPoly()))
           VERBOSE(70) << mySPoly.myPoly() << " [RealRadical]--> "
                        << RadSPoly << std::endl;
@@ -870,49 +838,39 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
 
 // returns the poly ring equivalent with OldP^2, same grading
 // The ordering is WDegPosnOrd if MOType==NoForcing or MOType
-  SparsePolyRing MakeNewPRingForSimpleEmbeddingPosFirst(const SparsePolyRing& OldP,
-                                                        bool HomogInput)
+// Called by intersection, colonbyprincipal
+  SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP,
+                                         bool HomogInput)
   {
-    if (HomogInput)
-      return MakeNewPRingForSimpleEmbedding(OldP, WDegPosTO);
-    else
-      return MakeNewPRingForSimpleEmbedding(OldP,PosWDegTO);
+    if (HomogInput) return MakeNewPRingForP2(OldP, WDegPosTO);
+    else return MakeNewPRingForP2(OldP, PosWDegTO);
   }
 
 
-  SparsePolyRing MakeNewPRingForSimpleEmbedding(const SparsePolyRing& OldP,
-                                                ModOrdTypeForcing MOType)
+// Called by syz, indirectly by intersection, colonbyprincipal (ideal)
+  SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& OldP,
+                                   ModOrdTypeForcing MOType)
   {
     std::vector<degree> InputShifts;
-    {
-      degree tmp(GradingDim(OldP));
-      InputShifts.push_back(tmp);
-      InputShifts.push_back(tmp);
-    }
+    degree tmp(GradingDim(OldP));
+    InputShifts.push_back(tmp);
+    InputShifts.push_back(tmp);
     const FreeModule FM=NewFreeModule(OldP, InputShifts, WDegPosnOrd);
     return MakeNewPRingFromModule(FM, MOType);
-  } // MakeNewPRingForSimpleEmbedding
+  }
 
 
-  SparsePolyRing MakeNewPRingForSimpleEmbedding(const SparsePolyRing& OldP)
-  {
-    return MakeNewPRingForSimpleEmbedding(OldP,NoForcing);
-  } // MakeNewPRingForSimpleEmbedding
-
-
+  // Called by ComputeGBasis2 (module), ComputeSyz (module), ComputeColonByPrincipal (module)
   SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM)
-  {
-    return MakeNewPRingFromModule(FM,NoForcing);
-  } // MakeNewPRingFromModule
+  { return MakeNewPRingFromModule(FM, NoForcing); }
 
 
-  SparsePolyRing MakeNewPRingFromModulePosFirst(const FreeModule& FM,
-                                                bool HomogInput)
+  // Called by ComputeIntersection (module)
+  SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM,
+                                              bool HomogInput)
   {
-    if (HomogInput)
-      return MakeNewPRingFromModule(FM, WDegPosTO);
-    else
-      return MakeNewPRingFromModule(FM, PosWDegTO);
+    if (HomogInput) return MakeNewPRingFromModule(FM, WDegPosTO);
+    else            return MakeNewPRingFromModule(FM, PosWDegTO);
   }
 
 
@@ -1262,36 +1220,28 @@ Is is here only for completeness/debug purposes.
     if (PL.empty()) return VL;
     for (const RingElem& g: PL)
       if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-        VL.push_back(DeEmbedPoly(g,theGRI,ComponentsLimit));
+        VL.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
     return VL;
   } // DeEmbedPolyList
 
 
-   RingElem DeEmbedPolyToP(ConstRefRingElem p,
-                           const GRingInfo& theGRI) // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
-   {
-     return theGRI.myNewP2OldP()(p);
-   } // DeEmbedPolyToP
-
-
+  // Poly whose LPP has phony last var exponent < ComponentsLimit disappear on DeEmbedding
   PolyList DeEmbedPolyListToPL(const PolyList& PL,
                                const GRingInfo& theGRI,
-                               const long ComponentsLimit) // Poly whose LPP has phony last var exponent lesser than this number disappear on DeEmbedding
+                               const long ComponentsLimit)
   {
     VerboseLog VERBOSE("DeEmbedPolyListToPL");
     PolyList outPL;
     if (PL.empty())
       return outPL;
     for (const RingElem& g: PL)
-      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit)) // Copies. Copying disappears when I work with GPolys
+      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
       {
         VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
-//        if (IsZero(g)) continue; // cannot happen, after LPP(g)
         outPL.push_back(DeEmbedPolyToP(g,theGRI));
         // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
         // {
         //   outPL.clear();
-        //   VERBOSE(99) << "g is constant" << std::endl; /////////////////
         //   outPL.push_back(theGRI.myOldSPR()->myOne());
         //   break;
         // }
@@ -1300,33 +1250,9 @@ Is is here only for completeness/debug purposes.
   } // DeEmbedPolyList
 			
       				
-    void DeEmbedPoly(ModuleElem& theOutputV,
-                      const GPoly& the_gp)
-    {
-      DeEmbedPoly(theOutputV,the_gp,0l);
-    } // DeEmbedPoly theOutputP
-
-    // some copies are unavoidable when deembedding
-    void DeEmbedPoly(ModuleElem& theOutputV,
-                      const GPoly& the_gp,
-                      const long ComponentsLimit) // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
-    {
-      const FreeModule FM=owner(theOutputV);
-      const GRingInfo& GRI=the_gp.myGRingInfo();
-      theOutputV=zero(FM);
-      const std::vector<ModuleElem>& e = gens(FM);
-      const RingHom& phi=GRI.myNewP2OldP();
-      for (SparsePolyIter i=BeginIter(the_gp.myPoly()); !IsEnded(i); ++i)
-        theOutputV+=phi(monomial(GRI.myNewSPR(),coeff(i),PP(i)))*
-                    e[GRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for cocoa4compatibility
-    } // DeEmbedPoly  theOutputV
-
-
     void DeEmbedPolyList(VectorList& theOutputVL,
                           const GPolyList& theGPL)
-    {
-      DeEmbedPolyList(theOutputVL,theGPL,0);
-    } // DeEmbedPolyList theOutputVL
+    { DeEmbedPolyList(theOutputVL,theGPL,0); }
 
 
   // AMB 2026-02-05: I guess this one has never been called: test properly
@@ -1349,16 +1275,9 @@ Is is here only for completeness/debug purposes.
     } // DeEmbedPolyList theOutputVL
 
 
-    void DeEmbedPoly(RingElem& theOutputP,
-                      const GPoly& the_gp) // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
-    {
-      theOutputP=the_gp.myGRingInfo().myNewP2OldP()(the_gp.myPoly());
-    } // DeEmbedPoly theOutputP
-
-
     void DeEmbedPolyList(PolyList& theOutputPL,
                          const GPolyList& theGPL,
-			 const long ComponentsLimit) // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
+                         const long ComponentsLimit) // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
     {
        theOutputPL.clear();
        if (theGPL.empty())
@@ -1374,8 +1293,6 @@ Is is here only for completeness/debug purposes.
            theOutputPL.push_back(tmp);
          }
     } // DeEmbedPolyList theOutputPL
-
-
 
 
     void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
