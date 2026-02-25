@@ -449,14 +449,13 @@ namespace CoCoA
   VectorList ComputeSyz(const FreeModule& SyzFM, const PolyList& G,
                         const CpuTimeLimit& CheckForTimeout)
   {
-    //if (!IsHomogGrD0(G))
-    //  CoCoA_THROW_ERROR2("Not Yet Tested for non-homogeneous input", "ComputeSyz(const VectorList&)");
     if (G.empty()) return VectorList{zero(SyzFM)};
     bool IsSatAlg=false;
     ModOrdTypeForcing MOType = (IsHomogGrD0(G) ? WDegPosTO : PosWDegTO);
     const SparsePolyRing P(owner(G[0]));
-    const SparsePolyRing P_new(MakeNewPRingForSimpleEmbedding(P,MOType));
-    GRingInfo GRI(P_new,P,SyzFM,IsHomogGrD0(G),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
+    const SparsePolyRing P_new(MakeNewPRingForP2(P,MOType));
+    GRingInfo GRI(P_new, P, SyzFM, IsHomogGrD0(G),
+                  IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
     GReductor GBR(GRI, SyzEmbedPolyList(G,GRI));
     GBR.myDoGBasis();
     return DeEmbedPolyList(GBR.myExportGBasis(), GRI,1);
@@ -468,11 +467,9 @@ namespace CoCoA
   {
     bool IsSatAlg=false;
     const FreeModule FM = owner(G1[0]);
-    //const SparsePolyRing P_new(MakeNewPRingFromModule(FM,WDegPosTO));
     bool HomogInput = IsHomogGrD0(G1) && IsHomogGrD0(G2);
-    const SparsePolyRing P_new(MakeNewPRingFromModulePosFirst(FM,HomogInput));
-    const SparsePolyRing P(RingOf(FM));
-    GRingInfo GRI(P_new, P, FM, FM, HomogInput,
+    const SparsePolyRing P_new(MakeNewPRingFromModule_PosTO(FM,HomogInput));
+    GRingInfo GRI(P_new, RingOf(FM), FM, FM, HomogInput,
                   IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
     GReductor GBR(GRI, IntEmbedVectorLists(G1, G2, GRI));
     GBR.myDoGBasis();// homog input standard alg interred
@@ -487,7 +484,7 @@ namespace CoCoA
     if (G1.empty())  return G1;
     const SparsePolyRing P(owner(G1[0]));
     const bool HomogInput = IsHomogGrD0(G1) && IsHomogGrD0(G2);
-    const SparsePolyRing P_new(MakeNewPRingForSimpleEmbeddingPosFirst(P, HomogInput));
+    const SparsePolyRing P_new(MakeNewPRingForP2_PosTO(P, HomogInput));
     GRingInfo GRI(P_new, P, HomogInput,
                   IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
     GReductor GBR(GRI, IntEmbedPolyLists(G1, G2, GRI));
@@ -507,10 +504,9 @@ namespace CoCoA
       if (!IsHomogGrD0(G1))  CoCoA_THROW_ERROR2(ERR::NYI, "non-homog");
       if (!IsHomogGrD0(v))  CoCoA_THROW_ERROR2(ERR::NYI, "non-homog");
       const FreeModule FM = owner(G1[0]);
-      const SparsePolyRing P_new(MakeNewPRingFromModule(FM,WDegPosTO));
-      const SparsePolyRing P(RingOf(FM));
-      GRingInfo GRI(P_new,P,FM,FM,IsHomogGrD0(G1)&&IsHomogGrD0(v),
-                    IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
+      const SparsePolyRing P_new(MakeNewPRingFromModule(FM, WDegPosTO));
+      GRingInfo GRI(P_new, RingOf(FM), FM, FM, IsHomogGrD0(G1)&&IsHomogGrD0(v),
+                    IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
       GReductor GBR(GRI, ColonEmbedVectorLists(G1, VectorList(1,v), GRI));
       GBR.myDoGBasis();// homog input standard alg interred
       return DeEmbedPolyListToPL(GBR.myExportGBasis(), GRI, NumCompts(FM));
@@ -525,7 +521,7 @@ namespace CoCoA
       if (IsZero(f))  return std::vector<RingElem>{one(owner(f))};
       bool IsSatAlg=false;
       const SparsePolyRing P(owner(G[0]));
-      const SparsePolyRing P_new(MakeNewPRingForSimpleEmbeddingPosFirst(P,IsHomogGrD0(G)&&IsHomogGrD0(f)));
+      const SparsePolyRing P_new(MakeNewPRingForP2_PosTO(P,IsHomogGrD0(G)&&IsHomogGrD0(f)));
       GRingInfo GRI(P_new, P, IsHomogGrD0(G) && IsHomogGrD0(f),
                     IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
       GPolyList EmbeddedPolys=ColonEmbedPolyLists(G, std::vector<RingElem>{f}, GRI);
@@ -533,6 +529,7 @@ namespace CoCoA
       GBR.myDoGBasis();// homog input standard alg interred
       return DeEmbedPolyListToPL(GBR.myExportGBasis(), GRI, 1);
     }
+
 
     VectorList ComputeColonByPrincipal(const VectorList& G, const PolyList& /*G_in*/,
                                        const CpuTimeLimit& /*CheckForTimeout*/)

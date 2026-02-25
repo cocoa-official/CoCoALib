@@ -172,11 +172,6 @@ typedef std::list<GPoly> GPolyList;
     friend GPoly* FindReducer(const GPoly&, const Reductors& theReductors);
     //@}
 
-    // these functions need to access myPoly(). See if they can be pared down/put here
-    // they are located in GReductor.C
-    friend void DeEmbedPoly(ModuleElem&,const GPoly&,long);
-    friend void IntEmbedGPolyList(GPolyList&, GPolyList&);
-    friend void DeEmbedPoly(RingElem&, const GPoly&);
   };//class GPoly
 
   // These are only for internal use
