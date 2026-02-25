@@ -312,28 +312,51 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   }
 
 
- // This procedure may be substituted by a transform_if
-  void GReductor::myCopyGBasis_GPoly(GPolyList& outG)
-  {
-    outG.clear();
-    for (const auto& ptr: myGB)
-      if (IsActive(*ptr))  outG.push_back((*ptr));
-  }
-  
-
-// This procedure may be substituted by a transform_if
-  void GReductor::myGBasisClear(GPolyList& outG)
-  {
-    outG.clear();
-    for (auto& ptr: myGB)
-      if (IsActive(*ptr))
+  namespace { // anonymous    //-- DeEmbedding --------------------------
+    
+    ModuleElem DeEmbedPoly(ConstRefRingElem p,
+                           const GRingInfo& theGRI,
+                           const long ComponentsLimit) // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
+    {
+      //std::clog<<"DeEmbedPoly:start"<<endl;
+      //std::clog<<"DeEmbedPoly:p  "<<p<<endl;
+      //std::clog<<"DeEmbedPoly:theGRI  "<<theGRI<<endl;
+      const SparsePolyRing OldP=theGRI.myOldSPR();
+      const SparsePolyRing NewP=theGRI.myNewSPR();
+      const FreeModule FM=theGRI.myOutputFreeModule();
+      ModuleElem v(FM);
+      
+      //std::clog<<"DeEmbedPoly:v  "<<v<<endl;
+      //std::clog<<"DeEmbedPoly:theGRI.myNewP2OldP()  "<<theGRI.myNewP2OldP()<<endl;
+      //std::clog<<"DeEmbedPoly:theGRI.myOldP2NewP()  "<<theGRI.myOldP2NewP()<<endl;
+      
+      const std::vector<ModuleElem>& e = gens(FM);
+      
+      RingElem tmp(OldP);
+      for (SparsePolyIter i=BeginIter(p); !IsEnded(i); ++i)
       {
-        GPoly Zero(myGRingInfoValue);
-        outG.push_back(Zero);
-        outG.back().AssignClear(*ptr);
+        //std::clog<<"DeEmbedPoly:ComponentsLimit  "<<ComponentsLimit<<endl;
+        //std::clog<<"DeEmbedPoly:PP(i)  "<<PP(i)<<endl;
+        tmp=theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
+        CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit < NumCompts(FM));
+        //std::clog<<"DeEmbedPoly:monomial(NewP,coeff(i),PP(i))  "<<monomial(NewP,coeff(i),PP(i))<<endl;
+        //std::clog<<"DeEmbedPoly:tmp  "<<tmp<<endl;
+        //std::clog<<"DeEmbedPoly:theGRI.myPhonyComponent(PP(i))-ComponentsLimit  "<<theGRI.myPhonyComponent(PP(i))-ComponentsLimit<<endl;
+        //std::clog<<"DeEmbedPoly:theGRI.myPhonyComponent(PP(i)) "<<theGRI.myPhonyComponent(PP(i))<<endl;
+        //std::clog<<"DeEmbedPoly:theGRI.myComponent(PP(i)) "<<theGRI.myComponent(PP(i))<<endl;
+        v+=tmp*e[theGRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for coco4compatibility
       }
-    myGB.clear();
-  }
+      //std::clog<<"DeEmbedPoly:v "<<v<<endl;
+      //std::clog<<"DeEmbedPoly:end"<<endl;
+      return v;
+    }
+
+
+    ModuleElem DeEmbedPoly(ConstRefRingElem p, const GRingInfo& theGRI)
+    { return DeEmbedPoly(p, theGRI, 0); }
+
+
+  } // namespace anonymous
 
 
   void GReductor::myCopyGBasis_module(VectorList& outG)
@@ -464,76 +487,6 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
                                       << " new pairs: " << oss.str() << endl;
     };
   } // myBuildNewPairs
-
-
-  // void GReductor::myBuildNewPairsAll(GPairList& new_pairs)
-  // {
-  //   VerboseLog VERBOSE("myBuildNewPairsAll");
-  //   new_pairs.clear();
-  //   long standing_index=1;
-  //   long walking_index=0;
-  //   long inserted_pairs=0;//STAT
-
-  //   GPolyPtrList::const_iterator BeginPlus=myGB.begin(); ++BeginPlus;
-  //   for (GPolyPtrList::const_iterator last=BeginPlus;last!=myGB.end();++last,++standing_index)
-  //   {
-  //   long last_component=Component(**last);
-  //   GPolyPtrList::const_iterator it;
-  //   walking_index=0;
-  //   for (it=myGB.begin(); it!=last; it++,walking_index++)
-  //   {
-  //     if (IsActive(**it)&&last_component==Component(**it))
-  //     {
-  //       if (myCriteria.myDiv && IsDivisibleFast(LPPForDivwMask(**it), LPPForDivwMask(**last)) )
-  //       {
-  //         if (VerbosityLevel() >= myStat.myPolyDeletedLevel)
-  //           VERBOSE(1)
-  //             <<"<"<<walking_index<<"> "<<LPPForDiv(**it)<<" DELETED BY NEW "
-  //             <<"<"<<standing_index<<"> "<<LPPForDiv(**last)<<"\n";
-  //         (*it)->Deactivate();
-  //         myStat.myPolyDeleted++;
-  //       } //second if
-  //       //else
-  //       inserted_pairs++;
-  //       myStat.myPInserted++;
-  //       if (myCriteria.myGM)
-  //         myStat.myGMTouched+=myGMInsert(new_pairs, GPair(**it,**last));
-  //       else
-  //       {
-  //         myStat.myGMTouched=0;
-  //         Ordered_Insert(new_pairs, GPair(**it,**last));
-  //       }
-  //     };//Active if
-  //   };//walking for
-  //   } //  last for
-  //   myStat.myGMKilled+=inserted_pairs-len(new_pairs);
-  //   if (VerbosityLevel() >= myStat.myGMLevel && (inserted_pairs!=len(new_pairs)))
-  //     VERBOSE(1) <<"[GM KILLED "<<inserted_pairs-len(new_pairs)
-  //                <<" OUT OF "<<inserted_pairs<<"]\n";
-
-  //   long pre_cop_test=len(new_pairs);
-  //   if (myCriteria.myCoprime)
-  //   {
-  //     GPairList::iterator it1=new_pairs.begin();
-  //     while (it1!=new_pairs.end())
-  //       if (it1->IamCoprime())
-  //         it1=new_pairs.erase(it1);
-  //       else
-  //         ++it1;
-  //   }
-  //   if (pre_cop_test!=len(new_pairs))
-  //     if (VerbosityLevel() >= myStat.myCopLevel)
-  //       VERBOSE(1) <<"[COP KILLED "<<pre_cop_test-len(new_pairs)
-  //                  <<" OUT OF "<<inserted_pairs<<"]\n";
-  //   myStat.myCopKilled+=pre_cop_test-len(new_pairs);
-  //   if (VerbosityLevel() >= myStat.myNewPairsLevel)
-  //   {
-  //     VERBOSE(1) << "NEW PAIRS " << len(new_pairs) << "  ";
-  //     for (const auto& p: new_pairs)
-  //       VERBOSE(1) << "<" << p.myFirstIndex()
-  //                  << "," << p.mySecondIndex() << "> " << std::endl;
-  //   };
-  // } // myBuildNewPairsAll
 
 
   void GReductor::myApplyBCriterion()
@@ -848,88 +801,6 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   } // myDoGBasisRealSolve
 
 
-//   void GReductor::myDoGBasisByBatch()
-//   {
-//     VerboseLog VERBOSE("myDoGBasisByBatch");
-//     bool NonZeroReductionPerformed=false;
-//     myPrepareGBasis();
-
-//     // process the special pairs
-//     while (!myPairs.empty())
-//     {
-//       myReduceCurrentSPoly();
-//       if (!IsZero(mySPoly))
-//       {
-//         myUpdateBasisOnly();
-//         VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-//       }
-//     } // while
-
-//     do
-//     {
-//       NonZeroReductionPerformed=false;
-//       myCreatePairs();
-//       while (!myPairs.empty())
-//       {
-//         myReduceCurrentSPoly();
-//         if (!IsZero(mySPoly))
-//         {
-//           myUpdateBasisOnly();
-//           VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-//           NonZeroReductionPerformed=true;
-//         }
-//       } // while
-//     }
-//     while (NonZeroReductionPerformed);
-//     myFinalizeGBasis();
-//   } // myDoGBasisByBatch
-
-
-//   void GReductor::myReduceUntilNonZeroRedSPoly()
-//   {
-//     VerboseLog VERBOSE("myReduceUntilNonZeroRedSPoly");
-//     bool flag=true;
-//     while ((!myPairs.empty())&&(IsZero(mySPoly)||flag))
-//     {
-//       flag=false;
-//       myReduceCurrentSPoly();
-//       if (!IsZero(mySPoly))
-//       {
-//         myUpdateBasisAndPairs();
-//         VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-//         if (!myPairs.empty())
-//           if (myFirstPairWDeg!=myOldDeg&&myTrueReductors.IhaveBorelReductors())
-//             myTrueReductors.myBorelReductorsUpdateInNextDegree();
-//       }
-//     }
-//   } // myReduceUntilNonZeroRedSPoly
-
-
-//   void GReductor::myReduceUntilNonZeroRedSPoly()
-//   {
-//     //    VerboseLog VERBOSE("myReduceUntilNonZeroRedSPoly");
-//     while (!myPairs.empty())
-//     {
-//       myReduceCurrentSPoly();
-//       if (!IsZero(mySPoly)) return;
-//     }
-//   } // myReduceUntilNonZeroRedSPoly
-
-
-//   void GReductor::myCreatePairs()
-//   {
-// clog << "myCreatePairs:begin "<<endl;
-//       GPairList new_pairs;
-//       myBuildNewPairsAll(new_pairs);
-//       if (myCriteria.myBack)
-//         myApplyBCriterion();
-//       for_each(new_pairs.begin(), new_pairs.end(), mem_fun_ref(&GPair::myComplete));
-//       new_pairs.sort();
-//       swap(myPairs,new_pairs);
-// clog << "myCreatePairs:end "<<endl;
-//   } // myCreatePairs
-
-
   void GReductor::myCreateInputPolyPairs(GPolyList& theCandidateBasis)
   {
     for (const auto& p: theCandidateBasis)
@@ -992,277 +863,9 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   } // myFinalizeGBasis
 
 
-//   // ANNA: not called
-//   void GReductor::myDoGBasisTEST()
-//   {
-//     double T=0.0;
-// //clog<<"myDoGBasisTEST:begin"<<endl;
-//     // Input Polynomials sorted and zero polys deleted
-//     if (myPolys.empty()) return;
-//     if (myGRingInfoValue.IamModule())
-//       myCriteria.myCoprime = false;// CopCriterion works only for REAL ideals
-//     GPoly Zero(myGRingInfoValue);
-//     GPolyList::iterator it=myPolys.begin();
-//     for (long i=0;it!=myPolys.end();++it)
-//       Ordered_Insert(myPairs,GPair(*it));
-//     myOldDeg = wdeg(myPairs.front());
-//     myFirstPairWDeg = myOldDeg;
-//     if (myStat.myDegLevel)
-//       clog<<"\n[log] ********* Starting_Pair_Degree="<<myFirstPairWDeg<<"\n";
-//     while (!myPairs.empty())
-//     {
-//       if (myStat.myNumPairLevel)
-//         clog<<"[log] pair="<<len(myPairs)<<" "<<flush;
-//       if (myStat.myReductionLevel)
-//         clog<<"doing="<<myPairs.front();
-//       if (myPairs.front().IamCoprime()&& myCriteria.myCoprime)
-//       {
-//         mySPoly=Zero;
-//         if (myStat.myCopLevel)
-//           clog<<"COP"<<flush;
-//         ++myStat.myCopKilled;
-//         T=0.0;
-//        }
-//        else
-//        {
-//          mySPoly.myAssignSPoly(myPairs.front(),myAgeValue);  // ??? SPoly computed only if not coprime
-//          ++myAgeValue;
-//          myStat.myPolyLens.push_back(make_pair(NumTerms(mySPoly),0));
-//          if (myStat.myReductionLevel && IsZero(mySPoly))
-//             clog<<"SPOLY IS ZERO BEFORE REDUCTION !"<<endl;
-//          if (myStat.myReductionLevel)
-//             clog<<" SPolyLen="<<myStat.myPolyLens.back().first<<" reduction="<<flush;
-//          myPairs.erase(myPairs.begin());// erase the used gpair
-//          T=CpuTime();
-//          mySPoly.myReduce(myTrueReductors);
-//          ++myStat.myNReductions;
-//          T-=CpuTime();
-//          myStat.myPolyLens.back().second=NumTerms(mySPoly);
-//          if (IsZero(mySPoly))
-//          {
-//            if (myStat.myReductionLevel) clog << "0"<<flush;
-//            ++myStat.myUseless;
-//          }
-//          else
-//          {
-//            if (myStat.myReductionLevel)
-//              clog<<LPPForDiv(mySPoly)<<"+..<"<<len(myGB)+1<<"> Len="
-//                  <<myStat.myPolyLens.back().second
-//                  <<" Comp="<<Component(mySPoly)<<flush;
-//            ++myStat.myUseful;
-//            //if (!IsTrueGCDDomain(CoeffRing(mySPoly)) || NumTerms(mySPoly)<=2)
-//            //myTrueReductors.interreduce(mySPoly);
-//            if ((myStat.myReductionLevel && (NumTerms(mySPoly)<=2)))
-//              clog<<" EASY REDUCTOR FOUND  LEN="<<NumTerms(mySPoly)<<" DEG="<<wdeg(mySPoly)<<endl;
-//          } //  else
-//        } // else -if not coprime
-//        if (myStat.myReductionLevel)
-//           clog <<" time="<<-T<<" \n"<<flush;
-//        if (!IsZero(mySPoly)) myUpdateBasisAndPairs();
-//        if (!myPairs.empty())
-//        {
-//          myFirstPairWDeg=wdeg(myPairs.front());//STAT
-//          if (myFirstPairWDeg!=myOldDeg)
-//          {
-//            if (myStat.myDegLevel)
-//              clog<<"\n[log] ********* Current_Pair_Degree_Now="<<myFirstPairWDeg<<"\n";
-//            if (myTrueReductors.IhaveBorelReductors())
-//              myTrueReductors.myBorelReductorsUpdateInNextDegree();
-//            myStat.myUpgradeDegStats(myOldDeg,len(myPairs));
-//            myOldDeg=myFirstPairWDeg;
-//          }
-//        }
-//        else
-//          myStat.myUpgradeDegStats(myFirstPairWDeg,0);
-//     };//end main while
-//     myStat.myTotalTime-=CpuTime();
-//     myStat.myStampa(clog);
-//   } //  end _myDoGBasis
-
-
-
-//At the moment, no one is calling this procedure. The caller calls myDoGBasisTEST instead
-//   void GReductor::myDoSATMixGBasis()
-//   {
-//     CoCoA_THROW_ERROR1(ERR::ShouldNeverGetHere);
-//     // MOD the homog var and the module vars conflict
-//     // Input Polynomials sorted and zero polys deleted
-//     if (myPolys.empty()) return;
-
-//     if (myGRingInfoValue.IamModule())
-//       myCriteria.myCoprime = false;// CopCriterion works only for REAL ideals
-
-//     CoCoA_ASSERT(GradingDim(myGRingInfoValue.myNewSPR()) == 1);
-//     const long HIndetIndex=NumIndets(myGRingInfoValue.myNewSPR())-1;// This is OK for Ideals only
-// //VARIABLE SET NEVER USED    bool satjumped=false;
-//     double T=0.0;//STAT
-//     degree SPolyPredDeg(GradingDim(myGRingInfoValue.myNewSPR()));// Used for stats in the dehmog alg
-
-//     GPoly Zero(myGRingInfoValue);
-
-
-//     GPolyList::iterator it=myPolys.begin();
-//     for (long i=0;it!=myPolys.end();++it)
-//     {
-//       Ordered_Insert(myPairs,GPair(*it));
-//     }
-
-//     myOldDeg = wdeg(myPairs.front());//STAT
-//     myFirstPairWDeg = myOldDeg;//STAT
-
-//     if (VerbosityLevel() >= myStat.myDegLevel)
-//       clog<<"\n[log] ********* Starting_Pair_Degree="<<myOldDeg<<"\n";
-
-
-//     while (!myPairs.empty())
-//     {
-// //VARIABLE SET NEVER USED      satjumped=false;
-//       myFirstPairWDeg = wdeg(myPairs.front());//STAT
-
-//       if (myFirstPairWDeg!=myOldDeg)
-//       {
-//         if (VerbosityLevel() >= myStat.myDegLevel)
-//           clog<<"\n[log] New_Degree="<<myFirstPairWDeg<<"\n";
-//         //      myTrueReductors.AdjustLimit(myFirstPairWDeg);
-//         myStat.myUpgradeDegStats(myOldDeg,len(myPairs));
-//         myOldDeg=myFirstPairWDeg;
-//       }
-
-//       if (!myPairs.empty())
-//       {
-//         // WARN - POSSIBLY DIFFERENT
-//         if (VerbosityLevel() >= myStat.myNumPairLevel)
-//           clog<<"[log] pair="<<len(myPairs)<<" "<<flush;
-//         if (VerbosityLevel() >= myStat.myReductionLevel)
-//           clog<<"doing="<<myPairs.front()<<" Len="
-//               <<myStat.myPolyLens.back().first<<"-->"<<flush;
-//         if (myPairs.front().IamCoprime()&& myCriteria.myCoprime)
-//         {
-//           mySPoly=Zero;
-//           if (VerbosityLevel() >= myStat.myCopLevel) clog<<"COP"<<flush;
-//           ++myStat.myCopKilled;
-//           //--myStat.myUseless;
-//           T=0.0;
-//         }
-//         else
-//         {
-//           mySPoly.myAssignSPoly(myPairs.front(), ++myAgeValue);  // ??? SPoly computed only if not coprime
-//           ++myAgeValue;
-//           myStat.myPolyLens.push_back(make_pair(NumTerms(mySPoly),0));
-//           T=CpuTime();
-//           //mySPoly.smart_dehomog(HIndetIndex);
-//           mySPoly.myReduce(myTrueReductors);
-//           ++myStat.myNReductions;
-//           T-=CpuTime();
-
-//           myStat.myPolyLens.back().second=NumTerms(mySPoly);
-//           if (IsZero(mySPoly))
-//           {
-//             if (VerbosityLevel() >= myStat.myReductionLevel) clog << "0"<<flush;
-//             ++myStat.myUseless;
-//           }
-//           else
-//           {
-//             if (VerbosityLevel() >= myStat.myReductionLevel)
-//               clog<<LPPForDiv(mySPoly)<<"+..<"<<len(myGB)+1<<"> Len="
-//                   <<myStat.myPolyLens.back().second<<flush;
-//             SPolyPredDeg = wdeg(mySPoly);
-//             mySPoly.smart_dehomog(HIndetIndex);
-
-//             if (SPolyPredDeg!=wdeg(mySPoly))
-//             {
-// //VARIABLE SET NEVER USED              satjumped=true;
-//               ++myStat.myPolyDHed;
-//               myStat.myDegDH += ConvertTo<long>((SPolyPredDeg-wdeg(mySPoly))[0]);
-//               if (VerbosityLevel() >= myStat.myPolyDHLevel && false)
-//                 clog << "\nPOLY DEHOMOG SUCCESSFULLY    Deg "
-//                      << SPolyPredDeg << "-->" << wdeg(mySPoly)
-//                      << LPPForDiv(mySPoly) << endl;
-//             }
-//             ++myStat.myUseful;
-//             //if (!IsTrueGCDDomain(CoeffRing(mySPoly)) && (NumTerms(mySPoly)<=2))
-//             //if (NumTerms(mySPoly)<=2)
-//             //if (!satjumped)
-//             //myTrueReductors.SuperInterreduce(mySPoly);
-//             //myTrueReductors.interreduce(mySPoly);
-//             if ((VerbosityLevel() >= myStat.myReductionLevel && (NumTerms(mySPoly)<=2)))
-//               //if (NumTerms(mySPoly)<=2)
-//               clog<<"EASY REDUCTOR FOUND  LEN="<<NumTerms(mySPoly)<<" DEG="<<wdeg(mySPoly)<<endl;
-//           } //  else
-//         } // else -if not coprime
-//         myPairs.erase(myPairs.begin());// erase the used gpair
-//         if (VerbosityLevel() >= myStat.myReductionLevel)
-//           clog <<" time="<<-T<<" \n"<<flush;
-//         if (!IsZero(mySPoly)) myUpdateBasisAndPairs();
-//       };//end if minpairs
-//     };//end main while
-//     //STAT
-//     if (myFirstPairWDeg!=myOldDeg)
-//       myStat.myDegByDeg.push_back(DegStats(myOldDeg,0,0,0,0,0,1,0));
-//     else myStat.myUpgradeDegStats(myOldDeg,0);
-// //     VerboseLog VERBOSE("myDoSATMixGBasis");
-// //     if (myStat.myGetLevel()>-1)
-// //     {
-// //       VERBOSE(3) << "number of reductions = " << myStat.myNReductions << endl;
-// //       VERBOSE(3) << "# GBasis = " << myStat.myUseful-myStat.myPolyDeleted<< endl;
-// //     }
-//      myStat.myStampa(clog);
-//   } //  end myDoSATMixGBasis
-
-
-//   // ANNA: not called
-//   void GReductor::Rebuild(const PolyList& thePL)
-//   {
-//     clog << "Rebuild:begin " <<endl;
-//     mySPoly=GPoly(myGRingInfoValue);
-//     clog << "Rebuild:before for " <<endl;
-//     myFirstPairWDeg=degree(GradingDim(myGRingInfoValue.myNewSPR()));
-//     myOldDeg=degree(GradingDim(myGRingInfoValue.myNewSPR()));
-//     //myStat(len(thePL),myStat.myGetLevel());
-//     myPrepared=false;
-//     myAgeValue = 0;
-//     myStat.myNReductions=0;
-//     //IsDynamicAlgorithm unchanged
-//     myWrongLPPFoundValue=false;
-//     //myCriteria unchanged
-//     myPairs.clear();
-//     myTrueReductors.myClear();
-//     myGB.clear();
-//     myPolys.clear();
-
-//     for (PolyList::const_iterator it=thePL.begin();it!=thePL.end();it++)
-//     {
-//       if (!IsZero(*it))
-//         myPolys.push_back(GPoly(*it,myGRingInfoValue));
-//     }
-//     myPolys.sort(BoolCmpLPPGPoly);
-//     clog << "Rebuild:end " <<endl;
-//   } // Rebuild
 
 
 //////////////////////////// Embedding/DeEmbedding /////////////////////
-
-
-  ModOrdTypeForcing ModuleOrderType(const FreeModule& M)
-  {
-    if (IsOrdPosn(ordering(M))) return WDegTOPos;
-    if (IsWDegPosnOrd(ordering(M))) return WDegPosTO;
-    return PosWDegTO;
-  } // ModOrdType
-
-
-// similar functions now moved into FreeModule.C
-// FreeModule MakeNewFreeModuleForSyz2(const GPolyList& theGPL)
-// {
-//   if (theGPL.empty())
-//     return NewFreeModule(RingQQ(),1);
-//   const SparsePolyRing OldP=owner(theGPL);
-//   std::vector<degree> InputShifts;
-//   for (GPolyList::const_iterator it=theGPL.begin(); it!=theGPL.end(); ++it)
-//      InputShifts.push_back(wdeg(*it));
-
-//   return NewFreeModule(OldP, NewWDegPosnOrd(ordering(PPM(OldP)), InputShifts));
-// } // MakeNewFreeModuleForSyz
 
 
 // returns the poly ring equivalent with OldP^2, same grading
@@ -1313,6 +916,18 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   }
 
 
+  namespace { // anonymous
+
+    ModOrdTypeForcing ModuleOrderType(const FreeModule& M)
+    {
+      if (IsOrdPosn(ordering(M))) return WDegTOPos;
+      if (IsWDegPosnOrd(ordering(M))) return WDegPosTO;
+      return PosWDegTO;
+    } // ModOrdType
+
+  } // namespace  // anonymous
+  
+  
 // This is OK for the non-homogeneous case
 // For the homogenous case, PosTo this is inefficient, since
 // the Deg rows in the To part are useless.
@@ -1416,95 +1031,78 @@ bool BoolCmpLPPPoly(ConstRefRingElem f, ConstRefRingElem g)
   } // MakeNewPRingFromModule
 
 
-  GPoly EmbedPoly(ConstRefRingElem p,
-                  const GRingInfo& theGRI,
-                  const long CompIndex)
-  {
-    //std::vector<RingElem> images;
-    //for (long i=0;i!=NumIndets(theGRI.myOldSPR());++i)
-    //  images.push_back(indet(theGRI.myNewSPR(), i));
-    const RingHom& phi=theGRI.myOldP2NewP();
-    return GPoly(phi(p)*theGRI.myE(CompIndex), theGRI);
-  } // EmbedPoly
-
-
-  GPoly EmbedPoly(ConstRefRingElem the_p,
-                  const GRingInfo& theGRI,
-                  const degree& the_d,
-                  const long CompIndex)
-  {
-    const RingHom& phi=theGRI.myOldP2NewP();
-    return GPoly(phi(the_p)*theGRI.myE(CompIndex)*theGRI.myY(the_d), theGRI);
-  } // EmbedPoly
-
-
-  // Embed a true polylist in a GPolyList. Component CompIndex
-  GPolyList EmbedPolyList(const PolyList& PL,
-                          const GRingInfo& GRI,
-                          const long CompIndex)
-  {
-    GPolyList result;
-    if (PL.empty())  return result;
-    for (const RingElem& p: PL) result.push_back(EmbedPoly(p, GRI, CompIndex));
-    return result;
-  } // EmbedPolyList
-
-
-  GPolyList EmbedPolyListNo0(const PolyList& PL,
-                             const GRingInfo& GRI,
-                             const long CompIndex)
-  {
-    GPolyList result;
-    if (PL.empty())  return result;
-    for (const RingElem& p: PL)
-      if (!IsZero(p)) result.push_back(EmbedPoly(p, GRI, CompIndex));
-    return result;
-  } // EmbedPolyListNo0
-
-
-  // Embed a true polylist in a GPolyList. Component CompIndex
-  GPolyList EmbedPolyList(const PolyList& PL,
-                          const GRingInfo& GRI,
-                          const degree& d,
-                          const long CompIndex)
-  {
-    GPolyList result;
-    if (PL.empty()) return result;
-    for (const RingElem& p: PL)
-      result.push_back(EmbedPoly(p, GRI, d, CompIndex));
-    return result;
-  } // EmbedPolyList
-
-
-/*
-This realizes the embedding FM-->NewP of a vector v.
-e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
-Should be changed to avoid passing FM,NewP.
-Is is here only for completeness/debug purposes.
-*/
-  GPoly EmbedVector(const ModuleElem& v,
-                    const GRingInfo& theGRI)			
-  {
-    return EmbedVector(v, theGRI, 0);
-  } // EmbedVector
-
-
-/*
-This realizes the embedding FM-->NewP of a vector v.
-e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
-Should be changed to avoid passing FM,NewP.
-Is is here only for completeness/debug purposes.
-*/
-  GPoly EmbedVector(const ModuleElem& v,
+  namespace { // anonymous
+  
+    GPoly EmbedPoly(ConstRefRingElem the_p,
                     const GRingInfo& theGRI,
-                    const long StartingFromCompIndex)			
-  {
-    RingElem p(theGRI.myNewSPR()),eMax(power(theGRI.myE(),StartingFromCompIndex));
-    const RingHom& phi=theGRI.myOldP2NewP();
-    for (long i=0; i<NumCompts(owner(v)); ++i)
-      p+=phi(v[i])*theGRI.myEY(i)/eMax;
-    return GPoly(p, theGRI);
-  } // EmbedVector
+                    const degree& the_d,
+                    const long CompIndex)
+    {
+      const RingHom& phi=theGRI.myOldP2NewP();
+      return GPoly(phi(the_p)*theGRI.myE(CompIndex)*theGRI.myY(the_d), theGRI);
+    }
+
+
+    GPoly EmbedPoly(ConstRefRingElem p,
+                    const GRingInfo& theGRI,
+                    const long CompIndex)
+    {
+      const RingHom& phi=theGRI.myOldP2NewP();
+      return GPoly(phi(p)*theGRI.myE(CompIndex), theGRI);
+    }
+
+
+    GPolyList EmbedPolyList(const PolyList& F,
+                            const GRingInfo& GRI,
+                            const long CompIndex)
+    {
+      GPolyList result;
+      if (F.empty())  return result;
+      for (const RingElem& f: F) result.push_back(EmbedPoly(f, GRI, CompIndex));
+      return result;
+    }
+
+
+    GPolyList EmbedPolyListNo0(const PolyList& F,
+                               const GRingInfo& GRI,
+                               const long CompIndex)
+    {
+      GPolyList result;
+      if (F.empty())  return result;
+      for (const RingElem& f: F)
+        if (!IsZero(f)) result.push_back(EmbedPoly(f, GRI, CompIndex));
+      return result;
+    }
+
+/*
+This realizes the embedding FM-->NewP of a vector v.
+e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
+Should be changed to avoid passing FM,NewP.
+Is is here only for completeness/debug purposes.
+*/
+    GPoly EmbedVector(const ModuleElem& v,
+                      const GRingInfo& theGRI,
+                      const long StartingFromCompIndex)			
+    {
+      RingElem p(theGRI.myNewSPR()),eMax(power(theGRI.myE(),StartingFromCompIndex));
+      const RingHom& phi=theGRI.myOldP2NewP();
+      for (long i=0; i<NumCompts(owner(v)); ++i)
+        p+=phi(v[i])*theGRI.myEY(i)/eMax;
+      return GPoly(p, theGRI);
+    } // EmbedVector
+    
+/*
+This realizes the embedding FM-->NewP of a vector v.
+e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
+Should be changed to avoid passing FM,NewP.
+Is is here only for completeness/debug purposes.
+*/
+    GPoly EmbedVector(const ModuleElem& v,
+                      const GRingInfo& theGRI)			
+    { return EmbedVector(v, theGRI, 0); }
+
+
+  } // namespace // anonymous
 
 
   GPolyList EmbedVectorList(const VectorList& VL, const GRingInfo& GRI)
@@ -1643,75 +1241,26 @@ Is is here only for completeness/debug purposes.
        return FirstPart;
      const SparsePolyRing NewP=theGRI.myNewSPR();
      FirstPart=EmbedPolyList(thePL1, theGRI, 0);
-     //std::clog<<"ComputeColon: FirstPart "<<FirstPart<<endl;
      GPoly GP1=EmbedPoly(thePL2.front(), theGRI, 0);
-     //std::clog<<"ComputeColon: GP1 "<<GP1<<endl;
      degree d=wdeg(thePL2.front());
      GPoly GP2=EmbedPoly(one(theGRI.myOldSPR()), theGRI, d, 1);
      GP1.myAppendClear(GP2);
      FirstPart.push_back(GP1);
+     //std::clog<<"ComputeColon: FirstPart "<<FirstPart<<endl;
+     //std::clog<<"ComputeColon: GP1 "<<GP1<<endl;
      //std::clog<<"ComputeColon: end "<<endl;
      return FirstPart;
   } // ColonEmbedPolyLists
 
 
-  ModuleElem DeEmbedPoly(ConstRefRingElem p, const GRingInfo& theGRI)
-  { return DeEmbedPoly(p, theGRI, 0); }
-
-
-  ModuleElem DeEmbedPoly(ConstRefRingElem p,
-                         const GRingInfo& theGRI,
-                         const long ComponentsLimit) // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
-  {
-//std::clog<<"DeEmbedPoly:start"<<endl;
-//std::clog<<"DeEmbedPoly:p  "<<p<<endl;
-//std::clog<<"DeEmbedPoly:theGRI  "<<theGRI<<endl;
-   const SparsePolyRing OldP=theGRI.myOldSPR();
-   const SparsePolyRing NewP=theGRI.myNewSPR();
-   const FreeModule FM=theGRI.myOutputFreeModule();
-   ModuleElem v(FM);
-
-//std::clog<<"DeEmbedPoly:v  "<<v<<endl;
-//std::clog<<"DeEmbedPoly:theGRI.myNewP2OldP()  "<<theGRI.myNewP2OldP()<<endl;
-//std::clog<<"DeEmbedPoly:theGRI.myOldP2NewP()  "<<theGRI.myOldP2NewP()<<endl;
-
-   const std::vector<ModuleElem>& e = gens(FM);
-
-   RingElem tmp(OldP);
-   for (SparsePolyIter i=BeginIter(p); !IsEnded(i); ++i)
-   {
-//std::clog<<"DeEmbedPoly:ComponentsLimit  "<<ComponentsLimit<<endl;
-//std::clog<<"DeEmbedPoly:PP(i)  "<<PP(i)<<endl;
-      tmp=theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
-      CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit < NumCompts(FM));
-//std::clog<<"DeEmbedPoly:monomial(NewP,coeff(i),PP(i))  "<<monomial(NewP,coeff(i),PP(i))<<endl;
-//std::clog<<"DeEmbedPoly:tmp  "<<tmp<<endl;
-//std::clog<<"DeEmbedPoly:theGRI.myPhonyComponent(PP(i))-ComponentsLimit  "<<theGRI.myPhonyComponent(PP(i))-ComponentsLimit<<endl;
-//std::clog<<"DeEmbedPoly:theGRI.myPhonyComponent(PP(i)) "<<theGRI.myPhonyComponent(PP(i))<<endl;
-//std::clog<<"DeEmbedPoly:theGRI.myComponent(PP(i)) "<<theGRI.myComponent(PP(i))<<endl;
-      v+=tmp*e[theGRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for coco4compatibility
-   }
-//std::clog<<"DeEmbedPoly:v "<<v<<endl;
-//std::clog<<"DeEmbedPoly:end"<<endl;
-   return v;
-  } // DeEmbedPoly
-
-
-  VectorList DeEmbedPolyList(const PolyList& PL, const GRingInfo& theGRI)
-  { return DeEmbedPolyList(PL, theGRI, 0); }
-
-
+  // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
   VectorList DeEmbedPolyList(const PolyList& PL,
                              const GRingInfo& theGRI,
-			     const long ComponentsLimit) // Poly whose LPP has last var exponent bigger than this number disappear on DeEmbedding
-
+                             const long ComponentsLimit)
   {
     VectorList VL;
-    if (PL.empty())
-      return VL;
+    if (PL.empty()) return VL;
     for (const RingElem& g: PL)
-//    PolyList::const_iterator it;
-//    for (it=PL.begin();it!=PL.end();++it)
       if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
         VL.push_back(DeEmbedPoly(g,theGRI,ComponentsLimit));
     return VL;
@@ -1751,64 +1300,6 @@ Is is here only for completeness/debug purposes.
   } // DeEmbedPolyList
 			
       				
-    void PolyList2GPolyListClear(PolyList& thePL,
-                                 GPolyList& theGPL,
-                                 const GRingInfo& theGRI)
-    {
-      theGPL.clear();
-      for (const RingElem& g: thePL)
-//      for (PolyList::iterator it=thePL.begin();it!=thePL.end();++it)
-        theGPL.push_back(GPoly(g, theGRI, clear));
-      thePL.clear();
-    } // PolyList2GPolyListClear
-
-
-    void GPolyList2PolyListClear(GPolyList& GPL, PolyList& PL)
-    {
-      PL.clear();
-      if (GPL.empty())  return;
-      const SparsePolyRing P=owner(*GPL.begin());
-      for (GPoly& g: GPL)
-      {
-        PL.push_back(zero(P));  // was PL.push_back(one(P));
-        swap(PL.back(), g.myPolyValue);
-      }
-      GPL.clear();
-    }
-
-
-    void PolyList2GPolyList(const PolyList& thePL,
-                             GPolyList& theGPL,
-                             const GRingInfo& theGRI)
-    {
-      theGPL.clear();
-      for (const RingElem& g: thePL)
-//      for (PolyList::const_iterator it=thePL.begin();it!=thePL.end();++it)
-        theGPL.push_back(GPoly(g, theGRI));
-    } // PolyList2GPolyList
-
-
-    void GPolyList2PolyList(const GPolyList& theGPL,PolyList& thePL)
-    {
-      thePL.clear();
-      if (theGPL.empty())
-        return;
-//      const SparsePolyRing SPR=owner(theGPL);
-      for (const GPoly& g: theGPL)
-//      for (GPolyList::const_iterator it=theGPL.begin();it!=theGPL.end();++it)
-        thePL.push_back(g.myPolyValue);
-    } // GPolyList2PolyListClear
-
-
-     // Just transform the PolyList in a GPolyList
-    GPolyList EmbedPolyList(PolyList& thePL, const GRingInfo& theGRI)
-    {
-      GPolyList GPL;
-      PolyList2GPolyListClear(thePL, GPL, theGRI);
-      return GPL;
-    }
-
-
     void DeEmbedPoly(ModuleElem& theOutputV,
                       const GPoly& the_gp)
     {

@@ -641,62 +641,6 @@ clog << "operator+=: result " <<myPoly<< endl;
     // myBorelGPolys.clear();
   }//clean
 
-//   void swap(Reductors& R1,Reductors& R2)
-//   {
-//     // TODO NEW if (R1.myPolyRing!=R2.myPolyRing) return;
-//     swap(R1.myReductors,R2.myReductors);
-//   }
-
-
-// This function prepares the Borel Reductors for the next degree
-//   void Reductors::myBorelReductorsUpdateInNextDegree()
-//   {
-//     for (ReductorData& R: myBorelReductors)
-// //    for (vector<ReductorData>::const_iterator it = myBorelReductors.begin();
-// //         it != myBorelReductors.end();
-// //         ++it)
-//       R.IamBorelUpdated = false;
-//   }
-
-
-  // // forward declaration of class GPoly needed.
-  // void MakeMonic(std::list<GPoly>& GPL)
-  // {
-  //   if (GPL.empty())  return;
-  //   const SparsePolyRing P(owner(GPL));
-  //   for (GPoly& g: GPL)
-  //   {
-  //     g.myPolyValue= monic(g.myPolyValue);
-  //     g.myLCValue = one(P);
-  //   }
-  // } // MakeMonic
-
-
-  void PolyList2PolyVectorClear(PolyList& thePL,std::vector<RingElem>& thePV)
-  {
-    thePV.clear();
-    if (thePL.empty())
-      return;
-    const SparsePolyRing P(owner(thePL[0]));
-    for (RingElem& g: thePL)
-    {
-      thePV.push_back(one(P));
-      swap(thePV.back(),g);
-    }
-  }//PolyList2PolyVector
-
-  void PolyVector2PolyListClear(std::vector<RingElem>& thePV,PolyList& thePL)
-  {
-    thePL.clear();
-    if (thePV.empty())
-      return;
-    const SparsePolyRing P(owner(thePV[0]));
-    for (RingElem& g: thePV)
-    {
-      thePL.push_back(one(P));
-      swap(thePL.back(),g);
-    }
-  }//PolyVector2PolyList
 
   // // power(y_1y_2..y_k,d_1d_2..d_k)=y_1^d_1y_2^d_2..y_k^d_k
   // void power(RingElem& theResult,

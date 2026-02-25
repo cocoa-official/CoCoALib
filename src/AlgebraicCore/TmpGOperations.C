@@ -159,8 +159,6 @@ namespace CoCoA
     if (GradingDim(P)>0 && IsHomog(G_in)) GBR.myCopyMinGens_module(MinGens_tmp);
     GB_out.clear(); // just to remember to clean this up
     MinGens_out.clear(); // just to remember to clean this up
-    //    GB_out =      DeEmbedPolyList(GB_tmp, GRI);
-    //    MinGens_out = DeEmbedPolyList(MinGens_tmp, GRI);
     GB_out =      GB_tmp;
     MinGens_out = MinGens_tmp;
   }//ComputeGBasis
