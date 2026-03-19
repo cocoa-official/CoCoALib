@@ -45,6 +45,8 @@ namespace CoCoA
   void ComputeGBasis2(VectorList& GB_out, VectorList& MinGens_out,
                       const VectorList& G_in, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 
+  PolyList ComputeGBasis(const PolyList& G, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
+  VectorList ComputeGBasis(const VectorList& G, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   PolyList ComputeGBasisSelfSatCore(const PolyList& G, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
   PolyList ComputeGBasisRealSolve(const PolyList& G, const CpuTimeLimit& CheckForTimeout=NoCpuTimeLimit());
 

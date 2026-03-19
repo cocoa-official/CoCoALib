@@ -40,18 +40,6 @@
 
 #include <algorithm>
 using std::stable_sort;
-#include <list>
-using std::list;
-#include <functional>
-using std::less;
-using std::binary_function;
-using std::mem_fun_ref; // for calling GPair::complete on GPairList
-#include <utility>
-using std::make_pair;
-#include <iostream>
-using std::ostream;
-using std::endl;
-using std::flush;
 
 namespace CoCoA
 {
@@ -161,7 +149,7 @@ namespace CoCoA
     MinGens_out.clear(); // just to remember to clean this up
     GB_out =      GB_tmp;
     MinGens_out = MinGens_tmp;
-  }//ComputeGBasis
+  } // ComputeGBasis2
 
 
   void ComputeGBasis2(PolyList& GB_out, PolyList& MinGens_out,
@@ -203,7 +191,7 @@ namespace CoCoA
       GB_out = GBR.myExportGBasis();
       if (GradingDim(P)>0 && IsHomog(G_in)) MinGens_out = GBR.myExportMinGens();
     }          
-  }//ComputeGBasis2
+  } // ComputeGBasis2
   
 
   namespace
@@ -262,9 +250,27 @@ namespace CoCoA
       if (IsEveryWDegLtEq(G_in, TruncDeg)) MinGens_out = GBR.myExportMinGens();
       TruncDeg = GBR.myTruncDeg(); // update TruncDeg (if changed/complete)
     }
-  }//ComputeGBasisTrunc
-  
-  
+  } // ComputeGBasisTrunc2
+
+
+  PolyList ComputeGBasis(const PolyList& G, const CpuTimeLimit& CheckForTimeout)
+  {
+    PolyList GB;
+    PolyList MinGens; // useless
+    ComputeGBasis2(GB, MinGens, G, CheckForTimeout);
+    return GB;
+  }
+
+
+  VectorList ComputeGBasis(const VectorList& G, const CpuTimeLimit& CheckForTimeout)
+  {
+    VectorList GB;
+    VectorList MinGens; // useless
+    ComputeGBasis2(GB, MinGens, G, CheckForTimeout);
+    return GB;
+  }
+
+
   PolyList ComputeGBasisSelfSatCore(const PolyList& G, const CpuTimeLimit& CheckForTimeout)
   {
     if (G.empty()) return G;
@@ -358,6 +364,7 @@ namespace CoCoA
     
   } // namespace // anonymous ----------------------------------------------
 
+
   PolyList ComputeElim(const PolyList& G, ConstRefPPMonoidElem inds,
                        const CpuTimeLimit& CheckForTimeout)
   {
@@ -370,11 +377,9 @@ namespace CoCoA
     RingHom PToNew = PolyAlgebraHom(P, P_new, indets(P_new));
     RingHom NewToP = PolyAlgebraHom(P_new, P, indets(P));
     PolyList NewGens;
-    for(const RingElem& g: G) NewGens.push_back(PToNew(g));
+    for (const RingElem& g: G) NewGens.push_back(PToNew(g));
     PPMonoidElem ElimIndsProd(LPP(PToNew(monomial(P,inds))));
-    PolyList GB;
-    PolyList MinGens; // useless
-    ComputeGBasis2(GB, MinGens, NewGens, CheckForTimeout);
+    PolyList GB = ComputeGBasis(NewGens, CheckForTimeout);
     PolyList ElimGens;
     for (const RingElem& g: GB)
     {
@@ -389,7 +394,7 @@ namespace CoCoA
         ElimGens.push_back(NewToP(g));
     }
     return ElimGens;
-  }//ComputeElim
+  } // ComputeElim
 
 
   RingElem ComputeElimFirst(const PolyList& G, ConstRefPPMonoidElem inds,
@@ -596,18 +601,6 @@ namespace CoCoA
     }
     
     
-    bool AreEqualLPPsIter(std::vector<PolyList::const_iterator>& v1,
-                          std::vector<PolyList::const_iterator>& v2)
-    {  // Auxiliary: v1 and v2 have same length
-      stable_sort(v1.begin(), v1.end(), ByLPP);
-      stable_sort(v2.begin(), v2.end(), ByLPP);
-      const long len1 = len(v1);
-      for (int i=0; i!=len1; ++i)
-        if (LPP(*(v1[i])) != LPP(*(v2[i])))  return false;
-      return true;
-    }
-    
-    
     // Useful when you have I\subset J and you want to check I==J
     bool AreEqualLPPs(const PolyList& G1, const PolyList& G2)
     {
@@ -617,7 +610,12 @@ namespace CoCoA
         v1.push_back(it);
       for (PolyList::const_iterator it=G2.begin(); it!=G2.end(); ++it)
         v2.push_back(it);
-      return AreEqualLPPsIter(v1,v2);
+      stable_sort(v1.begin(), v1.end(), ByLPP);
+      stable_sort(v2.begin(), v2.end(), ByLPP);
+      const long len1 = len(v1);
+      for (int i=0; i!=len1; ++i)
+        if (LPP(*(v1[i])) != LPP(*(v2[i])))  return false;
+      return true;
     }
 
     
@@ -641,13 +639,11 @@ namespace CoCoA
       const PPMonoidElem t = power(indet(PPM(P),IndetIndex), pwr);
       RingElem ans(P);
       for (SparsePolyIter it=BeginIter(f); !IsEnded(it); ++it)
-      {
         PushBack(ans, coeff(it), PP(it)/t);
-      }
       return ans;
-    }  
+    }
 
-    
+
     PolyList ComputeSaturationHomogByPP(const PolyList& G,
                                         ConstRefPPMonoidElem t,
                                         const CpuTimeLimit& CheckForTimeout)
@@ -661,19 +657,18 @@ namespace CoCoA
       const long NumX = NumIndets(P);
       std::vector<symbol> names;  for (long i=0; i<NumX; ++i) { names.push_back(IndetSymbol(P,i)); }
       VERBOSE(90) << "GrDim = " << GrDim << "   W = " << GradingMat(P) << std::endl;
-      matrix WRL0 = NewDenseMat(ConcatVer(GradingMat(P), ZeroMat(RingZZ(), 1, NumIndets(P))));
+      matrix W0 = NewDenseMat(ConcatVer(GradingMat(P), ZeroMat(RingZZ(), 1, NumIndets(P))));
       PolyList tmpGens = G;
-      PolyList MinGens; // unused
       std::vector<long> expv = exponents(t);
       for (long i=0; i<NumIndets(P); ++i)
         if (expv[i] != 0)
         {
           VERBOSE(95) << "doing indet " << i << " = " << indet(P,i) << std::endl;
-          SetEntry(WRL0, GrDim,i, -1);
-          ring PzDegRevLex = NewPolyRing(K, names, NewMatrixOrdering(MakeTermOrdMat(WRL0), GrDim));
-          SetEntry(WRL0, GrDim,i, 0);
+          SetEntry(W0, GrDim,i, -1); // W0[GrDim,i] = -1
+          ring PzDegRevLex = NewPolyRing(K, names, NewMatrixOrdering(MakeTermOrdMat(W0), GrDim));
+          SetEntry(W0, GrDim,i, 0); // back to W0[GrDim,i] = 0
           RingHom phi = PolyAlgebraHom(owner(tmpGens[0]), PzDegRevLex, indets(PzDegRevLex));
-          ComputeGBasis2(tmpGens, MinGens, phi(tmpGens), CheckForTimeout);
+          tmpGens = ComputeGBasis(phi(tmpGens), CheckForTimeout);
           for (RingElem& g: tmpGens)  g = SatByIndet(g,i);
         }
       for (auto& g:tmpGens)
@@ -795,4 +790,4 @@ namespace CoCoA
   }
 
   
-}// end namespace cocoa
+} // end of namespace cocoa
