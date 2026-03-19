@@ -277,22 +277,9 @@ namespace CoCoA
     // some copies are unavoidable when deembedding
     // ComponentsLimit: the component in p that goes to the 0 component of the output vector v.
     // Lesser components of p go to higher component of v    
-    void DeEmbedPoly(ModuleElem& theOutputV,
-                     const GPoly& the_gp,
-                     const long ComponentsLimit)
-    {
-      const FreeModule FM=owner(theOutputV);
-      const GRingInfo& GRI=the_gp.myGRingInfo();
-      theOutputV=zero(FM);
-      const std::vector<ModuleElem>& e = gens(FM);
-      const RingHom& phi=GRI.myNewP2OldP();
-      for (SparsePolyIter i=BeginIter(poly(the_gp)); !IsEnded(i); ++i)
-        theOutputV+=phi(monomial(GRI.myNewSPR(),coeff(i),PP(i)))*
-                    e[GRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for cocoa4compatibility
-    } // DeEmbedPoly  theOutputV
 
 
-    ModuleElem DeEmbedPoly(ConstRefRingElem p,
+    ModuleElem DeEmbedPoly(ConstRefRingElem g,
                            const GRingInfo& theGRI,
                            const long ComponentsLimit) // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
     {
@@ -304,7 +291,7 @@ namespace CoCoA
       const std::vector<ModuleElem>& e = gens(FM);
       
       RingElem tmp(OldP);
-      for (SparsePolyIter i=BeginIter(p); !IsEnded(i); ++i)
+      for (SparsePolyIter i=BeginIter(g); !IsEnded(i); ++i)
       {
         tmp=theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
         CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit < NumCompts(FM));
@@ -314,15 +301,11 @@ namespace CoCoA
     }
 
 
-    void DeEmbedPoly(RingElem& theOutputP, const GPoly& the_gp)
-    { theOutputP = the_gp.myGRingInfo().myNewP2OldP()(poly(the_gp)); }
+    RingElem DeEmbedPolyToP(ConstRefRingElem g, const GRingInfo& theGRI)
+    { return theGRI.myNewP2OldP()(g); }
 
-    RingElem DeEmbedPolyToP(ConstRefRingElem p, const GRingInfo& theGRI)
-    { return theGRI.myNewP2OldP()(p); }
-
-    ModuleElem DeEmbedPoly(ConstRefRingElem p, const GRingInfo& theGRI)
-    { return DeEmbedPoly(p, theGRI, 0); }
-
+    ModuleElem DeEmbedPoly(ConstRefRingElem g, const GRingInfo& theGRI)
+    { return DeEmbedPoly(g, theGRI, 0); }
 
   } // namespace anonymous
 
@@ -1193,10 +1176,8 @@ Is is here only for completeness/debug purposes.
                                 const PolyList& thePL2,
                                 const GRingInfo& theGRI)
   {
-    //std::clog<<"ComputeColon: start "<<endl;
      GPolyList FirstPart;
-     if (thePL1.empty())
-       return FirstPart;
+     if (thePL1.empty())  return FirstPart;
      const SparsePolyRing NewP=theGRI.myNewSPR();
      FirstPart=EmbedPolyList(thePL1, theGRI, 0);
      GPoly GP1=EmbedPoly(thePL2.front(), theGRI, 0);
@@ -1204,41 +1185,36 @@ Is is here only for completeness/debug purposes.
      GPoly GP2=EmbedPoly(one(theGRI.myOldSPR()), theGRI, d, 1);
      GP1.myAppendClear(GP2);
      FirstPart.push_back(GP1);
-     //std::clog<<"ComputeColon: FirstPart "<<FirstPart<<endl;
-     //std::clog<<"ComputeColon: GP1 "<<GP1<<endl;
-     //std::clog<<"ComputeColon: end "<<endl;
      return FirstPart;
   } // ColonEmbedPolyLists
 
 
   // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
-  VectorList DeEmbedPolyList(const PolyList& PL,
+  VectorList DeEmbedPolyList(const PolyList& G,
                              const GRingInfo& theGRI,
                              const long ComponentsLimit)
   {
-    VectorList VL;
-    if (PL.empty()) return VL;
-    for (const RingElem& g: PL)
+    VectorList outVL;
+    if (G.empty())  return outVL;
+    for (const RingElem& g: G)
       if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-        VL.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
-    return VL;
-  } // DeEmbedPolyList
+        outVL.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
+    return outVL;
+  }
 
 
-  // Poly whose LPP has phony last var exponent < ComponentsLimit disappear on DeEmbedding
-  PolyList DeEmbedPolyListToPL(const PolyList& PL,
+  PolyList DeEmbedPolyListToPL(const PolyList& G,
                                const GRingInfo& theGRI,
                                const long ComponentsLimit)
   {
     VerboseLog VERBOSE("DeEmbedPolyListToPL");
     PolyList outPL;
-    if (PL.empty())
-      return outPL;
-    for (const RingElem& g: PL)
+    if (G.empty())  return outPL;
+    for (const RingElem& g: G)
       if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
       {
         VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
-        outPL.push_back(DeEmbedPolyToP(g,theGRI));
+        outPL.push_back(DeEmbedPolyToP(g, theGRI));
         // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
         // {
         //   outPL.clear();
@@ -1247,55 +1223,10 @@ Is is here only for completeness/debug purposes.
         // }
       }
     return outPL;
-  } // DeEmbedPolyList
-			
-      				
-    void DeEmbedPolyList(VectorList& theOutputVL,
-                          const GPolyList& theGPL)
-    { DeEmbedPolyList(theOutputVL,theGPL,0); }
+  }
 
 
-  // AMB 2026-02-05: I guess this one has never been called: test properly
-    void DeEmbedPolyList(VectorList& theOutputVL,
-                         const GPolyList& theGPL,
-                         const long ComponentsLimit)
-    // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
-    {
-      theOutputVL.clear();
-      if (theGPL.empty())  return;
-      const FreeModule FM=owner(theOutputVL[0]); // after theOutputVL.clear() ??? 
-      const GRingInfo& GRI(GetGRI(theGPL));
-      ModuleElem tmp(FM);
-      for (const GPoly& g: theGPL)
-      if (GRI.myComponent(LPPForDiv(g)) <= GRI.myComponent(ComponentsLimit))			
-       {
-         DeEmbedPoly(tmp,g,ComponentsLimit);
-         theOutputVL.push_back(tmp);
-       }
-    } // DeEmbedPolyList theOutputVL
-
-
-    void DeEmbedPolyList(PolyList& theOutputPL,
-                         const GPolyList& theGPL,
-                         const long ComponentsLimit) // Poly whose LPP has last var degree bigger than this number disappear on DeEmbedding
-    {
-       theOutputPL.clear();
-       if (theGPL.empty())
-         return;
-       const GRingInfo& GRI(GetGRI(theGPL));
-       RingElem tmp(GRI.myNewSPR());
-       for (const GPoly& g: theGPL)
-//       GPolyList::const_iterator it;
-//       for (it=theGPL.begin();it!=theGPL.end();++it)
-         if (GRI.myComponent(LPPForDiv(g)) <= GRI.myComponent(ComponentsLimit)) // Copies. Copying disappears when I work with GPolys 			
-         {
-           DeEmbedPoly(tmp,g);
-           theOutputPL.push_back(tmp);
-         }
-    } // DeEmbedPolyList theOutputPL
-
-
-    void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
+  void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
     {
       CoCoA_ASSERT(GetGRI(theGPL)==the_gp.myGRingInfo());
       const GRingInfo& GRI(the_gp.myGRingInfo());
