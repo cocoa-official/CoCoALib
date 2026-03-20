@@ -275,13 +275,13 @@ namespace CoCoA
   namespace { // anonymous    //-- DeEmbedding --------------------------
 
     // some copies are unavoidable when deembedding
-    // ComponentsLimit: the component in p that goes to the 0 component of the output vector v.
-    // Lesser components of p go to higher component of v    
+    // ComponentsLimit: the component in g that goes to the 0 component of the output vector v.
+    // Lesser components of g go to higher component of v    
 
 
     ModuleElem DeEmbedPoly(ConstRefRingElem g,
                            const GRingInfo& theGRI,
-                           const long ComponentsLimit) // the component in p that goes to the 0 component of the output vector v. Lesser components of p go to higher component of v
+                           const long ComponentsLimit)
     {
       const SparsePolyRing OldP=theGRI.myOldSPR();
       const SparsePolyRing NewP=theGRI.myNewSPR();
