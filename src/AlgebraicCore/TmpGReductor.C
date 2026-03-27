@@ -44,23 +44,23 @@
 #include "CoCoA/verbose.H"  // for VerboseLog
 //#include "CoCoA/utils.H" // for LongRange
 
-#include <algorithm>
-using std::for_each;
-#include <functional>
-using std::binary_function;
-using std::less;
-using std::mem_fun_ref; // for calling GPair::complete on GPairList
+//#include <algorithm>
+//using std::for_each;
+// #include <functional>
+// using std::binary_function;
+// using std::less;
+// using std::mem_fun_ref; // for calling GPair::complete on GPairList
 #include <iostream>
 using std::ostream;
 using std::endl;
 using std::flush;
-#include <list>
-using std::list;
+// #include <list>
+// using std::list;
 #include <sstream> // for ostringstream
 #include <utility>
 using std::make_pair;
 #include <vector>
-using std::vector;
+//using std::vector;
 
 //static bool ANNA_DEBUG = true;
 //static const bool MAX_DEBUG = false;
@@ -71,21 +71,19 @@ namespace CoCoA
   //  int GReductor::ourDefaultStatLevel = -1;
 
 
+  namespace{ // anonymous
 
-  const GRingInfo& GetGRI(const GPolyList& theGPL)
-  {
-    CoCoA_ASSERT(!theGPL.empty());
     return theGPL.begin()->myGRingInfo();
-  }
+    bool BoolCmpLPPGPoly(const GPoly& f, const GPoly& g)
+    {
+      CoCoA_ASSERT(!IsZero(f));//BUG HUNTING  ???
+      CoCoA_ASSERT(!IsZero(g));//BUG HUNTING  ???
+      //const PPMonoid& PPM1=PPM(owner(f));
+      return PPM(owner(f))->myCmp(raw(LPPForOrd(f)),raw(LPPForOrd(g)))>0;
+    }
 
+  } //   namespace anonymous
 
-  bool BoolCmpLPPGPoly(const GPoly& f, const GPoly& g)
-  {
-    CoCoA_ASSERT(!IsZero(f));//BUG HUNTING  ???
-    CoCoA_ASSERT(!IsZero(g));//BUG HUNTING  ???
-    //const PPMonoid& PPM1=PPM(owner(f));
-    return PPM(owner(f))->myCmp(raw(LPPForOrd(f)),raw(LPPForOrd(g)))>0;
-  }
 
   void GReductor::myCtorAux(const BuchbergerOpTypeFlag theBuchbergerOpType)
   //,                        const UseDynamicAlgFlag IsDynamic)
@@ -152,51 +150,43 @@ namespace CoCoA
   } // GReductor ctor
 
 
-  ostream& operator<<(ostream& out, const GReductor& GR)
-  {
-    if (!out) return out;  // short-cut for bad ostreams
 
-    out<<"The GROBNER REDUCTOR\n";
-    out<<"  Reductors Len="<<GR.myReductorsLen()
-        <<"  GB Len="<<GR.myGBasisLen()
-        <<"  Pairs Len="<<GR.myPairsLen()
-        <<"  Byte Size="<<sizeof(GR)<<"\n";
-    GR.myStampaReductors(out);
-    GR.myStampaGB(out);
-    GR.myStampaPairs(out);
-    out<<"\n";
-    out<<"The Ring"<<GR.myGRingInfoValue<<"\n";
-    out<<"GradingDim  is "<<GradingDim(GR.myGRingInfoValue.myNewSPR())<<endl;
-    out<<"The Ring Module Index "<<ModuleVarIndex(GR.myGRingInfoValue.myNewSPR())<<"\n";
-    out<<"Age "<< GR.myAgeValue <<"\n";
-    out<<"Preparation done? "<<GR.myPrepared<<"\n";
-    out<<"myOldDeg "<<GR.myOldDeg<<"\n";
-    out<<"myIncomingWDeg " << GR.myIncomingWDeg << "\n";
-    //    out<<"Is Dynamic Algorithm? "<<GR.IsDynamicAlgorithm<<"\n";
-    //    out<<"Is Wrong LPP been Found? "<<GR.myWrongLPPFoundValue<<"\n";
-    out<<"Cop Criterion " <<GR.myCriteria.myCoprime<<"\n";
-    out<<"GM Criteria "   <<GR.myCriteria.myGM<<"\n";
-    out<<"Back Criterion "<<GR.myCriteria.myBack<<"\n";
-    out<<"Div Criterion " <<GR.myCriteria.myDiv<<"\n";
-    out<<"Algorithm "<<GR.myBuchbergerOpType<<"\n";
-    out<<"\n";
-    return out;
-  }
-
-  // // Can be used if the Greductor has been updated. If not, you are missing the
-  // // Spoly
-  // void GReductor::GetCandidateGBasis(PolyList& thePL)const
+  // ostream& operator<<(ostream& out, const GReductor& GR)
   // {
-  //   PolyList PL;
-  //   for (auto& ptr: myGB)
-  //     if (IsActive(*ptr))  PL.push_back((*ptr).myPoly());
-  //   //if (!IsZero(mySPoly))
-  //   //  PL.push_back(GetSPoly().myPoly());
-  //   for (const auto& pair: myPairs)
-  //     if (pair.IsInputPoly())
-  //       PL.push_back(pair.myFirstGPoly().myPoly());
-  //   swap(PL,thePL);
-  // } // GetCandidateGBasis
+  //   if (!out) return out;  // short-cut for bad ostreams
+
+  //   out<<"The GROBNER REDUCTOR\n";
+  //   out<<"  Reductors Len="<<GR.myReductorsLen()
+  //       <<"  GB Len="<<GR.myGBasisLen()
+  //       <<"  Pairs Len="<<GR.myPairsLen()
+  //       <<"  Byte Size="<<sizeof(GR)<<"\n";
+  //   //    GR.myStampaReductors(out);
+  //   GR.myTrueReductors.myStampaReductors(out);
+  //   //    GR.myStampaGB(out);
+  //   out << "The GBASIS\n";
+  //   for (const auto& ptr: GR.myGB) out << *ptr << "," << endl;
+  //   out << endl;
+  //   //    GR.myStampaPairs(out);
+  //   out << "The PAIRS\n" << GR.myPairs << "\n";
+
+  //   out<<"\n";
+  //   out<<"The Ring"<<GR.myGRingInfoValue<<"\n";
+  //   out<<"GradingDim  is "<<GradingDim(GR.myGRingInfoValue.myNewSPR())<<endl;
+  //   out<<"The Ring Module Index "<<ModuleVarIndex(GR.myGRingInfoValue.myNewSPR())<<"\n";
+  //   out<<"Age "<< GR.myAgeValue <<"\n";
+  //   out<<"Preparation done? "<<GR.myPrepared<<"\n";
+  //   out<<"myOldDeg "<<GR.myOldDeg<<"\n";
+  //   out<<"myIncomingWDeg " << GR.myIncomingWDeg << "\n";
+  //   //    out<<"Is Dynamic Algorithm? "<<GR.IsDynamicAlgorithm<<"\n";
+  //   //    out<<"Is Wrong LPP been Found? "<<GR.myWrongLPPFoundValue<<"\n";
+  //   out<<"Cop Criterion " <<GR.myCriteria.myCoprime<<"\n";
+  //   out<<"GM Criteria "   <<GR.myCriteria.myGM<<"\n";
+  //   out<<"Back Criterion "<<GR.myCriteria.myBack<<"\n";
+  //   out<<"Div Criterion " <<GR.myCriteria.myDiv<<"\n";
+  //   out<<"Algorithm "<<GR.myBuchbergerOpType<<"\n";
+  //   out<<"\n";
+  //   return out;
+  // }
 
 
   namespace { // anonymous
@@ -215,45 +205,7 @@ namespace CoCoA
   } // namespace anonymous
 
 
-  void GReductor::myStampaGB(ostream& out)const
-  {
-    if (!out) return;  // short-cut for bad ostreams
-
-    out<<"The GBASIS\n";
-    for (const auto& ptr: myGB) out<<*ptr<<","<<endl;
-    out<<endl;
-  } // myStampaGB
-
-
-
-  void GReductor::myStampaPPGB(ostream& out)const
-  {
-    if (!out) return;  // short-cut for bad ostreams
-
-    out<<"The GBASIS\n";
-    for (const auto& ptr: myGB)
-      out << LPPForDiv(*ptr) << "," << endl;
-    out << endl;
-  } // myStampaPPGB
-
-
-  void GReductor::myStampaPairs(ostream& out)const
-  {
-    if (!out) return;  // short-cut for bad ostreams
-    out<<"The PAIRS\n"<<myPairs<<"\n";
-  } // myStampaPairs
-
-
-  void GReductor::myStampaReductors(ostream& out)const
-  {
-    if (!out) return;  // short-cut for bad ostreams
-
-    myTrueReductors.myStampaReductors(out);
-    out<<endl;
-  } // myStampaReductors
-
-
-// This procedure may be substituted by a transform_if
+  // This procedure may be substituted by a transform_if
   std::vector<RingElem> GReductor::myExportGBasis()
   {
     std::vector<RingElem> GB;
@@ -301,8 +253,8 @@ namespace CoCoA
     }
 
 
-    RingElem DeEmbedPolyToP(ConstRefRingElem g, const GRingInfo& theGRI)
-    { return theGRI.myNewP2OldP()(g); }
+    // RingElem DeEmbedPolyToP(ConstRefRingElem g, const GRingInfo& theGRI)
+    // { return theGRI.myNewP2OldP()(g); }
 
     ModuleElem DeEmbedPoly(ConstRefRingElem g, const GRingInfo& theGRI)
     { return DeEmbedPoly(g, theGRI, 0); }
@@ -310,22 +262,23 @@ namespace CoCoA
   } // namespace anonymous
 
 
-  void GReductor::myCopyGBasis_module(VectorList& outG)
+  std::vector<ModuleElem> GReductor::myExportGBasis_module()
   {
-    outG.clear();
-    if (myGB.empty()) return;
+    std::vector<ModuleElem>  outG;
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))
         outG.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
+    return outG;
   }
 
 
-  void GReductor::myCopyMinGens_module(VectorList& outG)
+  std::vector<ModuleElem> GReductor::myExportMinGens_module()
   {
-    outG.clear();
+    std::vector<ModuleElem>  outG;
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))
         outG.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
+    return outG;
   }
 
 
@@ -498,8 +451,7 @@ namespace CoCoA
     myBuildNewPairs(new_pairs);
     if (myCriteria.myBack)
       myApplyBCriterion();
-    for_each(new_pairs.begin(), new_pairs.end(), [](GPair& arg) { arg.myComplete(); });
-// ORIGINAL LINE   for_each(new_pairs.begin(), new_pairs.end(), mem_fun_ref(&GPair::myComplete));
+    for (auto& pair: new_pairs)  pair.myComplete();
     new_pairs.sort();
     myPairs.merge(new_pairs);
   }
@@ -709,9 +661,7 @@ namespace CoCoA
         } // if
         myUpdateBasisAndPairs();
         VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-        // if (!myPairs.empty())
         //   if (myIncomingWDeg!=myOldDeg&&myTrueReductors.IhaveBorelReductors())
-        //     myTrueReductors.myBorelReductorsUpdateInNextDegree();
       }
     } // while
     VERBOSE(100) << "--Final clean up ... " << endl;
@@ -792,7 +742,7 @@ namespace CoCoA
         {
           CheckForInterrupt(FnName);
           myGRingInfo().myCheckForTimeout(FnName);
-          vector<ReductorData>::iterator it1=myTrueReductors.find(*it);
+          std::vector<ReductorData>::iterator it1=myTrueReductors.find(*it);
           it1->mySetIamNotToBeUsed(true);
           if (FindReducer(**it, myTrueReductors) != nullptr)  // surely -->0
           //if (IsZero(**it))    //  remove it
@@ -817,8 +767,9 @@ namespace CoCoA
 
 
 //////////////////////////// Embedding/DeEmbedding /////////////////////
-
-
+// Used only in TmpGOperations -- where should they live?
+//----------------------------------------------------------------------
+  
 // returns the poly ring equivalent with OldP^2, same grading
 // The ordering is WDegPosnOrd if MOType==NoForcing or MOType
 // Called by intersection, colonbyprincipal
@@ -912,7 +863,6 @@ namespace CoCoA
 
     case WDegTOPos:
       // Part common to IsWDegPosnOrd and IsOrdPosn
-      //clog<<"MakeNewPRingFromModule:case OrdPosn"<<endl;
       // Setting the Grading: the OldGrading		
       for (long i=0; i < GrDim; ++i)			
         for (long j=0; j < NumOldInds; ++j)		
@@ -920,15 +870,12 @@ namespace CoCoA
       // Setting the Grading: the NewGrading		
       for (long i=0; i < GrDim; ++i)			
         SetEntry(NewOrdMat, i, i+NumOldInds, 1);
-      //clog<<"MakeNewPRingFromModule:the matrix graded "<<NewOrdMat<<endl;
       // Setting the TO	
       for (long i=GrDim; i < NumOldInds; ++i)
         for (long j=0; j < NumOldInds; ++j)
           SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
-      //clog<<"MakeNewPRingFromModule:the matrix TO "<<NewOrdMat<<endl;
       // Setting the module component ordering
       SetEntry(NewOrdMat, NumNewInds-1-GrDim, NumNewInds-1, 1); 	
-      //clog<<"MakeNewPRingFromModule:the matrix TO Pos "<<NewOrdMat<<endl;
       break;
 
     case WDegPosTO:; // This is the default
@@ -953,8 +900,6 @@ namespace CoCoA
     for (long i=0; i < GrDim; ++i)
       for (long j=0; j < NumOldInds; ++j)
         SetEntry(NewOrdMat, NumOldInds+i+1, j, OldOrdOMat(i,j));
-
-    //clog<<"MakeNewPRingFromModule:the matrix"<<NewOrdMat<<endl;
 
     const PPOrdering MatNewOrd = NewMatrixOrdering(NewOrdMat, GrDim);
 
@@ -1214,7 +1159,7 @@ Is is here only for completeness/debug purposes.
       if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
       {
         VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
-        outPL.push_back(DeEmbedPolyToP(g, theGRI));
+        outPL.push_back(theGRI.myNewP2OldP()(g));
         // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
         // {
         //   outPL.clear();
@@ -1228,8 +1173,8 @@ Is is here only for completeness/debug purposes.
 
   void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
     {
-      CoCoA_ASSERT(GetGRI(theGPL)==the_gp.myGRingInfo());
       const GRingInfo& GRI(the_gp.myGRingInfo());
+      CoCoA_ASSERT(theGPL.begin()->myGRingInfo()==GRI);
       const long NC = NumCompts(GRI.myFreeModule());
       RingElem tmp =  GRI.myE(NC)*GRI.myY(wdeg(the_gp)); // JAA 2012-10-11
       the_gp.myAppendClear(tmp);                         // JAA 2012-10-11
