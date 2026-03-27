@@ -101,9 +101,9 @@ public:
 
     std::vector<RingElem> myExportGBasis();
     std::vector<RingElem> myExportMinGens();
+    std::vector<ModuleElem> myExportGBasis_module();
+    std::vector<ModuleElem> myExportMinGens_module();
 
-    void myCopyGBasis_module(VectorList& outGBasis);
-    void myCopyMinGens_module(VectorList& outMinGens);
     void myDoAFFGBasis(); // I am working on sugar selection strategies
     void myDoGBasis();
 
@@ -118,12 +118,6 @@ public:
     static constexpr long ourNoTruncValue = -1;  // no GB truncation
     void myDoGBasisRealSolve();
     void myDoGBasisSelfSatCore(); ///< dehomog algorithm
-    void myStampaPPGB(std::ostream&)const; ///< print ?
-    void myStampaGB(std::ostream&)const; ///< print ?
-    void myStampaPairs(std::ostream&)const; ///< print ?
-    void myStampaReductors(std::ostream&)const; ///< print ?
-    void myStampaStats(std::ostream& out) const{myStat.myStampa(out);}; ///< print ?
-    friend std::ostream& operator<<(std::ostream& out, const GReductor& GR);
     const SparsePolyRing& myPRing()const{return myGRingInfoValue.myNewSPR();};
     const GRingInfo& myGRingInfo()const{return myGRingInfoValue;};
     void myCreateInputPolyPairs(GPolyList&);
@@ -165,7 +159,10 @@ public:
   };// End class GReductor
 
 
-   const GRingInfo& GetGRI(const GPolyList& theGPL);
+
+//////////////////////////// Embedding/DeEmbedding /////////////////////
+// Used only in TmpGOperations -- where should they live?
+//----------------------------------------------------------------------
 
     enum ModOrdTypeForcing {NoForcing, PosWDegTO, WDegTOPos, WDegPosTO};
     SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);
