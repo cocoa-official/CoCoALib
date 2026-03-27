@@ -73,7 +73,6 @@ namespace CoCoA
 
   namespace{ // anonymous
 
-    return theGPL.begin()->myGRingInfo();
     bool BoolCmpLPPGPoly(const GPoly& f, const GPoly& g)
     {
       CoCoA_ASSERT(!IsZero(f));//BUG HUNTING  ???
@@ -661,7 +660,6 @@ namespace CoCoA
         } // if
         myUpdateBasisAndPairs();
         VERBOSE_NewPolyInGB(VERBOSE, len(myGB), len(myPairs), mySPoly);
-        //   if (myIncomingWDeg!=myOldDeg&&myTrueReductors.IhaveBorelReductors())
       }
     } // while
     VERBOSE(100) << "--Final clean up ... " << endl;
