@@ -133,6 +133,14 @@ namespace CoCoA
   }
 
 
+  std::vector<RingElem> monic(const std::vector<RingElem>& F)
+  {
+    std::vector<RingElem> F_out;
+    for (const RingElem& f: F)  F_out.push_back(monic(f));
+    return F_out;
+  }
+
+  
   namespace // anonymous
   {
 
