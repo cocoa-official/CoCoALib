@@ -397,10 +397,8 @@ namespace CoCoA
   }
 
 
-  void MakeMonic(std::vector<RingElem>& v)
-  {
-    for (RingElem& g: v)  g = monic(g);  // might throw
-  }
+  // moved to PolyRing-content.C
+  // std::vector<RingElem> monic(const std::vector<RingElem>& F)
 
   
   RingHom CoeffEmbeddingHom(const PolyRing& Rx)
