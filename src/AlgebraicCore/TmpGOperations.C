@@ -324,8 +324,9 @@ namespace CoCoA
 
     std::vector<long> PPIndices(ConstRefPPMonoidElem t)
     {
-      std::vector<long> indices;  indices.reserve(len(tmp));
+      std::vector<long> indices;
       std::vector<long> tmp = exponents(t);
+      indices.reserve(len(tmp));
       for (long i=0; i < len(tmp); ++i)
         if (tmp[i]!=0)  indices.push_back(i);
       return indices;
