@@ -595,9 +595,9 @@ namespace CoCoA
       std::vector<PolyList::const_iterator> v1,v2;
       v1.reserve(len(G1));
       v2.reserve(len(G2));
-      for (const auto& it=G1.begin(); it!=G1.end(); ++it)
+      for (auto it=G1.begin(); it!=G1.end(); ++it)
         v1.push_back(it);
-      for (const auto& it=G2.begin(); it!=G2.end(); ++it)
+      for (auto it=G2.begin(); it!=G2.end(); ++it)
         v2.push_back(it);
       stable_sort(v1.begin(), v1.end(), ByLPP);
       stable_sort(v2.begin(), v2.end(), ByLPP);
