@@ -82,10 +82,9 @@ namespace CoCoA
       CoCoA_ASSERT(IsFractionFieldOfGCDDomain(CoeffRing(Kx)));
       CoCoA_ASSERT(BaseRing(CoeffRing(Kx)) == CoeffRing(Rx));
       CoCoA_ASSERT(ordering(PPM(Kx)) == ordering(PPM(Rx)));
-      std::vector<RingElem> F_Rx;
+      std::vector<RingElem> F_Rx;  F_Rx.reserve(len(F));
       RingElem f_Rx(Rx);
       std::vector<long> expv(NumIndets(Rx));
-      F_Rx.reserve(len(F));
       for (const RingElem& f: F)
       {
         const RingElem d(CommonDenom(f));
@@ -325,9 +324,8 @@ namespace CoCoA
 
     std::vector<long> PPIndices(ConstRefPPMonoidElem t)
     {
-      std::vector<long> indices;
+      std::vector<long> indices;  indices.reserve(len(tmp));
       std::vector<long> tmp = exponents(t);
-      indices.reserve(len(tmp));
       for (long i=0; i < len(tmp); ++i)
         if (tmp[i]!=0)  indices.push_back(i);
       return indices;
@@ -365,13 +363,11 @@ namespace CoCoA
     SparsePolyRing P_work=MakeElimRing(P, PPIndices(inds), HomogInput);
     RingHom PToNew = PolyAlgebraHom(P, P_work, indets(P_work));
     RingHom NewToP = PolyAlgebraHom(P_work, P, indets(P));
-    std::vector<RingElem> NewGens;
-    NewGens.reserve(len(G));
+    std::vector<RingElem> NewGens;  NewGens.reserve(len(G));
     for (const RingElem& g: G) NewGens.push_back(PToNew(g));
     PPMonoidElem ElimIndsProd(LPP(PToNew(monomial(P,inds))));
     std::vector<RingElem> GB = ComputeGBasis(NewGens, CheckForTimeout);
-    std::vector<RingElem> ElimGens;
-    NewGens.reserve(len(GB));
+    std::vector<RingElem> ElimGens;  ElimGens.reserve(len(GB));
     for (const RingElem& g: GB)
     {
       if ( IsConstant(g) ) // redmine #1647
@@ -598,9 +594,9 @@ namespace CoCoA
       std::vector<PolyList::const_iterator> v1,v2;
       v1.reserve(len(G1));
       v2.reserve(len(G2));
-      for (PolyList::const_iterator it=G1.begin(); it!=G1.end(); ++it)
+      for (const auto& it=G1.begin(); it!=G1.end(); ++it)
         v1.push_back(it);
-      for (PolyList::const_iterator it=G2.begin(); it!=G2.end(); ++it)
+      for (const auto& it=G2.begin(); it!=G2.end(); ++it)
         v2.push_back(it);
       stable_sort(v1.begin(), v1.end(), ByLPP);
       stable_sort(v2.begin(), v2.end(), ByLPP);
@@ -647,8 +643,7 @@ namespace CoCoA
       const ring& K = CoeffRing(P); // CoCoA_ASSERT(IsField(k));
       const long GrDim = GradingDim(P);
       const long NumX = NumIndets(P);
-      std::vector<symbol> names;
-      names.reserve(NumX);
+      std::vector<symbol> names;  names.reserve(NumX);
       for (long i=0; i<NumX; ++i)  names.push_back(IndetSymbol(P,i));
       VERBOSE(90) << "GrDim = " << GrDim << "   W = " << GradingMat(P) << std::endl;
       matrix W0 = NewDenseMat(ConcatVer(GradingMat(P), ZeroMat(RingZZ(), 1, NumIndets(P))));
@@ -768,8 +763,7 @@ namespace CoCoA
   {
     if (G.empty()) return G;
     RingElem IndetProd(product(HomogIndets));
-    std::vector<RingElem> tmpHGens;
-    tmpHGens.reserve(len(G));
+    std::vector<RingElem> tmpHGens;  tmpHGens.reserve(len(G));
     for (const RingElem& g: G)
       tmpHGens.push_back(homog(g, HomogIndets));
     return ComputeSaturationByPrincipal(tmpHGens,IndetProd,CheckForTimeout);

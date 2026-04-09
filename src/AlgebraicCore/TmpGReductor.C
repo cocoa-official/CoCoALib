@@ -204,8 +204,7 @@ namespace CoCoA
   // This procedure may be substituted by a transform_if
   std::vector<RingElem> GReductor::myExportGBasis()
   {
-    std::vector<RingElem> GB;
-    GB.reserve(len(myGB));
+    std::vector<RingElem> GB;  GB.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))  GB.push_back(poly(*ptr));
     return GB;
@@ -214,8 +213,7 @@ namespace CoCoA
 
   std::vector<RingElem> GReductor::myExportMinGens()
   {
-    std::vector<RingElem> G;
-    G.reserve(len(myGB));
+    std::vector<RingElem> G;  G.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))  G.push_back(poly(*ptr));
     return G;
@@ -262,8 +260,7 @@ namespace CoCoA
 
   std::vector<ModuleElem> GReductor::myExportGBasis_module()
   {
-    std::vector<ModuleElem>  G;
-    G.reserve(len(myGB));
+    std::vector<ModuleElem> G;  G.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))
         G.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
@@ -273,8 +270,7 @@ namespace CoCoA
 
   std::vector<ModuleElem> GReductor::myExportMinGens_module()
   {
-    std::vector<ModuleElem>  G;
-    G.reserve(len(myGB));
+    std::vector<ModuleElem> G;  G.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))
         G.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
@@ -1078,15 +1074,14 @@ Is is here only for completeness/debug purposes.
   }
 
 
-  GPolyList IntEmbedVectorLists(const std::vector<ModuleElem>& theVL1,
-                                const std::vector<ModuleElem>& theVL2,
+  GPolyList IntEmbedVectorLists(const std::vector<ModuleElem>& G1,
+                                const std::vector<ModuleElem>& G2,
                                 const GRingInfo& theGRI)
   {
-    const long NC = NumCompts(owner(theVL1[0]));
-    //const SparsePolyRing NewP=theGRI.myNewSPR();
-    GPolyList FirstPart=EmbedVectorList(theVL1, theGRI);
-    GPolyList SecondPart=EmbedVectorList(theVL2, theGRI);
-    GPolyList ThirdPart=EmbedVectorList(theVL2, theGRI, NC);
+    const long NC = NumCompts(owner(G1[0]));
+    GPolyList FirstPart = EmbedVectorList(G1, theGRI);
+    GPolyList SecondPart = EmbedVectorList(G2, theGRI);
+    GPolyList ThirdPart = EmbedVectorList(G2, theGRI, NC);
     GPolyList::iterator it1=ThirdPart.begin();
     for (GPolyList::iterator it=SecondPart.begin();it!=SecondPart.end();++it,++it1)
       (*it).myAppendClear(*it1);
@@ -1100,29 +1095,25 @@ Is is here only for completeness/debug purposes.
                                   const GRingInfo& theGRI)
   {
     GPolyList FirstPart;
-    if (VL.empty())
-      return FirstPart;
-    const long NC = NumCompts(owner(VL[0]));
+    if (VL.empty())  return FirstPart;
     FirstPart = EmbedVectorList(VL, theGRI);
     GPoly GP1 = EmbedVector(v, theGRI);
-    degree d = wdeg(v);
-    GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, d, NC);
+    GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(v), NumCompts(owner(v)));
     GP1.myAppendClear(GP2);
     FirstPart.push_back(GP1);
     return FirstPart;
   }
 
 
-  GPolyList ColonEmbedPolyLists(const std::vector<RingElem>& F,
+  GPolyList ColonEmbedPolyLists(const std::vector<RingElem>& G,
                                 const RingElem& f,
                                 const GRingInfo& theGRI)
   {
      GPolyList FirstPart;
-     if (F.empty())  return FirstPart;
-     FirstPart = EmbedPolyList(F, theGRI, 0);
+     if (G.empty())  return FirstPart;
+     FirstPart = EmbedPolyList(G, theGRI, 0);
      GPoly GP1 = EmbedPoly(f, theGRI, 0);
-     degree d = wdeg(f);
-     GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, d, 1);
+     GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(f), 1);
      GP1.myAppendClear(GP2);
      FirstPart.push_back(GP1);
      return FirstPart;
