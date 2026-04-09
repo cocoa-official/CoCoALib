@@ -199,12 +199,12 @@ public:
                                 const GRingInfo& theGRI);
  			
   // The special poly embedding used in colon computations
-    GPolyList ColonEmbedVectorLists(const VectorList& VL1,
-                                    const VectorList& VL2,
+    GPolyList ColonEmbedVectorLists(const VectorList& VL,
+                                    const ModuleElem& v,
                                     const GRingInfo& theGRI);
 				
-    GPolyList ColonEmbedPolyLists(const PolyList& PL1,
-                                  const PolyList& PL2,
+    GPolyList ColonEmbedPolyLists(const PolyList& F,
+                                  const RingElem& f,
                                   const GRingInfo& theGRI);
 
     void SyzEmbedGPolyList(GPolyList& theGPL);

@@ -100,7 +100,7 @@ namespace CoCoA
 
 
   GReductor::GReductor(const GRingInfo& theGRI,
-                       const PolyList& TheInputPolys,
+                       const std::vector<RingElem>& F,
                        const BuchbergerOpTypeFlag theBuchbergerOpType,
                        const GBCriteria criteria):
       myGRingInfoValue(theGRI),
@@ -108,16 +108,13 @@ namespace CoCoA
       mySPoly(theGRI),
       myOldDeg(GradingDim(theGRI.myNewSPR())),
       myIncomingWDeg(GradingDim(theGRI.myNewSPR())),
-      myStat(len(TheInputPolys)),
+      myStat(len(F)),
       myCriteria(criteria)
   {
     myCtorAux(theBuchbergerOpType);
-
-    for (const RingElem& g: TheInputPolys)
-    {
+    for (const RingElem& g: F)
       if (!IsZero(g))
-        myPolys.push_back(GPoly(g,myGRingInfoValue));
-    }
+        myPolys.push_back(GPoly(g,myGRingInfoValue)); // list
     myPolys.sort(BoolCmpLPPGPoly);
     myTruncDegValue = ourNoTruncValue;
   } //  GReductor ctor
@@ -207,7 +204,7 @@ namespace CoCoA
   // This procedure may be substituted by a transform_if
   std::vector<RingElem> GReductor::myExportGBasis()
   {
-    std::vector<RingElem> GB;
+    std::vector<RingElem> GB;  GB.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))  GB.push_back(poly(*ptr));
     return GB;
@@ -216,7 +213,7 @@ namespace CoCoA
 
   std::vector<RingElem> GReductor::myExportMinGens()
   {
-    std::vector<RingElem> G;
+    std::vector<RingElem> G;  G.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))  G.push_back(poly(*ptr));
     return G;
@@ -263,21 +260,21 @@ namespace CoCoA
 
   std::vector<ModuleElem> GReductor::myExportGBasis_module()
   {
-    std::vector<ModuleElem>  outG;
+    std::vector<ModuleElem> G;  G.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsActive(*ptr))
-        outG.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
-    return outG;
+        G.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
+    return G;
   }
 
 
   std::vector<ModuleElem> GReductor::myExportMinGens_module()
   {
-    std::vector<ModuleElem>  outG;
+    std::vector<ModuleElem> G;  G.reserve(len(myGB));
     for (const auto& ptr: myGB)
       if (IsMinimalGen(*ptr))
-        outG.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
-    return outG;
+        G.push_back(DeEmbedPoly(poly(*ptr), myGRingInfoValue));
+    return G;
   }
 
 
@@ -936,7 +933,7 @@ namespace CoCoA
     }
 
 
-    GPolyList EmbedPolyList(const PolyList& F,
+    GPolyList EmbedPolyList(const std::vector<RingElem>& F,
                             const GRingInfo& GRI,
                             const long CompIndex)
     {
@@ -947,7 +944,7 @@ namespace CoCoA
     }
 
 
-    GPolyList EmbedPolyListNo0(const PolyList& F,
+    GPolyList EmbedPolyListNo0(const std::vector<RingElem>& F,
                                const GRingInfo& GRI,
                                const long CompIndex)
     {
@@ -989,11 +986,11 @@ Is is here only for completeness/debug purposes.
   } // namespace // anonymous
 
 
-  GPolyList EmbedVectorList(const VectorList& VL, const GRingInfo& GRI)
+  GPolyList EmbedVectorList(const std::vector<ModuleElem>& VL, const GRingInfo& GRI)
   { return EmbedVectorList(VL, GRI, 0); }
 
 
-  GPolyList EmbedVectorList(const VectorList& VL,
+  GPolyList EmbedVectorList(const std::vector<ModuleElem>& VL,
                             const GRingInfo& theGRI,
                             const long StartingFromCompIndex)
   {
@@ -1006,7 +1003,7 @@ Is is here only for completeness/debug purposes.
   } // EmbedVectorList		
 
 
-  GPolyList SyzEmbedVectorList(const VectorList& InputVectorList,
+  GPolyList SyzEmbedVectorList(const std::vector<ModuleElem>& InputVectorList,
                                const GRingInfo& GRI)
   {
     GPolyList outPL;
@@ -1031,13 +1028,13 @@ Is is here only for completeness/debug purposes.
   } // SyzEmbedVectorList
 
 
-  GPolyList SyzEmbedPolyList(const PolyList& InputPolyList,
+  GPolyList SyzEmbedPolyList(const std::vector<RingElem>& F,
                              const GRingInfo& theGRI)
   {
     GPolyList outPL;
-    if (InputPolyList.empty())  return outPL;
+    if (F.empty())  return outPL;
     const SparsePolyRing NewP=theGRI.myNewSPR();
-    outPL=EmbedPolyList(InputPolyList, theGRI, 0);
+    outPL = EmbedPolyList(F, theGRI, 0);
     RingElem SyzPP(NewP); // Gives the right degree to p+E^i
     degree d(GradingDim(NewP));
     long k=1;
@@ -1062,102 +1059,95 @@ Is is here only for completeness/debug purposes.
   } // SyzEmbedPolyList
 
 
-  GPolyList IntEmbedPolyLists(const PolyList& PL1,
-                              const PolyList& PL2,
+  GPolyList IntEmbedPolyLists(const std::vector<RingElem>& F1,
+                              const std::vector<RingElem>& F2,
                               const GRingInfo& GRI)
   {
-    GPolyList Part1 = EmbedPolyListNo0(PL1, GRI, 0);
-    GPolyList Part2 = EmbedPolyListNo0(PL2, GRI, 0);
-    GPolyList Part3 = EmbedPolyListNo0(PL2, GRI, 1);
+    GPolyList Part1 = EmbedPolyListNo0(F1, GRI, 0);
+    GPolyList Part2 = EmbedPolyListNo0(F2, GRI, 0);
+    GPolyList Part3 = EmbedPolyListNo0(F2, GRI, 1);
     GPolyList::iterator it3=Part3.begin();
     for (GPolyList::iterator it2=Part2.begin(); it2!=Part2.end(); ++it2,++it3)
       (*it2).myAppendClear(*it3);
     Part2.splice(Part2.begin(), Part1);
     return Part2;
-  } // IntEmbedPolyLists
+  }
 
 
-  GPolyList IntEmbedVectorLists(const VectorList& theVL1,
-                                const VectorList& theVL2,
+  GPolyList IntEmbedVectorLists(const std::vector<ModuleElem>& G1,
+                                const std::vector<ModuleElem>& G2,
                                 const GRingInfo& theGRI)
   {
-    const long NC = NumCompts(owner(theVL1[0]));
-    //const SparsePolyRing NewP=theGRI.myNewSPR();
-    GPolyList FirstPart=EmbedVectorList(theVL1, theGRI);
-    GPolyList SecondPart=EmbedVectorList(theVL2, theGRI);
-    GPolyList ThirdPart=EmbedVectorList(theVL2, theGRI, NC);
+    const long NC = NumCompts(owner(G1[0]));
+    GPolyList FirstPart = EmbedVectorList(G1, theGRI);
+    GPolyList SecondPart = EmbedVectorList(G2, theGRI);
+    GPolyList ThirdPart = EmbedVectorList(G2, theGRI, NC);
     GPolyList::iterator it1=ThirdPart.begin();
     for (GPolyList::iterator it=SecondPart.begin();it!=SecondPart.end();++it,++it1)
       (*it).myAppendClear(*it1);
     SecondPart.splice(SecondPart.begin(),FirstPart);
     return SecondPart;
-  } // IntEmbedVectorLists
-
-
-  // VL2 is a singleton
-  GPolyList ColonEmbedVectorLists(const VectorList& theVL1,
-                                  const VectorList& theVL2,
-                                  const GRingInfo& theGRI)
-  {
-    GPolyList FirstPart;
-    if (theVL1.empty())
-      return FirstPart;
-    const long NC = NumCompts(owner(theVL1[0]));
-    // const SparsePolyRing NewP=theGRI.myNewSPR();
-    FirstPart=EmbedVectorList(theVL1, theGRI);
-    GPoly GP1=EmbedVector(theVL2.front(), theGRI);
-    degree d=wdeg(theVL2.front());
-    GPoly GP2=EmbedPoly(one(theGRI.myOldSPR()), theGRI, d, NC);
-    GP1.myAppendClear(GP2);
-    FirstPart.push_back(GP1);
-    return FirstPart;
-  } // ColonEmbedVectorLists
-
-
-  // PL2 is a singleton
-  GPolyList ColonEmbedPolyLists(const PolyList& thePL1,
-                                const PolyList& thePL2,
-                                const GRingInfo& theGRI)
-  {
-     GPolyList FirstPart;
-     if (thePL1.empty())  return FirstPart;
-     const SparsePolyRing NewP=theGRI.myNewSPR();
-     FirstPart=EmbedPolyList(thePL1, theGRI, 0);
-     GPoly GP1=EmbedPoly(thePL2.front(), theGRI, 0);
-     degree d=wdeg(thePL2.front());
-     GPoly GP2=EmbedPoly(one(theGRI.myOldSPR()), theGRI, d, 1);
-     GP1.myAppendClear(GP2);
-     FirstPart.push_back(GP1);
-     return FirstPart;
-  } // ColonEmbedPolyLists
-
-
-  // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
-  VectorList DeEmbedPolyList(const PolyList& G,
-                             const GRingInfo& theGRI,
-                             const long ComponentsLimit)
-  {
-    VectorList outVL;
-    if (G.empty())  return outVL;
-    for (const RingElem& g: G)
-      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-        outVL.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
-    return outVL;
   }
 
 
-  PolyList DeEmbedPolyListToPL(const PolyList& G,
-                               const GRingInfo& theGRI,
-                               const long ComponentsLimit)
+  GPolyList ColonEmbedVectorLists(const std::vector<ModuleElem>& VL,
+                                  const ModuleElem& v,
+                                  const GRingInfo& theGRI)
+  {
+    GPolyList FirstPart;
+    if (VL.empty())  return FirstPart;
+    FirstPart = EmbedVectorList(VL, theGRI);
+    GPoly GP1 = EmbedVector(v, theGRI);
+    GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(v), NumCompts(owner(v)));
+    GP1.myAppendClear(GP2);
+    FirstPart.push_back(GP1);
+    return FirstPart;
+  }
+
+
+  GPolyList ColonEmbedPolyLists(const std::vector<RingElem>& G,
+                                const RingElem& f,
+                                const GRingInfo& theGRI)
+  {
+     GPolyList FirstPart;
+     if (G.empty())  return FirstPart;
+     FirstPart = EmbedPolyList(G, theGRI, 0);
+     GPoly GP1 = EmbedPoly(f, theGRI, 0);
+     GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(f), 1);
+     GP1.myAppendClear(GP2);
+     FirstPart.push_back(GP1);
+     return FirstPart;
+  }
+
+
+  // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
+  std::vector<ModuleElem> DeEmbedPolyList(const std::vector<RingElem>& G,
+                                          const GRingInfo& theGRI,
+                                          const long ComponentsLimit)
+  {
+    std::vector<ModuleElem> G_out;
+    if (G.empty())  return G_out;
+    G_out.reserve(len(G));
+    for (const RingElem& g: G)
+      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+        G_out.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
+    return G_out;
+  }
+
+
+  std::vector<RingElem> DeEmbedPolyListToPL(const std::vector<RingElem>& G,
+                                            const GRingInfo& theGRI,
+                                            const long ComponentsLimit)
   {
     VerboseLog VERBOSE("DeEmbedPolyListToPL");
-    PolyList outPL;
-    if (G.empty())  return outPL;
+    std::vector<RingElem> G_out;
+    if (G.empty())  return G_out;
+    G_out.reserve(len(G));
     for (const RingElem& g: G)
       if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
       {
         VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
-        outPL.push_back(theGRI.myNewP2OldP()(g));
+        G_out.push_back(theGRI.myNewP2OldP()(g));
         // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
         // {
         //   outPL.clear();
@@ -1165,7 +1155,7 @@ Is is here only for completeness/debug purposes.
         //   break;
         // }
       }
-    return outPL;
+    return G_out;
   }
 
 
