@@ -223,7 +223,7 @@ namespace CoCoA
   namespace { // anonymous    //-- DeEmbedding --------------------------
 
     // identical copy for this function in TmpGOperations:
-    // this is only for DeEmbedPoly define just below
+    // this copy is only for fn DeEmbedPoly(g, GRI) defined just below
     ModuleElem DeEmbedPolyAux(ConstRefRingElem g,
                               const GRingInfo& theGRI,
                               const long ComponentsLimit)
