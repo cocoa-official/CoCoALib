@@ -225,10 +225,10 @@ public:
                                  const GRingInfo& theGRI,
                                  const long ComponentsLimit);
 
-    RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& the_Y); ///< hp = hom(p,y) in the ring with the y's
-    void homogenized(ModuleElem& the_hv,
-                     const ModuleElem& the_v,
-                     const GRingInfo& theGRI);
+    // RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& the_Y); ///< hp = hom(p,y) in the ring with the y's
+    // void homogenized(ModuleElem& the_hv,
+    //                  const ModuleElem& the_v,
+    //                  const GRingInfo& theGRI);
 
 
 }// end namespace cocoa

@@ -469,6 +469,45 @@ namespace CoCoA
     }
 
 
+    ////////////////////////////////////////////
+    // homog....
+    // from TmpGReductor 2026-04-10
+    ////////////////////////////////////
+
+    // The ordering is supposed to be Deg compatible
+    RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& theY)
+    {
+      const SparsePolyRing SPR=owner(the_p);
+      if (GradingDim(SPR) != len(theY))
+        CoCoA_THROW_ERROR2(ERR::BadArg, "incompatible GradingDim");
+      RingElem the_hp(SPR);
+      RingElem tmp(SPR);
+      degree MaxDeg(GradingDim(SPR));
+      degree TmpDeg(GradingDim(SPR));
+      // Compute the maximum degree
+      for (SparsePolyIter it=BeginIter(the_p);!IsEnded(it);++it)
+        MaxDeg=top(MaxDeg,wdeg(PP(it)));
+      // Homogenizing
+      for (SparsePolyIter it=BeginIter(the_p);!IsEnded(it);++it)
+      {
+        //std::clog<<"Homogenized:tmp"<<tmp<<endl;
+        tmp = monomial(SPR,coeff(it),PP(it));
+        TmpDeg=wdeg(PP(it));
+        for (long i=0; i != len(theY); ++i)
+          tmp*=power(theY[i],(MaxDeg[i]-TmpDeg[i]));
+        SPR->myAddClear(raw(the_hp), raw(tmp));
+      }
+      return the_hp;
+    } // homog (multihomog)
+
+
+    void homogenized(ModuleElem& /*the_hv*/,
+                     const ModuleElem& /*the_v*/,
+                     const GRingInfo& /*theGRI*/)
+    {
+      CoCoA_THROW_ERROR1(ERR::NYI);
+    } // homogenized
+
 
   } // namespace // anonymous ----------------------------------------------
       
