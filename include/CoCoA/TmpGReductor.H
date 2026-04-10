@@ -164,12 +164,12 @@ public:
 // Used only in TmpGOperations -- where should they live?
 //----------------------------------------------------------------------
 
-    enum ModOrdTypeForcing {NoForcing, PosWDegTO, WDegTOPos, WDegPosTO};
-    SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);
-    SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM, ModOrdTypeForcing MOType);
-    SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& theOldP, ModOrdTypeForcing MOType);
-    SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM, bool HomogInput);
-    SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP, bool HomogInput);
+    // enum ModOrdTypeForcing {NoForcing, PosWDegTO, WDegTOPos, WDegPosTO};
+    // SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);
+    // SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM, ModOrdTypeForcing MOType);
+    // SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& theOldP, ModOrdTypeForcing MOType);
+    // SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM, bool HomogInput);
+    // SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP, bool HomogInput);
 
    // Embed theVL
     GPolyList EmbedVectorList(const VectorList& theVL,

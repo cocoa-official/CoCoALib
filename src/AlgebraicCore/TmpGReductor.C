@@ -25,7 +25,7 @@
 #include "CoCoA/MatrixForOrdering.H"
 #include "CoCoA/MatrixOps.H"
 #include "CoCoA/MatrixView.H"
-#include "CoCoA/ModuleOrdering.H"
+//#include "CoCoA/ModuleOrdering.H"
 #include "CoCoA/RingDistrMPolyInlFpPP.H"
 #include "CoCoA/RingDistrMPolyInlPP.H"
 #include "CoCoA/RingFp.H" // for dynamic_cast<RingFpImpl*>(CoeffRing.myRingPtr())
@@ -765,151 +765,151 @@ namespace CoCoA
 // Used only in TmpGOperations -- where should they live?
 //----------------------------------------------------------------------
   
-// returns the poly ring equivalent with OldP^2, same grading
-// The ordering is WDegPosnOrd if MOType==NoForcing or MOType
-// Called by intersection, colonbyprincipal
-  SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP,
-                                         bool HomogInput)
-  {
-    if (HomogInput) return MakeNewPRingForP2(OldP, WDegPosTO);
-    else return MakeNewPRingForP2(OldP, PosWDegTO);
-  }
+// // returns the poly ring equivalent with OldP^2, same grading
+// // The ordering is WDegPosnOrd if MOType==NoForcing or MOType
+// // Called by intersection, colonbyprincipal
+//   SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP,
+//                                          bool HomogInput)
+//   {
+//     if (HomogInput) return MakeNewPRingForP2(OldP, WDegPosTO);
+//     else return MakeNewPRingForP2(OldP, PosWDegTO);
+//   }
 
 
-// Called by syz, indirectly by intersection, colonbyprincipal (ideal)
-  SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& OldP,
-                                   ModOrdTypeForcing MOType)
-  {
-    std::vector<degree> InputShifts;
-    degree tmp(GradingDim(OldP));
-    InputShifts.push_back(tmp);
-    InputShifts.push_back(tmp);
-    const FreeModule FM=NewFreeModule(OldP, InputShifts, WDegPosnOrd);
-    return MakeNewPRingFromModule(FM, MOType);
-  }
+// // Called by syz, indirectly by intersection, colonbyprincipal (ideal)
+//   SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& OldP,
+//                                    ModOrdTypeForcing MOType)
+//   {
+//     std::vector<degree> InputShifts;
+//     degree tmp(GradingDim(OldP));
+//     InputShifts.push_back(tmp);
+//     InputShifts.push_back(tmp);
+//     const FreeModule FM=NewFreeModule(OldP, InputShifts, WDegPosnOrd);
+//     return MakeNewPRingFromModule(FM, MOType);
+//   }
 
 
-  // Called by ComputeGBasis2 (module), ComputeSyz (module), ComputeColonByPrincipal (module)
-  SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM)
-  { return MakeNewPRingFromModule(FM, NoForcing); }
+//   // Called by ComputeGBasis2 (module), ComputeSyz (module), ComputeColonByPrincipal (module)
+//   SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM)
+//   { return MakeNewPRingFromModule(FM, NoForcing); }
 
 
-  // Called by ComputeIntersection (module)
-  SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM,
-                                              bool HomogInput)
-  {
-    if (HomogInput) return MakeNewPRingFromModule(FM, WDegPosTO);
-    else            return MakeNewPRingFromModule(FM, PosWDegTO);
-  }
+//   // Called by ComputeIntersection (module)
+//   SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM,
+//                                               bool HomogInput)
+//   {
+//     if (HomogInput) return MakeNewPRingFromModule(FM, WDegPosTO);
+//     else            return MakeNewPRingFromModule(FM, PosWDegTO);
+//   }
 
 
-  namespace { // anonymous
+//   namespace { // anonymous
 
-    ModOrdTypeForcing ModuleOrderType(const FreeModule& M)
-    {
-      if (IsOrdPosn(ordering(M))) return WDegTOPos;
-      if (IsWDegPosnOrd(ordering(M))) return WDegPosTO;
-      return PosWDegTO;
-    } // ModOrdType
+//     ModOrdTypeForcing ModuleOrderType(const FreeModule& M)
+//     {
+//       if (IsOrdPosn(ordering(M))) return WDegTOPos;
+//       if (IsWDegPosnOrd(ordering(M))) return WDegPosTO;
+//       return PosWDegTO;
+//     } // ModOrdType
 
-  } // namespace  // anonymous
+//   } // namespace  // anonymous
   
   
-// This is OK for the non-homogeneous case
-// For the homogenous case, PosTo this is inefficient, since
-// the Deg rows in the To part are useless.
-  SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM,
-                                        ModOrdTypeForcing MOType)
-  {
-    const ModuleOrdering MTO = ordering(FM);
-    const SparsePolyRing OldP=RingOf(FM);
-    const long NumOldInds=NumIndets(OldP);
-    long GrDim;
-    if (MOType==PosWDegTO)
-      GrDim=0;// Set simple sugar on
-    else
-      GrDim=GradingDim(OldP);
-    const long NumNewInds=NumOldInds+GrDim+1;
+// // This is OK for the non-homogeneous case
+// // For the homogenous case, PosTo this is inefficient, since
+// // the Deg rows in the To part are useless.
+//   SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM,
+//                                         ModOrdTypeForcing MOType)
+//   {
+//     const ModuleOrdering MTO = ordering(FM);
+//     const SparsePolyRing OldP=RingOf(FM);
+//     const long NumOldInds=NumIndets(OldP);
+//     long GrDim;
+//     if (MOType==PosWDegTO)
+//       GrDim=0;// Set simple sugar on
+//     else
+//       GrDim=GradingDim(OldP);
+//     const long NumNewInds=NumOldInds+GrDim+1;
 
-    ConstMatrixView OldOrdOMat = OrdMat(OldP);
+//     ConstMatrixView OldOrdOMat = OrdMat(OldP);
 
-    matrix NewOrdMat(NewDenseMat(RingZZ(), NumNewInds, NumNewInds));
-    ////std::clog<<"NewOrdMat starts as "<<NewOrdMat<<std::endl;
-    if (MOType == NoForcing)  MOType = ModuleOrderType(FM);
+//     matrix NewOrdMat(NewDenseMat(RingZZ(), NumNewInds, NumNewInds));
+//     ////std::clog<<"NewOrdMat starts as "<<NewOrdMat<<std::endl;
+//     if (MOType == NoForcing)  MOType = ModuleOrderType(FM);
 
-    switch (MOType)
-    {
-    case PosWDegTO:
-      // Setting the module component ordering
-      SetEntry(NewOrdMat, 0, NumNewInds-1, 1); 	
-      // Part common to IsWDegPosnOrd and IsOrdPosn
-      // Setting the Grading: the OldGrading		
-      for (long i=0; i < GrDim+1; ++i)			
-        for (long j=0; j < NumOldInds; ++j)		
-          SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
-      // Setting the Grading: the NewGrading		
-      for (long i=1; i < GrDim+1; ++i)			
-        SetEntry(NewOrdMat, i, i+NumOldInds-1, 1); 	
-      // Setting the TO ordering
-      for (long i=GrDim; i < NumOldInds; ++i)
-        for (long j=0; j < NumOldInds; ++j)
-          SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
-      break;
+//     switch (MOType)
+//     {
+//     case PosWDegTO:
+//       // Setting the module component ordering
+//       SetEntry(NewOrdMat, 0, NumNewInds-1, 1); 	
+//       // Part common to IsWDegPosnOrd and IsOrdPosn
+//       // Setting the Grading: the OldGrading		
+//       for (long i=0; i < GrDim+1; ++i)			
+//         for (long j=0; j < NumOldInds; ++j)		
+//           SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
+//       // Setting the Grading: the NewGrading		
+//       for (long i=1; i < GrDim+1; ++i)			
+//         SetEntry(NewOrdMat, i, i+NumOldInds-1, 1); 	
+//       // Setting the TO ordering
+//       for (long i=GrDim; i < NumOldInds; ++i)
+//         for (long j=0; j < NumOldInds; ++j)
+//           SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
+//       break;
 
-    case WDegTOPos:
-      // Part common to IsWDegPosnOrd and IsOrdPosn
-      // Setting the Grading: the OldGrading		
-      for (long i=0; i < GrDim; ++i)			
-        for (long j=0; j < NumOldInds; ++j)		
-          SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
-      // Setting the Grading: the NewGrading		
-      for (long i=0; i < GrDim; ++i)			
-        SetEntry(NewOrdMat, i, i+NumOldInds, 1);
-      // Setting the TO	
-      for (long i=GrDim; i < NumOldInds; ++i)
-        for (long j=0; j < NumOldInds; ++j)
-          SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
-      // Setting the module component ordering
-      SetEntry(NewOrdMat, NumNewInds-1-GrDim, NumNewInds-1, 1); 	
-      break;
+//     case WDegTOPos:
+//       // Part common to IsWDegPosnOrd and IsOrdPosn
+//       // Setting the Grading: the OldGrading		
+//       for (long i=0; i < GrDim; ++i)			
+//         for (long j=0; j < NumOldInds; ++j)		
+//           SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
+//       // Setting the Grading: the NewGrading		
+//       for (long i=0; i < GrDim; ++i)			
+//         SetEntry(NewOrdMat, i, i+NumOldInds, 1);
+//       // Setting the TO	
+//       for (long i=GrDim; i < NumOldInds; ++i)
+//         for (long j=0; j < NumOldInds; ++j)
+//           SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
+//       // Setting the module component ordering
+//       SetEntry(NewOrdMat, NumNewInds-1-GrDim, NumNewInds-1, 1); 	
+//       break;
 
-    case WDegPosTO:; // This is the default
-    default:
-      // Part common to IsWDegPosnOrd and IsOrdPosn
-      // Setting the Grading: the OldGrading		
-      for (long i=0; i < GrDim; ++i)			
-        for (long j=0; j < NumOldInds; ++j)		
-          SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
-    // Setting the Grading: the NewGrading		
-    for (long i=0; i < GrDim; ++i)			
-      SetEntry(NewOrdMat, i, i+NumOldInds, 1); 	
-    // Setting the module component ordering
-    SetEntry(NewOrdMat, GrDim, NumNewInds-1, 1);
-    // Setting the TO ordering
-    for (long i=GrDim; i < NumOldInds; ++i)
-      for (long j=0; j < NumOldInds; ++j)
-        SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
-    break;
-    }
-    // Filling the matrix
-    for (long i=0; i < GrDim; ++i)
-      for (long j=0; j < NumOldInds; ++j)
-        SetEntry(NewOrdMat, NumOldInds+i+1, j, OldOrdOMat(i,j));
+//     case WDegPosTO:; // This is the default
+//     default:
+//       // Part common to IsWDegPosnOrd and IsOrdPosn
+//       // Setting the Grading: the OldGrading		
+//       for (long i=0; i < GrDim; ++i)			
+//         for (long j=0; j < NumOldInds; ++j)		
+//           SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
+//     // Setting the Grading: the NewGrading		
+//     for (long i=0; i < GrDim; ++i)			
+//       SetEntry(NewOrdMat, i, i+NumOldInds, 1); 	
+//     // Setting the module component ordering
+//     SetEntry(NewOrdMat, GrDim, NumNewInds-1, 1);
+//     // Setting the TO ordering
+//     for (long i=GrDim; i < NumOldInds; ++i)
+//       for (long j=0; j < NumOldInds; ++j)
+//         SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
+//     break;
+//     }
+//     // Filling the matrix
+//     for (long i=0; i < GrDim; ++i)
+//       for (long j=0; j < NumOldInds; ++j)
+//         SetEntry(NewOrdMat, NumOldInds+i+1, j, OldOrdOMat(i,j));
 
-    const PPOrdering MatNewOrd = NewMatrixOrdering(NewOrdMat, GrDim);
+//     const PPOrdering MatNewOrd = NewMatrixOrdering(NewOrdMat, GrDim);
 
-    const std::vector<symbol> IndetNames = NewSymbols(NumOldInds + GrDim + 1);
-//---> for DEBUGGING choose these IndetNames:
-//   std::vector<symbol> IndetNames = SymbolRange("x", 0, NumOldInds-1);
-//   if ( GrDim==1 ) IndetNames.push_back(symbol("s"));  // indet representing shift
-//   else
-//     for ( long i=0 ; i<GrDim ; ++i )
-//       IndetNames.push_back(symbol("s",i));  // indet representing shift
-//   IndetNames.push_back(symbol("e"));  // indet representing module component
-//---> for DEBUGGING
-    SparsePolyRing NewP(NewPolyRing(CoeffRing(OldP),IndetNames,MatNewOrd));
-    return NewP;
-  } // MakeNewPRingFromModule
+//     const std::vector<symbol> IndetNames = NewSymbols(NumOldInds + GrDim + 1);
+// //---> for DEBUGGING choose these IndetNames:
+// //   std::vector<symbol> IndetNames = SymbolRange("x", 0, NumOldInds-1);
+// //   if ( GrDim==1 ) IndetNames.push_back(symbol("s"));  // indet representing shift
+// //   else
+// //     for ( long i=0 ; i<GrDim ; ++i )
+// //       IndetNames.push_back(symbol("s",i));  // indet representing shift
+// //   IndetNames.push_back(symbol("e"));  // indet representing module component
+// //---> for DEBUGGING
+//     SparsePolyRing NewP(NewPolyRing(CoeffRing(OldP),IndetNames,MatNewOrd));
+//     return NewP;
+//   } // MakeNewPRingFromModule
 
 
   namespace { // anonymous
