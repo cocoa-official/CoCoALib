@@ -222,14 +222,11 @@ namespace CoCoA
 
   namespace { // anonymous    //-- DeEmbedding --------------------------
 
-    // some copies are unavoidable when deembedding
-    // ComponentsLimit: the component in g that goes to the 0 component of the output vector v.
-    // Lesser components of g go to higher component of v    
-
-
-    ModuleElem DeEmbedPoly(ConstRefRingElem g,
-                           const GRingInfo& theGRI,
-                           const long ComponentsLimit)
+    // identical copy for this function in TmpGOperations:
+    // this is only for DeEmbedPoly define just below
+    ModuleElem DeEmbedPolyAux(ConstRefRingElem g,
+                              const GRingInfo& theGRI,
+                              const long ComponentsLimit)
     {
       const SparsePolyRing OldP=theGRI.myOldSPR();
       const SparsePolyRing NewP=theGRI.myNewSPR();
@@ -253,9 +250,9 @@ namespace CoCoA
     // { return theGRI.myNewP2OldP()(g); }
 
     ModuleElem DeEmbedPoly(ConstRefRingElem g, const GRingInfo& theGRI)
-    { return DeEmbedPoly(g, theGRI, 0); }
+    { return DeEmbedPolyAux(g, theGRI, 0); }
 
-  } // namespace anonymous
+  } // namespace anonymous------------------------------------
 
 
   std::vector<ModuleElem> GReductor::myExportGBasis_module()
@@ -1120,55 +1117,55 @@ namespace CoCoA
 //   }
 
 
-  // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
-  std::vector<ModuleElem> DeEmbedPolyList(const std::vector<RingElem>& G,
-                                          const GRingInfo& theGRI,
-                                          const long ComponentsLimit)
-  {
-    std::vector<ModuleElem> G_out;
-    if (G.empty())  return G_out;
-    G_out.reserve(len(G));
-    for (const RingElem& g: G)
-      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-        G_out.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
-    return G_out;
-  }
+  // // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
+  // std::vector<ModuleElem> DeEmbedPolyList(const std::vector<RingElem>& G,
+  //                                         const GRingInfo& theGRI,
+  //                                         const long ComponentsLimit)
+  // {
+  //   std::vector<ModuleElem> G_out;
+  //   if (G.empty())  return G_out;
+  //   G_out.reserve(len(G));
+  //   for (const RingElem& g: G)
+  //     if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+  //       G_out.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
+  //   return G_out;
+  // }
 
 
-  std::vector<RingElem> DeEmbedPolyListToPL(const std::vector<RingElem>& G,
-                                            const GRingInfo& theGRI,
-                                            const long ComponentsLimit)
-  {
-    VerboseLog VERBOSE("DeEmbedPolyListToPL");
-    std::vector<RingElem> G_out;
-    if (G.empty())  return G_out;
-    G_out.reserve(len(G));
-    for (const RingElem& g: G)
-      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-      {
-        VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
-        G_out.push_back(theGRI.myNewP2OldP()(g));
-        // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
-        // {
-        //   outPL.clear();
-        //   outPL.push_back(theGRI.myOldSPR()->myOne());
-        //   break;
-        // }
-      }
-    return G_out;
-  }
+  // std::vector<RingElem> DeEmbedPolyListToPL(const std::vector<RingElem>& G,
+  //                                           const GRingInfo& theGRI,
+  //                                           const long ComponentsLimit)
+  // {
+  //   VerboseLog VERBOSE("DeEmbedPolyListToPL");
+  //   std::vector<RingElem> G_out;
+  //   if (G.empty())  return G_out;
+  //   G_out.reserve(len(G));
+  //   for (const RingElem& g: G)
+  //     if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+  //     {
+  //       VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
+  //       G_out.push_back(theGRI.myNewP2OldP()(g));
+  //       // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
+  //       // {
+  //       //   outPL.clear();
+  //       //   outPL.push_back(theGRI.myOldSPR()->myOne());
+  //       //   break;
+  //       // }
+  //     }
+  //   return G_out;
+  // }
 
 
-  void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
-    {
-      const GRingInfo& GRI(the_gp.myGRingInfo());
-      CoCoA_ASSERT(theGPL.begin()->myGRingInfo()==GRI);
-      const long NC = NumCompts(GRI.myFreeModule());
-      RingElem tmp =  GRI.myE(NC)*GRI.myY(wdeg(the_gp)); // JAA 2012-10-11
-      the_gp.myAppendClear(tmp);                         // JAA 2012-10-11
-      theGPL.push_back(GPoly(GRI));
-      theGPL.back().AssignClear(the_gp);
-    } // ColonEmbedGPolyList
+  // void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
+  //   {
+  //     const GRingInfo& GRI(the_gp.myGRingInfo());
+  //     CoCoA_ASSERT(theGPL.begin()->myGRingInfo()==GRI);
+  //     const long NC = NumCompts(GRI.myFreeModule());
+  //     RingElem tmp =  GRI.myE(NC)*GRI.myY(wdeg(the_gp)); // JAA 2012-10-11
+  //     the_gp.myAppendClear(tmp);                         // JAA 2012-10-11
+  //     theGPL.push_back(GPoly(GRI));
+  //     theGPL.back().AssignClear(the_gp);
+  //   } // ColonEmbedGPolyList
 
 
     // // The ordering is supposed to be Deg compatible

@@ -214,16 +214,16 @@ public:
   //   void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp);
 
 
-    VectorList DeEmbedPolyList(const PolyList& G,
-                               const GRingInfo& theGRI);
+    // VectorList DeEmbedPolyList(const PolyList& G,
+    //                            const GRingInfo& theGRI);
 
-    VectorList DeEmbedPolyList(const PolyList& G,
-                               const GRingInfo& theGRI,
-                               const long ComponentsLimit); // only polys whose LPP has deg of last indet <=CL
+    // VectorList DeEmbedPolyList(const PolyList& G,
+    //                            const GRingInfo& theGRI,
+    //                            const long ComponentsLimit); // only polys whose LPP has deg of last indet <=CL
 
-    PolyList DeEmbedPolyListToPL(const PolyList& G,
-                                 const GRingInfo& theGRI,
-                                 const long ComponentsLimit);
+    // PolyList DeEmbedPolyListToPL(const PolyList& G,
+    //                              const GRingInfo& theGRI,
+    //                              const long ComponentsLimit);
 
     // RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& the_Y); ///< hp = hom(p,y) in the ring with the y's
     // void homogenized(ModuleElem& the_hv,

@@ -469,6 +469,88 @@ namespace CoCoA
     }
 
 
+    void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
+    {
+      const GRingInfo& GRI(the_gp.myGRingInfo());
+      CoCoA_ASSERT(theGPL.begin()->myGRingInfo()==GRI);
+      const long NC = NumCompts(GRI.myFreeModule());
+      RingElem tmp =  GRI.myE(NC)*GRI.myY(wdeg(the_gp)); // JAA 2012-10-11
+      the_gp.myAppendClear(tmp);                         // JAA 2012-10-11
+      theGPL.push_back(GPoly(GRI));
+      theGPL.back().AssignClear(the_gp);
+    } // ColonEmbedGPolyList
+
+
+    ////////////////////////////////////////////
+    // DeEmbed....
+    // from TmpGReductor 2026-04-10
+    ////////////////////////////////////
+
+    // some copies are unavoidable when deembedding
+    // ComponentsLimit: the component in g that goes to the 0 component of the output vector v.
+    // Lesser components of g go to higher component of v    
+
+    // identical copy in TmpGReductor:
+    ModuleElem DeEmbedPoly(ConstRefRingElem g,
+                           const GRingInfo& theGRI,
+                           const long ComponentsLimit)
+    {
+      const SparsePolyRing OldP=theGRI.myOldSPR();
+      const SparsePolyRing NewP=theGRI.myNewSPR();
+      const FreeModule FM=theGRI.myOutputFreeModule();
+      ModuleElem v(FM);
+      
+      const std::vector<ModuleElem>& e = gens(FM);
+      
+      RingElem tmp(OldP);
+      for (SparsePolyIter i=BeginIter(g); !IsEnded(i); ++i)
+      {
+        tmp=theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
+        CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit < NumCompts(FM));
+        v+=tmp*e[theGRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for coco4compatibility
+      }
+      return v;
+    }
+
+
+    // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
+    std::vector<ModuleElem> DeEmbedPolyList(const std::vector<RingElem>& G,
+                                            const GRingInfo& theGRI,
+                                            const long ComponentsLimit)
+    {
+      std::vector<ModuleElem> G_out;
+      if (G.empty())  return G_out;
+      G_out.reserve(len(G));
+      for (const RingElem& g: G)
+        if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+          G_out.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
+      return G_out;
+    }
+
+
+    std::vector<RingElem> DeEmbedPolyListToPL(const std::vector<RingElem>& G,
+                                              const GRingInfo& theGRI,
+                                              const long ComponentsLimit)
+    {
+      VerboseLog VERBOSE("DeEmbedPolyListToPL");
+      std::vector<RingElem> G_out;
+      if (G.empty())  return G_out;
+      G_out.reserve(len(G));
+      for (const RingElem& g: G)
+        if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+        {
+          VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
+          G_out.push_back(theGRI.myNewP2OldP()(g));
+          // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
+          // {
+          //   outPL.clear();
+          //   outPL.push_back(theGRI.myOldSPR()->myOne());
+          //   break;
+          // }
+        }
+      return G_out;
+    }
+
     ////////////////////////////////////////////
     // homog....
     // from TmpGReductor 2026-04-10
