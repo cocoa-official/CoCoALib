@@ -164,71 +164,71 @@ public:
 // Used only in TmpGOperations -- where should they live?
 //----------------------------------------------------------------------
 
-    enum ModOrdTypeForcing {NoForcing, PosWDegTO, WDegTOPos, WDegPosTO};
-    SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);
-    SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM, ModOrdTypeForcing MOType);
-    SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& theOldP, ModOrdTypeForcing MOType);
-    SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM, bool HomogInput);
-    SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP, bool HomogInput);
+    // enum ModOrdTypeForcing {NoForcing, PosWDegTO, WDegTOPos, WDegPosTO};
+    // SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM);
+    // SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM, ModOrdTypeForcing MOType);
+    // SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& theOldP, ModOrdTypeForcing MOType);
+    // SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM, bool HomogInput);
+    // SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP, bool HomogInput);
 
-   // Embed theVL
-    GPolyList EmbedVectorList(const VectorList& theVL,
-                              const GRingInfo& theGRI);
-    // Embed theVL starting from the StartingFromCompIndex component
-    GPolyList EmbedVectorList(const VectorList& theVL,
-                              const GRingInfo& theGRI,
-                              const long StartingFromCompIndex);
+  //  // Embed theVL
+  //   GPolyList EmbedVectorList(const VectorList& theVL,
+  //                             const GRingInfo& theGRI);
+  //   // Embed theVL starting from the StartingFromCompIndex component
+  //   GPolyList EmbedVectorList(const VectorList& theVL,
+  //                             const GRingInfo& theGRI,
+  //                             const long StartingFromCompIndex);
 
 
 
-    // The embedding used in syzygy computations
-    GPolyList SyzEmbedVectorList(const VectorList& InputVectorList,
-                                 const GRingInfo& theGRI);
-  // The embedding used in syzygy computations
-    GPolyList SyzEmbedPolyList(const PolyList& InputPolyList,
-                                 const GRingInfo& theGRI);
+  //   // The embedding used in syzygy computations
+  //   GPolyList SyzEmbedVectorList(const VectorList& InputVectorList,
+  //                                const GRingInfo& theGRI);
+  // // The embedding used in syzygy computations
+  //   GPolyList SyzEmbedPolyList(const PolyList& InputPolyList,
+  //                                const GRingInfo& theGRI);
 				
-    // The embedding used in intersection computations
-    GPolyList IntEmbedVectorLists(const VectorList& VL1,
-                                  const VectorList& VL2,
-                                  const GRingInfo& theGRI);
+  //   // The embedding used in intersection computations
+  //   GPolyList IntEmbedVectorLists(const VectorList& VL1,
+  //                                 const VectorList& VL2,
+  //                                 const GRingInfo& theGRI);
 				
-    // The embedding used in intersection computations
-    GPolyList IntEmbedPolyLists(const PolyList& PL1,
-                                const PolyList& PL2,
-                                const GRingInfo& theGRI);
+  //   // The embedding used in intersection computations
+  //   GPolyList IntEmbedPolyLists(const PolyList& PL1,
+  //                               const PolyList& PL2,
+  //                               const GRingInfo& theGRI);
  			
-  // The special poly embedding used in colon computations
-    GPolyList ColonEmbedVectorLists(const VectorList& VL,
-                                    const ModuleElem& v,
-                                    const GRingInfo& theGRI);
+  // // The special poly embedding used in colon computations
+  //   GPolyList ColonEmbedVectorLists(const VectorList& VL,
+  //                                   const ModuleElem& v,
+  //                                   const GRingInfo& theGRI);
 				
-    GPolyList ColonEmbedPolyLists(const PolyList& F,
-                                  const RingElem& f,
-                                  const GRingInfo& theGRI);
+  //   GPolyList ColonEmbedPolyLists(const PolyList& F,
+  //                                 const RingElem& f,
+  //                                 const GRingInfo& theGRI);
 
-    void SyzEmbedGPolyList(GPolyList& theGPL);
+  //   void SyzEmbedGPolyList(GPolyList& theGPL);
 
-    void IntEmbedGPolyList(GPolyList& theGPL1, GPolyList& theGPL2);
+  //   void IntEmbedGPolyList(GPolyList& theGPL1, GPolyList& theGPL2);
 
-    void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp);
+  //   void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp);
 
 
-    VectorList DeEmbedPolyList(const PolyList& G,
-                               const GRingInfo& theGRI);
+    // VectorList DeEmbedPolyList(const PolyList& G,
+    //                            const GRingInfo& theGRI);
 
-    VectorList DeEmbedPolyList(const PolyList& G,
-                               const GRingInfo& theGRI,
-                               const long ComponentsLimit); // only polys whose LPP has deg of last indet <=CL
+    // VectorList DeEmbedPolyList(const PolyList& G,
+    //                            const GRingInfo& theGRI,
+    //                            const long ComponentsLimit); // only polys whose LPP has deg of last indet <=CL
 
-    PolyList DeEmbedPolyListToPL(const PolyList& G,
-                                 const GRingInfo& theGRI,
-                                 const long ComponentsLimit);
+    // PolyList DeEmbedPolyListToPL(const PolyList& G,
+    //                              const GRingInfo& theGRI,
+    //                              const long ComponentsLimit);
 
-    RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& the_Y); ///< hp = hom(p,y) in the ring with the y's
-    void homogenized(ModuleElem& the_hv,
-                     const ModuleElem& the_v,
-                     const GRingInfo& theGRI);
+    // RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& the_Y); ///< hp = hom(p,y) in the ring with the y's
+    // void homogenized(ModuleElem& the_hv,
+    //                  const ModuleElem& the_v,
+    //                  const GRingInfo& theGRI);
 
 
 }// end namespace cocoa

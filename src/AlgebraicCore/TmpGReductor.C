@@ -25,7 +25,7 @@
 #include "CoCoA/MatrixForOrdering.H"
 #include "CoCoA/MatrixOps.H"
 #include "CoCoA/MatrixView.H"
-#include "CoCoA/ModuleOrdering.H"
+//#include "CoCoA/ModuleOrdering.H"
 #include "CoCoA/RingDistrMPolyInlFpPP.H"
 #include "CoCoA/RingDistrMPolyInlPP.H"
 #include "CoCoA/RingFp.H" // for dynamic_cast<RingFpImpl*>(CoeffRing.myRingPtr())
@@ -222,14 +222,11 @@ namespace CoCoA
 
   namespace { // anonymous    //-- DeEmbedding --------------------------
 
-    // some copies are unavoidable when deembedding
-    // ComponentsLimit: the component in g that goes to the 0 component of the output vector v.
-    // Lesser components of g go to higher component of v    
-
-
-    ModuleElem DeEmbedPoly(ConstRefRingElem g,
-                           const GRingInfo& theGRI,
-                           const long ComponentsLimit)
+    // identical copy for this function in TmpGOperations:
+    // this copy is only for fn DeEmbedPoly(g, GRI) defined just below
+    ModuleElem DeEmbedPolyAux(ConstRefRingElem g,
+                              const GRingInfo& theGRI,
+                              const long ComponentsLimit)
     {
       const SparsePolyRing OldP=theGRI.myOldSPR();
       const SparsePolyRing NewP=theGRI.myNewSPR();
@@ -253,9 +250,9 @@ namespace CoCoA
     // { return theGRI.myNewP2OldP()(g); }
 
     ModuleElem DeEmbedPoly(ConstRefRingElem g, const GRingInfo& theGRI)
-    { return DeEmbedPoly(g, theGRI, 0); }
+    { return DeEmbedPolyAux(g, theGRI, 0); }
 
-  } // namespace anonymous
+  } // namespace anonymous------------------------------------
 
 
   std::vector<ModuleElem> GReductor::myExportGBasis_module()
@@ -765,445 +762,445 @@ namespace CoCoA
 // Used only in TmpGOperations -- where should they live?
 //----------------------------------------------------------------------
   
-// returns the poly ring equivalent with OldP^2, same grading
-// The ordering is WDegPosnOrd if MOType==NoForcing or MOType
-// Called by intersection, colonbyprincipal
-  SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP,
-                                         bool HomogInput)
-  {
-    if (HomogInput) return MakeNewPRingForP2(OldP, WDegPosTO);
-    else return MakeNewPRingForP2(OldP, PosWDegTO);
-  }
+// // returns the poly ring equivalent with OldP^2, same grading
+// // The ordering is WDegPosnOrd if MOType==NoForcing or MOType
+// // Called by intersection, colonbyprincipal
+//   SparsePolyRing MakeNewPRingForP2_PosTO(const SparsePolyRing& OldP,
+//                                          bool HomogInput)
+//   {
+//     if (HomogInput) return MakeNewPRingForP2(OldP, WDegPosTO);
+//     else return MakeNewPRingForP2(OldP, PosWDegTO);
+//   }
 
 
-// Called by syz, indirectly by intersection, colonbyprincipal (ideal)
-  SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& OldP,
-                                   ModOrdTypeForcing MOType)
-  {
-    std::vector<degree> InputShifts;
-    degree tmp(GradingDim(OldP));
-    InputShifts.push_back(tmp);
-    InputShifts.push_back(tmp);
-    const FreeModule FM=NewFreeModule(OldP, InputShifts, WDegPosnOrd);
-    return MakeNewPRingFromModule(FM, MOType);
-  }
+// // Called by syz, indirectly by intersection, colonbyprincipal (ideal)
+//   SparsePolyRing MakeNewPRingForP2(const SparsePolyRing& OldP,
+//                                    ModOrdTypeForcing MOType)
+//   {
+//     std::vector<degree> InputShifts;
+//     degree tmp(GradingDim(OldP));
+//     InputShifts.push_back(tmp);
+//     InputShifts.push_back(tmp);
+//     const FreeModule FM=NewFreeModule(OldP, InputShifts, WDegPosnOrd);
+//     return MakeNewPRingFromModule(FM, MOType);
+//   }
 
 
-  // Called by ComputeGBasis2 (module), ComputeSyz (module), ComputeColonByPrincipal (module)
-  SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM)
-  { return MakeNewPRingFromModule(FM, NoForcing); }
+//   // Called by ComputeGBasis2 (module), ComputeSyz (module), ComputeColonByPrincipal (module)
+//   SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM)
+//   { return MakeNewPRingFromModule(FM, NoForcing); }
 
 
-  // Called by ComputeIntersection (module)
-  SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM,
-                                              bool HomogInput)
-  {
-    if (HomogInput) return MakeNewPRingFromModule(FM, WDegPosTO);
-    else            return MakeNewPRingFromModule(FM, PosWDegTO);
-  }
+//   // Called by ComputeIntersection (module)
+//   SparsePolyRing MakeNewPRingFromModule_PosTO(const FreeModule& FM,
+//                                               bool HomogInput)
+//   {
+//     if (HomogInput) return MakeNewPRingFromModule(FM, WDegPosTO);
+//     else            return MakeNewPRingFromModule(FM, PosWDegTO);
+//   }
 
 
-  namespace { // anonymous
+//   namespace { // anonymous
 
-    ModOrdTypeForcing ModuleOrderType(const FreeModule& M)
-    {
-      if (IsOrdPosn(ordering(M))) return WDegTOPos;
-      if (IsWDegPosnOrd(ordering(M))) return WDegPosTO;
-      return PosWDegTO;
-    } // ModOrdType
+//     ModOrdTypeForcing ModuleOrderType(const FreeModule& M)
+//     {
+//       if (IsOrdPosn(ordering(M))) return WDegTOPos;
+//       if (IsWDegPosnOrd(ordering(M))) return WDegPosTO;
+//       return PosWDegTO;
+//     } // ModOrdType
 
-  } // namespace  // anonymous
+//   } // namespace  // anonymous
   
   
-// This is OK for the non-homogeneous case
-// For the homogenous case, PosTo this is inefficient, since
-// the Deg rows in the To part are useless.
-  SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM,
-                                        ModOrdTypeForcing MOType)
-  {
-    const ModuleOrdering MTO = ordering(FM);
-    const SparsePolyRing OldP=RingOf(FM);
-    const long NumOldInds=NumIndets(OldP);
-    long GrDim;
-    if (MOType==PosWDegTO)
-      GrDim=0;// Set simple sugar on
-    else
-      GrDim=GradingDim(OldP);
-    const long NumNewInds=NumOldInds+GrDim+1;
+// // This is OK for the non-homogeneous case
+// // For the homogenous case, PosTo this is inefficient, since
+// // the Deg rows in the To part are useless.
+//   SparsePolyRing MakeNewPRingFromModule(const FreeModule& FM,
+//                                         ModOrdTypeForcing MOType)
+//   {
+//     const ModuleOrdering MTO = ordering(FM);
+//     const SparsePolyRing OldP=RingOf(FM);
+//     const long NumOldInds=NumIndets(OldP);
+//     long GrDim;
+//     if (MOType==PosWDegTO)
+//       GrDim=0;// Set simple sugar on
+//     else
+//       GrDim=GradingDim(OldP);
+//     const long NumNewInds=NumOldInds+GrDim+1;
 
-    ConstMatrixView OldOrdOMat = OrdMat(OldP);
+//     ConstMatrixView OldOrdOMat = OrdMat(OldP);
 
-    matrix NewOrdMat(NewDenseMat(RingZZ(), NumNewInds, NumNewInds));
-    ////std::clog<<"NewOrdMat starts as "<<NewOrdMat<<std::endl;
-    if (MOType == NoForcing)  MOType = ModuleOrderType(FM);
+//     matrix NewOrdMat(NewDenseMat(RingZZ(), NumNewInds, NumNewInds));
+//     ////std::clog<<"NewOrdMat starts as "<<NewOrdMat<<std::endl;
+//     if (MOType == NoForcing)  MOType = ModuleOrderType(FM);
 
-    switch (MOType)
-    {
-    case PosWDegTO:
-      // Setting the module component ordering
-      SetEntry(NewOrdMat, 0, NumNewInds-1, 1); 	
-      // Part common to IsWDegPosnOrd and IsOrdPosn
-      // Setting the Grading: the OldGrading		
-      for (long i=0; i < GrDim+1; ++i)			
-        for (long j=0; j < NumOldInds; ++j)		
-          SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
-      // Setting the Grading: the NewGrading		
-      for (long i=1; i < GrDim+1; ++i)			
-        SetEntry(NewOrdMat, i, i+NumOldInds-1, 1); 	
-      // Setting the TO ordering
-      for (long i=GrDim; i < NumOldInds; ++i)
-        for (long j=0; j < NumOldInds; ++j)
-          SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
-      break;
+//     switch (MOType)
+//     {
+//     case PosWDegTO:
+//       // Setting the module component ordering
+//       SetEntry(NewOrdMat, 0, NumNewInds-1, 1); 	
+//       // Part common to IsWDegPosnOrd and IsOrdPosn
+//       // Setting the Grading: the OldGrading		
+//       for (long i=0; i < GrDim+1; ++i)			
+//         for (long j=0; j < NumOldInds; ++j)		
+//           SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
+//       // Setting the Grading: the NewGrading		
+//       for (long i=1; i < GrDim+1; ++i)			
+//         SetEntry(NewOrdMat, i, i+NumOldInds-1, 1); 	
+//       // Setting the TO ordering
+//       for (long i=GrDim; i < NumOldInds; ++i)
+//         for (long j=0; j < NumOldInds; ++j)
+//           SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
+//       break;
 
-    case WDegTOPos:
-      // Part common to IsWDegPosnOrd and IsOrdPosn
-      // Setting the Grading: the OldGrading		
-      for (long i=0; i < GrDim; ++i)			
-        for (long j=0; j < NumOldInds; ++j)		
-          SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
-      // Setting the Grading: the NewGrading		
-      for (long i=0; i < GrDim; ++i)			
-        SetEntry(NewOrdMat, i, i+NumOldInds, 1);
-      // Setting the TO	
-      for (long i=GrDim; i < NumOldInds; ++i)
-        for (long j=0; j < NumOldInds; ++j)
-          SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
-      // Setting the module component ordering
-      SetEntry(NewOrdMat, NumNewInds-1-GrDim, NumNewInds-1, 1); 	
-      break;
+//     case WDegTOPos:
+//       // Part common to IsWDegPosnOrd and IsOrdPosn
+//       // Setting the Grading: the OldGrading		
+//       for (long i=0; i < GrDim; ++i)			
+//         for (long j=0; j < NumOldInds; ++j)		
+//           SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
+//       // Setting the Grading: the NewGrading		
+//       for (long i=0; i < GrDim; ++i)			
+//         SetEntry(NewOrdMat, i, i+NumOldInds, 1);
+//       // Setting the TO	
+//       for (long i=GrDim; i < NumOldInds; ++i)
+//         for (long j=0; j < NumOldInds; ++j)
+//           SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
+//       // Setting the module component ordering
+//       SetEntry(NewOrdMat, NumNewInds-1-GrDim, NumNewInds-1, 1); 	
+//       break;
 
-    case WDegPosTO:; // This is the default
-    default:
-      // Part common to IsWDegPosnOrd and IsOrdPosn
-      // Setting the Grading: the OldGrading		
-      for (long i=0; i < GrDim; ++i)			
-        for (long j=0; j < NumOldInds; ++j)		
-          SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
-    // Setting the Grading: the NewGrading		
-    for (long i=0; i < GrDim; ++i)			
-      SetEntry(NewOrdMat, i, i+NumOldInds, 1); 	
-    // Setting the module component ordering
-    SetEntry(NewOrdMat, GrDim, NumNewInds-1, 1);
-    // Setting the TO ordering
-    for (long i=GrDim; i < NumOldInds; ++i)
-      for (long j=0; j < NumOldInds; ++j)
-        SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
-    break;
-    }
-    // Filling the matrix
-    for (long i=0; i < GrDim; ++i)
-      for (long j=0; j < NumOldInds; ++j)
-        SetEntry(NewOrdMat, NumOldInds+i+1, j, OldOrdOMat(i,j));
+//     case WDegPosTO:; // This is the default
+//     default:
+//       // Part common to IsWDegPosnOrd and IsOrdPosn
+//       // Setting the Grading: the OldGrading		
+//       for (long i=0; i < GrDim; ++i)			
+//         for (long j=0; j < NumOldInds; ++j)		
+//           SetEntry(NewOrdMat, i, j, OldOrdOMat(i,j));
+//     // Setting the Grading: the NewGrading		
+//     for (long i=0; i < GrDim; ++i)			
+//       SetEntry(NewOrdMat, i, i+NumOldInds, 1); 	
+//     // Setting the module component ordering
+//     SetEntry(NewOrdMat, GrDim, NumNewInds-1, 1);
+//     // Setting the TO ordering
+//     for (long i=GrDim; i < NumOldInds; ++i)
+//       for (long j=0; j < NumOldInds; ++j)
+//         SetEntry(NewOrdMat, i+1, j, OldOrdOMat(i,j));
+//     break;
+//     }
+//     // Filling the matrix
+//     for (long i=0; i < GrDim; ++i)
+//       for (long j=0; j < NumOldInds; ++j)
+//         SetEntry(NewOrdMat, NumOldInds+i+1, j, OldOrdOMat(i,j));
 
-    const PPOrdering MatNewOrd = NewMatrixOrdering(NewOrdMat, GrDim);
+//     const PPOrdering MatNewOrd = NewMatrixOrdering(NewOrdMat, GrDim);
 
-    const std::vector<symbol> IndetNames = NewSymbols(NumOldInds + GrDim + 1);
-//---> for DEBUGGING choose these IndetNames:
-//   std::vector<symbol> IndetNames = SymbolRange("x", 0, NumOldInds-1);
-//   if ( GrDim==1 ) IndetNames.push_back(symbol("s"));  // indet representing shift
-//   else
-//     for ( long i=0 ; i<GrDim ; ++i )
-//       IndetNames.push_back(symbol("s",i));  // indet representing shift
-//   IndetNames.push_back(symbol("e"));  // indet representing module component
-//---> for DEBUGGING
-    SparsePolyRing NewP(NewPolyRing(CoeffRing(OldP),IndetNames,MatNewOrd));
-    return NewP;
-  } // MakeNewPRingFromModule
+//     const std::vector<symbol> IndetNames = NewSymbols(NumOldInds + GrDim + 1);
+// //---> for DEBUGGING choose these IndetNames:
+// //   std::vector<symbol> IndetNames = SymbolRange("x", 0, NumOldInds-1);
+// //   if ( GrDim==1 ) IndetNames.push_back(symbol("s"));  // indet representing shift
+// //   else
+// //     for ( long i=0 ; i<GrDim ; ++i )
+// //       IndetNames.push_back(symbol("s",i));  // indet representing shift
+// //   IndetNames.push_back(symbol("e"));  // indet representing module component
+// //---> for DEBUGGING
+//     SparsePolyRing NewP(NewPolyRing(CoeffRing(OldP),IndetNames,MatNewOrd));
+//     return NewP;
+//   } // MakeNewPRingFromModule
 
 
-  namespace { // anonymous
+//   namespace { // anonymous
   
-    GPoly EmbedPoly(ConstRefRingElem the_p,
-                    const GRingInfo& theGRI,
-                    const degree& the_d,
-                    const long CompIndex)
-    {
-      const RingHom& phi=theGRI.myOldP2NewP();
-      return GPoly(phi(the_p)*theGRI.myE(CompIndex)*theGRI.myY(the_d), theGRI);
-    }
+//     GPoly EmbedPoly(ConstRefRingElem the_p,
+//                     const GRingInfo& theGRI,
+//                     const degree& the_d,
+//                     const long CompIndex)
+//     {
+//       const RingHom& phi=theGRI.myOldP2NewP();
+//       return GPoly(phi(the_p)*theGRI.myE(CompIndex)*theGRI.myY(the_d), theGRI);
+//     }
 
 
-    GPoly EmbedPoly(ConstRefRingElem p,
-                    const GRingInfo& theGRI,
-                    const long CompIndex)
-    {
-      const RingHom& phi=theGRI.myOldP2NewP();
-      return GPoly(phi(p)*theGRI.myE(CompIndex), theGRI);
-    }
+//     GPoly EmbedPoly(ConstRefRingElem p,
+//                     const GRingInfo& theGRI,
+//                     const long CompIndex)
+//     {
+//       const RingHom& phi=theGRI.myOldP2NewP();
+//       return GPoly(phi(p)*theGRI.myE(CompIndex), theGRI);
+//     }
 
 
-    GPolyList EmbedPolyList(const std::vector<RingElem>& F,
-                            const GRingInfo& GRI,
-                            const long CompIndex)
-    {
-      GPolyList result;
-      if (F.empty())  return result;
-      for (const RingElem& f: F) result.push_back(EmbedPoly(f, GRI, CompIndex));
-      return result;
-    }
+//     GPolyList EmbedPolyList(const std::vector<RingElem>& F,
+//                             const GRingInfo& GRI,
+//                             const long CompIndex)
+//     {
+//       GPolyList result;
+//       if (F.empty())  return result;
+//       for (const RingElem& f: F) result.push_back(EmbedPoly(f, GRI, CompIndex));
+//       return result;
+//     }
 
 
-    GPolyList EmbedPolyListNo0(const std::vector<RingElem>& F,
-                               const GRingInfo& GRI,
-                               const long CompIndex)
-    {
-      GPolyList result;
-      if (F.empty())  return result;
-      for (const RingElem& f: F)
-        if (!IsZero(f)) result.push_back(EmbedPoly(f, GRI, CompIndex));
-      return result;
-    }
+//     GPolyList EmbedPolyListNo0(const std::vector<RingElem>& F,
+//                                const GRingInfo& GRI,
+//                                const long CompIndex)
+//     {
+//       GPolyList result;
+//       if (F.empty())  return result;
+//       for (const RingElem& f: F)
+//         if (!IsZero(f)) result.push_back(EmbedPoly(f, GRI, CompIndex));
+//       return result;
+//     }
 
-/*
-This realizes the embedding FM-->NewP of a vector v.
-e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
-Should be changed to avoid passing FM,NewP.
-Is is here only for completeness/debug purposes.
-*/
-    GPoly EmbedVector(const ModuleElem& v,
-                      const GRingInfo& theGRI,
-                      const long StartingFromCompIndex)			
-    {
-      RingElem p(theGRI.myNewSPR()),eMax(power(theGRI.myE(),StartingFromCompIndex));
-      const RingHom& phi=theGRI.myOldP2NewP();
-      for (long i=0; i<NumCompts(owner(v)); ++i)
-        p+=phi(v[i])*theGRI.myEY(i)/eMax;
-      return GPoly(p, theGRI);
-    } // EmbedVector
+// /*
+// This realizes the embedding FM-->NewP of a vector v.
+// e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
+// Should be changed to avoid passing FM,NewP.
+// Is is here only for completeness/debug purposes.
+// */
+//     GPoly EmbedVector(const ModuleElem& v,
+//                       const GRingInfo& theGRI,
+//                       const long StartingFromCompIndex)			
+//     {
+//       RingElem p(theGRI.myNewSPR()),eMax(power(theGRI.myE(),StartingFromCompIndex));
+//       const RingHom& phi=theGRI.myOldP2NewP();
+//       for (long i=0; i<NumCompts(owner(v)); ++i)
+//         p+=phi(v[i])*theGRI.myEY(i)/eMax;
+//       return GPoly(p, theGRI);
+//     } // EmbedVector
     
-/*
-This realizes the embedding FM-->NewP of a vector v.
-e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
-Should be changed to avoid passing FM,NewP.
-Is is here only for completeness/debug purposes.
-*/
-    GPoly EmbedVector(const ModuleElem& v,
-                      const GRingInfo& theGRI)			
-    { return EmbedVector(v, theGRI, 0); }
+// /*
+// This realizes the embedding FM-->NewP of a vector v.
+// e_i->EY[i] and OldP2NewP gives the RingHom between BaseRing(FM) and NewP
+// Should be changed to avoid passing FM,NewP.
+// Is is here only for completeness/debug purposes.
+// */
+//     GPoly EmbedVector(const ModuleElem& v,
+//                       const GRingInfo& theGRI)			
+//     { return EmbedVector(v, theGRI, 0); }
 
 
-  } // namespace // anonymous
+//   } // namespace // anonymous
 
 
-  GPolyList EmbedVectorList(const std::vector<ModuleElem>& VL, const GRingInfo& GRI)
-  { return EmbedVectorList(VL, GRI, 0); }
+//   GPolyList EmbedVectorList(const std::vector<ModuleElem>& VL, const GRingInfo& GRI)
+//   { return EmbedVectorList(VL, GRI, 0); }
 
 
-  GPolyList EmbedVectorList(const std::vector<ModuleElem>& VL,
-                            const GRingInfo& theGRI,
-                            const long StartingFromCompIndex)
-  {
-    GPolyList outPL;
-    if (VL.empty())  return outPL;
-    for (const auto& v: VL)
-      if (!IsZero(v))
-        outPL.push_back(EmbedVector(v, theGRI, StartingFromCompIndex));
-    return outPL;
-  } // EmbedVectorList		
+//   GPolyList EmbedVectorList(const std::vector<ModuleElem>& VL,
+//                             const GRingInfo& theGRI,
+//                             const long StartingFromCompIndex)
+//   {
+//     GPolyList outPL;
+//     if (VL.empty())  return outPL;
+//     for (const auto& v: VL)
+//       if (!IsZero(v))
+//         outPL.push_back(EmbedVector(v, theGRI, StartingFromCompIndex));
+//     return outPL;
+//   } // EmbedVectorList		
 
 
-  GPolyList SyzEmbedVectorList(const std::vector<ModuleElem>& InputVectorList,
-                               const GRingInfo& GRI)
-  {
-    GPolyList outPL;
-    if (InputVectorList.empty())
-      return outPL;
-    const SparsePolyRing NewP=GRI.myNewSPR();
-    outPL=EmbedVectorList(InputVectorList, GRI);
-    long k=NumCompts(GRI.myFreeModule());
-    if (GRI.myInputAndGrading()==NONHOMOG_GRADING)
-      for (GPoly& p: outPL)
-      { // Added by JAA 2012/10/11
-        RingElem Ek = GRI.myE(k++); // previous k
-        p.myAppendClear(Ek);
-      }
-    else
-      for (GPoly& p: outPL)
-      { // Added by JAA 2012/10/11
-        RingElem EkY = GRI.myE(k++) * GRI.myY(wdeg(p)); // previous k
-        p.myAppendClear(EkY);
-      }
-    return outPL;
-  } // SyzEmbedVectorList
+//   GPolyList SyzEmbedVectorList(const std::vector<ModuleElem>& InputVectorList,
+//                                const GRingInfo& GRI)
+//   {
+//     GPolyList outPL;
+//     if (InputVectorList.empty())
+//       return outPL;
+//     const SparsePolyRing NewP=GRI.myNewSPR();
+//     outPL=EmbedVectorList(InputVectorList, GRI);
+//     long k=NumCompts(GRI.myFreeModule());
+//     if (GRI.myInputAndGrading()==NONHOMOG_GRADING)
+//       for (GPoly& p: outPL)
+//       { // Added by JAA 2012/10/11
+//         RingElem Ek = GRI.myE(k++); // previous k
+//         p.myAppendClear(Ek);
+//       }
+//     else
+//       for (GPoly& p: outPL)
+//       { // Added by JAA 2012/10/11
+//         RingElem EkY = GRI.myE(k++) * GRI.myY(wdeg(p)); // previous k
+//         p.myAppendClear(EkY);
+//       }
+//     return outPL;
+//   } // SyzEmbedVectorList
 
 
-  GPolyList SyzEmbedPolyList(const std::vector<RingElem>& F,
-                             const GRingInfo& theGRI)
-  {
-    GPolyList outPL;
-    if (F.empty())  return outPL;
-    const SparsePolyRing NewP=theGRI.myNewSPR();
-    outPL = EmbedPolyList(F, theGRI, 0);
-    RingElem SyzPP(NewP); // Gives the right degree to p+E^i
-    degree d(GradingDim(NewP));
-    long k=1;
-    for (GPolyList::iterator it=outPL.begin();it!=outPL.end();++it,++k) // for (auto& g: outPL) BUT MUST ALSO INCREMENT k !!
-    {
-      SyzPP=one(NewP);
-      d=wdeg(*it);
-      for (long j=0; j < GradingDim(NewP); ++j)
-        SyzPP*=power(theGRI.myY(j),d[j]);
-      if (theGRI.myInputAndGrading()==NONHOMOG_GRADING)
-      { // Added by JAA 2012/10/11
-        RingElem Ek = theGRI.myE(k);
-        (*it).myAppendClear(Ek);
-      }
-      else
-      { // Added by JAA 2012/10/11
-        RingElem EkSyzPP = theGRI.myE(k)*SyzPP;
-        (*it).myAppendClear(EkSyzPP);
-      }
-    }
-    return outPL;
-  } // SyzEmbedPolyList
+//   GPolyList SyzEmbedPolyList(const std::vector<RingElem>& F,
+//                              const GRingInfo& theGRI)
+//   {
+//     GPolyList outPL;
+//     if (F.empty())  return outPL;
+//     const SparsePolyRing NewP=theGRI.myNewSPR();
+//     outPL = EmbedPolyList(F, theGRI, 0);
+//     RingElem SyzPP(NewP); // Gives the right degree to p+E^i
+//     degree d(GradingDim(NewP));
+//     long k=1;
+//     for (GPolyList::iterator it=outPL.begin();it!=outPL.end();++it,++k) // for (auto& g: outPL) BUT MUST ALSO INCREMENT k !!
+//     {
+//       SyzPP=one(NewP);
+//       d=wdeg(*it);
+//       for (long j=0; j < GradingDim(NewP); ++j)
+//         SyzPP*=power(theGRI.myY(j),d[j]);
+//       if (theGRI.myInputAndGrading()==NONHOMOG_GRADING)
+//       { // Added by JAA 2012/10/11
+//         RingElem Ek = theGRI.myE(k);
+//         (*it).myAppendClear(Ek);
+//       }
+//       else
+//       { // Added by JAA 2012/10/11
+//         RingElem EkSyzPP = theGRI.myE(k)*SyzPP;
+//         (*it).myAppendClear(EkSyzPP);
+//       }
+//     }
+//     return outPL;
+//   } // SyzEmbedPolyList
 
 
-  GPolyList IntEmbedPolyLists(const std::vector<RingElem>& F1,
-                              const std::vector<RingElem>& F2,
-                              const GRingInfo& GRI)
-  {
-    GPolyList Part1 = EmbedPolyListNo0(F1, GRI, 0);
-    GPolyList Part2 = EmbedPolyListNo0(F2, GRI, 0);
-    GPolyList Part3 = EmbedPolyListNo0(F2, GRI, 1);
-    GPolyList::iterator it3=Part3.begin();
-    for (GPolyList::iterator it2=Part2.begin(); it2!=Part2.end(); ++it2,++it3)
-      (*it2).myAppendClear(*it3);
-    Part2.splice(Part2.begin(), Part1);
-    return Part2;
-  }
+//   GPolyList IntEmbedPolyLists(const std::vector<RingElem>& F1,
+//                               const std::vector<RingElem>& F2,
+//                               const GRingInfo& GRI)
+//   {
+//     GPolyList Part1 = EmbedPolyListNo0(F1, GRI, 0);
+//     GPolyList Part2 = EmbedPolyListNo0(F2, GRI, 0);
+//     GPolyList Part3 = EmbedPolyListNo0(F2, GRI, 1);
+//     GPolyList::iterator it3=Part3.begin();
+//     for (GPolyList::iterator it2=Part2.begin(); it2!=Part2.end(); ++it2,++it3)
+//       (*it2).myAppendClear(*it3);
+//     Part2.splice(Part2.begin(), Part1);
+//     return Part2;
+//   }
 
 
-  GPolyList IntEmbedVectorLists(const std::vector<ModuleElem>& G1,
-                                const std::vector<ModuleElem>& G2,
-                                const GRingInfo& theGRI)
-  {
-    const long NC = NumCompts(owner(G1[0]));
-    GPolyList FirstPart = EmbedVectorList(G1, theGRI);
-    GPolyList SecondPart = EmbedVectorList(G2, theGRI);
-    GPolyList ThirdPart = EmbedVectorList(G2, theGRI, NC);
-    GPolyList::iterator it1=ThirdPart.begin();
-    for (GPolyList::iterator it=SecondPart.begin();it!=SecondPart.end();++it,++it1)
-      (*it).myAppendClear(*it1);
-    SecondPart.splice(SecondPart.begin(),FirstPart);
-    return SecondPart;
-  }
+//   GPolyList IntEmbedVectorLists(const std::vector<ModuleElem>& G1,
+//                                 const std::vector<ModuleElem>& G2,
+//                                 const GRingInfo& theGRI)
+//   {
+//     const long NC = NumCompts(owner(G1[0]));
+//     GPolyList FirstPart = EmbedVectorList(G1, theGRI);
+//     GPolyList SecondPart = EmbedVectorList(G2, theGRI);
+//     GPolyList ThirdPart = EmbedVectorList(G2, theGRI, NC);
+//     GPolyList::iterator it1=ThirdPart.begin();
+//     for (GPolyList::iterator it=SecondPart.begin();it!=SecondPart.end();++it,++it1)
+//       (*it).myAppendClear(*it1);
+//     SecondPart.splice(SecondPart.begin(),FirstPart);
+//     return SecondPart;
+//   }
 
 
-  GPolyList ColonEmbedVectorLists(const std::vector<ModuleElem>& VL,
-                                  const ModuleElem& v,
-                                  const GRingInfo& theGRI)
-  {
-    GPolyList FirstPart;
-    if (VL.empty())  return FirstPart;
-    FirstPart = EmbedVectorList(VL, theGRI);
-    GPoly GP1 = EmbedVector(v, theGRI);
-    GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(v), NumCompts(owner(v)));
-    GP1.myAppendClear(GP2);
-    FirstPart.push_back(GP1);
-    return FirstPart;
-  }
+//   GPolyList ColonEmbedVectorLists(const std::vector<ModuleElem>& VL,
+//                                   const ModuleElem& v,
+//                                   const GRingInfo& theGRI)
+//   {
+//     GPolyList FirstPart;
+//     if (VL.empty())  return FirstPart;
+//     FirstPart = EmbedVectorList(VL, theGRI);
+//     GPoly GP1 = EmbedVector(v, theGRI);
+//     GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(v), NumCompts(owner(v)));
+//     GP1.myAppendClear(GP2);
+//     FirstPart.push_back(GP1);
+//     return FirstPart;
+//   }
 
 
-  GPolyList ColonEmbedPolyLists(const std::vector<RingElem>& G,
-                                const RingElem& f,
-                                const GRingInfo& theGRI)
-  {
-     GPolyList FirstPart;
-     if (G.empty())  return FirstPart;
-     FirstPart = EmbedPolyList(G, theGRI, 0);
-     GPoly GP1 = EmbedPoly(f, theGRI, 0);
-     GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(f), 1);
-     GP1.myAppendClear(GP2);
-     FirstPart.push_back(GP1);
-     return FirstPart;
-  }
+//   GPolyList ColonEmbedPolyLists(const std::vector<RingElem>& G,
+//                                 const RingElem& f,
+//                                 const GRingInfo& theGRI)
+//   {
+//      GPolyList FirstPart;
+//      if (G.empty())  return FirstPart;
+//      FirstPart = EmbedPolyList(G, theGRI, 0);
+//      GPoly GP1 = EmbedPoly(f, theGRI, 0);
+//      GPoly GP2 = EmbedPoly(one(theGRI.myOldSPR()), theGRI, wdeg(f), 1);
+//      GP1.myAppendClear(GP2);
+//      FirstPart.push_back(GP1);
+//      return FirstPart;
+//   }
 
 
-  // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
-  std::vector<ModuleElem> DeEmbedPolyList(const std::vector<RingElem>& G,
-                                          const GRingInfo& theGRI,
-                                          const long ComponentsLimit)
-  {
-    std::vector<ModuleElem> G_out;
-    if (G.empty())  return G_out;
-    G_out.reserve(len(G));
-    for (const RingElem& g: G)
-      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-        G_out.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
-    return G_out;
-  }
+  // // Polys whose LPP has last var exponent bigger than ComponentsLimit disappear on DeEmbedding
+  // std::vector<ModuleElem> DeEmbedPolyList(const std::vector<RingElem>& G,
+  //                                         const GRingInfo& theGRI,
+  //                                         const long ComponentsLimit)
+  // {
+  //   std::vector<ModuleElem> G_out;
+  //   if (G.empty())  return G_out;
+  //   G_out.reserve(len(G));
+  //   for (const RingElem& g: G)
+  //     if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+  //       G_out.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
+  //   return G_out;
+  // }
 
 
-  std::vector<RingElem> DeEmbedPolyListToPL(const std::vector<RingElem>& G,
-                                            const GRingInfo& theGRI,
-                                            const long ComponentsLimit)
-  {
-    VerboseLog VERBOSE("DeEmbedPolyListToPL");
-    std::vector<RingElem> G_out;
-    if (G.empty())  return G_out;
-    G_out.reserve(len(G));
-    for (const RingElem& g: G)
-      if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-      {
-        VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
-        G_out.push_back(theGRI.myNewP2OldP()(g));
-        // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
-        // {
-        //   outPL.clear();
-        //   outPL.push_back(theGRI.myOldSPR()->myOne());
-        //   break;
-        // }
-      }
-    return G_out;
-  }
+  // std::vector<RingElem> DeEmbedPolyListToPL(const std::vector<RingElem>& G,
+  //                                           const GRingInfo& theGRI,
+  //                                           const long ComponentsLimit)
+  // {
+  //   VerboseLog VERBOSE("DeEmbedPolyListToPL");
+  //   std::vector<RingElem> G_out;
+  //   if (G.empty())  return G_out;
+  //   G_out.reserve(len(G));
+  //   for (const RingElem& g: G)
+  //     if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+  //     {
+  //       VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
+  //       G_out.push_back(theGRI.myNewP2OldP()(g));
+  //       // if ( IsConstant(outPL.last()) ) // redmine #1647 ////' doesn't happen
+  //       // {
+  //       //   outPL.clear();
+  //       //   outPL.push_back(theGRI.myOldSPR()->myOne());
+  //       //   break;
+  //       // }
+  //     }
+  //   return G_out;
+  // }
 
 
-  void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
-    {
-      const GRingInfo& GRI(the_gp.myGRingInfo());
-      CoCoA_ASSERT(theGPL.begin()->myGRingInfo()==GRI);
-      const long NC = NumCompts(GRI.myFreeModule());
-      RingElem tmp =  GRI.myE(NC)*GRI.myY(wdeg(the_gp)); // JAA 2012-10-11
-      the_gp.myAppendClear(tmp);                         // JAA 2012-10-11
-      theGPL.push_back(GPoly(GRI));
-      theGPL.back().AssignClear(the_gp);
-    } // ColonEmbedGPolyList
+  // void ColonEmbedGPolyList(GPolyList& theGPL, GPoly& the_gp)
+  //   {
+  //     const GRingInfo& GRI(the_gp.myGRingInfo());
+  //     CoCoA_ASSERT(theGPL.begin()->myGRingInfo()==GRI);
+  //     const long NC = NumCompts(GRI.myFreeModule());
+  //     RingElem tmp =  GRI.myE(NC)*GRI.myY(wdeg(the_gp)); // JAA 2012-10-11
+  //     the_gp.myAppendClear(tmp);                         // JAA 2012-10-11
+  //     theGPL.push_back(GPoly(GRI));
+  //     theGPL.back().AssignClear(the_gp);
+  //   } // ColonEmbedGPolyList
 
 
-    // The ordering is supposed to be Deg compatible
-    RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& theY)
-    {
-      const SparsePolyRing SPR=owner(the_p);
-      if (GradingDim(SPR) != len(theY))
-        CoCoA_THROW_ERROR2(ERR::BadArg, "incompatible GradingDim");
-      RingElem the_hp(SPR);
-      RingElem tmp(SPR);
-      degree MaxDeg(GradingDim(SPR));
-      degree TmpDeg(GradingDim(SPR));
-      // Compute the maximum degree
-      for (SparsePolyIter it=BeginIter(the_p);!IsEnded(it);++it)
-        MaxDeg=top(MaxDeg,wdeg(PP(it)));
-      // Homogenizing
-      for (SparsePolyIter it=BeginIter(the_p);!IsEnded(it);++it)
-      {
-        //std::clog<<"Homogenized:tmp"<<tmp<<endl;
-        tmp = monomial(SPR,coeff(it),PP(it));
-        TmpDeg=wdeg(PP(it));
-        for (long i=0; i != len(theY); ++i)
-          tmp*=power(theY[i],(MaxDeg[i]-TmpDeg[i]));
-        SPR->myAddClear(raw(the_hp), raw(tmp));
-      }
-      return the_hp;
-    } // homog (multihomog)
+    // // The ordering is supposed to be Deg compatible
+    // RingElem homog(ConstRefRingElem the_p, const std::vector<RingElem>& theY)
+    // {
+    //   const SparsePolyRing SPR=owner(the_p);
+    //   if (GradingDim(SPR) != len(theY))
+    //     CoCoA_THROW_ERROR2(ERR::BadArg, "incompatible GradingDim");
+    //   RingElem the_hp(SPR);
+    //   RingElem tmp(SPR);
+    //   degree MaxDeg(GradingDim(SPR));
+    //   degree TmpDeg(GradingDim(SPR));
+    //   // Compute the maximum degree
+    //   for (SparsePolyIter it=BeginIter(the_p);!IsEnded(it);++it)
+    //     MaxDeg=top(MaxDeg,wdeg(PP(it)));
+    //   // Homogenizing
+    //   for (SparsePolyIter it=BeginIter(the_p);!IsEnded(it);++it)
+    //   {
+    //     //std::clog<<"Homogenized:tmp"<<tmp<<endl;
+    //     tmp = monomial(SPR,coeff(it),PP(it));
+    //     TmpDeg=wdeg(PP(it));
+    //     for (long i=0; i != len(theY); ++i)
+    //       tmp*=power(theY[i],(MaxDeg[i]-TmpDeg[i]));
+    //     SPR->myAddClear(raw(the_hp), raw(tmp));
+    //   }
+    //   return the_hp;
+    // } // homog (multihomog)
 
 
-    void homogenized(ModuleElem& /*the_hv*/,
-                     const ModuleElem& /*the_v*/,
-                     const GRingInfo& /*theGRI*/)
-    {
-      CoCoA_THROW_ERROR1(ERR::NYI);
-    } // homogenized
+    // void homogenized(ModuleElem& /*the_hv*/,
+    //                  const ModuleElem& /*the_v*/,
+    //                  const GRingInfo& /*theGRI*/)
+    // {
+    //   CoCoA_THROW_ERROR1(ERR::NYI);
+    // } // homogenized
 
 
 
