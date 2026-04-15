@@ -107,14 +107,14 @@ public:
   friend std::ostream& operator<<(std::ostream& out, const GRingInfo& theGRI);
   bool IamModule()const{return IamModuleValue;};
 
-  const RingElem& myE()const{return indet(myNewSPR(),ModuleVarIndex(myNewSPR()));};
-  std::vector<RingElem> myEY()const{return myEYValue;};
+  //  const RingElem& myE()const{return indet(myNewSPR(),ModuleVarIndex(myNewSPR()));};
+  //  std::vector<RingElem> myEY()const{return myEYValue;};
   //  std::vector<RingElem> myY()const;
   SugarDegree myNewSugar(ConstRefRingElem f) const;
-  RingElem myY(long i)const{return indet(myNewSPR(),i+NumIndets(myNewSPRValue)-1-GradingDim(myNewSPRValue));};
+  //  RingElem myY(long i)const{return indet(myNewSPR(),i+NumIndets(myNewSPRValue)-1-GradingDim(myNewSPRValue));};
   RingElem myY(const degree& the_d)const;
   ConstRefRingElem myEY(long i)const{return myEYValue[i];};
-  RingElem myE(long i)const{return power(myE(),myComponent(i));};
+  RingElem myE(long i) const {return IndetPower(myNewSPR(), ModuleVarIndex(myNewSPR()), myComponent(i));};
   //  bool amIGraded()const{return myEYValue.empty();};
   bool IsMyGradingPosPlus()const{return myGradingPosPlusValue;};
   void MySetComputationInputAndGradingType(const ComputationInputAndGradingType CIAGT)

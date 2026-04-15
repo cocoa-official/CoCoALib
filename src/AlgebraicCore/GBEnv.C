@@ -159,17 +159,18 @@ namespace CoCoA
     const std::vector<RingElem>& x = indets(myNewSPRValue);
     // Fill Y
     for (long i=0; i < GradingDim(myNewSPRValue); ++i)
-       Y.push_back(x[i+NumIndets(P_orig)]);
+      Y.push_back(x[i+NumIndets(P_orig)]);
 
     const std::vector<degree> Sh=shifts(myFreeModuleValue);
-    RingElem tmp(myNewSPRValue);
+    //RingElem tmp(myNewSPRValue);
     for (long i=0; i < NumCompts(myFreeModuleValue); ++i)
-    {
-      tmp=power(myE(),this->myComponent(i));
-      for (long j=0; j < GradingDim(myNewSPRValue); ++j)
-        tmp*=power(Y[j],Sh[i][j]);
-      myEYValue.push_back(tmp);
-    }
+      myEYValue.push_back(myE(i) * myY(Sh[i]));
+    //{
+    //  tmp=power(myE(),this->myComponent(i));
+    //  for (long j=0; j < GradingDim(myNewSPRValue); ++j)
+    //    tmp*=power(Y[j],Sh[i][j]);
+    //  myEYValue.push_back(tmp);
+    //}
     myCtorAux(P_work, IsHomog, IsSatAlg);
     myTimeoutChecker.myReset(IterationVariability::high);
   }// ctor GRingInfo
@@ -264,8 +265,9 @@ long GRingInfo::myPhonyComponent(ConstRefPPMonoidElem T)const
 RingElem GRingInfo::myY(const degree& d) const
 {
    RingElem result(one(myNewSPR()));
+   const long YFirstIdx = NumIndets(myNewSPRValue) -GradingDim(myNewSPRValue) -1;
    for (long j=0; j < GradingDim(myNewSPR()); ++j)
-     result *= power(myY(j),d[j]);
+     result *= IndetPower(myNewSPR(), YFirstIdx+j, d[j]); // Y(j)^d[j]
    return result;
 }
 
@@ -319,8 +321,8 @@ ostream& operator<<(ostream& out, const GRingInfo& theGRI)
      <<" myInputAndGrading = "<<theGRI.myInputAndGrading()<<endl
      <<" myGradingPosPlusValue = "<<theGRI.IsMyGradingPosPlus()<<endl
      <<" embedding grading "
-     <<" EY=\n";
-  for (const RingElem& f: theGRI.myEYValue)  out << f << endl;
+     <<" EY=" << theGRI.myEYValue << endl;
+  //  for (const RingElem& f: theGRI.myEYValue)  out << f << endl;
   out << endl;
   return out;
 }
