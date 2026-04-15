@@ -192,26 +192,26 @@ namespace CoCoA
 
 
 
-  const RingElem& indet(const PolyRing& P, long var)
+  const RingElem& indet(const PolyRing& P, long idx)
   {
-    P->myCheckIndetIndex(var, CoCoA_ERROR_CONTEXT);
-    return P->myIndets()[var];
+    P->myCheckIndetIndex(idx, CoCoA_ERROR_CONTEXT);
+    return P->myIndets()[idx];
   }
 
 
-  RingElem IndetPower(const PolyRing& P, long var, long exp)  // error if exp < 0
+  RingElem IndetPower(const PolyRing& P, long idx, long exp)  // error if exp < 0
   {
-    P->myCheckIndetIndex(var, CoCoA_ERROR_CONTEXT);
+    P->myCheckIndetIndex(idx, CoCoA_ERROR_CONTEXT);
     if (exp < 0)  CoCoA_THROW_ERROR1(ERR::NegExp);
     RingElem ans(P, 1);
-    P->myIndetPower(raw(ans), var, exp);
+    P->myIndetPower(raw(ans), idx, exp);
     return ans;
   }
 
 
-  RingElem IndetPower(const PolyRing& P, long var, const BigInt& EXP)  // error if EXP < 0
+  RingElem IndetPower(const PolyRing& P, long idx, const BigInt& EXP)  // error if EXP < 0
   {
-    return IndetPower(P, var, ConvertTo<long>(EXP));
+    return IndetPower(P, idx, ConvertTo<long>(EXP));
   }
 
 
@@ -292,15 +292,15 @@ namespace CoCoA
   }
 
 
-  long deg(ConstRefRingElem f, long var)
+  long deg(ConstRefRingElem f, long idx)
   {
     if (!IsPolyRing(owner(f)))
       CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     const PolyRingBase* P = PolyRingPtr(owner(f));
-    P->myCheckIndetIndex(var, CoCoA_ERROR_CONTEXT);
+    P->myCheckIndetIndex(idx, CoCoA_ERROR_CONTEXT);
     if (IsZero(f))
       CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
-    return P->myDeg(raw(f), var);
+    return P->myDeg(raw(f), idx);
   }
 
 
