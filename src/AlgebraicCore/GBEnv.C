@@ -154,21 +154,20 @@ namespace CoCoA
     IamModuleValue(true),    //    IamModuleValue(P_work!=P_orig),
     myTimeoutChecker(CheckForTimeout)
   {
-    //    if (!IsField(CoeffRing(P_orig)))
-    //      CoCoA_THROW_ERROR1(ERR::ReqField);
-    std::vector<RingElem> Y; // The grading vars
+    // if (!IsField(CoeffRing(P_orig))) CoCoA_THROW_ERROR1(ERR::ReqField);
+    std::vector<RingElem> Y; // The grading indets
     const std::vector<RingElem>& x = indets(myNewSPRValue);
     // Fill Y
     for (long i=0; i < GradingDim(myNewSPRValue); ++i)
        Y.push_back(x[i+NumIndets(P_orig)]);
 
-    const std::vector<degree> S=shifts(myFreeModuleValue);
+    const std::vector<degree> Sh=shifts(myFreeModuleValue);
     RingElem tmp(myNewSPRValue);
     for (long i=0; i < NumCompts(myFreeModuleValue); ++i)
     {
       tmp=power(myE(),this->myComponent(i));
       for (long j=0; j < GradingDim(myNewSPRValue); ++j)
-        tmp*=power(Y[j],S[i][j]);
+        tmp*=power(Y[j],Sh[i][j]);
       myEYValue.push_back(tmp);
     }
     myCtorAux(P_work, IsHomog, IsSatAlg);
@@ -254,19 +253,21 @@ long GRingInfo::myComponent(ConstRefPPMonoidElem T)const
   return exponent(T,ModuleVarIndex(myNewSPRValue));
 }
 
+
 long GRingInfo::myPhonyComponent(ConstRefPPMonoidElem T)const
 {
   if (!IamModule()) return 0;// True Ring
   return myComponent(exponent(T,ModuleVarIndex(myNewSPRValue)));
 }
 
-RingElem GRingInfo::myY(const degree& the_d)const
+
+RingElem GRingInfo::myY(const degree& d) const
 {
    RingElem result(one(myNewSPR()));
    for (long j=0; j < GradingDim(myNewSPR()); ++j)
-      result*=power(myY(j),the_d[j]);
+     result *= power(myY(j),d[j]);
    return result;
-}//myY
+}
 
 
   SugarDegree GRingInfo::myNewSugar(ConstRefRingElem f) const
@@ -319,9 +320,8 @@ ostream& operator<<(ostream& out, const GRingInfo& theGRI)
      <<" myGradingPosPlusValue = "<<theGRI.IsMyGradingPosPlus()<<endl
      <<" embedding grading "
      <<" EY=\n";
-  for (const RingElem& f: theGRI.myEYValue)
-  { out<<f<<endl; }
-  out<<endl;
+  for (const RingElem& f: theGRI.myEYValue)  out << f << endl;
+  out << endl;
   return out;
 }
 
@@ -347,13 +347,13 @@ bool AreCompatible(const GRingInfo& GRI1,const GRingInfo& GRI2)
 
 
 // A member field?
-std::vector<RingElem> GRingInfo::myY()const
-{
-  vector<RingElem> Y;
-  for (long i=0; i < GradingDim(myNewSPRValue); ++i)
-    Y.push_back(indet(myNewSPRValue,i+NumIndets(myOldSPRValue)));
-  return Y;
-}//myY()
+// std::vector<RingElem> GRingInfo::myY()const
+// {
+//   vector<RingElem> Y;
+//   for (long i=0; i < GradingDim(myNewSPRValue); ++i)
+//     Y.push_back(indet(myNewSPRValue, i+NumIndets(myOldSPRValue)));
+//   return Y;
+// }//myY()
 
 
  // AMB 2026-02-05: This function only returns false.  ???

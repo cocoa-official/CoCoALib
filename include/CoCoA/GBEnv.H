@@ -109,7 +109,7 @@ public:
 
   const RingElem& myE()const{return indet(myNewSPR(),ModuleVarIndex(myNewSPR()));};
   std::vector<RingElem> myEY()const{return myEYValue;};
-  std::vector<RingElem> myY()const;
+  //  std::vector<RingElem> myY()const;
   SugarDegree myNewSugar(ConstRefRingElem f) const;
   RingElem myY(long i)const{return indet(myNewSPR(),i+NumIndets(myNewSPRValue)-1-GradingDim(myNewSPRValue));};
   RingElem myY(const degree& the_d)const;
