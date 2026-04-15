@@ -298,18 +298,6 @@ void GPoly::myUpdateLenLPPLCDegComp()
     mySugar = sugar(the_gp);
    }//myAssignSPoly
 
- /*
-//???  This does not work, I don't understand why.
- void GPoly::myAppendClear(RingElem& p)
- {
-   SparsePolyRing P=owner(*this);
-clog << "operator+=: myPoly " <<myPoly<< endl;
-clog << "operator+=: p " <<p<< endl;
-   P->myAppendClear(raw(myPoly), raw(p));
-clog << "operator+=: result " <<myPoly<< endl;
-   myNumTerms = NumTerms(myPoly);
- }//_myAppendClear
- */
 
 // TEMPORARY - Dangerous, does not adjust all the fields of *this
  void GPoly::myAppendClear(RingElem& p)
