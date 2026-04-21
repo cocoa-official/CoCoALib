@@ -255,6 +255,13 @@ long GRingInfo::myComponent(ConstRefPPMonoidElem T)const
 }
 
 
+  // change in progress:
+  // long GRingInfo::myCompt_orig(ConstRefPPMonoidElem T, long NC)const
+  // {
+  //   if (!IamModule()) return 0;// True Ring
+  //   return myComponent(myComponent(T)) - NC;
+  // }
+
 long GRingInfo::myPhonyComponent(ConstRefPPMonoidElem T)const
 {
   if (!IamModule()) return 0;// True Ring
@@ -262,6 +269,10 @@ long GRingInfo::myPhonyComponent(ConstRefPPMonoidElem T)const
 }
 
 
+  long GRingInfo::myComponent(const long i) const
+  { return myMaxComponentIndex-i; }  // was inline AMB 2026-04-18
+
+  
 RingElem GRingInfo::myY(const degree& d) const
 {
    RingElem result(one(myNewSPR()));
@@ -330,12 +341,13 @@ ostream& operator<<(ostream& out, const GRingInfo& theGRI)
 
 long ModuleVarIndex(const SparsePolyRing& P)
 {
-  long tmp = NumIndets(P);
-  if (tmp!=0)
-    return tmp-1;
-  else
-    return tmp;
-}//ModuleVarIndex
+//long tmp = NumIndets(P);
+//if (tmp!=0)
+//  return tmp-1;
+//else
+//  return tmp;
+  return NumIndets(P)-1;
+}
 
 
 bool AreCompatible(const GRingInfo& GRI1,const GRingInfo& GRI2)

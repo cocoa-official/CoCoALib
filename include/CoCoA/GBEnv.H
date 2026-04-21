@@ -98,9 +98,10 @@ public:
   CoeffEncoding::type myCoeffRingType() const { return myCoeffRingTypeValue; }
 
   void mySetCoeffRingType(CoeffEncoding::type CT); ///< Field or FrFldOfGCDDomain
-  long myComponent(const long i)const{return myMaxComponentIndex-i;}; //Complement to myMaxComponentIndex
-  long myComponent(ConstRefPPMonoidElem T) const;///< the real component of a PP
-  long myPhonyComponent(ConstRefPPMonoidElem T) const;///< the phony component of a PP
+  long myComponent(const long i) const; //Complement to myMaxComponentIndex
+  long myComponent(ConstRefPPMonoidElem T)const;///< the component in work ring
+  long myPhonyComponent(ConstRefPPMonoidElem T) const;///< Complement of myComponent(T)
+  //  long myCompt_orig(ConstRefPPMonoidElem T, long NC) const;///< the component in orig module
   bool operator==(const GRingInfo&) const;
   ///< Are equal myNewSPRValue and myDivMaskRuleValue only
   friend bool AreCompatible(const GRingInfo&,const GRingInfo&);
