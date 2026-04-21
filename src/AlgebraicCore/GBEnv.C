@@ -154,23 +154,23 @@ namespace CoCoA
     IamModuleValue(true),    //    IamModuleValue(P_work!=P_orig),
     myTimeoutChecker(CheckForTimeout)
   {
-    //    if (!IsField(CoeffRing(P_orig)))
-    //      CoCoA_THROW_ERROR1(ERR::ReqField);
-    std::vector<RingElem> Y; // The grading vars
+    // if (!IsField(CoeffRing(P_orig))) CoCoA_THROW_ERROR1(ERR::ReqField);
+    std::vector<RingElem> Y; // The grading indets
     const std::vector<RingElem>& x = indets(myNewSPRValue);
     // Fill Y
     for (long i=0; i < GradingDim(myNewSPRValue); ++i)
-       Y.push_back(x[i+NumIndets(P_orig)]);
+      Y.push_back(x[i+NumIndets(P_orig)]);
 
-    const std::vector<degree> S=shifts(myFreeModuleValue);
-    RingElem tmp(myNewSPRValue);
+    const std::vector<degree> Sh=shifts(myFreeModuleValue);
+    //RingElem tmp(myNewSPRValue);
     for (long i=0; i < NumCompts(myFreeModuleValue); ++i)
-    {
-      tmp=power(myE(),this->myComponent(i));
-      for (long j=0; j < GradingDim(myNewSPRValue); ++j)
-        tmp*=power(Y[j],S[i][j]);
-      myEYValue.push_back(tmp);
-    }
+      myEYValue.push_back(myE(i) * myY(Sh[i]));
+    //{
+    //  tmp=power(myE(),this->myComponent(i));
+    //  for (long j=0; j < GradingDim(myNewSPRValue); ++j)
+    //    tmp*=power(Y[j],Sh[i][j]);
+    //  myEYValue.push_back(tmp);
+    //}
     myCtorAux(P_work, IsHomog, IsSatAlg);
     myTimeoutChecker.myReset(IterationVariability::high);
   }// ctor GRingInfo
@@ -254,19 +254,33 @@ long GRingInfo::myComponent(ConstRefPPMonoidElem T)const
   return exponent(T,ModuleVarIndex(myNewSPRValue));
 }
 
+
+  // change in progress:
+  // long GRingInfo::myCompt_orig(ConstRefPPMonoidElem T, long NC)const
+  // {
+  //   if (!IamModule()) return 0;// True Ring
+  //   return myComponent(myComponent(T)) - NC;
+  // }
+
 long GRingInfo::myPhonyComponent(ConstRefPPMonoidElem T)const
 {
   if (!IamModule()) return 0;// True Ring
   return myComponent(exponent(T,ModuleVarIndex(myNewSPRValue)));
 }
 
-RingElem GRingInfo::myY(const degree& the_d)const
+
+  long GRingInfo::myComponent(const long i) const
+  { return myMaxComponentIndex-i; }  // was inline AMB 2026-04-18
+
+  
+RingElem GRingInfo::myY(const degree& d) const
 {
    RingElem result(one(myNewSPR()));
+   const long YFirstIdx = NumIndets(myNewSPRValue) -GradingDim(myNewSPRValue) -1;
    for (long j=0; j < GradingDim(myNewSPR()); ++j)
-      result*=power(myY(j),the_d[j]);
+     result *= IndetPower(myNewSPR(), YFirstIdx+j, d[j]); // Y(j)^d[j]
    return result;
-}//myY
+}
 
 
   SugarDegree GRingInfo::myNewSugar(ConstRefRingElem f) const
@@ -318,22 +332,22 @@ ostream& operator<<(ostream& out, const GRingInfo& theGRI)
      <<" myInputAndGrading = "<<theGRI.myInputAndGrading()<<endl
      <<" myGradingPosPlusValue = "<<theGRI.IsMyGradingPosPlus()<<endl
      <<" embedding grading "
-     <<" EY=\n";
-  for (const RingElem& f: theGRI.myEYValue)
-  { out<<f<<endl; }
-  out<<endl;
+     <<" EY=" << theGRI.myEYValue << endl;
+  //  for (const RingElem& f: theGRI.myEYValue)  out << f << endl;
+  out << endl;
   return out;
 }
 
 
 long ModuleVarIndex(const SparsePolyRing& P)
 {
-  long tmp = NumIndets(P);
-  if (tmp!=0)
-    return tmp-1;
-  else
-    return tmp;
-}//ModuleVarIndex
+//long tmp = NumIndets(P);
+//if (tmp!=0)
+//  return tmp-1;
+//else
+//  return tmp;
+  return NumIndets(P)-1;
+}
 
 
 bool AreCompatible(const GRingInfo& GRI1,const GRingInfo& GRI2)
@@ -347,13 +361,13 @@ bool AreCompatible(const GRingInfo& GRI1,const GRingInfo& GRI2)
 
 
 // A member field?
-std::vector<RingElem> GRingInfo::myY()const
-{
-  vector<RingElem> Y;
-  for (long i=0; i < GradingDim(myNewSPRValue); ++i)
-    Y.push_back(indet(myNewSPRValue,i+NumIndets(myOldSPRValue)));
-  return Y;
-}//myY()
+// std::vector<RingElem> GRingInfo::myY()const
+// {
+//   vector<RingElem> Y;
+//   for (long i=0; i < GradingDim(myNewSPRValue); ++i)
+//     Y.push_back(indet(myNewSPRValue, i+NumIndets(myOldSPRValue)));
+//   return Y;
+// }//myY()
 
 
  // AMB 2026-02-05: This function only returns false.  ???

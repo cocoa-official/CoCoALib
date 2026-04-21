@@ -71,7 +71,7 @@ namespace CoCoA
     virtual const std::vector<RingElem>& myIndets() const = 0;
     virtual const symbol& myIndetSymbol(long idx) const = 0;
     virtual std::vector<RingElem> myIndets(const std::string& s) const; ///< common impl
-    virtual void myIndetPower(RawPtr rawf, long var, long exp) const = 0;  ///< assumes exp >= 0
+    virtual void myIndetPower(RawPtr rawf, long idx, long exp) const = 0;  ///< assumes exp >= 0
     virtual long myNumTerms(ConstRawPtr rawf) const = 0;
     virtual bool myIsConstant(ConstRawPtr rawf) const = 0;
     virtual bool myIsIndet(long& index, ConstRawPtr rawf) const = 0;
@@ -81,7 +81,7 @@ namespace CoCoA
     virtual bool myIsOddPoly(ConstRawPtr rawf) const = 0;
 
     virtual long myStdDeg(ConstRawPtr rawf) const = 0;
-    virtual long myDeg(ConstRawPtr rawf, long var) const = 0;
+    virtual long myDeg(ConstRawPtr rawf, long idx) const = 0;
     virtual RingElemAlias myLC(ConstRawPtr rawf) const = 0;
     virtual void myContent(RawPtr rawcontent, ConstRawPtr rawf) const = 0;
     virtual void myContentFrF(RawPtr rawcontent, ConstRawPtr rawf) const = 0;
@@ -144,7 +144,7 @@ namespace CoCoA
 
   long StdDeg(ConstRefRingElem f);                // inline
   long deg(ConstRefRingElem f);                   // inline (identical to StdDeg)
-  long deg(ConstRefRingElem f, long var);
+  long deg(ConstRefRingElem f, long idx);
   RingElemAlias LC(ConstRefRingElem f);           ///< NB result belongs to CoeffRing(owner(f))
   RingElem content(ConstRefRingElem f);           ///< NB result belongs to CoeffRing(owner(f))
   RingElem FixedDivisor(ConstRefRingElem f);      ///< NB result belongs to CoeffRing(owner(f))
@@ -156,7 +156,7 @@ namespace CoCoA
   RingElem prim(ConstRefRingElem f);              ///< alpha*f for alpha in QQ s.t. coeffs are integer and coprime
   bool IsSqFree(ConstRefRingElem f);              ///< true iff f is square-free (coeffs must be in field)
   RingElem deriv(ConstRefRingElem f, ConstRefRingElem x); ///< derivative of f w.r.t. x, x must be an indeterminate
-  RingElem deriv(ConstRefRingElem f, long var);   ///< here var is the index of the indeterminate
+  RingElem deriv(ConstRefRingElem f, long idx);   ///< here idx is the index of the indeterminate
 
   //----- RingHom --------------------------------------------------
   RingHom PolyRingHom(const PolyRing& domain, const ring& codomain, RingHom CoeffHom, const std::vector<RingElem>& IndetImages); // R[x] -> S, defined by CoeffHom: R->S and x->IndetImages
