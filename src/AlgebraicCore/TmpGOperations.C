@@ -314,12 +314,12 @@ namespace CoCoA
     */
     GPoly EmbedVector(const ModuleElem& v,
                       const GRingInfo& theGRI,
-                      const long StartingFromCompIndex)			
+                      const long FromCompt)			
     {
       RingElem p(theGRI.myNewSPR());
       const RingHom& phi=theGRI.myOldP2NewP();
       for (long i=0; i<NumCompts(owner(v)); ++i)
-        p += phi(v[i]) * theGRI.myEY(i+StartingFromCompIndex);
+        p += phi(v[i]) * theGRI.myEY(i+FromCompt);
       return GPoly(p, theGRI);
     } // EmbedVector
 
@@ -331,13 +331,13 @@ namespace CoCoA
 
     GPolyList EmbedVectorList(const std::vector<ModuleElem>& VL,
                               const GRingInfo& theGRI,
-                              const long StartingFromCompIndex)
+                              const long FromCompt)
     {
       GPolyList outPL;
       if (VL.empty())  return outPL;
       for (const auto& v: VL)
         if (!IsZero(v))
-          outPL.push_back(EmbedVector(v, theGRI, StartingFromCompIndex));
+          outPL.push_back(EmbedVector(v, theGRI, FromCompt));
       return outPL;
     }
 
@@ -426,14 +426,13 @@ namespace CoCoA
                                 const std::vector<RingElem>& F2,
                                 const GRingInfo& GRI)
     {
-      GPolyList Part1 = EmbedPolyListNo0(F1, GRI, 0);
-      GPolyList Part2 = EmbedPolyListNo0(F2, GRI, 0);
-      GPolyList Part3 = EmbedPolyListNo0(F2, GRI, 1);
-      GPolyList::iterator it3=Part3.begin();
-      for (GPolyList::iterator it2=Part2.begin(); it2!=Part2.end(); ++it2,++it3)
-        (*it2).myAppendClear(*it3);
-      Part2.splice(Part2.begin(), Part1);
-      return Part2;
+      GPolyList F1_gp = EmbedPolyListNo0(F1, GRI, 0);
+      GPolyList F2_gp = EmbedPolyListNo0(F2, GRI, 0);
+      GPolyList F2_gp1 = EmbedPolyListNo0(F2, GRI, 1);
+      for (auto it=F2_gp.begin(), it1=F2_gp1.begin(); it!=F2_gp.end(); ++it,++it1)
+        (*it).myAppendClear(*it1);
+      F1_gp.splice(F1_gp.end(), F2_gp);
+      return F1_gp;
     }
 
 
@@ -442,14 +441,13 @@ namespace CoCoA
                                   const GRingInfo& theGRI)
     {
       const long NC = NumCompts(owner(G1[0]));
-      GPolyList FirstPart  = EmbedVectorList(G1, theGRI, 0);
-      GPolyList SecondPart = EmbedVectorList(G2, theGRI, 0);
-      GPolyList ThirdPart  = EmbedVectorList(G2, theGRI, NC);
-      GPolyList::iterator it1=ThirdPart.begin();
-      for (GPolyList::iterator it=SecondPart.begin();it!=SecondPart.end();++it,++it1)
-        (*it).myAppendClear(*it1);
-      SecondPart.splice(SecondPart.begin(),FirstPart);
-      return SecondPart;
+      GPolyList G1_gp = EmbedVectorList(G1, theGRI, 0);
+      GPolyList G2_gp = EmbedVectorList(G2, theGRI, 0);
+      GPolyList G2_gpNC  = EmbedVectorList(G2, theGRI, NC);
+      for (auto it=G2_gp.begin(), itNC=G2_gpNC.begin(); it!=G2_gp.end(); ++it,++itNC)
+        (*it).myAppendClear(*itNC);
+      G1_gp.splice(G1_gp.end(), G2_gp);
+      return G1_gp;
     }
 
 
@@ -503,7 +501,7 @@ namespace CoCoA
     // identical copy in TmpGReductor:
     ModuleElem DeEmbedPoly(ConstRefRingElem g,
                            const GRingInfo& theGRI,
-                           const long ComponentsLimit)
+                           const long FromCompt)
     {
       const SparsePolyRing OldP=theGRI.myOldSPR();
       const SparsePolyRing NewP=theGRI.myNewSPR();
@@ -515,41 +513,41 @@ namespace CoCoA
       RingElem tmp(OldP);
       for (SparsePolyIter i=BeginIter(g); !IsEnded(i); ++i)
       {
-        tmp=theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
-        CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit >= 0);
-        CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit < NumCompts(FM));
-        v += tmp * e[theGRI.myPhonyComponent(PP(i))-ComponentsLimit];
+        tmp = theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
+        CoCoA_ASSERT(theGRI.myCompt_orig(PP(i)) - FromCompt >= 0);
+        CoCoA_ASSERT(theGRI.myCompt_orig(PP(i)) - FromCompt < NumCompts(FM));
+        v += tmp * e[theGRI.myCompt_orig(PP(i)) - FromCompt];
       }
       return v;
     }
 
 
-    // Polys whose LPP has compt_work > max-ComponentsLimit,
-    // i.e. compt_orig < ComponentsLimit,  are ignored
+    // Polys whose LPP has compt_work > max-FromCompt,
+    // i.e. compt_orig < FromCompt,  are ignored
     std::vector<ModuleElem> DeEmbedPolyList(const std::vector<RingElem>& G,
                                             const GRingInfo& theGRI,
-                                            const long ComponentsLimit)
+                                            const long FromCompt)
     {
       std::vector<ModuleElem> G_out;
       if (G.empty())  return G_out;
       G_out.reserve(len(G));
-      for (const RingElem& g: G)
-        if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
-          G_out.push_back(DeEmbedPoly(g, theGRI, ComponentsLimit));
+      for (const RingElem& g: G) // vvvvvvvvvv  only for PosTO 
+        if (theGRI.myCompt_work(LPP(g)) <= theGRI.myCompt_OrigToWork(FromCompt))
+          G_out.push_back(DeEmbedPoly(g, theGRI, FromCompt));
       return G_out;
     }
 
 
     std::vector<RingElem> DeEmbedPolyListToPL(const std::vector<RingElem>& G,
                                               const GRingInfo& theGRI,
-                                              const long ComponentsLimit)
+                                              const long FromCompt)
     {
       VerboseLog VERBOSE("DeEmbedPolyListToPL");
       std::vector<RingElem> G_out;
       if (G.empty())  return G_out;
       G_out.reserve(len(G));
       for (const RingElem& g: G)
-        if (theGRI.myComponent(LPP(g)) <= theGRI.myComponent(ComponentsLimit))
+        if (theGRI.myCompt_work(LPP(g)) <= theGRI.myCompt_OrigToWork(FromCompt))
         {
           VERBOSE(100) << "LPP(g) = " << LPP(g) << std::endl; /////////////////
           G_out.push_back(theGRI.myNewP2OldP()(g));
@@ -912,6 +910,8 @@ namespace CoCoA
   }//ComputeElim
 
 
+  // ------- ComputeSyz --------------------------------
+
   VectorList ComputeSyz(const FreeModule& SyzFM, const VectorList& G,
                         const CpuTimeLimit& CheckForTimeout)
   {
@@ -928,8 +928,8 @@ namespace CoCoA
     GRingInfo GRI(P_work,P,FM,SyzFM,IsHomogGrD0(G),IsSatAlg,NewDivMaskEvenPowers(), CheckForTimeout);
     GReductor GBR(GRI, SyzEmbedVectorList(G,GRI));
     GBR.myDoGBasis();
-    return DeEmbedPolyList(GBR.myExportGBasis(), GRI,NumCompts(FM));
-  }//ComputeSyz
+    return DeEmbedPolyList(GBR.myExportGBasis(), GRI, NumCompts(FM));
+  }
 
 
   VectorList ComputeSyz(const FreeModule& SyzFM, const PolyList& G,
@@ -944,9 +944,11 @@ namespace CoCoA
                   IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
     GReductor GBR(GRI, SyzEmbedPolyList(G,GRI));
     GBR.myDoGBasis();
-    return DeEmbedPolyList(GBR.myExportGBasis(), GRI,1);
-  }//ComputeSyz
+    return DeEmbedPolyList(GBR.myExportGBasis(), GRI, 1);
+  }
 
+
+  // ------- ComputeIntersection --------------------------------
 
   VectorList ComputeIntersection(const VectorList& G1, const VectorList& G2,
                                  const CpuTimeLimit& CheckForTimeout)
@@ -959,8 +961,8 @@ namespace CoCoA
                   IsSatAlg, NewDivMaskEvenPowers(), CheckForTimeout);
     GReductor GBR(GRI, IntEmbedVectorLists(G1, G2, GRI));
     GBR.myDoGBasis();// homog input standard alg interred
-    return DeEmbedPolyList(GBR.myExportGBasis(), GRI,NumCompts(FM));
-  }//ComputeIntersection
+    return DeEmbedPolyList(GBR.myExportGBasis(), GRI, NumCompts(FM));
+  }
 
 
   PolyList ComputeIntersection(const PolyList& G1, const PolyList& G2,
@@ -976,11 +978,13 @@ namespace CoCoA
     GReductor GBR(GRI, IntEmbedPolyLists(G1, G2, GRI));
     GBR.myDoGBasis();// homog input standard alg interred
     return DeEmbedPolyListToPL(GBR.myExportGBasis(), GRI, 1);
-  }//ComputeIntersection
+  }
 
+
+  // ------- ComputeColon --------------------------------
 
   namespace
-  { // namespace // anonymous ----------------------------------------------
+  { // namespace // anonymous ----------------------------
 
     PolyList ComputeColonByPrincipal(const VectorList& G1, const ModuleElem& v,
                                      const CpuTimeLimit& CheckForTimeout)
@@ -1041,7 +1045,8 @@ namespace CoCoA
     {
       aux = ComputeColonByPrincipal(G1, *it, CheckForTimeout);
       tmpColon = ComputeIntersection(tmpColon, aux, CheckForTimeout);
-      if (tmpColon.empty()) break;  /// anna non puo' essere empty, giusto?
+      CoCoA_ASSERT_ALWAYS(!tmpColon.empty()); // just paranoia -- remove ALWAYS
+      if (tmpColon.empty()) break;
     }
     return tmpColon;
   }
@@ -1062,15 +1067,16 @@ namespace CoCoA
       {
         aux = ComputeColonByPrincipal(G1, *it, CheckForTimeout);
         tmpColon = ComputeIntersection(tmpColon, aux, CheckForTimeout);
-        CoCoA_ASSERT_ALWAYS(!tmpColon.empty());
-      //        if (tmpColon.empty()) break;
+        CoCoA_ASSERT_ALWAYS(!tmpColon.empty()); // just paranoia -- remove ALWAYS
       }
     return tmpColon;
   }
 
 
+  // ------- ComputeSaturation --------------------------------
+
   namespace
-  { // namespace // anonymous ----------------------------------------------
+  { // namespace // anonymous ---------------------------------
     // These procedures are for EqualLPPs used by Saturation
   
     // PolyList::const_iterators are ordered according to LPP of their polys
@@ -1243,6 +1249,8 @@ namespace CoCoA
   }
 
 
+  // ------- ComputeHomogenization --------------------------------
+
   VectorList ComputeHomogenization(const VectorList& G, const PolyList& /*theIndets*/,
                              const CpuTimeLimit& /*CheckForTimeout*/)
   {
@@ -1264,7 +1272,9 @@ namespace CoCoA
   }
 
 
-// WARN: it supposes ComputeSaturationByPrincipal returns a GB
+  // ------- RadicalMembership --------------------------------
+
+  // WARN: it supposes ComputeSaturationByPrincipal returns a GB
   bool RadicalMembership(const PolyList& G, ConstRefRingElem f,
                          const CpuTimeLimit& CheckForTimeout)
   {

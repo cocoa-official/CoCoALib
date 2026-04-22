@@ -222,11 +222,10 @@ namespace CoCoA
 
   namespace { // anonymous    //-- DeEmbedding --------------------------
 
-    // identical copy for this function in TmpGOperations:
+    // similar copy for this function in TmpGOperations:
     // this copy is only for fn DeEmbedPoly(g, GRI) defined just below
-    ModuleElem DeEmbedPolyAux(ConstRefRingElem g,
-                              const GRingInfo& theGRI,
-                              const long ComponentsLimit)
+    // used in myExportGBasis/MinGens_module
+    ModuleElem DeEmbedPoly(ConstRefRingElem g, const GRingInfo& theGRI)
     {
       const SparsePolyRing OldP=theGRI.myOldSPR();
       const SparsePolyRing NewP=theGRI.myNewSPR();
@@ -238,19 +237,11 @@ namespace CoCoA
       RingElem tmp(OldP);
       for (SparsePolyIter i=BeginIter(g); !IsEnded(i); ++i)
       {
-        tmp=theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
-        CoCoA_ASSERT(theGRI.myPhonyComponent(PP(i))-ComponentsLimit < NumCompts(FM));
-        v+=tmp*e[theGRI.myPhonyComponent(PP(i))-ComponentsLimit]; // reversed for coco4compatibility
+        tmp = theGRI.myNewP2OldP()(monomial(NewP,coeff(i),PP(i)));
+        v += tmp * e[theGRI.myCompt_orig(PP(i))];
       }
       return v;
     }
-
-
-    // RingElem DeEmbedPolyToP(ConstRefRingElem g, const GRingInfo& theGRI)
-    // { return theGRI.myNewP2OldP()(g); }
-
-    ModuleElem DeEmbedPoly(ConstRefRingElem g, const GRingInfo& theGRI)
-    { return DeEmbedPolyAux(g, theGRI, 0); }
 
   } // namespace anonymous------------------------------------
 

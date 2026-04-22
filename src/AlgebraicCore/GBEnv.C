@@ -248,28 +248,28 @@ namespace CoCoA
 
 
 
-long GRingInfo::myComponent(ConstRefPPMonoidElem T)const
-{
-  if (!IamModule()) return 0;// True Ring
-  return exponent(T,ModuleVarIndex(myNewSPRValue));
-}
+  long GRingInfo::myCompt_work(ConstRefPPMonoidElem T)const
+  {
+    if (!IamModule()) return 0;// True Ring
+    return exponent(T,ModuleVarIndex(myNewSPRValue));
+  }
 
 
-  // change in progress:
-  // long GRingInfo::myCompt_orig(ConstRefPPMonoidElem T, long NC)const
-  // {
-  //   if (!IamModule()) return 0;// True Ring
-  //   return myComponent(myComponent(T)) - NC;
-  // }
-
-long GRingInfo::myPhonyComponent(ConstRefPPMonoidElem T)const
-{
-  if (!IamModule()) return 0;// True Ring
-  return myComponent(exponent(T,ModuleVarIndex(myNewSPRValue)));
-}
+  long GRingInfo::myCompt_orig(ConstRefPPMonoidElem T) const
+  {
+    CoCoA_ASSERT(IamModule());
+    return myMaxComponentIndex - myCompt_work(T);
+  }
 
 
-  long GRingInfo::myComponent(const long i) const
+// long GRingInfo::myPhonyComponent(ConstRefPPMonoidElem T)const
+// {
+//   if (!IamModule()) return 0;// True Ring
+//   return myComponent(exponent(T,ModuleVarIndex(myNewSPRValue)));
+// }
+
+
+  long GRingInfo::myCompt_OrigToWork(const long i) const
   { return myMaxComponentIndex-i; }  // was inline AMB 2026-04-18
 
   
@@ -283,7 +283,13 @@ RingElem GRingInfo::myY(const degree& d) const
 }
 
 
-  SugarDegree GRingInfo::myNewSugar(ConstRefRingElem f) const
+  RingElem GRingInfo::myE(long i) const
+  { // was inline
+    return IndetPower(myNewSPR(), ModuleVarIndex(myNewSPR()), myCompt_OrigToWork(i));
+  }
+
+
+SugarDegree GRingInfo::myNewSugar(ConstRefRingElem f) const
   {
     switch (myInputAndGrading())
     {

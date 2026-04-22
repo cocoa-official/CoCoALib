@@ -69,7 +69,7 @@ namespace CoCoA
     myMinimalGenLevel = -1;
     myAge = age;
     myNumTerms = NumTerms(the_p);
-    myComponent = theGRI.myComponent(myLPPForDiv());
+    myComponent = theGRI.myCompt_work(myLPPForDiv());
    }//ctor
 
 
@@ -93,7 +93,7 @@ namespace CoCoA
     myMinimalGenLevel = -1;
     myAge = age;
     myNumTerms = NumTerms(the_p);
-    myComponent = theGRI.myComponent(myLPPForDiv());
+    myComponent = theGRI.myCompt_work(myLPPForDiv());
    }//ctor
 
   // This ctor destroys the_p
@@ -118,7 +118,7 @@ namespace CoCoA
     myMinimalGenLevel = -1;
     myAge = age;
     myNumTerms = NumTerms(myPolyValue);
-    myComponent = theGRI.myComponent(myLPPForDiv());
+    myComponent = theGRI.myCompt_work(myLPPForDiv());
   }//ctor
 
 // This ctor destroys the_p
@@ -141,7 +141,7 @@ namespace CoCoA
     myMinimalGenLevel = -1;
     myAge = age;
     myNumTerms = NumTerms(myPolyValue);
-    myComponent = theGRI.myComponent(myLPPForDiv());
+    myComponent = theGRI.myCompt_work(myLPPForDiv());
   }//ctor
 
 
@@ -271,7 +271,7 @@ void GPoly::myUpdateLenLPPLCDegComp()
     myLPPForDivwMask = exponents(myLPPForOrd);
     myLCValue=LC(myPoly());//DYN here the new LC will be computed
     myWDeg = wdeg(myLPPForOrd);
-    myComponent = myGRingInfoValue.myComponent(myLPPForDiv());
+    myComponent = myGRingInfoValue.myCompt_work(myLPPForDiv());
   }
 }//myUpdateLenLPPLCDegComp
 
