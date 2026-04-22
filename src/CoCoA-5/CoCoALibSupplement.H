@@ -107,6 +107,7 @@ namespace CoCoA
   std::vector<RingElem> QuotientBasisSorted_forC5(const ideal& I);
   std::vector<RingElem> JanetBasis_forC5(const ideal& I);
   RingElem HilbertNumQuot_forC5(const ideal& I);
+  RingElem HilbertNumQuot_C_forC5(const ideal& I);
   std::vector<BigInt> ContFrac_forC5(const BigRat& q);
   std::vector<BigRat> CFApproximants_forC5(const BigRat& q);
   std::vector<BigInt> BinomialRepr_forC5(const BigInt& N, const BigInt& r);
