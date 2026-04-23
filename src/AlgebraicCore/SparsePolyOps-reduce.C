@@ -100,7 +100,7 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
   {
     if ( IsZero(g) ) return nullptr;
     GRingInfo GRI(theReductors.myGRingInfo());
-    return FindReducer(LPPForDivwMask(g), GRI.myComponent(LPPForDiv(g)), theReductors);
+    return FindReducer(LPPForDivwMask(g), GRI.myCompt_work(LPPForDiv(g)), theReductors);
   }
 
 
@@ -113,7 +113,7 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
     //    const PPWithMask pm(ActiveLPP(F), GRI.myDivMaskRule());
     PPWithMask pm(GRI.myPPM(), GRI.myDivMaskRule());
     pm = exponents(ActiveLPP(F));
-    return FindReducer(pm, GRI.myComponent(PP(pm)), theReductors);
+    return FindReducer(pm, GRI.myCompt_work(PP(pm)), theReductors);
   }
 
 
@@ -184,12 +184,12 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
     if ( IsActiveZero(F) || ActiveLPP(F) < LPPForOrd(g) ) return;
     const GRingInfo& GRI(g.myGRingInfo());
     const PPWithMask& PMg(LPPForDivwMask(g));
-    const long Componentg = GRI.myComponent(PP(PMg));
+    const long Componentg = GRI.myCompt_work(PP(PMg));
     //    PPWithMask PMF(ActiveLPP(F), GRI.myDivMaskRule());
     PPWithMask PMF(GRI.myPPM(), GRI.myDivMaskRule());
     vector<long> expv;
     PMF = exponents(expv, ActiveLPP(F));
-    long ComponentF = GRI.myComponent(PP(PMF));
+    long ComponentF = GRI.myCompt_work(PP(PMF));
     while ( !IsActiveZero(F) )
     {
       if ( (ComponentF==Componentg && IsDivisibleFast(PMF, PMg) ) )
@@ -202,7 +202,7 @@ degree HereForProfilingOnlyWDeg(ConstRefPPMonoidElem cofactor1)
       if ( IsActiveZero(F) || ActiveLPP(F) < LPPForOrd(g) ) return;
       //      PMF.myAssign(ActiveLPP(F));
       PMF = exponents(expv, ActiveLPP(F));;
-      ComponentF = GRI.myComponent(PP(PMF));
+      ComponentF = GRI.myCompt_work(PP(PMF));
     }//while
   }//reduce
 

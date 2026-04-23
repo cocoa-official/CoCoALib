@@ -98,10 +98,9 @@ public:
   CoeffEncoding::type myCoeffRingType() const { return myCoeffRingTypeValue; }
 
   void mySetCoeffRingType(CoeffEncoding::type CT); ///< Field or FrFldOfGCDDomain
-  long myComponent(const long i) const; //Complement to myMaxComponentIndex
-  long myComponent(ConstRefPPMonoidElem T)const;///< the component in work ring
-  long myPhonyComponent(ConstRefPPMonoidElem T) const;///< Complement of myComponent(T)
-  //  long myCompt_orig(ConstRefPPMonoidElem T, long NC) const;///< the component in orig module
+  long myCompt_OrigToWork(const long i) const; //Complement to myMaxComponentIndex
+  long myCompt_work(ConstRefPPMonoidElem T)const;///< the component in work ring
+  long myCompt_orig(ConstRefPPMonoidElem T) const;///< the component in orig module
   bool operator==(const GRingInfo&) const;
   ///< Are equal myNewSPRValue and myDivMaskRuleValue only
   friend bool AreCompatible(const GRingInfo&,const GRingInfo&);
@@ -115,7 +114,7 @@ public:
   //  RingElem myY(long i)const{return indet(myNewSPR(),i+NumIndets(myNewSPRValue)-1-GradingDim(myNewSPRValue));};
   RingElem myY(const degree& the_d)const;
   ConstRefRingElem myEY(long i)const{return myEYValue[i];};
-  RingElem myE(long i) const {return IndetPower(myNewSPR(), ModuleVarIndex(myNewSPR()), myComponent(i));};
+  RingElem myE(long i) const;
   //  bool amIGraded()const{return myEYValue.empty();};
   bool IsMyGradingPosPlus()const{return myGradingPosPlusValue;};
   void MySetComputationInputAndGradingType(const ComputationInputAndGradingType CIAGT)
