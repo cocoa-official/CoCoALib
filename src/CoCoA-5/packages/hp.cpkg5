@@ -56,7 +56,7 @@ EndDefine; -- AffHilbertSeries
 
 
 Define PoincareQuotient(I)
-  return TaggedHilbertSeries(HilbertSeriesQuot(I));
+  return TaggedHilbertSeries(HilbertSeriesQuot(I)); // <built-in function>
 EndDefine; -- PoincareQuotient
 
 
@@ -518,23 +518,23 @@ Define HilbertSeriesMultiDeg(QR, WM)
   return $hp.PoincareMultiDeg(QR, WM);
 EndDefine;
 
+
 Define PoincareMultiDeg(QR, WM)
-  If type(QR) <> RING And not(IsQuotientRing(QR)) Then
+  if type(QR) <> RING and not(IsQuotientRing(QR)) then
     error("First argument must be a quotient ring", QR);
-  EndIf;
+  endif;
   P := BaseRing(QR);
-  If type(WM) <> MAT Then
+  if type(WM) <> MAT then
     error("Second argument must be a matrix", WM);
-  EndIf;
-  If NumCols(WM) <> NumIndets(P) Then
+  endif;
+  if NumCols(WM) <> NumIndets(P) then
     error("Wrong number of weights:" + sprint(NumCols(WM)) + " " + sprint(NumIndets(P)), WM);
-  EndIf;
+  endif;
+  --------------------
   K := CoeffRing(P);
-  M := MakeTermOrd(WM);
-  AuxRing := NewPolyRing(K, SymbolRange("x",1,NumCols(M)), M, NumRows(WM));
-  phi := PolyAlgebraHom(P, AuxRing, indets(AuxRing));
-  PS := HilbertSeries(AuxRing/ideal(phi(gens(DefiningIdeal(QR)))));
-  return PS;
+  P_W := NewPolyRingWeights(K, IndetSymbols(P), WM);
+  phi := PolyAlgebraHom(P, P_W, indets(P_W));
+  return HilbertSeries(P_W/ideal(phi(gens(DefiningIdeal(QR)))));
 EndDefine; -- PoincareMultiDeg
 
 

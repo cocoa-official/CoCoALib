@@ -641,6 +641,17 @@ namespace CoCoA {
   }
 
 
+  RingElem HilbertNumQuot_C_forC5(const ideal& I)
+  {
+    PPOrdering PPO(ordering(PPM(RingOf(I))));
+    if (GradingDim(PPO) ==0)  // aff -- see hp.cpkg5
+      CoCoA_THROW_ERROR2(ERR::NYI, "GradingDim(PPO) is 0");
+    if (GradingDim(PPO) >1)  // multigraded
+      CoCoA_THROW_ERROR1(ERR::ReqGradingDim1);
+    return HilbertNumQuot_C(I);
+  }
+
+
   std::vector<BigInt> ContFrac_forC5(const BigRat& q)
   {
     vector<BigInt> ans;
