@@ -8,17 +8,14 @@ using namespace std;
 
 //----------------------------------------------------------------------
 const string ShortDescription =
-  "C++ vectors behave much like LISTs in CoCoA-5, but faster.\n"
-  "This is an example showing how to translate CoCoA-5 list  \n"
-  "functions APPEND, CONCAT, FIRST & LAST into C++.          \n";
+  "A C++ vector behave much like a LIST in CoCoA-5, but faster.\n"
+  "This is an example showing how to translate CoCoA-5 LIST  \n"
+  "functions \"append\", \"concat\", \"first\" & \"last\" into C++.\n";
 
 const string LongDescription =
-  "C++ vectors behave much like LISTs in CoCoA-5, but faster. \n"
-  "This is an example showing how to translate CoCoA-5 list   \n"
-  "functions APPEND, CONCAT FIRST & LAST into C++.            \n"
-  "APPEND translates nicely into push_back. Also FIRST(L) and \n"
-  "and LAST(L) have simple translations.  However FIRST(L,k)  \n"
-  "and LAST(L,k) do not have such simple translations; instead\n"
+  "\"append\" translates nicely into push_back.               \n"
+  "Also \"first(L)\" and \"last(L)\" have simple translations.\n"
+  "However \"first(L,k)\" and \"last(L,k)\" do not translate simply:\n"
   "there are usually better, but different techniques in C++. \n";
 //----------------------------------------------------------------------
 
@@ -37,6 +34,7 @@ namespace CoCoA
   {
     GlobalManager CoCoAFoundations;
     cout << ShortDescription << endl;
+    cout << LongDescription << endl;
 
     // ---------------------------------------------------------
     // Translating CoCoA-5 functions APPEND, FIRST, LAST, CONCAT
@@ -48,6 +46,7 @@ namespace CoCoA
     // Nevertheless, it can be helpful to know how to translate them
     // directly... we show this here.
 
+    cout << "-------------------------------------------" << endl;
     // Construct a "list" with given elements:
     // L := [3,4,5];
     std::vector<long> L = {3,4,5};
@@ -80,8 +79,20 @@ namespace CoCoA
     const std::vector<long> L2 = {6,7,8,9};
     // L := concat(L,L2);  becomes the line below
     L.insert( L.end(),  L2.begin(),  L2.end() );
+    cout << "  L2 is " << L2 << endl;    
     cout << "Concatenated with \"L.insert\"  modifies L  --> " << L << endl;
-    // L2 remains unchanged.
+    cout <<   "             and L2 remains unchanged: L2  is " << L2 << endl;
+    cout << "-------------------------------------------" << endl;
+    std::list<long> LL  = {1,2};
+    std::list<long> LL2 = {7,8};
+    cout << "If LL, LL2 are implemented as C++ \"list\" instead of \"vector\":" << endl;
+    cout << "LL is " << LL << " and LL2 is " << LL2 << endl;    
+    LL.insert( LL.end(),  LL2.begin(),  LL2.end() );
+    cout << "Concatenated with \"LL.insert\"  modifies LL  --> " << LL << endl;
+    cout <<   "             and LL2 remains unchanged: LL2  is  " << LL2 << endl;
+    LL.splice( LL.end(),  LL2);
+    cout << "Concatenated with \"LL.splice\"  modifies LL  --> " << LL << endl;
+    cout <<   "   and LL2 is cleared (moved into LL): LL2  is  " << LL2 << endl;
   }
 
 } // end of namespace CoCoA
