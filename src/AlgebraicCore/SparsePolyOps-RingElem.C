@@ -274,7 +274,7 @@ namespace CoCoA
   long SparsePolyRingBase::myStdDeg(ConstRawPtr rawf) const
   {
     if (myIsZero(rawf)) CoCoA_THROW_ERROR1(ERR::ReqNonZeroRingElem);
-    if (IsStdGraded(ordering(myPPM())))
+    if (IsStdGradedCompatible(ordering(myPPM())))
       return deg(PP(myBeginIter(rawf))); // same as deg(LPP(f))
     long PolyDegree = 0;
     for (SparsePolyIter i=myBeginIter(rawf); !IsEnded(i); ++i)

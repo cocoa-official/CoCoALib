@@ -24,7 +24,7 @@ TESTS=test-empty.C \
       test-GOperations1.C  test-GOperations2.C  test-GReductor1.C \
       test-Graeffe.C \
       test-gsl1.C \
-      test-hilbert1.C  test-HomomorphismOps1.C \
+      test-hilbert1.C  test-hilbert2.C  test-HomomorphismOps1.C \
       test-ideal1.C  test-ideal2.C  test-IdealOfPoints1.C \
       test-IntOperations1.C  test-IntOperations2.C  test-IntOperations3.C  test-IsInteger1.C \
       test-LRSDegeneracy1.C  test-LRSDegeneracy2.C \

@@ -89,6 +89,7 @@ namespace CoCoA
     ideal I = ideal(indets(P));
     
     RingElem HNum = power((1-t), NumIndets(P));
+    CoCoA_ASSERT_ALWAYS(num(HilbertSeriesQuot(I)) == HNum);
     CoCoA_ASSERT_ALWAYS(HilbertNumQuot_time(I) == HNum);
     CoCoA_ASSERT_ALWAYS(HilbertNumQuot_C_time(I) == HNum);
     CoCoA_ASSERT_ALWAYS(MGHilbertNumQuot_time(I) == HNum);
@@ -98,12 +99,11 @@ namespace CoCoA
     ideal I3 = ideal(indets(Pw));
     
     HNum = power((1-t*t*t), NumIndets(Pw));
+    VERBOSE(30) << "---- IsStdGraded(P)?  " << IsStdGraded(P) << std::endl;
+    VERBOSE(30) << "---- IsStdGraded(Pw)?  " << IsStdGraded(Pw) << std::endl;
     VERBOSE(30) << "-----------  " << HNum << std::endl;
-    HilbertNumQuot_time(I3);
-    HilbertNumQuot_C_time(I3);
     
-    //CoCoA_ASSERT_ALWAYS(HilbertNumQuot_time(I3) == HNum);  // no
-    //CoCoA_ASSERT_ALWAYS(HilbertNumQuot_C_time(I3) == HNum);  // no
+    CoCoA_ASSERT_ALWAYS(num(HilbertSeriesQuot(I3)) == HNum);// OK
     CoCoA_ASSERT_ALWAYS(MGHilbertNumQuot_time(I3) == HNum); // OK  
 
     // this line is just to avoid mempool complaints with -DCoCoA_MEMPOOL_DEBUG
