@@ -360,9 +360,8 @@ namespace CoCoA
     {
       // ???Cache the result in a data member???
       if (myGradingDim != 1)  return false;
-      if (IsZero(myDefiningMatrix(0,0)))  return false;
-      for (long j=1; j < myNumIndets; ++j)
-        if (myDefiningMatrix(0,j) != myDefiningMatrix(0,0))  return false;
+      for (long j=0; j < myNumIndets; ++j)
+        if (!IsOne(myDefiningMatrix(0,j)))  return false;
       return true;
     }
     
@@ -371,6 +370,16 @@ namespace CoCoA
 
 
   } // end of namespace PPO
+
+
+    bool IsStdGradedCompatible(const PPOrdering& PPO)
+    { // very similar to IamStdGraded
+      if (GradingDim(PPO) != 1)  return false;
+      if (IsZero(OrdMat(PPO)(0,0)))  return false;
+      for (long j=1; j < NumIndets(PPO); ++j)
+        if (OrdMat(PPO)(0,j) != OrdMat(PPO)(0,0))  return false;
+      return true;
+    }
 
 
   bool IsLex(const PPOrdering& PPO)

@@ -99,6 +99,8 @@ namespace CoCoA
   PPOrdering NewMatrixOrdering(const ConstMatrixView& OrderMatrix, const MachineInt& GradingDim);
 
 
+  bool IsStdGradedCompatible(const PPOrdering& PPO);
+
   // Functions for recognizing the underlying implementation of a PP ordering.
   bool IsLex(const PPOrdering& PPO);
   bool IsXel(const PPOrdering& PPO);
@@ -110,7 +112,6 @@ namespace CoCoA
 
   ConstMatrixView OrdMat(const PPOrdering& PPO);
   ConstMatrixView GradingMat(const PPOrdering& PPO);
-
   
   // The next few classes are to allow one to use "lex", "StdDegLex" or "StdDegRevLex"
   // as the ordering (without having to create the PPOrdering object).  This is just
