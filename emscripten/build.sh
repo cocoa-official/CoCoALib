@@ -359,7 +359,7 @@ fi
 if [[ ! -f configuration/autoconf.mk ]]; then
     emconfigure ./configure \
         --with-cxx=em++ \
-        --with-cxxflags="-O2" \
+        --with-cxxflags="-O2 -fexceptions" \
         --with-libgmp="$AUX_PREFIX/lib/libgmp.a" \
         --with-boost-hdr-dir="$AUX_PREFIX/include" \
         --with-libcddgmp="$AUX_PREFIX/lib/libcddgmp.a" \
@@ -390,12 +390,36 @@ if [[ -f examples/CopyInfo ]]; then
     chmod +x examples/CopyInfo
 fi
 
-WASM_LDFLAGS="-O2 -s ASYNCIFY=1 -s TOTAL_STACK=32mb -s INITIAL_MEMORY=2048mb -s ALLOW_MEMORY_GROWTH=1"
+WASM_LDFLAGS="-O2 --fexceptions -s TOTAL_STACK=32mb -s INITIAL_MEMORY=2048mb -s ALLOW_MEMORY_GROWTH=1"
 
 emmake make -j8 library
 emmake make -j8 cocoa5 LDFLAGS="$WASM_LDFLAGS"
 # emmake make -j8 -C examples executables LDFLAGS="$WASM_LDFLAGS" EXEEXT=".html"
 
 cd src/CoCoA-5
-python3 ../../generate_cocoa_fs.py
+
+em++ -O2 -fexceptions -s ASSERTIONS=0 -s TOTAL_STACK=32mb -s INITIAL_MEMORY=2048mb -s ALLOW_MEMORY_GROWTH=1 \
+-o CoCoAInterpreter.js \
+../../emscripten/wasm_patch.c \
+AST.o Lexer.o Main.o Interpreter.o LineProviders.o Parser.o CoCoALibSupplement.o \
+BuiltInFunctions.o BuiltInFunctions-CoCoALib.o BuiltInFunctionsVarArgs-CoCoALib.o \
+BuiltInOneLiners-CoCoALib.o BuiltInFunctions-Frobby.o BuiltInFunctions-GFan.o \
+BuiltInFunctions-GSL.o BuiltInFunctions-MathSAT.o BuiltInFunctions-Normaliz.o \
+globals.o OnlineHelp.o VersionInfo.o Banner.o CompilationDate.o \
+../../lib/libcocoa.a \
+../../configuration/ExternalLibs/lib/libgfan-symlink.a \
+../../configuration/ExternalLibs/lib/libcddgmp-symlink.a \
+../../configuration/ExternalLibs/lib/libgsl-symlink.a \
+../../extern/emscripten/install/lib/libgslcblas.a \
+../../configuration/ExternalLibs/lib/libnormaliz-symlink.a \
+../../extern/emscripten/install/lib/libflint.a \
+../../extern/emscripten/install/lib/libmpfr.a \
+../../configuration/ExternalLibs/lib/libntl-symlink.a \
+../../configuration/ExternalLibs/lib/libgmpxx-symlink.a \
+../../configuration/ExternalLibs/lib/libgmp-symlink.a \
+../../configuration/ExternalLibs-CoCoA5/lib/libboost_filesystem-symlink.a \
+--preload-file "$(pwd)/packages@/src/CoCoA-5/packages" \
+--preload-file "$(pwd)/tests@/src/CoCoA-5/tests" \
+--preload-file "$(pwd)/CoCoAManual@/src/CoCoA-5/CoCoAManual"
+
 cd ../..
