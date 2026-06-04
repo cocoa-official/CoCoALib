@@ -34,7 +34,7 @@ then
     exit 1
 fi
 
-if [ \! -d "$1" -o \! -d "$1/boost" ]
+if ! { [ -d "$1" ] && [ -d "$1/boost" ]; }
 then
   echo "ERROR: arg must be a directory containing subdir \"boost\"   $SCRIPT_NAME"   > /dev/stderr
   exit 2
@@ -58,7 +58,7 @@ is_absolute "$EXTLIB_5_DIR_FULL" ||
   exit 1
 )
 
-if [ \! -d "$EXTLIB_5_DIR_FULL" -o \! -d "$EXTLIB_5_DIR_FULL/include" -o \! -d "$EXTLIB_5_DIR_FULL/lib" ]
+if ! { [ -d "$EXTLIB_5_DIR_FULL" ] && [ -d "$EXTLIB_5_DIR_FULL/include" ] && [ -d "$EXTLIB_5_DIR_FULL/lib" ]; }
 then
     echo "ERROR: environment variable EXTLIB_5_DIR_FULL is implausible: \"$EXTLIB_5_DIR_FULL\"   $SCRIPT_NAME"   > /dev/stderr
     echo "ERROR: (expected subdirs .../include/ and .../lib/ to exist)"  > /dev/stderr
@@ -89,8 +89,7 @@ has_libboost_mt ()
     MISSING_SUBLIBS=
     for sublib in $SUBLIBS
     do
-	/bin/ls  "${1}"/libboost_$sublib-mt.*  >/dev/null  2>&1
-	if [ $? -ne 0 ]
+	if ! /bin/ls  "${1}/libboost_$sublib-mt".*  >/dev/null  2>&1
 	then
 	    MISSING_SUBLIBS="libboost_$sublib-mt  $MISSING_SUBLIBS"
 	fi
@@ -103,8 +102,7 @@ has_libboost ()
     MISSING_SUBLIBS=
     for sublib in $SUBLIBS
     do
-	/bin/ls  "${1}"/libboost_$sublib.*  >/dev/null  2>&1
-	if [ $? -ne 0 ]
+	if ! /bin/ls  "${1}/libboost_$sublib".*  >/dev/null  2>&1
 	then
 	    MISSING_SUBLIBS="libboost_$sublib  $MISSING_SUBLIBS"
 	fi
@@ -149,8 +147,7 @@ fi
 # CHEAP HACK: hopefully it can soon be eliminated (when older systems
 #             update to newer versions of BOOST)
 # Older versions of BOOST must also link to libboost_system
-/bin/ls "$BOOST_LIB_DIR"/libboost_system.*  >/dev/null  2>&1
-if [ $? = 0 ]
+if  /bin/ls  "$BOOST_LIB_DIR"/libboost_system.*  >/dev/null  2>&1
 then
     SUBLIBS="$SUBLIBS  system"
 fi
@@ -178,7 +175,7 @@ done
 
 
 # Hack for MinGW as it needs libws2_32 for Boost ASIO
-MINGW=`uname -s | grep -F MINGW`
+MINGW=$(uname -s | grep -F MINGW)
 if [ -n "$MINGW" ]
 then
   BOOST_LDLIBS="$BOOST_LDLIBS  -lws2_32"

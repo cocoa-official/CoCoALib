@@ -3,8 +3,8 @@
 # Script to choose the best ULong2Long defn (in ULong2Long.H).
 # Expects env variables CXX and CXXFLAGS to be set.
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 # Try the three possible settings for the flag CoCoA_ULONG2LONG.
 # Print out the first which works (and exit with code 0): prints 1, 2 or 3
@@ -39,15 +39,15 @@ is_absolute "$1" ||
   exit 1
 )
 
-if [ \! -d "$1" ]
+if ! [ -d "$1" ]
 then
     echo "ERROR: arg is not a directory \"$1\"   $SCRIPT_NAME"  > /dev/stderr
     exit 1
 fi
     
-COCOA_INC_DIR=`dirname "$1"`
-BASE=`basename "$1"`
-if [ "$BASE" \!= "CoCoA" -o \! -f "$COCOA_INC_DIR/CoCoA/ULong2Long.H" ]
+COCOA_INC_DIR=$(dirname "$1")
+BASE=$(basename "$1")
+if [ "$BASE" \!= "CoCoA" ] || ! [ -f "$COCOA_INC_DIR/CoCoA/ULong2Long.H" ]
 then
   echo "ERROR: cannot find CoCoA header file \"$COCOA_INC_DIR/CoCoA/ULong2Long.H\"   $SCRIPT_NAME"  > /dev/stderr
   exit 1
@@ -62,9 +62,9 @@ fi
 # Create tmp directory, put test prog in it, compile and run.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir cpp-flags-ulong2long`
+TMP_DIR=$(mktempdir cpp-flags-ulong2long)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null  || ( echo "ERROR: pushd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/cat > CheckULong2Long.C  <<EOF
 #include "CoCoA/ULong2Long.H"
 using CoCoA::ULong2Long;
@@ -117,8 +117,7 @@ do
     echo "LOGFILE: $TMP_DIR/LogFile   $SCRIPT_NAME"  > /dev/stderr
     exit 3  # do not clean TMP_DIR, for possible debugging
   fi
-  ./CheckULong2Long  >> LogFile  2>&1
-  if [ $? = 0 ]
+  if ./CheckULong2Long  >> LogFile  2>&1
   then
     UL2L_DEFN="$defn"
     break
@@ -133,7 +132,7 @@ then
 fi
 
 # Clean up TMP_DIR
-popd  > /dev/null
+popd  > /dev/null  || ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/rm -rf "$TMP_DIR"
 echo $UL2L_DEFN
 exit 0

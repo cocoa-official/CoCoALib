@@ -1,7 +1,7 @@
 #! /bin/bash
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 # Script assumes that CXX and CXXFLAGS are set.
 # This script tests whether CXX can compile with readline by
@@ -30,9 +30,9 @@ fi
 # Create tmp directory, put test prog in it, compile and run.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir readline-try-default`
+TMP_DIR=$(mktempdir readline-try-default)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null  || (echo "ERROR: pushd failed   $SCRIPT_NAME"  > /dev/stderr; exit 2 )
 
 # Here is the simple source code we shall use to test for readline:
 /bin/cat > test-readline.C <<EOF
@@ -56,14 +56,13 @@ int main()
 }
 EOF
 
-"$CXX" $CXXFLAGS test-readline.C -lreadline -o test-readline  > LogFile 2>&1
+"$CXX"  $CXXFLAGS  test-readline.C  -lreadline  -o test-readline  > LogFile 2>&1
 if [ $? -ne 0 ]
 then
     exit 1
 fi
 
 # Successful, so clean up TMP_DIR
-popd  > /dev/null
+popd  > /dev/null  || ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/rm -rf "$TMP_DIR"
 exit 0
-
