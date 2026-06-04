@@ -13,13 +13,15 @@ fi
 ##################################################################
 # Check $QMAKE
 
-if [ -z "$QMAKE" ]; then
+if [ -z "$QMAKE" ]
+then
   echo "ERROR: QMAKE not set" > /dev/stderr
   echo "ERROR: please re-run configure *without* the option --no-qt-gui" > /dev/stderr
   exit 2
 fi
 
-if [ ! -r "$QMAKE" -o ! -x "$QMAKE" ]; then
+if ! { [ -r "$QMAKE" ] && [ -x "$QMAKE" ]; }
+then
   echo "ERROR: $QMAKE not executable" > /dev/stderr
   exit 3
 fi
@@ -28,7 +30,7 @@ fi
 # Check that subdir QCodeEdit/ exists
 
 QCE="QCodeEdit"
-if [ \! -d "$QCE" ]
+if ! [ -d "$QCE" ]
 then
   echo "ERROR: $0 cannot find subdirectory $QCE/"
   exit 4
@@ -38,18 +40,17 @@ fi
 ##################################################################
 # Set the variable ARCH if we are on a MacOS X system...
 
-SYS_TYPE=`uname`
+SYS_TYPE=$(uname)
 
 # On MacOSX we must explicitly state the "architecture".
 # The block below should pick the right one (as dictated by libgmp).
 if [ "$SYS_TYPE" = "Darwin" ]
 then
-  ARCH=`arch`  # either "i386" or "ppc"
+  ARCH=$(arch)  # either "i386" or "ppc"
   if [ "$ARCH" = "i386" ]
   then
     (cd ../../examples; make ex-empty) > /dev/null 2>&1
-    arch -x86_64 ../../examples/ex-empty > /dev/null 2>&1
-    if [ $? = 0 ]
+    if arch -x86_64 ../../examples/ex-empty > /dev/null 2>&1
     then
       ARCH=x86_64
     fi
@@ -57,8 +58,7 @@ then
   if [ "$ARCH" = "ppc" ]
   then
     (cd ../../examples; make ex-empty) > /dev/null 2>&1
-    arch -ppc64 ../../examples/ex-empty > /dev/null 2>&1
-    if [ $? = 0 ]
+    if arch -ppc64 ../../examples/ex-empty > /dev/null 2>&1
     then
       ARCH=ppc64
     fi
@@ -93,8 +93,7 @@ then
     fi
 fi
 cd $QCE
-"$QMAKE" $DARWIN_OPTS  QCodeEdit.pro
-if [ "$?" -ne 0 ]
+if ! "$QMAKE" $DARWIN_OPTS  QCodeEdit.pro
 then
   echo "ERROR: $0 failed because $QMAKE failed for QCodeEdit" > /dev/stderr
   exit 5
