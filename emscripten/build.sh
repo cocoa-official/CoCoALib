@@ -130,8 +130,43 @@ EOF
 )
 
 # ------------------------------------------------------------------------------
-# Frobby
+# Frobby 
 # ------------------------------------------------------------------------------
+(
+    mkdir -p "$AUX_BUILD/frobby"
+    cd "$AUX_BUILD/frobby"
+    if [[ ! -d "$EXTERN_DIR/frobby" ]]; then
+        echo "Downloading Frobby source..."
+        git clone https://github.com/broune/frobby.git "$EXTERN_DIR/frobby"
+    fi
+    
+    cd "$EXTERN_DIR/frobby"
+    
+    if [[ ! -f bin/libfrobby.a ]]; then
+        echo "Building Frobby for WebAssembly..."
+        
+        sed -i.bak 's/ar crs/$(AR) crs/g' Makefile
+        
+        sed -i.bak2 's/$(outdir)stdinc.h.gch//g' Makefile
+        sed -i.bak3 's/-include $(outdir)stdinc.h/-include src\/stdinc.h/g' Makefile
+        
+        sed -i.bak4 's|"hash_map/hash_map"|<unordered_map>|g' src/HashMap.h
+        sed -i.bak5 's|__gnu_cxx::hash_map|std::unordered_map|g' src/HashMap.h
+        sed -i.bak6 's|__gnu_cxx::hash|std::hash|g' src/HashMap.h
+
+        sed -i.bak7 's/getpid()/1/g' src/main.cpp src/randomDataGenerators.cpp
+
+        sed -i.bak8 's/mpz_class q = mpq_class(_subGenSum)/mpq_class q = mpq_class(_subGenSum)/g' src/StatisticsStrategy.cpp
+        sed -i.bak9 's/rawSources := $(rawSources) $(rawTests)/rawSources := $(rawSources)/g' Makefile
+
+        emmake make library -j8 \
+            MODE=release \
+            GMP_INC_DIR="$AUX_PREFIX/include"
+            
+        cp bin/libfrobby.a "$AUX_PREFIX/lib/"
+        cp src/frobby.h "$AUX_PREFIX/include/"
+    fi
+)
 
 
 # ------------------------------------------------------------------------------
@@ -195,10 +230,6 @@ EOF
     emmake make -j8
     emmake make install
 )
-
-# ------------------------------------------------------------------------------
-# MathSAT
-# ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # MPFR
@@ -359,11 +390,12 @@ fi
 if [[ ! -f configuration/autoconf.mk ]]; then
     emconfigure ./configure \
         --with-cxx=em++ \
-        --with-cxxflags="-O2 -fexceptions" \
+        --with-cxxflags="-O2 -fexceptions -I$AUX_PREFIX/include" \
         --with-libgmp="$AUX_PREFIX/lib/libgmp.a" \
         --with-boost-hdr-dir="$AUX_PREFIX/include" \
         --with-libcddgmp="$AUX_PREFIX/lib/libcddgmp.a" \
         --with-libgfan="$AUX_PREFIX/lib/libgfan.a" \
+        --with-libfrobby="$AUX_PREFIX/lib/libfrobby.a" \
         --with-libgsl="$AUX_PREFIX/lib/libgsl.a" \
         --with-libnormaliz="$AUX_PREFIX/lib/libnormaliz.a" \
         --with-libntl="$AUX_PREFIX/lib/libntl.a" \
@@ -412,6 +444,7 @@ globals.o OnlineHelp.o VersionInfo.o Banner.o CompilationDate.o \
 ../../configuration/ExternalLibs/lib/libgsl-symlink.a \
 ../../extern/emscripten/install/lib/libgslcblas.a \
 ../../configuration/ExternalLibs/lib/libnormaliz-symlink.a \
+../../extern/emscripten/install/lib/libfrobby.a \
 ../../extern/emscripten/install/lib/libflint.a \
 ../../extern/emscripten/install/lib/libmpfr.a \
 ../../configuration/ExternalLibs/lib/libntl-symlink.a \

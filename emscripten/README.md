@@ -8,9 +8,6 @@ Files:
 
 See `run-web-demo.sh` as an example on how to set up a working website.
 
-Todo:
-- add Frobby, MathSAT
-
 Setup Instructions:
 
 - install emscripten:
