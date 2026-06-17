@@ -1,0 +1,47 @@
+SetVerbosityLevel(0);
+
+----------------------------------------------------------------------
+--- (1) Toy example: two circles
+----------------------------------------------------------------------
+
+P := NewPolyRing(QQ, "r,c,  x,y", ElimXLex(2,2), 0);
+use P;
+X := [x,y];
+
+f := x^2 +y^2 -1;      -- circ  (0,0)  radius 1 
+g := (x-c)^2 +y^2- r;  -- circ  (c,0)  radius sqrt(r)
+I := ideal(f, g);
+indent(ReducedGBasis(I));
+
+-->  (1),   c,   r-1,   (c^2)
+
+CGS_I := CGSIter(I,X, ElimXLex(2,2));
+PrintSegments(CGS_I);
+
+----------------------------------------------------------------------
+--- (2) Toy example enhanced
+----------------------------------------------------------------------
+
+P := NewPolyRing(QQ, "r, c1, c2,  x,y", ElimXLex(3,2), 0);
+use P;
+X := [x,y];
+
+f := x^2 +y^2 -1;            -- circ   (0,0)   radius 1 
+g := (x-c1)^2 +(y-c2)^2- r;  -- circ  (c1,c2)  radius sqrt(r)
+I := ideal(f, g);
+
+CGS_I := CGSIter(I,X, ElimXLex(3,2)); len(CGS_I.segments);
+--> 5 cases
+
+--SetVerbosityLevel(50); -- see inside the algorithm
+CGS_I := CGSIter(I,X, ElimXLex(3,2)); len(CGS_I.segments);
+
+--PrintSegments(CGS_I);
+
+CleanupCGS(ref CGS_I);
+PrintSegments(CGS_I);
+
+---------------------------------------------------------
+---------------------------------------------------------
+---------------------------------------------------------
+

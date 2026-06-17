@@ -14,6 +14,7 @@ TESTS=exsegv.cocoa5 \
       SourceAnna.cocoa5 \
       demo-GeMiTo2011.cocoa5 \
       demo-Osaka2015.cocoa5 \
+      demo-KL2026.cocoa5 \
       test-manual.cocoa5 \
       whatiscocoa.cocoa5 \
       lecture-HF1.cocoa5 \
