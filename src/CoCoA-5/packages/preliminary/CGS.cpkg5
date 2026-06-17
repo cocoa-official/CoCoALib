@@ -577,8 +577,8 @@ define CGSCoreIter2026(I,X)
     --< Step 2.3 >--
     G := ReducedGBasis_KAX_plus(J); -- G <-- RGB_J;
     --< Step 2.4 >-- -- g in K[A] -------
-    gg_list := [g in G | IsCoprime(LT(g), ProdX)];
-    gg_RadGens := ideal(RingOf(I), [radical_plus(g) | g in gg_list ]);
+    gg := ideal(RingOf(aa), [g in G | IsCoprime(LT(g), ProdX)]);
+    gg_RadGens := ideal(RingOf(I), [radical_plus(g) | g in gens(gg) ]);
     // 2026 -- se diversi, metto in VanishingToDo?
     if IsVERBOSE($.VL_list) then println "gg_RadGens = ", gg_RadGens; endif;
     --< Step 2.5 >--2026--------------------------------------------------------------
@@ -586,24 +586,28 @@ define CGSCoreIter2026(I,X)
       --< Step 2.5.1 >--
       if IsVERBOSE($.VL_base) then println "  -- V(aa)\\V(gg) non empty"; endif;
       append(ref CGS, record[Is0:=aa,
-//			     IsNot0:=[ideal(g) | g in gg_list],
-			     IsNot0:=[gg_RadGens], // 2026 - credo, ma sono confusa
+			     IsNot0:=[gg_RadGens], // 2026
 			     GB:=[one(K_AX)]]); // CGS1
       --< Step 2.5.2 >--
 // 2026 removed:     if ContainsNone(gg_RadGens, VanishingToDo) then
-      if ContainsNone(ideal(gg_list), VanishingToDo) then
-	if IsVERBOSE($.VL_base) then println "  --new gg_RadGens contains none (append gg to VanishingToDo)"; endif;	
+      if ContainsNone(gg, VanishingToDo) then
 	append(ref VanishingToDo, gg_RadGens);
-	if IsVERBOSE($.VL_list) then println "--==> VanishingToDo = --vvvv--"; indent(VanishingToDo); endif;
+	if IsVERBOSE($.VL_base) then
+	  println "  --gg contains none (append gg_RadGens to VanishingToDo)";
+	  if IsVERBOSE($.VL_list) then
+	    println "--==> VanishingToDo = --vvvv--"; indent(VanishingToDo);
+	  endif;
+	endif;
       else
 	if IsVERBOSE($.VL_base) then println "  --new gg_RadGens contains some (removed)"; endif;	
       endif;
     --< Step 2.6 >--2026--------------------------------------------------------------
     else
-      if gg_list<>[] and ideal(gg_list) <> gg_RadGens and ContainsNone(ideal(gg_list), VanishingToDo) then
-	if IsVERBOSE($.VL_list) then println "  gg_list = ", gg_list, "\n  gg_RadGens = ", gg_RadGens; endif;
-	if IsVERBOSE($.VL_base) then println " (append gg to VanishingToDo)"; endif;
+      if not(IsZero(gg)) and gg <> gg_RadGens and ContainsNone(gg, VanishingToDo) then
 	append(ref VanishingToDo, gg_RadGens);
+	if IsVERBOSE($.VL_list) then println "   gg   =    ", gg;  endif;
+	if IsVERBOSE($.VL_list) then println "gg_RadGens = ", gg_RadGens; endif;
+	if IsVERBOSE($.VL_base) then println "--gg contains none (append gg_RadGens to VanishingToDo)"; endif;
 	if IsVERBOSE($.VL_list) then println "--==> VanishingToDo = --vvvv--"; indent(VanishingToDo); endif;
 	continue; // 2026: added this if
       endif;      
@@ -980,11 +984,21 @@ define FindSpecializedGB(CGS, SubstIdeal, opt ideal2)
   endfor;
 enddefine; -- FindSpecializedGB
 
+define CleanupRadGens(I)
+  if IsZero(I) then return I; endif;
+  J := IdealOfGBasis(I);
+  repeat
+    Jr := ideal([ radical(g) | g in gens(J) ]);
+    if IsContained_plus(Jr, J) then return Jr; endif;
+    J := Jr;
+  endrepeat;
+enddefine; -- CleanupRadGens
+
 
 define CleanupCGS(ref CGS)
   CleanedSegments := [];
   foreach s in CGS.segments do
-    s.IsNot0 := [ IdealOfGBasis(I) | I in MINIMALIZED(s.IsNot0) ]; // 2026 Anna
+    s.IsNot0 := [ CleanupRadGens(I) | I in MINIMALIZED(s.IsNot0) ]; // 2026 Anna
     if s.IsNot0=[] or not(IsEmptyDiffVanishing_plus(s.Is0, product(s.IsNot0))) then
       append(ref CleanedSegments, s);
     endif;
