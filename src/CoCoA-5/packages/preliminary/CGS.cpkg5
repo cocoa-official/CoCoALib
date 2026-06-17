@@ -21,12 +21,6 @@ export ComputeSpecializedGB;
 export SpecializeInXRing;
 export FindSpecializedGB;
 export CleanupCGS;
-  
-//export CGSRec;  // removed 18-11-2021
-//export CGSRecOpt; // removed 18-11-2021
-//export CGSIterACA; // removed 18-11-2021
-//export CGSIterOpt; // removed 18-11-2021
-//export CGS_fromCore;
 
 ----------------------------------------------------------------------
   PrintFormat := "latex";
@@ -50,56 +44,40 @@ EndDefine; -- About
 //  GB_function := ReducedGBasis;
 //  GB_function := GBasis;
 //  GB_function := ReducedGBasisByHomog;
-  
+
+// Verbosity levels: ----------------------------
 VL_time := 40;
 VL_base := 42;
 VL_list := 50;
 VL_GB   := 60;
 VL_debug   := 70;
 
+// profiling: -----------------------------------
 time_t0 := 0;
-count_extra := 0;
-time_extra := 0;
-count_ProdRad := 0;
-time_ProdRad := 0;
-count_radical := 0;
-time_radical := 0;
-count_sqfr := 0;
-time_sqfr := 0;
-count_GB_AX := 0;
-time_GB_AX := 0;
-count_GB_A := 0;
-time_GB_A := 0;
-count_IsContained := 0;
-time_IsContained := 0;
-count_IsEmptyDiffVanishing := 0;
-time_IsEmptyDiffVanishing := 0;
-count_MBLPP_X := 0;
-time_MBLPP_X := 0;
+count_extra := 0;     time_extra := 0;
+count_ProdRad := 0;   time_ProdRad := 0;
+count_radical := 0;   time_radical := 0;
+count_sqfr := 0;      time_sqfr := 0;
+count_GB_AX := 0;     time_GB_AX := 0;
+count_GB_A := 0;      time_GB_A := 0;
+count_MBLPP_X := 0;   time_MBLPP_X := 0;
+count_IsContained := 0;        time_IsContained := 0;
+count_IsEmptyDiffVanishing:=0; time_IsEmptyDiffVanishing:=0;
 
 
 -- global counter/timers --
 
 define ResetGlobals()
   $.time_t0 := CpuTime();
-  $.count_extra := 0;
-  $.time_extra := 0;
-  $.count_ProdRad := 0;
-  $.time_ProdRad := 0;
-  $.count_radical := 0;
-  $.time_radical := 0;
-  $.count_sqfr := 0;
-  $.time_sqfr := 0;
-  $.count_GB_AX := 0;
-  $.time_GB_AX := 0;
-  $.count_GB_A := 0;
-  $.time_GB_A := 0;
-  $.count_IsContained := 0;
-  $.time_IsContained := 0;
-  $.count_IsEmptyDiffVanishing := 0;
-  $.time_IsEmptyDiffVanishing := 0;
-  $.count_MBLPP_X := 0;
-  $.time_MBLPP_X := 0;
+  $.count_extra := 0;    $.time_extra := 0;
+  $.count_ProdRad := 0;  $.time_ProdRad := 0;
+  $.count_radical := 0;  $.time_radical := 0;
+  $.count_sqfr := 0;     $.time_sqfr := 0;
+  $.count_GB_AX := 0;    $.time_GB_AX := 0;
+  $.count_GB_A := 0;     $.time_GB_A := 0;
+  $.count_MBLPP_X := 0;  $.time_MBLPP_X := 0;
+  $.count_IsContained := 0;        $.time_IsContained := 0;
+  $.count_IsEmptyDiffVanishing:=0; $.time_IsEmptyDiffVanishing:=0;
 enddefine; -- ResetGlobals
 
 //-------- printing timings/data ----------------------------------------
@@ -491,7 +469,7 @@ enddefine; -- RadGensIdeal
   
 
 --====  core iterative  ====--
---==  do NOT modify the original ==--
+--==  do NOT modify the original ==-----------------------------------------------
   
 define CGSCoreIter(I,X) // after Nabeshima
   IsVERBOSE := IsVERBOSE_func("CGSCoreIter");
@@ -575,10 +553,10 @@ define CGSCoreIter(I,X) // after Nabeshima
   return CGS;
 enddefine; -- CGSCoreIter
 
-  
---=================================================--
+
+--=================================================----------------------------
 --==   modify only below, not the original above ==--
---====  core iterative 2026  ====--
+--====  core iterative 2026  ====--  orig + debugging for Kaiserslautern 2026
   
 define CGSCoreIter2026(I,X)
   IsVERBOSE := IsVERBOSE_func("CGSCoreIter2026");
