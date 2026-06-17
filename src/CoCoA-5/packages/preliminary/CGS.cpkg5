@@ -639,7 +639,7 @@ define CGSCoreIter2026(I,X)
       --< Step 2.6.3 >--
       LC_MB := LC_Gpj(MB, G_MB, ProdX); -- [ RadGensIdeal(cc_t) | t in MB ]
       LC_MB := [cc_t in LC_MB | not(1 isin gens(cc_t))]; -- not(IsOne(J)) -- VERY COSTLY for ex-P3P
-      ---->  LC_MB := MINIMALIZED(LC_MB); -- not convenient: computes GB(J) uselessly
+      ---->  LC_MB := MINIMALIZED(LC_MB); -- not worthwhile: computes GB(J) uselessly
       TIMER := TIMER + CpuTime() - t0;
       if IsVERBOSE($.VL_list) then println "     LC_MB = ", LC_MB; endif;
       --< Step 2.6.4 >--
@@ -841,12 +841,12 @@ define PrintSegments(CGS)
   endif;
   K_AX := RingOf(AllX[1]);
 //  CGS := CGS_fromCore(CGSC, AllX);
-  foreach pippo in CGS.segments do
+  foreach S in CGS.segments do
     println;
     print "for ";
-    println pippo.IsNot0, " not 0";
-    if not(IsZero(pippo.Is0)) then println "and ", gens(pippo.Is0), " = 0"; endif;
-    println "  GB is "; indent(pippo.GB);
+    println S.IsNot0, " not 0";
+    if not(IsZero(S.Is0)) then println "and ", gens(S.Is0), " = 0"; endif;
+    println "  GB is "; indent(S.GB);
   endforeach;
 enddefine; -- PrintSegments
 
@@ -861,14 +861,14 @@ define PrintCMinPoly(CGSC, AllX, Z)
   K_AX := RingOf(Z);
   if not(IsIndet(Z)) or not(Z isin AllX) then error("wrong indets"); endif;
   CGS := Pulisci(CGSC);
-  foreach pippo in CGS do
+  foreach S in CGS do
     println;
     print "for ";
-    println "not 0  ", pippo.IsNot0;
-    if IsZero(pippo.Is0) then print "and "; endif;
-//    if pippo.IsNot0<>[] then print "not 0 ", pippo.IsNot0, "  and "; endif;
-    println " = 0  ", pippo.Is0;
-    println "  minpoly is in ", MinPolyZ(pippo.GB, AllX, Z);
+    println "not 0  ", S.IsNot0;
+    if IsZero(S.Is0) then print "and "; endif;
+//    if S.IsNot0<>[] then print "not 0 ", S.IsNot0, "  and "; endif;
+    println " = 0  ", S.Is0;
+    println "  minpoly is in ", MinPolyZ(S.GB, AllX, Z);
   endforeach;
 enddefine; -- PrintCMinPoly
 
