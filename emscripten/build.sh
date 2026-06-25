@@ -21,9 +21,7 @@ mkdir -p "$AUX_PREFIX/lib"
 mkdir -p "$AUX_PREFIX/include"
 mkdir -p "$EXTERN_DIR"
 
-# ------------------------------------------------------------------------------
 # GMP 
-# ------------------------------------------------------------------------------
 (
     mkdir -p "$AUX_BUILD/gmp"
     cd "$AUX_BUILD/gmp"
@@ -43,9 +41,7 @@ mkdir -p "$EXTERN_DIR"
     emmake make install
 )
 
-# ------------------------------------------------------------------------------
 # BOOST
-# ------------------------------------------------------------------------------
 (
     BOOST_VERSION_DIR="boost_1_91_0"
     BOOST_VERSION_URL="1.91.0"
@@ -95,9 +91,7 @@ EOF
         install
 )
 
-# ------------------------------------------------------------------------------
 # CDD
-# ------------------------------------------------------------------------------
 (
     if [[ ! -d "$EXTERN_DIR/cddlib" ]]; then
         echo "Cloning cddlib..."
@@ -129,9 +123,7 @@ EOF
     ln -sf cddmp.h cdd_mp.h
 )
 
-# ------------------------------------------------------------------------------
 # Frobby 
-# ------------------------------------------------------------------------------
 (
     mkdir -p "$AUX_BUILD/frobby"
     cd "$AUX_BUILD/frobby"
@@ -168,10 +160,7 @@ EOF
     fi
 )
 
-
-# ------------------------------------------------------------------------------
 # GFAN
-# ------------------------------------------------------------------------------
 (
     if [[ ! -d "$EXTERN_DIR/gfanlib0" ]]; then
         echo "Downloading gfanlib..."
@@ -200,9 +189,7 @@ EOF
     emmake make install
 )
 
-# ------------------------------------------------------------------------------
 # GSL
-# ------------------------------------------------------------------------------
 (
     mkdir -p "$AUX_BUILD/gsl"
     cd "$AUX_BUILD/gsl"
@@ -231,9 +218,7 @@ EOF
     emmake make install
 )
 
-# ------------------------------------------------------------------------------
 # MPFR
-# ------------------------------------------------------------------------------
 (
     mkdir -p "$AUX_BUILD/mpfr"
     cd "$AUX_BUILD/mpfr"
@@ -253,9 +238,7 @@ EOF
     emmake make install
 )
 
-# ------------------------------------------------------------------------------
 # FLINT
-# ------------------------------------------------------------------------------
 (
     mkdir -p "$AUX_BUILD/flint"
     cd "$AUX_BUILD/flint"
@@ -278,9 +261,7 @@ EOF
     emmake make install
 )
 
-# ------------------------------------------------------------------------------
 # Normaliz 
-# ------------------------------------------------------------------------------
 (
     if [[ ! -d "$EXTERN_DIR/normaliz" ]]; then
         echo "Cloning Normaliz..."
@@ -314,9 +295,7 @@ EOF
     emmake make install
 )
 
-# ------------------------------------------------------------------------------
 # NTL
-# ------------------------------------------------------------------------------
 (
     mkdir -p "$AUX_BUILD/ntl"
     cd "$AUX_BUILD/ntl"
@@ -367,9 +346,7 @@ EOF
     emranlib "$AUX_PREFIX/lib/libntl.a"
 )
 
-# ------------------------------------------------------------------------------
 # CoCoA-5 Configuration & Build
-# ------------------------------------------------------------------------------
 
 if [[ -f configure ]]; then
     chmod +x configure
@@ -430,29 +407,22 @@ emmake make -j8 cocoa5 LDFLAGS="$WASM_LDFLAGS"
 
 cd src/CoCoA-5
 
+COCOA5_OBJS=$(make -s print-objs -f Makefile -f <(echo -e 'print-objs:\n\t@echo $(OBJS)'))
+
+COCOA_LINK_LIBS=$(make -s -C ../../ print-libs \
+    -f configuration/autoconf.mk \
+    -f <(echo -e 'print-libs:\n\t@echo $(COCOA5_LDLIBS) $(LDLIBS)') \
+    COCOA_ROOT=../..)
+
 em++ -O2 -fexceptions -s ASSERTIONS=0 -s TOTAL_STACK=32mb -s INITIAL_MEMORY=2048mb -s ALLOW_MEMORY_GROWTH=1 \
--o CoCoAInterpreter.js \
-../../emscripten/wasm_patch.c \
-AST.o Lexer.o Main.o Interpreter.o LineProviders.o Parser.o CoCoALibSupplement.o \
-BuiltInFunctions.o BuiltInFunctions-CoCoALib.o BuiltInFunctionsVarArgs-CoCoALib.o \
-BuiltInOneLiners-CoCoALib.o BuiltInFunctions-Frobby.o BuiltInFunctions-GFan.o \
-BuiltInFunctions-GSL.o BuiltInFunctions-MathSAT.o BuiltInFunctions-Normaliz.o \
-globals.o OnlineHelp.o VersionInfo.o Banner.o CompilationDate.o \
-../../lib/libcocoa.a \
-../../configuration/ExternalLibs/lib/libgfan-symlink.a \
-../../configuration/ExternalLibs/lib/libcddgmp-symlink.a \
-../../configuration/ExternalLibs/lib/libgsl-symlink.a \
-../../extern/emscripten/install/lib/libgslcblas.a \
-../../configuration/ExternalLibs/lib/libnormaliz-symlink.a \
-../../extern/emscripten/install/lib/libfrobby.a \
-../../extern/emscripten/install/lib/libflint.a \
-../../extern/emscripten/install/lib/libmpfr.a \
-../../configuration/ExternalLibs/lib/libntl-symlink.a \
-../../configuration/ExternalLibs/lib/libgmpxx-symlink.a \
-../../configuration/ExternalLibs/lib/libgmp-symlink.a \
-../../configuration/ExternalLibs-CoCoA5/lib/libboost_filesystem-symlink.a \
---preload-file "$(pwd)/packages@/src/CoCoA-5/packages" \
---preload-file "$(pwd)/tests@/src/CoCoA-5/tests" \
---preload-file "$(pwd)/CoCoAManual@/src/CoCoA-5/CoCoAManual"
+    -o CoCoAInterpreter.js \
+    ../../emscripten/wasm_patch.c \
+    $COCOA5_OBJS \
+    CompilationDate.o \
+    ../../lib/libcocoa.a \
+    $COCOA_LINK_LIBS \
+    --preload-file "$(pwd)/packages@/src/CoCoA-5/packages" \
+    --preload-file "$(pwd)/tests@/src/CoCoA-5/tests" \
+    --preload-file "$(pwd)/CoCoAManual@/src/CoCoA-5/CoCoAManual"
 
 cd ../..
