@@ -401,6 +401,11 @@ fi
 
 WASM_LDFLAGS="-O2 --fexceptions -s TOTAL_STACK=32mb -s INITIAL_MEMORY=2048mb -s ALLOW_MEMORY_GROWTH=1"
 
+# Patch LineProviders.C to add `#` before prompt
+sed -i.bak '/std::thread/,/detach();/c\
+cout << CurrPrompt << flush;
+' src/CoCoA-5/LineProviders.C
+
 emmake make -j8 library
 emmake make -j8 cocoa5 LDFLAGS="$WASM_LDFLAGS"
 # emmake make -j8 -C examples executables LDFLAGS="$WASM_LDFLAGS" EXEEXT=".html"
