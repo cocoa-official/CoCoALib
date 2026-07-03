@@ -275,7 +275,7 @@ EndDefine; -- RingsOf
 --  Elif type(A) = MODULEELEM Then Return A*(1/B)
 --  Else
 --    Catch R := $builtin.Div(Cast(A,INT),Cast(B,INT)) In E EndCatch;
---    If type(E)=ERROR Then error("Div:arguments must be integers") EndIf;
+--    If type(E)=ERROR_MESG Then error("Div:arguments must be integers") EndIf;
 --    Return R;
 --  EndIf;
 --EndDefine;

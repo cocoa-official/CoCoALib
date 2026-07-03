@@ -216,7 +216,7 @@ EndDefine; -- Module
 --   If len(ARGV) > 1 Or type(ARGV[1]) <= POLY Then Return ideal(ARGV); EndIf;
 --   X := ARGV[1];
 --   T := type(X);
--- --  If T = ERROR Then Return ARGV[1]; EndIf;
+-- --  If T = ERROR_MESG Then Return ARGV[1]; EndIf;
 --   If T = IDEAL Then Return X; EndIf;
 --   If T = MODULE Then Return Cast(X, IDEAL); EndIf;
 --   If T = LIST Then

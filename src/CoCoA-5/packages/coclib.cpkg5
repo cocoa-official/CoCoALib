@@ -502,8 +502,8 @@ Define Print_shifts(S)  Print "Shifts(",Untagged(S),")"; EndDefine;
 --   For I := 1 To len(M) Do
 --     If I>1 Then PrintLn EndIf;
 --     Print M[I,1], " = ";
---     Catch Print M[I,2] In E EndCatch; -->_Catch useful when TypeOf(V)=ERROR
---     If type(E) = ERROR Then Print "(Error)"; EndIf;
+--     Catch Print M[I,2] In E EndCatch; -->_Catch useful when TypeOf(V)=ERROR_MESG
+--     If type(E) = ERROR_MESG Then Print "(Error)"; EndIf;
 --   EndFor;
 -- EndDefine;
 

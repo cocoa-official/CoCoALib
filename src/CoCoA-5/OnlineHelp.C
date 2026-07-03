@@ -385,7 +385,7 @@ namespace OnlineHelp
     ReplaceWith(line, "<ie/>", "i.e."); ReplaceWith(line, "<ie />", "i.e.");
     ReplaceWith(line, "<eg/>", "e.g."); ReplaceWith(line, "<eg />", "e.g.");
     ReplaceWith(line, "<BOOL/>", "BOOL");
-    ReplaceWith(line, "<ERROR/>", "ERROR");
+    ReplaceWith(line, "<ERROR_MESG/>", "ERROR_MESG");
     ReplaceWith(line, "<FUNCTION/>", "FUNCTION");
     ReplaceWith(line, "<IDEAL/>", "IDEAL");
     ReplaceWith(line, "<INT/>", "INT");
