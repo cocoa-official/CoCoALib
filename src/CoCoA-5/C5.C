@@ -479,7 +479,7 @@ CocoaHighlighter::CocoaHighlighter(QTextDocument *parent, bool highlightUnknownC
 	commentEndRE("(?:[^\\*]|(?:\\*[^/]))*\\*/", Qt::CaseInsensitive, QRegExp::RegExp2),
 	singlelineCommentEndRE("[^\\n]*", Qt::CaseInsensitive, QRegExp::RegExp2),
 	numericLiteralRE("\\d+(?:\\.\\d+)?", Qt::CaseInsensitive, QRegExp::RegExp2),
-	typeRE("\\b(?:BOOL|FUNCTION|LIST|INT|RAT|RECORD|TYPE|STRING|VOID|ERROR|OSTREAM"
+	typeRE("\\b(?:BOOL|FUNCTION|LIST|INT|RAT|RECORD|TYPE|STRING|VOID|ERROR_MESG|OSTREAM"
 			"RINGELEM|RATFUN|MODULEELEM|IDEAL|MODULE|MAT|RING|PACKAGE|RINGHOM|INTMAP)\\b", Qt::CaseSensitive, QRegExp::RegExp2),
 	parenthesisRE("[()\\[\\]]|\\$\\{|\\}\\$", Qt::CaseInsensitive, QRegExp::RegExp2), // parenthesisRE is a quick-hack because QCodeEdit cannot highlight operators correctly
 	operatorRE("[\\+\\-\\*/:<>=()\\[\\]|%^;,]|<=|>=|<>|:{1,2}=|<<|><|::|\\$\\{|\\}\\$|\\.{1,3}", Qt::CaseInsensitive, QRegExp::RegExp2),

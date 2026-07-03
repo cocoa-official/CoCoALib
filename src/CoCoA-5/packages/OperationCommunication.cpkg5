@@ -330,7 +330,7 @@ Define HeaderToDevice(Computation, NumArgs, Info5, OutStream)
 --   EndIf;
 -- -- The number of arguments is to be sent AFTER the answer from CoCoAServer
   PrintLn "<number_arguments> ", NumArgs, " </number_arguments>" On OutStream;
---   If Type(MEMORY.PKG.CoCoAServer.Result) = ERROR Then
+--   If Type(MEMORY.PKG.CoCoAServer.Result) = ERROR_MESG Then
 --     Close(D);
 --     Throw := MEMORY.PKG.CoCoAServer.Result; -- throws the error
 --   EndIf;

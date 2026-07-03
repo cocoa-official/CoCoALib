@@ -362,7 +362,7 @@
      (1 font-lock-keyword-face) (2 font-lock-function-name-face nil t))
    ; types
    (cons    (concat "\\<\\("
-	   "BOOL\\|ERROR\\|FUNCTION\\|"
+	   "BOOL\\|ERROR_MESG\\|FUNCTION\\|"
 	   "IDEAL\\|INT\\|LIST\\|"
 	   "MAT\\|MATRIXROW\\|MODULE\\|MODULEELEM\\|"
 	   "OSTREAM\\|PACKAGE\\|" ;; AMB 2010-08-25 (rm NULL,DEVICE)

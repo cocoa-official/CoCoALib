@@ -4307,7 +4307,7 @@ CurrentTypes(): <rtn>LIST</rtn> of <rtn>TYPE</rtn>
 This function lists all CoCoA data types.
 <example>
 /**/  CurrentTypes();
-[BOOL, ERROR, FUNCTION, ...]
+[BOOL, ERROR_MESG, FUNCTION, ...]
 </example>
 </description>
 </command>
@@ -5699,7 +5699,7 @@ true
   <title>error</title>
   <short_description>throw an error message</short_description>
 <syntax>
-error(S: <type>STRING</type>): <rtn>ERROR</rtn>
+error(S: <type>STRING</type>): <rtn>ERROR_MESG</rtn>
 </syntax>
 <description>
 This function throws an error containing the given message.
@@ -7912,7 +7912,7 @@ using <ttref>export</ttref> to make your shell variables visible to CoCoA.
   <title>GetErrMesg</title>
   <short_description>returns the message associated with an error</short_description>
 <syntax>
-GetErrMesg(E: <type>ERROR</type>): <rtn>STRING</rtn>
+GetErrMesg(E: <type>ERROR_MESG</type>): <rtn>STRING</rtn>
 </syntax>
 <description>
 This function returns the string containing the error message
@@ -24027,7 +24027,7 @@ true
 <types>
   <type>command</type>
   <type>programming</type>
-  <type>ERROR</type>
+  <type>ERROR_MESG</type>
 </types>
 </command>
 <!-- ===  COMMAND  =============================================== -->
@@ -24213,7 +24213,7 @@ This function returns the data type of E.
 TYPE
 
 /**/  CurrentTypes();
-[BOOL, ERROR, FUNCTION, ...]
+[BOOL, ERROR_MESG, FUNCTION, ...]
 </example>
 </description>
 <seealso>
@@ -25478,7 +25478,7 @@ second table are case sensitive.
            Case insensitive reserved names
 
      -------------------------------------------------
-    | BOOL      DegLex  DegRevLex  DEVICE  ERROR      |
+    | BOOL      DegLex  DegRevLex  DEVICE  ERROR_MESG |
     | FUNCTION  IDEAL   INT        LIST    Lex        |
     | MAT       MODULE  NULL       Null    PANEL      |
     | POLY      PosTo   RAT        RATFUN  RING       |

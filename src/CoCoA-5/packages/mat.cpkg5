@@ -425,10 +425,10 @@ EndDefine; -- CharPoly
 // M must be square matrix, lambda must be an indeterminate.
 define eigenfactors(M, lambda)
   If type(M) <> MAT Or NumRows(M) <> NumCols(M) Then
-    ERROR("eigenfactors: 1st arg must be a square matrix");
+    error("eigenfactors: 1st arg must be a square matrix");
   EndIf;
   If not(IsIndet(lambda)) Then
-    ERROR("eigenfactors: 2nd arg must be an indeterminate");
+    error("eigenfactors: 2nd arg must be an indeterminate");
   EndIf;
   return factor(CharPoly(M,lambda)).factors;
 enddefine; -- eigenfactors
@@ -437,15 +437,15 @@ enddefine; -- eigenfactors
 // M must be square matrix of numbers, lambda must be an indeterminate.
 Define eigenvectors(M, lambda)
   If type(M) <> MAT Or NumRows(M) <> NumCols(M) Then
-    ERROR("eigenvectors: 1st arg must be a square matrix");
+    error("eigenvectors: 1st arg must be a square matrix");
   EndIf;
   If not(IsIndet(lambda)) Then
-    ERROR("eigenvectors: 2nd arg must be an indeterminate");
+    error("eigenvectors: 2nd arg must be an indeterminate");
   EndIf;
   Rx := RingOf(lambda);
   CRing := CoeffRing(Rx);
   if RingOf(M) <> CRing or not(IsField(CRing)) then
-    ERROR("eigenvectors: matrix must be over a field, and indeterminate over same field");
+    error("eigenvectors: matrix must be over a field, and indeterminate over same field");
   endif
   // Compute basis for nullspace of M-lambda*I in alg extn gen by each factor.
   Ans := [];

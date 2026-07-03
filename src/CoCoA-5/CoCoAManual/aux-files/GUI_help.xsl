@@ -650,7 +650,7 @@
 <xsl:template match="ie">i.e.</xsl:template>
 <xsl:template match="eg">e.g.</xsl:template>
 <xsl:template match="BOOL">BOOL</xsl:template>
-<xsl:template match="ERROR">ERROR</xsl:template>
+<xsl:template match="ERROR_MESG">ERROR_MESG</xsl:template>
 <xsl:template match="FUNCTION">FUNCTION</xsl:template>
 <xsl:template match="IDEAL">IDEAL</xsl:template>
 <xsl:template match="INT">INT</xsl:template>

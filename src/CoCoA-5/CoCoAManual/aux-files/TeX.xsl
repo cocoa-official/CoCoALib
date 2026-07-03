@@ -273,7 +273,7 @@ frame=single]<xsl:apply-templates select="syntax"/>\end{Verbatim}
   <xsl:template match="ie">\textit{i.e.}</xsl:template>
   <xsl:template match="eg">\textit{e.g.}</xsl:template>
   <xsl:template match="BOOL">\textsf{BOOL}</xsl:template>
-  <xsl:template match="ERROR">\textsf{ERROR}</xsl:template>
+  <xsl:template match="ERROR_MESG">\textsf{ERROR\_MESG}</xsl:template>
   <xsl:template match="FUNCTION">\textsf{FUNCTION}</xsl:template>
   <xsl:template match="IDEAL">\textsf{IDEAL}</xsl:template>
   <xsl:template match="INT">\textsf{INT}</xsl:template>

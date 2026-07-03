@@ -11,7 +11,7 @@ This function returns the data type of E.
 TYPE
 
 /**/  CurrentTypes();
-[BOOL, ERROR, FUNCTION, ...]
+[BOOL, ERROR_MESG, FUNCTION, ...]
 ----==< end example >==----
 --============( end type )=============--
 --> See also:

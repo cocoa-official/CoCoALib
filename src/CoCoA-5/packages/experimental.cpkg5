@@ -141,7 +141,7 @@ define MinPolyModularWithPrimes(f, I, x, opt vrb, opt primes)
     NewP := NewPolyRing(NewZZmod(p), IndetSymbols(P));
     pi := PolyRingHom(P, NewP, CanonicalHom(RingQQ(), NewP), indets(NewP));
     Jp := ideal(pi(G));
-    if not(IsZeroDim(Jp)) then ERROR("non zero-dim"); endif;
+    if not(IsZeroDim(Jp)) then error("non zero-dim"); endif;
     mp := MinPolyQuot(pi(f), Jp, indet(NewP,1));
     --    println "residue poly is ", LM(mp), "+ ...";
     if deg(mp) = deg(mpCRT.residue) then
