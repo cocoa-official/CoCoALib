@@ -41,9 +41,8 @@
 #include "CoCoA/SparsePolyOps-eval.H"
 #include "CoCoA/verbose.H"
 
-#include "CoCoA/time.H"
-
-//#include <functional>
+#include <unordered_set>
+// using std::unordered_set
 using std::vector;
 
 namespace CoCoA
@@ -398,6 +397,23 @@ namespace CoCoA
   // Fns to check whether a poly is cyclo
 
 
+  namespace // anonymous
+  {
+
+    // Returns the product of the (prime) factors in "fac" which satisfy lo <= fac <= hi.
+    // We assume that fac came from a factorization of a long, so the product will not overflow
+    long FactorWithPrimesInRange(const vector<long>& fac, long lo, long hi)
+    {
+      long ans = 1;
+      for (long f: fac)
+        if (f >= lo && f <= hi)
+          ans *= f;
+      return ans;
+    }
+
+  } // end of namespace anonymous
+
+
   // This is a "naughty/ugly" function: it does several things at once
   //  (a) checks cyclo by matching against "prefixes" (& do only this if !DoFullCheck)
   //  (b) checks that f is univariate, palindromic, below height bound H
@@ -445,7 +461,7 @@ namespace CoCoA
     const long mu = (IsOne(coeff(it)))? -1 : 1; // minus 2nd coeff
     const long radr = radical(r);
     const long degr = degf/r; // "reduced degree"
-    // Obtain list of candidate indices to try: in 3 stages
+    // Obtain list of candidate indices to try in 3 stages: InvTotient, filter by MoebiusFn, must be div by radr
     // InvTotient (sqfr preimages), with correct MoebiusFn value, & must be mult of r
     vector<long> cand = InvTotient(degr, InvTotientMode::SqFreePreimages);
     const auto WrongMu = [mu](long n){ return (MoebiusFn(n) != mu); };
@@ -455,6 +471,9 @@ namespace CoCoA
     if (radr != 1)
     { auto it = std::remove_if(cand.begin(), cand.end(), NotMultOfRadr);  cand.erase(it, cand.end()); }
     if (cand.empty())  return DefinitelyNotCyclo;
+    // Convenient to store the factorizations of the candidates (in cand_factors):
+    vector<vector<long>> CandFactors; CandFactors.reserve(len(cand));  // could combine this with the MoebiusFn loop (8 lines above)
+    for (long k: cand) { CandFactors.push_back(factor(k).myFactors()); }
     const vector<int>& CycloCoeffHeightTbl = CyclotomicCoeffHeightTable();
     vector<long> CandHeightBound;
     long H=0;  // overall height bound -- 0 means "to be computed"
@@ -462,6 +481,8 @@ namespace CoCoA
     long prev = 2;
     long thresh = degr/2;  while (thresh >= 64)  { thresh = 1+thresh/4; }
 
+    long SmallestPrime = 2;
+    long LargestPrime = thresh-1;
     // This loop handles the "upper half"
     while (!IsEnded(it))
     {
@@ -488,21 +509,30 @@ namespace CoCoA
         // Coeffs in C are correct up to index dr_next, and dr_next >= thresh:
         const long dr_next = (deg_next < degf/2) ? degf/(2*r) : (degf-deg_next)/r-1;
         vector<long> NewCand;
-        for (long k: cand)
+        vector<vector<long>> NewCandFactors;
+        long GoodGcd = 0; // set non-zero if a good prefix is found
+        std::unordered_set<long> BadGcd;
+        for (int i=0; i < len(cand); ++i) // use indexes since we scan through 2 vectors (cand, CandFactors)
         {
+          const long k = cand[i];
+          const long g = FactorWithPrimesInRange(CandFactors[i], SmallestPrime, LargestPrime);
+          if (GoodGcd != 0)
+          { if (g == GoodGcd) { NewCand.push_back(k); NewCandFactors.push_back(CandFactors[i]); } continue; }
+          if (BadGcd.count(g) > 0)  continue; // we know the prefix won't match -- in C++20 call: BadGcd.contains(g)
           const factorization<long> facs = factor(k);
           const vector<unsigned long> prefix = CycloPrefix(facs.myFactors(), dr_next);
           bool eq = true;
           for (int i=prev; i <= dr_next; ++i)
             if (prefix[i] != static_cast<unsigned long>(C[i]))  { eq = false; break; }
-          if (eq)  NewCand.push_back(k);
+          if (eq) { GoodGcd = g; NewCand.push_back(k); NewCandFactors.push_back(CandFactors[i]);} else { BadGcd.insert(g); }
         }
         if (NewCand.empty())  return DefinitelyNotCyclo;
-        if (len(cand) != len(NewCand)) { swap(cand, NewCand); H = 0/*force recomputation*/; }
+        if (len(cand) != len(NewCand)) { swap(cand, NewCand); swap(CandFactors, NewCandFactors); H = 0/*force recomputation*/; }
         if (!DoFullCheck && len(cand) == 1 && dr_next > 31)  return r*cand[0]; // might be false positive!
         prev = dr_next+1;
         do {thresh *= 4;} while (thresh <= 2*dr_next);
         thresh = std::min(thresh, degr/2);
+        SmallestPrime = LargestPrime+1; LargestPrime = thresh-1;
       }
     }
     if (IsEnded(it)) return DefinitelyNotCyclo;
@@ -881,7 +911,7 @@ namespace CoCoA
 
 
   // -------------------------------------------------------
-  // CyclotomicIndex
+  // CyclotomicIndex: given a cyclo poly, find its index
 
   namespace  // anonymous
   {

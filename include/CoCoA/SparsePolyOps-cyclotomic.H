@@ -1,7 +1,7 @@
 #ifndef CoCoA_SparsePolyOps_cyclotomic_H
 #define CoCoA_SparsePolyOps_cyclotomic_H
 
-//   Copyright (c)  2022  John Abbott,  Anna M. Bigatti
+//   Copyright (c)  2022,2023  John Abbott,  Anna M. Bigatti
 //   Original author: Nico Mexis (2022)
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
