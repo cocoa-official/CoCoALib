@@ -43,6 +43,7 @@ Notes:
 
 Notes:
 - Currently the tuples are generated in lexicographical order.
+- **Keywords:** //Cartesian power, Cartesian product//
 
 
 ==== Random subsets and random tuples ====
@@ -64,20 +65,24 @@ Notes:
 == Maintainer documentation ==
 %======================================================================
 
-The algorithm for ``RandomSubsetIndices(n,r)`` was taken from the
-Wikipedia page on "Reservoir Sorting".  Also ``RandomPermutation``
+An older version of the algorithm for ``RandomSubsetIndices(n,r)`` was taken
+from the Wikipedia page on //Reservoir Sorting//.  Also ``RandomPermutation``
 was taken from Wikipedia (which page?)
 
 
 == Bugs, shortcomings and other ideas ==
 %======================================================================
 
-Ugly fn names ``RandomSubsetIndices`` and ``RandomTupleIndices``
+Ugly fn names ``RandomSubsetIndices`` and ``RandomTupleIndices``.
 For thread-safety the fns should also accept as input a random source!
 
 
 == Main changes ==
 %======================================================================
+
+**2025**
+- ??month??:  improved implementations of ``RandomSubsetIndices`` and ``RandomPermutation``
+
 
 **2023**
 - December (v0.99821): added ``SubsetIter(n,k)``
