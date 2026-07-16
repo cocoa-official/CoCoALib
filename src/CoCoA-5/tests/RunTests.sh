@@ -29,7 +29,7 @@ then
   exit 1
 fi
 
-if [ \! -d ../../../src/CoCoA-5/tests ]
+if ! [ -d ../../../src/CoCoA-5/tests ]
 then
     echo "$0: curr dir must be src/CoCoA-5/tests/"
     exit 1
@@ -76,7 +76,7 @@ failures=""
 # This loop iterates through the names of tests to run.
 COUNTER=0
 for p in "${progs[@]}"; do
-  COUNTER=$(( 1 + $COUNTER ))
+  COUNTER=$(( 1 + COUNTER ))
   prog=$(basename "$p" .cocoa5)
   if [ $? -ne 0 ] || [ ! -f "$p" ]
   then

@@ -1,3 +1,4 @@
+#! /bin/bash
 
 # Script for running the CoCoALib tests (after they've been compiled).
 # This script is normally called by make as part of the target "check";
@@ -28,8 +29,7 @@ then
   exit 1
 fi
 
-which valgrind > /dev/null 2>&1
-if [ $? -ne 0 ]
+if ! which valgrind > /dev/null 2>&1
 then
     echo "$0: ERROR: valgrind command not found"  > /dev/stderr
     exit 2
@@ -41,19 +41,16 @@ source ../../configuration/shell-fns.sh
 echo
 echounderline "Running valgrind on the CoCoALib tests ($# programs altogether)"
 
-# Keep track of which tests failed, to print a summary at the end.
-failures=""
-
 # This loop iterates through the names supplied as arguments to the script.
 while [ $# -ne 0 ]
 do
   prog="$1"; shift
   echo " --$prog "
-  if [ -f $prog.in ]
+  if [ -f "$prog.in" ]
   then
-    valgrind ./$prog < $prog.in  2>&1 | grep "definitely lost\|no leaks are possible\|Invalid write"
+    valgrind ./"$prog"  < "$prog.in"  2>&1 | grep "definitely lost\|no leaks are possible\|Invalid write"
   else
-    valgrind ./$prog             2>&1 | grep "definitely lost\|no leaks are possible\|Invalid write"
+    valgrind ./"$prog"                2>&1 | grep "definitely lost\|no leaks are possible\|Invalid write"
   fi
-  /bin/rm -f $prog.cout
+  /bin/rm -f "$prog.cout"
 done

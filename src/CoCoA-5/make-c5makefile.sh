@@ -13,13 +13,15 @@
 ##################################################################
 # Check $QMAKE
 
-if [ -z "$QMAKE" ]; then
+if [ -z "$QMAKE" ]
+then
   echo "ERROR: QMAKE not set -- unable to build Qt GUI" > /dev/stderr
   echo "ERROR: Please re-run configure script *without* the option \"--no-qt-gui\"" > /dev/stderr
   exit 2
 fi
 
-if [ ! -r "$QMAKE" -o ! -x "$QMAKE" ]; then
+if ! { [ -r "$QMAKE" ] && [ -x "$QMAKE" ]; }
+then
   echo "ERROR: $QMAKE not executable" > /dev/stderr
   exit 3
 fi
@@ -33,12 +35,11 @@ SYS_TYPE=`uname`
 # The block below should pick the right one (as dictated by libgmp).
 if [ "$SYS_TYPE" = "Darwin" ]
 then
-  ARCH=`arch`  # either "i386" or "ppc"
+  ARCH=$(arch)  # either "i386" or "ppc"
   if [ "$ARCH" = "i386" ]
   then
     (cd ../../examples; make ex-empty) > /dev/null 2>&1
-    arch -x86_64 ../../examples/ex-empty > /dev/null 2>&1
-    if [ $? = 0 ]
+    if arch -x86_64 ../../examples/ex-empty > /dev/null 2>&1
     then
       ARCH=x86_64
     fi
@@ -46,8 +47,7 @@ then
   if [ "$ARCH" = "ppc" ]
   then
     (cd ../../examples; make ex-empty) > /dev/null 2>&1
-    arch -ppc64 ../../examples/ex-empty > /dev/null 2>&1
-    if [ $? = 0 ]
+    if arch -ppc64 ../../examples/ex-empty > /dev/null 2>&1
     then
       ARCH=ppc64
     fi
@@ -116,8 +116,7 @@ then
 	DARWIN_OPTS="-spec macx-clang"
     fi
 fi
-"$QMAKE"  $DARWIN_OPTS  C5.pro  -o C5Makefile
-if [ "$?" -ne 0 ]
+if ! "$QMAKE"  $DARWIN_OPTS  C5.pro  -o C5Makefile
 then
   echo "ERROR: $0 failed because $QMAKE failed for C5.pro" > /dev/stderr
   exit 6

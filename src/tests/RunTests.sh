@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # Script for running the CoCoALib tests (after they've been compiled).
 # This script is normally called by make as part of the target "check";
@@ -42,47 +43,47 @@ failures=""
 COUNTER=0
 while [ $# -ne 0 ]
 do
-  COUNTER=`expr 1 + $COUNTER`
+  COUNTER=$(( 1 + COUNTER ))
   prog="$1"; shift
-  /bin/rm -f  $prog.cout-found  $prog.cerr-found
-  if [ \! -x $prog ]
+  /bin/rm -f  "$prog.cout-found"  "$prog.cerr-found"
+  if ! [ -x "$prog" ]
   then
     echo "[$COUNTER/$NUM_TESTS] *****  $prog MISSING or NOT EXECUTABLE  *****"
   fi
-  if [ -f $prog.in ]
+  if [ -f "$prog.in" ]
   then
-    ./$prog < $prog.in > $prog.cout-found 2> $prog.cerr-found
+    ./"$prog"  <  "$prog.in"  >  "$prog.cout-found"  2> "$prog.cerr-found"
   else
-    ./$prog > $prog.cout-found 2> $prog.cerr-found
+    ./"$prog"  >  "$prog.cout-found"  2> "$prog.cerr-found"
   fi
   if [ $? -ne 0 ]
   then
     echo "[$COUNTER/$NUM_TESTS] *****  $prog FAILED  ***** (non-zero exit status)"
     failures="$failures $prog"
   else
-    if [ -f $prog.out ]
+    if [ -f "$prog.out" ]
     then
-      diff -w  $prog.cout-found  $prog.out  > /dev/null
+      diff -w  "$prog.cout-found"  "$prog.out"  > /dev/null
     else
-      diff -w  $prog.cout-found  /dev/null  > /dev/null
+      diff -w  "$prog.cout-found"  /dev/null  > /dev/null
     fi
     if [ $? -ne 0 ]
     then
       echo "[$COUNTER/$NUM_TESTS] *****  $prog FAILED  ***** (wrong output)"
       failures="$failures $prog"
     else
-      if [ -f $prog.err ]
+      if [ -f "$prog.err" ]
       then
-        diff -w  $prog.cerr-found  $prog.err > /dev/null
+        diff -w  "$prog.cerr-found"  "$prog.err" > /dev/null
       else
-        diff -w  $prog.cerr-found  /dev/null > /dev/null
+        diff -w  "$prog.cerr-found"  /dev/null > /dev/null
       fi
     if [ $? -ne 0 ]
       then
         echo "[$COUNTER/$NUM_TESTS] *****  $prog FAILED  ***** (wrong output on cerr/clog)"
         failures="$failures $prog"
       else
-        /bin/rm  $prog.cout-found  $prog.cerr-found
+        /bin/rm  "$prog.cout-found"  "$prog.cerr-found"
         echo "[$COUNTER/$NUM_TESTS] $prog..... OK"
       fi
     fi
