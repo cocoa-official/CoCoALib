@@ -13,13 +13,12 @@ then
     exit 1
 fi
 
-COCOALIB_INSTALL_DIR=$1
-INSTALL_CMD=$2
+COCOALIB_INSTALL_DIR="$1"
+INSTALL_CMD="$2"
 
-which "$INSTALL_CMD" > /dev/null
-if [ $? -ne 0 ]
+if ! command -v "$INSTALL_CMD" > /dev/null
 then
-    echo "$0: ERROR: \`$INSTALL_CMD\' is not a recognized command"  > /dev/stderr
+    echo "$0: ERROR: \"$INSTALL_CMD\" is not a recognized command"  > /dev/stderr
     exit 1
 fi
 
@@ -32,7 +31,7 @@ echo
 sleep 5
 
 # Ad hoc check that we are in CoCoA root directory, and that libcocoa.a has been built.
-if [ \! -f lib/libcocoa.a ];
+if ! [ -f lib/libcocoa.a ]
 then
     echo "***** INSTALLATION ERROR: CoCoALib is not built!           *****";
     echo "***** Please run \"make library doc\" before installation.   *****";
@@ -40,7 +39,7 @@ then
     exit 1;
 fi
 
-if [ \! -f doc/CoCoALib.pdf -o \! -f examples/index.html ];
+if ! { [ -f doc/CoCoALib.pdf ] && [ -f examples/index.html ]; }
 then
     echo "***** INSTALLATION ERROR: CoCoALib documentation is missing! *****";
     echo "***** Please run \"make library doc\" before installation.     *****";
@@ -48,7 +47,7 @@ then
     exit 1;
 fi
 
-if [ \! -d "$(COCOALIB_INSTALL_DIR)/include" -o \! -w "$(COCOALIB_INSTALL_DIR)/include" ];
+if ! { [ -d "$(COCOALIB_INSTALL_DIR)/include" ] && [ -w "$(COCOALIB_INSTALL_DIR)/include" ]; }
 then
     echo;
     echo "***** ERROR: Installation directory \"$(COCOALIB_INSTALL_DIR)/include\" is not writable *****";
@@ -57,7 +56,7 @@ then
     exit 1;
 fi
 
-if [ \! -d "$(COCOALIB_INSTALL_DIR)/lib" -o \! -w "$(COCOALIB_INSTALL_DIR)/lib" ];
+if ! { [ -d "$(COCOALIB_INSTALL_DIR)/lib" ] && [ -w "$(COCOALIB_INSTALL_DIR)/lib" ]; }
 then
     echo;
     echo "***** ERROR: Installation directory \"$(COCOALIB_INSTALL_DIR)/lib\" is not writable *****";
@@ -65,7 +64,7 @@ then
     exit 1;
 fi
 
-if [ -e "$(COCOALIB_INSTALL_DIR)/include/CoCoA" -a \! -L "$(COCOALIB_INSTALL_DIR)/include/CoCoA" ];
+if [ -e "$(COCOALIB_INSTALL_DIR)/include/CoCoA" ] && ! [ -L "$(COCOALIB_INSTALL_DIR)/include/CoCoA" ]
 then
     echo;
     echo "***** ERROR: $(COCOALIB_INSTALL_DIR)/include/CoCoA exists but is not a symlink *****";
@@ -73,7 +72,7 @@ then
     exit 2;
 fi
 
-if [ -e "$(COCOALIB_INSTALL_DIR)/lib/libcocoa.a" -a \! -f "$(COCOALIB_INSTALL_DIR)/lib/libcocoa.a" ];
+if [ -e "$(COCOALIB_INSTALL_DIR)/lib/libcocoa.a" ] && ! [ -f "$(COCOALIB_INSTALL_DIR)/lib/libcocoa.a" ]
 then
     echo;
     echo "***** ERROR: $(COCOALIB_INSTALL_DIR)/lib/libcocoa.a exists but is not a file *****";
@@ -81,13 +80,13 @@ then
     exit 2;
 fi
 
-if [ -e "$(COCOALIB_INSTALL_DIR)/include/CoCoA-$(COCOALIB_VERSION)" ];
+if [ -e "$(COCOALIB_INSTALL_DIR)/include/CoCoA-$(COCOALIB_VERSION)" ]
 then
     echo ">>>>  ?? CoCoALib ALREADY INSTALLED ??  <<<<";
     /bin/ls -ld "$(COCOALIB_INSTALL_DIR)/include/CoCoA-$(COCOALIB_VERSION)";
     echo;
-    read -p "Really overwrite existing installation? " yn;
-    if [ "X$$yn" \!= "Xy" -a "X$$yn" \!= "Xyes" ]; then exit 3; fi;
+    read -r -p "Really overwrite existing installation? " yn;
+    if [ "X$yn" \!= "Xy" ] && [ "X$yn" \!= "Xyes" ]; then exit 3; fi;
 fi
 
 /bin/rm -rf "$(COCOALIB_INSTALL_DIR)/include/CoCoA-$(COCOALIB_VERSION)"

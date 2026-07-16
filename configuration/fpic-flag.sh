@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 # Auxiliary script for CoCoALib configuration process.
 # Script expects the env variables CXX and CXXFAGS to be set.
@@ -28,9 +28,9 @@ FPIC_FLAG=-fPIC
 # Create tmp directory, put test prog in it, compile and run.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir fpic-flag`
+TMP_DIR=$(mktempdir fpic-flag)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null  || ( echo "ERROR: pushd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 
 /bin/cat > test-fpic-flag.C <<EOF
 int f(int x)
@@ -40,7 +40,7 @@ int f(int x)
 EOF
 
 
-COMPILER_MESG=`"$CXX" $FPIC_FLAG -c  -o test-fpic-flag.o  test-fpic-flag.C  2>& 1`
+COMPILER_MESG=$("$CXX" $FPIC_FLAG -c  -o test-fpic-flag.o  test-fpic-flag.C  2>& 1)
 if [ $? -ne 0 ]
 then
   echo "ERROR: test compilation failed   $SCRIPT_NAME"   > /dev/stderr
@@ -48,7 +48,7 @@ then
 fi
 
 # Clean up TMP_DIR
-popd  > /dev/null
+popd  > /dev/null  || ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/rm -rf "$TMP_DIR"
 if [ -z "$COMPILER_MESG" ]
 then

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_NAME=[[`basename "$0"`]]
+SCRIPT_NAME=[[$(basename "$0")]]
 
 # This script expects the (full) path of libgmp.a.
 # It prints out the (full) path of the (hopefully) corresponding gmp.h.
@@ -12,7 +12,7 @@ then
 fi
 
 # Check that path ends with libgmp.*  (simple rather than rigorous)
-case `basename "$1"` in
+case $(basename "$1") in
     libgmp.*)
 	: # OK what we expected
 	;;
@@ -25,21 +25,19 @@ esac
 GMP_LIB="$1"
 
 
-GMP_LIB_DIR=`dirname "$GMP_LIB"`
-PLATFORM=`basename "$GMP_LIB_DIR"`
+GMP_LIB_DIR=$(dirname "$GMP_LIB")
+PLATFORM=$(basename "$GMP_LIB_DIR")
 if [ "$PLATFORM" = "lib" ]
 then
   PLATFORM=
 fi
-GMP_LIB_DIR_DIR=`dirname "$GMP_LIB_DIR"`
-GMP_LIB_DIR_DIR_DIR=`dirname "$GMP_LIB_DIR_DIR"`
+GMP_LIB_DIR_DIR=$(dirname "$GMP_LIB_DIR")
+GMP_LIB_DIR_DIR_DIR=$(dirname "$GMP_LIB_DIR_DIR")
 # Special handling if libgmp.a is not fully installed...
-if [ `basename "$GMP_LIB_DIR"` = ".libs" ]
+if [ "$(basename "$GMP_LIB_DIR")" = ".libs" ]
 then
     echo "ERROR: Please supply path to an **installed** GMP library; (\"$GMP_LIB_DIR\" refers to an uninstalled GMP)    $SCRIPT_NAME"  > /dev/stderr
-    exit 2
-  # GMP is not installed
-  GMP_INC_DIR="$GMP_LIB_DIR_DIR"
+    exit 2  # GMP is not installed
 else
   # GMP is installed -- have to check two possible locations for the header file
   GMP_INC_DIR1="$($PKGCONF --variable=includedir gmp 2>/dev/null)"

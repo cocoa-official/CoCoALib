@@ -4,8 +4,8 @@
 # Expects env variables CXX and CXXFLAGS to be set.
 
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 if [ -z "$CXX" ]
 then
@@ -20,28 +20,28 @@ then
 fi
 
 NMZ_INC_DIR="$1"
-if [ \! -d "$NMZ_INC_DIR" -o \! -f "$NMZ_INC_DIR/libnormaliz/libnormaliz.h" ]
+if ! { [ -d "$NMZ_INC_DIR" ] && [ -f "$NMZ_INC_DIR/libnormaliz/libnormaliz.h" ]; }
 then
     echo "ERROR: unable to find/read Normaliz headers in $NMZ_INC_DIR   $SCRIPT_NAME"  > /dev/stderr
     exit 1
 fi
 
 NMZ_LIB="$2"
-if [ \! -f "$NMZ_LIB" -o \! -r "$NMZ_LIB" ]
+if ! { [ -f "$NMZ_LIB" ] && [ -r "$NMZ_LIB" ]; }
 then
     echo "ERROR: specified Normaliz lib ($NMZ_LIB) not a readable file   $SCRIPT_NAME"  > /dev/stderr
     exit 1
 fi
 
-NMZ_LIB_DIR=`dirname "$NMZ_LIB"`
-NMZ_LIB_BASE=`basename "$NMZ_LIB"`
+#unused# NMZ_LIB_DIR=$(dirname "$NMZ_LIB")
+#unused# NMZ_LIB_BASE=$(basename "$NMZ_LIB")
 
 # Create tmp directory, put test prog in it, compile and run.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir normaliz-version`
+TMP_DIR=$(mktempdir normaliz-version)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null   || ( echo "ERROR: push failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/cat > NormalizVersion.C  <<EOF
 #include "libnormaliz/libnormaliz.h"
 
@@ -63,8 +63,7 @@ then
   echo "LOGFILE: $TMP_DIR/LogFile   $SCRIPT_NAME"                  > /dev/stderr
   exit 3  # do not clean TMP_DIR, for possible debugging
 fi
-NMZ_VER=`./NormalizVersion 2> LogFile`
-if [ $? -ne 0 ]
+if ! NMZ_VER=$(./NormalizVersion 2> LogFile)
 then
   echo "ERROR: test program crashed   $SCRIPT_NAME"  > /dev/stderr
   echo "LOGFILE: $TMP_DIR/LogFile   $SCRIPT_NAME"    > /dev/stderr
@@ -72,7 +71,7 @@ then
 fi
 
 # Clean up TMP_DIR
-popd  > /dev/null
+popd  > /dev/null  || ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/rm -rf "$TMP_DIR"
-echo $NMZ_VER
+echo "$NMZ_VER"
 exit 0

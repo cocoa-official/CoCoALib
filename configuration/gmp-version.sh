@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 # This script gets the version number of GMP.
 # Assumes that env variables CXX and EXTLIB_DIR_FULL are set, and
@@ -48,7 +48,7 @@ is_absolute "$EXTLIB_DIR_FULL" ||
   exit 1
 )
 
-if [ \! -d "$EXTLIB_DIR_FULL" -o \! -d "$EXTLIB_DIR_FULL/include" -o \! -d "$EXTLIB_DIR_FULL/lib" ]
+if ! { [ -d "$EXTLIB_DIR_FULL" ] && [ -d "$EXTLIB_DIR_FULL/include" ] && [ -d "$EXTLIB_DIR_FULL/lib" ]; }
 then
   echo "ERROR: environment variable EXTLIB_DIR_FULL is implausible: \"$EXTLIB_DIR_FULL\"   $SCRIPT_NAME"  > /dev/stderr
   exit 1
@@ -58,9 +58,9 @@ fi
 # Get version number from the header file; we (ab)use the compiler.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir gmp-version`
+TMP_DIR=$(mktempdir gmp-version)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null   || ( echo "ERROR: pushd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 
 /bin/cat > test-gmp-version.C <<EOF
 #include "gmp.h"
@@ -73,7 +73,7 @@ int main()
 EOF
 
 # Use c++ compiler specified in CXX; no need to specify libgmp as all info is in header file!!
-echo "$CXX -I"$EXTLIB_DIR_FULL/include"  test-gmp-version.C  -o test-gmp-version"  > LogFile
+echo "$CXX -I\"$EXTLIB_DIR_FULL/include\"  test-gmp-version.C  -o test-gmp-version"  > LogFile
 $CXX -I"$EXTLIB_DIR_FULL/include"  test-gmp-version.C  -o test-gmp-version  >> LogFile 2>&1
 
 # Check whether compilation failed; if so, complain.
@@ -86,11 +86,11 @@ then
 fi
 
 # Compilation succeeded, so run $PROG which will print out the version.
-GMP_LIB_VERSION=`./test-gmp-version`
+GMP_LIB_VERSION=$(./test-gmp-version)
 
 # Clean up TMP_DIR
-popd  > /dev/null
+popd  > /dev/null  || ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/rm -rf "$TMP_DIR"
 
 # If we get here, all tests have passed, so print version number and exit with code 0.
-echo $GMP_LIB_VERSION
+echo "$GMP_LIB_VERSION"

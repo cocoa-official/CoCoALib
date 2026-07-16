@@ -6,8 +6,8 @@
 # then we assume all the BOOST libs are fine too.
 # ASSUMES environment variables CXX and CXXFLAGS are set correctly.
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 if [ $# -ne 3 ]
 then
@@ -28,12 +28,12 @@ BOOST_LDLIBS="$3"
 # We create a temp dir and work in there.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir boost-check-arch`
+TMP_DIR=$(mktempdir boost-check-arch)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null  || ( echo "ERROR: pushd into $TMP_DIR failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 
 # Here is the simple source code we shall use to test the compiler:
-/bin/cat > test-boost-arch.C <<EOF
+/bin/cat  > test-boost-arch.C  <<EOF
 #include "boost/filesystem.hpp"
 using namespace boost::filesystem;
 
@@ -55,8 +55,8 @@ then
 fi
 
 echo "Running ./test-boost-arch" >> LogFile
-./test-boost-arch  2>> LogFile
-if [ $? -ne 0 ]
+
+if ! ./test-boost-arch  2>> LogFile
 then
   echo "ERROR: test-boost-arch gave run-time error   $SCRIPT_NAME"   > /dev/stderr
   echo "LOGFILE:  $TMP_DIR/LogFile   $SCRIPT_NAME"   > /dev/stderr
@@ -64,6 +64,6 @@ then
 fi
 
 # Clean up and return 0 for success.
-popd  > /dev/null
+popd  > /dev/null  ||  (echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 4)
 /bin/rm -rf "$TMP_DIR"
 exit 0

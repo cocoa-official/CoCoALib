@@ -1,7 +1,7 @@
 #! /bin/bash
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 # Expects args: include paths and libs for READLINE
 # expects env variables CXX and CXXFLAGS inherited from parent shell.
@@ -39,8 +39,8 @@ is_absolute "$READLINE_HDR" || is_absolute "$READLINE_LIB" ||
 )
 
 
-READLINE_HDR_DIR=`dirname "$1"`
-READLINE_HDR_DIR_DIR=`dirname "$READLINE_HDR_DIR"`
+READLINE_HDR_DIR=$(dirname "$1")
+READLINE_HDR_DIR_DIR=$(dirname "$READLINE_HDR_DIR")
 
 if [ -z "$CXX" ]
 then
@@ -51,9 +51,9 @@ fi
 # Create tmp directory, put test prog in it, compile and run.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir readline-check-cxxflags`
+TMP_DIR=$(mktempdir readline-check-cxxflags)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null  || ( echo "ERROR: push failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/cat > test-readline.c <<EOF
 #include "stdlib.h"
 #include "stdio.h"
@@ -97,8 +97,7 @@ fi
 abc
 EOF
 
-./test-readline < test-readline.in  >> LogFile  2>&1
-if [ $? -ne 0 ]
+if ! ./test-readline < test-readline.in  >> LogFile  2>&1
 then
   echo "ERROR: test program gave run-time error   $SCRIPT_NAME"  > /dev/stderr
   echo "LOGFILE: $TMP_DIR/LogFile   $SCRIPT_NAME"                > /dev/stderr
@@ -106,7 +105,7 @@ then
 fi
 
 # Clean up TMP_DIR
-popd  > /dev/null
+popd  > /dev/null  || ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/rm -rf "$TMP_DIR"
 echo "$LIBTERMCAP"
 exit 0

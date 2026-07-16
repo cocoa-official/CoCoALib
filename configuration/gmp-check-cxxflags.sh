@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 # This script checks compatibility of user supplied CXXFLAGS with
 # the GMP library.
@@ -50,7 +50,7 @@ is_absolute "$EXTLIB_DIR_FULL" ||
 )
 
 
-if [ \! -d "$EXTLIB_DIR_FULL" -o \! -d "$EXTLIB_DIR_FULL/include" -o \! -d "$EXTLIB_DIR_FULL/lib" ]
+if ! { [ -d "$EXTLIB_DIR_FULL" ] && [ -d "$EXTLIB_DIR_FULL/include" ] && [ -d "$EXTLIB_DIR_FULL/lib" ]; }
 then
   echo "ERROR: environment variable EXTLIB_DIR_FULL is implausible: \"$EXTLIB_DIR_FULL\"   $SCRIPT_NAME"   > /dev/stderr
   exit 1
@@ -59,8 +59,7 @@ fi
 
 
 GMP_LDLIB=-lgmp-symlink
-/bin/ls "$EXTLIB_DIR_FULL"/lib/libgmp-symlink.*  > /dev/null  2>&1
-if [ $? -ne 0 ]
+if ! /bin/ls "$EXTLIB_DIR_FULL"/lib/libgmp-symlink.*  > /dev/null  2>&1
 then
   GMP_LDLIB=-lgmp
 fi
@@ -69,9 +68,9 @@ fi
 # Create tmp directory, put test prog in it, compile and run.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir gmp-check-cxxflags`
+TMP_DIR=$(mktempdir gmp-check-cxxflags)
 
-pushd "$TMP_DIR" > /dev/null
+pushd "$TMP_DIR" > /dev/null  || ( echo "ERROR: pushd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 ) 
 /bin/cat > test-gmp-cxxflags.c <<EOF
 #include "gmp.h"
 
@@ -102,11 +101,9 @@ then
 fi
 
 # Compilation succeeded, so try running $PROG.
+# Check whether execution fails; if so, complain (probably linker problems).
 echo "Run ./test-gmp-cxxflags" >> LogFile
-./test-gmp-cxxflags  >> LogFile 2>&1
-
-# Check whether execution failed; if so, complain (probably linker problems).
-if [ $? -ne 0 ]
+if ! ./test-gmp-cxxflags  >> LogFile 2>&1
 then
   # Deliberately leave $TMP_DIR to assist debugging.
   echo "ERROR: test-gmp-cxxflags crashed (maybe linker problem for libgmp)   $SCRIPT_NAME"   > /dev/stderr
@@ -115,6 +112,6 @@ then
 fi
 
 # Clean up TMP_DIR
-popd  > /dev/null
+popd  > /dev/null  ||  ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 /bin/rm -rf "$TMP_DIR"
 exit 0

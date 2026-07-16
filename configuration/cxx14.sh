@@ -1,7 +1,7 @@
 #!/bin/bash
 
-SCRIPT_NAME=[[`basename "$0"`]]
-SCRIPT_DIR=`dirname "$0"`
+SCRIPT_NAME=[[$(basename "$0")]]
+SCRIPT_DIR=$(dirname "$0")
 
 # Auxiliary script for CoCoALib configuration process.
 # Script expects the env variables CXX and CXXFLAGS to be set.
@@ -30,9 +30,9 @@ fi
 # Create tmp directory, put test prog in it, compile and run.
 umask 22
 source "$SCRIPT_DIR/shell-fns.sh"
-TMP_DIR=`mktempdir cxx14`
+TMP_DIR=$(mktempdir cxx14)
 
-pushd "$TMP_DIR"  > /dev/null
+pushd "$TMP_DIR"  > /dev/null  || ( echo "ERROR: pushd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
 
 
 /bin/cat > language-version.C <<EOF
@@ -58,17 +58,16 @@ then
     echo "LOGFILE: $TMP_DIR/LogFile   $SCRIPT_NAME"                                       > /dev/stderr
     exit 1
 fi
-./language-version | tee language-version.out  >> LogFile
-if [ $? -ne 0 ]
+if ! ./language-version | tee language-version.out  >> LogFile
 then
     echo "ERROR: language-version program crashed unexpectedly    $SCRIPT_NAME"           > /dev/stderr
     echo "LOGFILE: $TMP_DIR/LogFile    $SCRIPT_NAME"                                      > /dev/stderr
     exit 1
 fi
-CXXVER=`/bin/cat language-version.out`
+CXXVER=$(/bin/cat language-version.out)
 if [ "$CXXVER" = "CXX14" ]
 then
-    popd  > /dev/null
+    popd  > /dev/null  || ( echo "ERROR: popd failed   $SCRIPT_NAME" > /dev/stderr; exit 2 )
     /bin/rm -rf "$TMP_DIR"
     exit 0; # exit without printing (no flag needed for C++14)
 fi
@@ -76,24 +75,22 @@ fi
 # Compilation without flag is not C++14 standard; try with -std=c++14
 
 CXX14="-std=c++14"
-"$CXX"  $CXX14  language-version.C  -o language-version  >> LogFile  2>& 1 
-if [ $? -ne 0 ]
+if ! "$CXX"  $CXX14  language-version.C  -o language-version  >> LogFile  2>& 1 
 then
     echo "ERROR: compilation with flag $CXX14 failed   $SCRIPT_NAME"                      > /dev/stderr
     echo "LOGFILE: $TMP_DIR/LogFile   $SCRIPT_NAME"                                       > /dev/stderr
     exit 1
 fi
-./language-version | tee language-version.out  >> LogFile
-if [ $? -ne 0 ]
+if ! ./language-version | tee language-version.out  >> LogFile
 then
     echo "ERROR: language-version program crashed unexpectedly   $SCRIPT_NAME"            > /dev/stderr
     echo "LOGFILE: $TMP_DIR/LogFile    $SCRIPT_NAME"                                      > /dev/stderr
     exit 1
 fi
-CXXVER=`/bin/cat language-version.out`
+CXXVER=$(/bin/cat language-version.out)
 if [ "$CXXVER" = "C++14" ]
 then
-    popd  > /dev/null
+    popd  > /dev/null  || ( echo "ERROR: popd failed" > /dev/stderr; exit 2 )
     /bin/rm -rf "$TMP_DIR"
     echo "$CXX14"
     exit 0; # Success (flag for C++14 sent via echo to stdout)
