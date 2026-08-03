@@ -194,7 +194,8 @@ namespace CoCoA
     }
     catch (...)
     {
-      ans->myDtorBody();
+      // If ctor DenseMatImpl threw, ans == nullptr, and no clean up is needed.
+      if (ans != nullptr)  { ans->myDtorBody(); }
       throw;
     }
     return ans;
