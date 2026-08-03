@@ -194,7 +194,7 @@ namespace CoCoA
     }
     catch (...)
     {
-      ans->myDtorBody();
+      if (ans != nullptr)  { ans->myDtorBody(); }
       throw;
     }
     return ans;
