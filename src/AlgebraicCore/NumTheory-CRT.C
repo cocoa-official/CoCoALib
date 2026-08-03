@@ -61,17 +61,17 @@ namespace CoCoA
     myM *= m;
   }
 
+  // modulus m MUST BE coprime to all previous moduli;
+  // CoprimeFlag check disables the coprimeness safety check (to save time)
   void CRTMill::myAddInfo(const BigInt& r, const BigInt& m, CoprimeFlag check)
   {
-//???JAA    CoCoA_ASSERT(m > 1);
-    if (IsOne(m))  return; //???JAA
+    if (IsOne(m))  return;
     if (IsOne(m))  { if (!IsOne(myM))  CoCoA_THROW_ERROR1(ERR::BadModulus); return; }
-    CoCoA_ASSERT((r < m) && (r > -m));
     if (check == CheckCoprimality && gcd(m,myM) != 1)
       CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");
     CoCoA_ASSERT(IsCoprime(m,myM));
     const BigInt a = myR%m;
-    const BigInt k = SymmRemainder((r-a)*InvMod(myM,m), m); ///???BUG/SLUG??? SymmRemainder(r-a,m) ???
+    const BigInt k = SymmRemainder(SymmRemainder(r-a,m)*InvMod(myM,m), m);
     myR += k*myM;
     myM *= m;
   }
