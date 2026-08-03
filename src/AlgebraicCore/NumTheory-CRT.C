@@ -42,16 +42,17 @@ namespace CoCoA
 
   void CRTMill::myAddInfo(const MachineInt& res, const MachineInt& mod, CoprimeFlag check)
   {
+    // First check that mod >= 2, and (depending on CoprimeFlag) that it is coprime to product of all previous moduli,
     if (IsNegative(mod))  CoCoA_THROW_ERROR1(ERR::BadModulus);
     if (!IsSignedLong(mod) || !IsSignedLong(res))
       CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     const long m = AsSignedLong(mod);
+    if (m == 1)  CoCoA_THROW_ERROR1(ERR::BadModulus);
     if (check == CheckCoprimality && gcd(m,myM) != 1)
       CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");
     CoCoA_ASSERT(IsCoprime(m,myM));
-    long r = uabs(res)%m;
-    if (r != 0 && IsNegative(res))  r = m-r;
-    const long a = myR%m;
+    const long r = (IsNegative(res)) ? (m-SymmRemainder(uabs(res),m)) : (SymmRemainder(uabs(res),m));
+    const long a = SymmRemainder(myR,m);
     long k;
     if (m <= MaxSquarableInteger<long>())
       k = SymmRemainder((r-a)*InvMod(myM,m),m); // if both (r-a) & InvMod(..) are SymmRem then can allow m <= 2*MaxSquarableInteger
@@ -65,8 +66,7 @@ namespace CoCoA
   // CoprimeFlag check disables the coprimeness safety check (to save time)
   void CRTMill::myAddInfo(const BigInt& r, const BigInt& m, CoprimeFlag check)
   {
-    if (IsOne(m))  return;
-    if (IsOne(m))  { if (!IsOne(myM))  CoCoA_THROW_ERROR1(ERR::BadModulus); return; }
+    if (m < 2)  CoCoA_THROW_ERROR1(ERR::BadModulus);
     if (check == CheckCoprimality && gcd(m,myM) != 1)
       CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");
     CoCoA_ASSERT(IsCoprime(m,myM));
