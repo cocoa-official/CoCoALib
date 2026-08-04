@@ -6,6 +6,8 @@ export IsHomogWRT;
 -------------------------------------------------------------
 
 define WDegWRT(f, Weights)
+  if not(IsPolyRing(owner(f))) then error("WDegWRT: 1st arg must be a polynomial"); endif;
+  if type(Weights) <> MAT or NumIndets(owner(f)) <> NumCols(Weights) then error("WDegWRT: 2nd arg must be a matrix with 1 column for each ring indeterminate"); endif;
   if IsMonomial(f) then return GetCol(Weights*ColMat(exponents(f)), 1); endif;
   error("WDegWeights: currently only for monomials");
 enddefine; -- WDegWRT
