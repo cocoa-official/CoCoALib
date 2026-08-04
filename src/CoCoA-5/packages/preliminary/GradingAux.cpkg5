@@ -1,0 +1,20 @@
+package $GradingAux -- degree wrt to any weight matrix
+
+export WDegWRT;
+export IsHomogWRT;
+
+-------------------------------------------------------------
+
+define WDegWRT(f, Weights)
+  if IsMonomial(f) then return GetCol(Weights*ColMat(exponents(f)), 1); endif;
+  error("WDegWeights: currently only for monomials");
+enddefine; -- WDegWeights
+  
+
+define IsHomogWRT(f, Weights)
+  wdegs := [ WDegWRT(t, Weights) | t in support(f) ];
+  return len(MakeSet(wdegs))=1;
+enddefine; -- IsHomogWeights
+  
+
+endpackage;
