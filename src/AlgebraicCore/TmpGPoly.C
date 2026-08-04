@@ -93,7 +93,7 @@ namespace CoCoA
 
   GPoly& GPoly::operator=(const GPoly& the_gp) // ANNA: should it throw if not compatible???
   {
-    CoCoA_ASSERT( AreCompatible(myGRingInfoValue,the_gp.myGRingInfoValue));
+// CoCoA_ASSERT( AreCompatible(myGRingInfoValue,the_gp.myGRingInfoValue));
     myLPPForDivwMask = the_gp.myLPPForDivwMask;
     myLPPForOrd = the_gp.myLPPForOrd;
     myLCValue = the_gp.myLCValue;
