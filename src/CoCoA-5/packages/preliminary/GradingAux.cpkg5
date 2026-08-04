@@ -14,7 +14,7 @@ enddefine; -- WDegWRT
 define IsHomogWRT(f, Weights)
   wdegs := [ WDegWRT(t, Weights) | t in support(f) ];
   return len(MakeSet(wdegs))=1;
-enddefine; -- IsHomogWeights
+enddefine; -- IsHomogWRT
   
 
 endpackage;
