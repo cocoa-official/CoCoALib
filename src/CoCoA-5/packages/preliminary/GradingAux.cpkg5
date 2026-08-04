@@ -8,7 +8,7 @@ export IsHomogWRT;
 define WDegWRT(f, Weights)
   if IsMonomial(f) then return GetCol(Weights*ColMat(exponents(f)), 1); endif;
   error("WDegWeights: currently only for monomials");
-enddefine; -- WDegWeights
+enddefine; -- WDegWRT
   
 
 define IsHomogWRT(f, Weights)
