@@ -76,12 +76,15 @@ namespace CoCoA
   // Test for CRTMill (very simple test)
   void test_CRT()
   {
-    // Copied from ex-NumTheory2.C
-    const BigInt N = power(10,100);
-    const BigInt UPB = 2*N+1;
+    const BigInt N = -power(10,100);
+    const BigInt UPB = 2*abs(N)+1;
 
     CRTMill crt;
-    int p = 101;
+    // Just a quick check that modulus 1 is disallowed:
+    try { crt.myAddInfo(0,1); CoCoA_ASSERT_ALWAYS(!"Never get here"); }
+    catch (const ErrorInfo& err) { if (err != ERR::BadModulus)  throw; }
+
+    long p = 101;
     while (true)
     {
       p = NextPrime(p);
