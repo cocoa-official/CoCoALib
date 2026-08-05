@@ -56,7 +56,7 @@ namespace CoCoA
     const long a = LeastNNegRemainder(myR,m);
     long k;
     if (m <= MaxSquarableInteger<long>())
-      k = SymmRemainder((r-a)*InvMod(myM,m),m); // if both (r-a) & InvMod(..) are LeastNNegRem then no overflow if m <= MaxSquarableInteger
+      k = SymmRemainder((r-a)*InvMod(myM,m),m); // if both r, a & InvMod(..) are LeastNNegRem then no overflow if m <= MaxSquarableInteger
     else
       k = SymmRemainder(BigInt(r-a)*InvMod(myM,m),m); // use BigInt to avoid possible overflow (don't care about speed)
     myR += k*myM;
