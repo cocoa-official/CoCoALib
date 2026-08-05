@@ -200,7 +200,7 @@ answer (assuming perfect bounds are known).  In practice, this means
 that **the methods always fail if the combined modulus is too small**.
 
 The constructors available are:
-- ``RatReconstructByContFrac()`` ctor for continued fraction method mill log-epsilon equal to 20
+- ``RatReconstructByContFrac()`` ctor for continued fraction method mill (with log-epsilon equal to 20 by default)
 - ``RatReconstructByContFrac(LogEps)`` ctor for continued fraction method mill with given log-epsilon (must be at least 3)
 - ``RatReconstructByLattice(SafetyFactor)`` ctor for lattice method mill with given ``SafetyFactor`` (0 --> use default)
 
