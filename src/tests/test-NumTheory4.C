@@ -78,12 +78,15 @@ namespace CoCoA
   // Test for CRTMill (very simple test)
   void test_CRT()
   {
-    // Copied from ex-NumTheory2.C
-    const BigInt N = power(10,100);
-    const BigInt UPB = 2*N+1;
+    const BigInt N = -power(10,100);
+    const BigInt UPB = 2*abs(N)+1;
 
     CRTMill crt;
-    int p = 101;
+    // Just a quick check that modulus 1 is disallowed:
+    try { crt.myAddInfo(0,1); CoCoA_ASSERT_ALWAYS(!"Never get here"); }
+    catch (const ErrorInfo& err) { if (err != ERR::BadModulus)  throw; }
+
+    long p = 101;
     while (true)
     {
       p = NextPrime(p);
@@ -101,7 +104,7 @@ namespace CoCoA
   {
     // Taken from an old email (2024-09-24)
     const BigInt m(536870923);
-    const BigInt r = BigIntFromString("-133938711504058062521343586503804797493927382774057437847102718821399120752284154595014137517805073862154012246567574121259948634520322906545919708367827740890559457959928206211377205431569213484206966838991149");
+    const BigInt r = BigIntFromString("-57312042378620423056674247");
 
     RatReconstructByContFrac RatRecon1;
     RatRecon1.myAddInfo(r,m);

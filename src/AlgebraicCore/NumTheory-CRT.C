@@ -47,23 +47,22 @@ namespace CoCoA
     if (!IsSignedLong(mod) || !IsSignedLong(res))
       CoCoA_THROW_ERROR1(ERR::ArgTooBig);
     const long m = AsSignedLong(mod);
-    if (m == 1)  CoCoA_THROW_ERROR1(ERR::BadModulus);
+    if (m < 2)  CoCoA_THROW_ERROR1(ERR::BadModulus);  // require modulus >= 2
     if (check == CheckCoprimality && gcd(m,myM) != 1)
       CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");
     CoCoA_ASSERT(IsCoprime(m,myM));
-    const long r = (IsNegative(res)) ? (m-SymmRemainder(uabs(res),m)) : (SymmRemainder(uabs(res),m));
-    const long a = SymmRemainder(myR,m);
+    long r = uabs(res)%m;
+    if (r != 0 && IsNegative(res))  r = m-r;
+    const long a = LeastNNegRemainder(myR,m);
     long k;
     if (m <= MaxSquarableInteger<long>())
-      k = SymmRemainder((r-a)*InvMod(myM,m),m); // if both (r-a) & InvMod(..) are SymmRem then can allow m <= 2*MaxSquarableInteger
+      k = SymmRemainder((r-a)*InvMod(myM,m),m); // if both (r-a) & InvMod(..) are LeastNNegRem then no overflow if m <= MaxSquarableInteger
     else
       k = SymmRemainder(BigInt(r-a)*InvMod(myM,m),m); // use BigInt to avoid possible overflow (don't care about speed)
     myR += k*myM;
     myM *= m;
   }
 
-  // modulus m MUST BE coprime to all previous moduli;
-  // CoprimeFlag check disables the coprimeness safety check (to save time)
   void CRTMill::myAddInfo(const BigInt& r, const BigInt& m, CoprimeFlag check)
   {
     if (m < 2)  CoCoA_THROW_ERROR1(ERR::BadModulus);
@@ -71,7 +70,7 @@ namespace CoCoA
       CoCoA_THROW_ERROR2(ERR::BadArg, "new modulus not coprime");
     CoCoA_ASSERT(IsCoprime(m,myM));
     const BigInt a = myR%m;
-    const BigInt k = SymmRemainder(SymmRemainder(r-a,m)*InvMod(myM,m), m);
+    const BigInt k = SymmRemainder(LeastNNegRemainder(r-a,m)*InvMod(myM,m), m);
     myR += k*myM;
     myM *= m;
   }
