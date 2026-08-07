@@ -20,9 +20,11 @@
 #include "CoCoA/GlobalManager.H"
 #include "CoCoA/error.H"
 #include "CoCoA/BigIntOps.H"
+#include "CoCoA/BigRatOps.H"
 #include "CoCoA/NumTheory-CRT.H"
 #include "CoCoA/NumTheory-prime.H"
 #include "CoCoA/NumTheory-CoprimeFactorBasis.H"
+#include "CoCoA/NumTheory-RatReconstruct.H"
 #include "CoCoA/utils.H"
 
 #include <iostream>
@@ -76,12 +78,15 @@ namespace CoCoA
   // Test for CRTMill (very simple test)
   void test_CRT()
   {
-    // Copied from ex-NumTheory2.C
-    const BigInt N = power(10,100);
-    const BigInt UPB = 2*N+1;
+    const BigInt N = -power(10,100);
+    const BigInt UPB = 2*abs(N)+1;
 
     CRTMill crt;
-    int p = 101;
+    // Just a quick check that modulus 1 is disallowed:
+    try { crt.myAddInfo(0,1); CoCoA_ASSERT_ALWAYS(!"Never get here"); }
+    catch (const ErrorInfo& err) { if (err != ERR::BadModulus)  throw; }
+
+    long p = 101;
     while (true)
     {
       p = NextPrime(p);
@@ -95,6 +100,24 @@ namespace CoCoA
   }
   
 
+  void test_RatReconstruct()
+  {
+    // Taken from an old email (2024-09-24)
+    const BigInt m(536870923);
+    const BigInt r = BigIntFromString("-57312042378620423056674247");
+
+    RatReconstructByContFrac RatRecon1;
+    RatRecon1.myAddInfo(r,m);
+    CoCoA_ASSERT_ALWAYS(!IsConvincing(RatRecon1));
+
+    RatReconstructByContFrac RatRecon2;
+    RatRecon2.myAddInfo(r,m*m);
+    CoCoA_ASSERT_ALWAYS(IsConvincing(RatRecon2));
+    CoCoA_ASSERT_ALWAYS(ReconstructedRat(RatRecon2) == BigRat(1,27));
+    CoCoA_ASSERT_ALWAYS(IsOne(BadMFactor(RatRecon2)));
+}
+  
+
   void program()
   {
     GlobalManager CoCoAFoundations;
@@ -102,6 +125,7 @@ namespace CoCoA
     test_eratosthenes();
     test_CFB();
     test_CRT();
+    test_RatReconstruct();
   }
 
 } // end of namespace CoCoA
