@@ -26,9 +26,9 @@ then
 fi
 
 
-OS=$(uname -s)
-PLATFORM=$(uname -m)
-if [ "$OS" = "Darwin" ] && [ "$PLATFORM" = "x86_64" ]
-then
-    echo "-Wl,-no_pie"  # note the underscore!
-fi
+# OS=$(uname -s)
+# PLATFORM=$(uname -m)
+# if [ "$OS" = "Darwin" ] && [ "$PLATFORM" = "x86_64" ]
+# then
+#     echo "-Wl,-no_pie"  # note the underscore!
+# fi
