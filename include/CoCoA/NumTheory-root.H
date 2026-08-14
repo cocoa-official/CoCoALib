@@ -25,9 +25,12 @@ namespace CoCoA
 
   class BigInt; // fwd decl -- defined in BigInt.H
 
-  BigInt StarRoot(BigInt N, long UPBexp);
+  BigInt StarRoot(BigInt N, long UPBexp = 0);
+  long StarRoot(long n);
   long CertifyNotPower(const BigInt& N, long k);
 
+  // BELOW IS JUST FOR TESTING
+  BigInt StarRoot_OLD(BigInt N, long UPBexp = 0);
 
 } // end of namespace CoCoA
 
