@@ -22,7 +22,7 @@
 #include "CoCoA/NumTheory-modular.H"
 #include "CoCoA/NumTheory-factor.H"
 #include "CoCoA/NumTheory-prime.H"
-
+#include "CoCoA/NumTheory-root.H"
 
 #include <algorithm>
 using std::min;
@@ -49,7 +49,7 @@ namespace CoCoA
 
   //----------------------------------------------------------------------
   // This test checks that radical gives the expected answer over a
-  // range of sall numbers with prime factors 2,3,5,7.
+  // range of small numbers with prime factors 2,3,5,7.
   //----------------------------------------------------------------------
   void test_radical()
   {
@@ -237,6 +237,28 @@ namespace CoCoA
   }
 
 
+  void test_StarRoot()
+  {
+    for (long n = 1; n <= 100000; ++n)
+    {
+      const long r = StarRoot(n);
+      if (r == n)  continue;
+      const long pwr = static_cast<long>(std::floor(0.5+std::log(n)/std::log(r)));
+      CoCoA_ASSERT_ALWAYS(n == power(r,pwr));
+    }
+    for (long b = 2; b <= 720; ++b)
+    {
+      const long r = StarRoot(b);
+      BigInt power_b(1);
+      for (long pwr = 1; pwr <= 60; ++pwr)
+      {
+        power_b *= b;
+        CoCoA_ASSERT_ALWAYS(StarRoot(power_b) == r);
+      }
+    }
+  }
+
+
   void program()
   {
     GlobalManager CoCoAFoundations;
@@ -245,6 +267,7 @@ namespace CoCoA
     test_IsSqFree();
     test_PrimeSeq();
     test_kronecker();
+    test_StarRoot();
   }
 
 } // end of namespace CoCoA
