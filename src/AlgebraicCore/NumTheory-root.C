@@ -158,7 +158,7 @@ namespace CoCoA
       VerboseLog VERBOSE("StarRoot_improved");
       long logN = FloorLog2(N);
       if (UPBexp == 0)  UPBexp = logN;
-      double lnN = log(N); // maybe mult by (1+epsilon)  ???
+      double lnN = log(N)+1.0/65536.0; // better to mult by (1+epsilon)  ???
       long MaxK = 1+logN;
       long multiplicity = 0; // if N = r^s then s divides multiplicity
       double lnKnownFactor = 0.0;  // may help exit loop sooner
@@ -202,7 +202,7 @@ namespace CoCoA
         // also N must have a prime factor larger than p; so if (p*KnownFactor)^k > N
         // then we know that N cannot be a power.
         if (lnKnownFactor+k*std::log(p) > lnN)  return N;
-        // Advance k (by at most 100 steps) until we find a plausible next value for k
+        // Advance k (by at most 100 "steps") until we find a plausible next value for k
         bool plausible = false;
         for (int i=0; i < 100; ++i)
         {
@@ -211,7 +211,7 @@ namespace CoCoA
             if (!IsFalse3(IsPowerQuick(N,k)))   { plausible = true; break; }
             if (multiplicity > 0)
             {
-              multiplicity /= k;/*exact division*/  MaxK = std::min(MaxK, multiplicity); 
+              multiplicity = CoprimeFactor(multiplicity,k);  MaxK = std::min(MaxK, multiplicity); 
               VERBOSE(200) << "Reduced multiplicity to " << multiplicity << std::endl;
             }
           }
