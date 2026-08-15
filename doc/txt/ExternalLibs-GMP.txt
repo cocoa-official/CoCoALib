@@ -1,5 +1,5 @@
       ExternalLibs-GMP
-      Copyright (c)  2016,2022  John Abbott, Anna M. Bigatti
+      Copyright (c)  2016,2022,2026  John Abbott, Anna M. Bigatti
       GNU Free Documentation License, Version 1.2
 %!includeconf: ../aux-txt2tags/config.t2t
       TeXTitle{ExternalLibs-GMP}{John Abbott}
@@ -47,39 +47,42 @@ If you have little or no experience compiling software, ask
 someone who has experience to help you.  It is not hard, but
 experience helps a lot!
 
+Note that **CoCoALib** expects **GMP release 5.1.0 or later.**
+
 To build the GMP library yourself, you must first download the sources from
  | [**GMP** website http://www.gmplib.org/]
 
-Note that **CoCoALib** expects **GMP release 5.1.0 or later.**
-
+```
+tar xf gmp-6.3.0.tar.xz
+cd gmp-6.3.0
+```
 
 You must then decide whether to make a "personal" installation or
 a "system-wide" installation.  To make a system-wide installation
 your account must have "administrator privileges"; in case of
 doubt, make a personal installation.
+
+- Commands for a **system-wide** installation:
 ```
-## Commands for a ***system-wide*** installation
-tar xzf gmp-6.2.1.tar.gz
-cd gmp-6.2.1
-./configure  --enable-cxx
-make
+./configure  --enable-cxx  --with-pic
+make -j4
 sudo make install
-## Maybe run the ldconfig command to register the shared library.
-## You can now delete gmp-6.2.1.tar.gz and the directory gmp-6.2.1
 ```
+Maybe run the ldconfig command to register the shared library.
 
-
-To make a personal installation you must decide where GMP should
+- Commands for a **personal** installation:
+you must decide where GMP should
 be installed.  We suggest something like ``$HOME/MySoftware``
-(if you choose somewhere else, change the lines below accordingly).
 ```
-## Commands for a ***personal*** installation
 mkdir "$HOME/MySoftware"
-./configure  --enable-cxx  --disable-shared  --prefix="$HOME/MySoftware"
-make
+./configure  --enable-cxx  --disable-shared  --with-pic  --prefix="$HOME/MySoftware"
+make -j4
 make install
-## You can now delete gmp-6.2.1.tar.gz and the directory gmp-6.2.1
 ```
+-
+
+After the installation, you can delete ``gmp-6.3.0.tar.xz`` and the directory ``gmp-6.3.0``
+
 
 ==== Telling CoCoALib where GMP is ====
 
@@ -126,6 +129,10 @@ http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
 
 == Main changes ==
 %======================================================================
+
+**2026**
+- July: updated guidelines system-wide/personal installation
+-
 
 **2022**
 - February: guidelines system-wide/personal installation (now necessary for CoCoALib)
