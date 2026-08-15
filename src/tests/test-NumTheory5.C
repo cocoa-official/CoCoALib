@@ -24,7 +24,6 @@
 #include "CoCoA/NumTheory-prime.H"
 #include "CoCoA/NumTheory-root.H"
 
-
 #include <algorithm>
 using std::min;
 #include <iostream>
@@ -245,7 +244,6 @@ namespace CoCoA
       const long r = StarRoot(n);
       if (r == n)  continue;
       const long pwr = static_cast<long>(std::floor(0.5+std::log(n)/std::log(r)));
-      std::clog<<"n="<<n<<"  r="<<r<<"   exp="<<pwr<<std::endl;
       CoCoA_ASSERT_ALWAYS(n == power(r,pwr));
     }
     for (long b = 2; b <= 720; ++b)
