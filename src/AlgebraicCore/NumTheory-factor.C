@@ -713,7 +713,7 @@ struct PRS_Check
   {
     if (IsZero(N)) CoCoA_THROW_ERROR(ERR::ReqNonZero, "SmallestNonDivisor");
     if (IsOdd(N)) return 2;
-    // SLUG! simple rather than quick
+    // Obviously correct, bu could be faster.
     PrimeSeq TrialDivisorList;
     while (N%(*TrialDivisorList) == 0)
     {
