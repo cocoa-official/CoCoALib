@@ -1,0 +1,180 @@
+Package $CheckArgs -- helper fns for arg checks
+
+
+// These fns deliberately do not check their arg types
+// All fns just check a condition:
+//   if the condition is satisfied, the fn just returns
+//   otherwise an error is thrown (with a helpful message)
+
+export CheckIsInteger;
+export CheckIsPositiveInteger;
+export CheckIsNonNegInteger;
+export CheckIsMatrix;
+export CheckIsPolyRing;
+export CheckIsPolyRingOverField;
+export CheckIsPolynomial;
+export CheckIsUnivariatePolynomial;
+export CheckIsList;
+export CheckIsListOfRingElem;
+export ListOfRingElem;
+export CheckIsIdealPolyRingOverField;
+export CheckIsString;
+export CheckIsRecord;
+---------------------- Integers ----------------------
+
+define CheckIsInteger(n)
+  if type(n) = INT then return; endif;
+  error("arg must be an integer")
+enddefine; -- CheckIsInteger
+
+define CheckIsPositiveInteger(n)
+  if type(n) = INT and n > 0 then return; endif;
+  error("arg must be a positive integer")
+enddefine; -- CheckIsPositiveInteger
+
+
+-- define CheckIsPositiveInteger(n, FnName, opt posn)
+--   if type(n) = INT and n > 0 then return; endif;
+--   if not(IsDefined(posn)) then
+--     error(FnName + ": arg must be a positive integer")
+--   else
+--     error(FnName + ": arg "+ sprint(posn) + " must be a positive integer")
+--   endif;
+-- enddefine; -- CheckIsPositiveInteger
+
+define CheckIsNonNegInteger(n)
+  if type(n) = INT and n >= 0 then return; endif;
+  error("arg must be a non-negative integer")
+enddefine; -- CheckIsNonNegInteger
+
+---------------------- Matrices ----------------------
+
+define CheckIsMatrix(M)
+  if type(M) = MAT then return; endif
+  error("arg must be a matrix");
+enddefine; -- CheckIsMatrix
+
+define CheckIsMatrixOfZZ(M)
+  if type(M) = MAT and IsZZ(RingOf(M)) then return; endif
+  error("arg must be a matrix over ZZ");
+enddefine; -- CheckIsMatrixOfZZ
+
+define CheckIsMatrixOfQQ(M)
+  if type(M) = MAT and IsQQ(RingOf(M)) then return; endif
+  error("arg must be a matrix over QQ");
+enddefine; -- CheckIsMatrixOfQQ
+
+define CheckIsSquareMatrix(M)
+  if type(M) = MAT and NumRows(M) = NumCols(M) then return; endif
+  error("arg must be a square matrix");
+enddefine; -- CheckIsSquareMatrix
+
+---------------------- Rings ----------------------
+
+// This probably unhelpful -- when could you usefully call it?
+define CheckIsZZ(R)
+  if type(R) = RING and IsZZ(R) then return; endif;
+  error("arg must be the ring of integers");
+enddefine; -- CheckIsZZ
+  
+
+define CheckIsPolyRing(P)
+  if type(P) = RING and IsPolyRing(P) then return; endif;
+  error("arg must be a polynomial ring");
+enddefine; -- CheckIsPolyRing
+
+define CheckIsPolyRingOverField(P)
+  if type(P) = RING and IsPolyRing(P) and IsField(CoeffRing(P)) then return; endif;
+  error("arg must be a polynomial ring over a field");
+enddefine; -- CheckIsPolyRing
+  
+
+---------------------- Polynomials ----------------------
+
+define CheckIsPolynomial(f)
+  if type(f) = RINGELEM and IsPolyRing(RingOf(f)) then return; endif;
+  error("arg must be a polynomial");
+enddefine; -- CheckIsPolynomial
+
+define CheckIsUnivariatePolynomial(f)
+  if type(f) = RINGELEM and IsPolyRing(RingOf(f)) and UnivariateIndetIndex(f) <> 0 then return; endif;
+  error("arg must be a univariate polynomial");
+enddefine; -- CheckIsUnivariatePolynomial
+
+---------------------- Lists ----------------------
+
+// JAA is pretty sure that this function is essentially useless
+define CheckIsList(L)
+  if type(L) = LIST then return; endif;
+  error("arg must be a list");
+enddefine; -- CheckIsList
+
+
+// Check that all elements of the list are the same ring
+define CheckIsListOfRingElem(L)
+  if type(L) = LIST then
+    if IsEmpty(L) then return; endif;
+    if type(L[1]) = RINGELEM then
+      R := RingOf(L[1]);
+      AllInSameRing := true;
+      foreach e in L do
+	if type(e) = RINGELEM and RingOf(e) = R then continue; endif;
+	AllInSameRing := false; break;
+      endforeach;
+      if AllInSameRing then return; endif;
+    endif;
+  endif;
+  error("arg must be a list of elements of the same ring");
+enddefine; -- CheckIsListOfRingElem
+
+// Given a mixed list of INT, RAT or RINGELEM
+// Return a list of RINGELEM
+// Error if there are two RINGELEM belonging to different rings
+// If there are no RINGELEM: map entries into ZZ if possible, otherwise QQ.
+define ListOfRingElem(L)
+  ErrMesg := "arg must be a list of ring elements";
+  if type(L) <> LIST then error(ErrMesg); endif;
+  if IsEmpty(L) then return L; endif;
+  RR := RingsOf(L);
+  R := RingZZ();
+  SeenARingElem := false;
+  foreach e in L do
+    if type(e) = INT then continue; endif;
+    if type(e) = RAT then
+      if IsZZ(R) and not(IsOne(den(e))) then R := RingQQ(); endif;
+      continue;
+    endif
+    if type(e) <> RINGELEM then error(ErrMesg); endif;
+    SeenARingElem := true;
+  R := RingOf(e); break;
+//    if IsZZ(R) then R := RingOf(e); continue; endif;
+//    if IsQQ(R) and IsZZ(RingOf(e)) then continue; endif; // ??? BUG ???
+  endforeach;
+  // ??? BUG Check value of SeenARingElem ???
+  return [RingElem(R,e) | e in L];
+enddefine; -- ListOfRingElem
+  
+---------------------- Ideals ----------------------
+
+define CheckIsIdealPolyRingOverField(I)
+  if type(I) = IDEAL and IsPolyRing(RingOf(I)) and IsField(CoeffRing(RingOf(I))) then return; endif;
+  error("arg must be an ideal in a polynomial ring over a field");
+enddefine; -- CheckIsIdealPolyRingOverField
+  
+---------------------- Strings ----------------------
+
+define CheckIsString(str)
+  if type(str) = STRING then return; endif;
+  error("arg must be a string");
+enddefine; -- CheckIsString
+  
+
+---------------------- Records ----------------------
+
+define CheckIsRecord(R)
+  if type(R) = RECORD then return; endif;
+  error("arg must be a record");
+enddefine; -- CheckIsRecord
+
+ 
+EndPackage;
