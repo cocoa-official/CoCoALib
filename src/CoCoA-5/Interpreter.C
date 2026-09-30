@@ -4563,7 +4563,7 @@ void ErrorReporter::reportError(const RuntimeException &exception) {
 				this->printBold(fnDecl->fnName);
 			} else
 				this->printBold("anonymous-function");
-			if (!this->reportLineNumberWhenMeaningful(from, to, false, false)) {
+			if (!this->reportLineNumberWhenMeaningful(from, to, true, false)) { // anna 2026 column->true
 				if (frame.block)
 					this->outputStream->print(" (previously defined at the prompt)");
 				else
@@ -4573,7 +4573,7 @@ void ErrorReporter::reportError(const RuntimeException &exception) {
 			from = frame.invocationExp->getBegin();
 			to = frame.invocationExp->getEnd();
 		}
-		this->outputStream->print(string(++nesting, ' '))->print("called");
+		this->outputStream->print(string(++nesting, ' '))->print("--> called");
 		if (!this->reportLineNumberWhenMeaningful(from, to, false, false))
 			this->outputStream->print(" at top-level");
 		this->outputStream->newline();

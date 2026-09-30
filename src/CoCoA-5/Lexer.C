@@ -784,16 +784,18 @@ Token Token::EndOfFile;
 const string
   ErrorReporter::ContextPrefix("--> CONTEXT: "), // "--> " for issue #148
   ErrorReporter::WherePrefix("\n--> WHERE:"),
-  ErrorReporter::ErrorPrefix("--> ERROR: "), // "--> " for issue #567
+  ErrorReporter::ErrorPrefix("--->>> ERROR: "), // "--> " for issue #567
   ErrorReporter::WarningPrefix("--> WARNING: "),
-  ErrorReporter::CalledbyPrefix("CALLED BY: ");
+  ErrorReporter::CalledbyPrefix("--> CALLED BY: ");
 
 void ErrorReporter::printWarning() {
 	this->outputStream->print(WarningPrefix);
 }
 
 void ErrorReporter::printBold(const string &s) {
+	this->outputStream->print("\"");
 	this->outputStream->print(s);
+	this->outputStream->print("\"");
 }
 
 void ErrorReporter::printContext() {
@@ -840,7 +842,7 @@ void DefaultErrorReporter::implReportError(const string &msg) {
 void DefaultErrorReporter::implReportError(const string &msg, const CharPointer &from, const CharPointer &to) {
 	this->printError();
 	this->outputStream->print(msg);
-	this->reportLineNumberWhenMeaningful(from, to, true, true);
+  //this->reportLineNumberWhenMeaningful(from, to, true, true); // anna 2026: rm WHERE
 	this->outputStream->newline();
 	this->outputUnderlinedChars(intrusive_ptr_cast<InterpreterNS::CppOSTREAM>(this->outputStream)->out, from, to);
 }
