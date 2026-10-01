@@ -839,10 +839,11 @@ void DefaultErrorReporter::implReportError(const string &msg) {
 	this->outputStream->print(msg)->newline();
 }
 
-void DefaultErrorReporter::implReportError(const string &msg, const CharPointer &from, const CharPointer &to) {
+void DefaultErrorReporter::implReportError(const string &msg, const CharPointer &from, const CharPointer &to, const bool printWHEREline) {
 	this->printError();
 	this->outputStream->print(msg);
-  //this->reportLineNumberWhenMeaningful(from, to, true, true); // anna 2026: rm WHERE
+  if (printWHEREline)
+    this->reportLineNumberWhenMeaningful(from, to, true, true); // anna 2026: rm WHERE
 	this->outputStream->newline();
 	this->outputUnderlinedChars(intrusive_ptr_cast<InterpreterNS::CppOSTREAM>(this->outputStream)->out, from, to);
 }

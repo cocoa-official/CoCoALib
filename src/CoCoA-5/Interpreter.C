@@ -1103,8 +1103,12 @@ void Interpreter::reportError(const string &msg) {
 	this->errorReporter->reportError(msg);
 }
 
+void Interpreter::reportError(const string &msg, const CharPointer &from, const CharPointer &to, const bool printWHEREline) {
+	this->errorReporter->reportError(msg, from, to, printWHEREline);
+}
+
 void Interpreter::reportError(const string &msg, const CharPointer &from, const CharPointer &to) {
-	this->errorReporter->reportError(msg, from, to);
+	this->errorReporter->reportError(msg, from, to, true /*printWHEREline*/);
 }
 
 intrusive_ptr<const StaticEnv> RuntimeEnvironment::findStaticEnv() {
@@ -4533,7 +4537,7 @@ namespace LexerNS {
 using namespace InterpreterNS;
 
 void ErrorReporter::reportError(const RuntimeException &exception) {
-	this->reportError(exception.reason, exception.from, exception.to);
+	this->reportError(exception.reason, exception.from, exception.to, false /*printWHEREline*/);
 	const vector<SnapshotFrame>::size_type snapshotSize = exception.snapshot.size();
 	if (snapshotSize) {
 		this->printContext();

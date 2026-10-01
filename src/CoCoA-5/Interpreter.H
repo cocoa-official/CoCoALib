@@ -1353,6 +1353,7 @@ public:
 	void reportInterrupt(const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
 	void reportError(const std::string &msg);
 	void reportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
+	void reportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to, const bool printWHEREline);
 	static const std::string IT, CURRENT_RING;
 #ifdef C5IDE
 private:
