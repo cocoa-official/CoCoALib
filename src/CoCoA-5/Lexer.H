@@ -295,15 +295,16 @@ public:
 		++this->errorCount;
 		this->implReportError(msg);
 	}
-	void reportErrorW(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to, const bool printWHEREline) {
+	void reportErrorShort(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to) {
 		++this->errorCount;
-		this->implReportError(msg, from, to, printWHEREline);
+		this->implReportError(msg, from, to, false /*printWHEREline*/);
 	}
 	void reportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to) {
-		this->reportErrorW(msg, from, to, true);
+		++this->errorCount;
+		this->implReportError(msg, from, to, true /*printWHEREline*/);
 	}
 	void reportError(const std::string &msg, const LexerNS::Token &tok) {
-		this->reportErrorW(msg, tok.getBegin(), tok.getEnd(), true);
+		this->reportError(msg, tok.getBegin(), tok.getEnd());
 	}
 	virtual void reportError(const InterpreterNS::RuntimeException &exception);
 	int getErrorCount() const { return this->errorCount; }

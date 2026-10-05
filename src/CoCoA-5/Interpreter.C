@@ -4533,7 +4533,7 @@ namespace LexerNS {
 using namespace InterpreterNS;
 
 void ErrorReporter::reportError(const RuntimeException &exception) {
-	this->reportErrorW(exception.reason, exception.from, exception.to, false /*printWHEREline*/);
+	this->reportErrorShort(exception.reason, exception.from, exception.to);
 	const vector<SnapshotFrame>::size_type snapshotSize = exception.snapshot.size();
 	if (snapshotSize) {
 		this->printContext();
