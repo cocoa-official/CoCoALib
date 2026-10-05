@@ -782,10 +782,11 @@ const CharPointer CharPointer::Null;
 Token Token::EndOfFile;
 
 const string
-  ErrorReporter::ContextPrefix("--> CONTEXT: "), // "--> " for issue #148
+//  ErrorReporter::ContextPrefix("--> CONTEXT: "), // "--> " for issue #148
+  ErrorReporter::ContextPrefix("--> WHERE: "), // anna 2026-10
   ErrorReporter::WherePrefix("\n--> WHERE:"),
   ErrorReporter::ErrorPrefix("--->>> ERROR: "), // "--> " for issue #567
-  ErrorReporter::WarningPrefix("--> WARNING: "),
+  ErrorReporter::WarningPrefix("--->>> WARNING: "),
   ErrorReporter::CalledbyPrefix("--> CALLED BY: ");
 
 void ErrorReporter::printWarning() {
