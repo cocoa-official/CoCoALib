@@ -304,7 +304,7 @@ public:
 		this->implReportError(msg, from, to, true /*printWHEREline*/);
 	}
 	void reportError(const std::string &msg, const LexerNS::Token &tok) {
-		this->reportError(msg, tok.getBegin(), tok.getEnd());
+		this->reportErrorW(msg, tok.getBegin(), tok.getEnd(), true);
 	}
 	virtual void reportError(const InterpreterNS::RuntimeException &exception);
 	int getErrorCount() const { return this->errorCount; }
