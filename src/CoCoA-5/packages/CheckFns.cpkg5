@@ -53,7 +53,7 @@ enddefine; -- CheckIsNonNegInteger
 
 ---------------------- Matrices ----------------------
 
-define CheckIsMAT(M, extra)
+define CheckIsMAT(M, opt extra)
   if type(M) = MAT then return; endif
   ErrMesg := "arg must be a matrix";
   if IsDefined(extra) then
@@ -175,7 +175,7 @@ enddefine; -- CheckIsIdealPolyRingOverField
   
 ---------------------- Strings ----------------------
 
-define CheckIsSTRING(str, extra)
+define CheckIsSTRING(str, opt extra)
   if type(str) = STRING then return; endif;
   ErrMesg := "arg must be a string";
   if IsDefined(extra) then
