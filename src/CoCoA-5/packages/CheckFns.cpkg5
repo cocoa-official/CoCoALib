@@ -6,35 +6,30 @@ Package $CheckArgs -- helper fns for arg checks
 //   if the condition is satisfied, the fn just returns
 //   otherwise an error is thrown (with a helpful message)
 
-export CheckIsINT;
+export CheckIsInteger;
 export CheckIsPositiveInteger;
 export CheckIsNonNegInteger;
-export CheckIsMAT;
+export CheckIsMatrix;
 export CheckIsPolyRing;
 export CheckIsPolyRingOverField;
 export CheckIsPolynomial;
 export CheckIsUnivariatePolynomial;
-export CheckIsLIST;
+export CheckIsList;
 export CheckIsListOfRingElem;
 export ListOfRingElem;
 export CheckIsIdealPolyRingOverField;
-export CheckIsSTRING;
-export CheckIsRECORD;
+export CheckIsString;
+export CheckIsRecord;
 ---------------------- Integers ----------------------
 
-define CheckIsINT(n, opt extra)
+define CheckIsInteger(n)
   if type(n) = INT then return; endif;
-  ErrMesg := "arg must be an integer";
-  if IsDefined(extra) then
-    ErrMesg := sprint(extra) + " " + ErrMesg;
-  endif;
-  error(ErrMesg);
-enddefine; -- CheckIsINT
-
+  error("arg must be an integer")
+enddefine; -- CheckIsInteger
 
 define CheckIsPositiveInteger(n)
   if type(n) = INT and n > 0 then return; endif;
-  error("arg must be a positive integer");
+  error("arg must be a positive integer")
 enddefine; -- CheckIsPositiveInteger
 
 
@@ -49,19 +44,15 @@ enddefine; -- CheckIsPositiveInteger
 
 define CheckIsNonNegInteger(n)
   if type(n) = INT and n >= 0 then return; endif;
-  error("arg must be a non-negative integer");
+  error("arg must be a non-negative integer")
 enddefine; -- CheckIsNonNegInteger
 
 ---------------------- Matrices ----------------------
 
-define CheckIsMAT(M, extra)
+define CheckIsMatrix(M)
   if type(M) = MAT then return; endif
-  ErrMesg := "arg must be a matrix";
-  if IsDefined(extra) then
-    ErrMesg := sprint(extra) + " " + ErrMesg;
-  endif;
-  error(ErrMesg);
-enddefine; -- CheckIsMAT
+  error("arg must be a matrix");
+enddefine; -- CheckIsMatrix
 
 define CheckIsMatrixOfZZ(M)
   if type(M) = MAT and IsZZ(RingOf(M)) then return; endif
@@ -113,14 +104,10 @@ enddefine; -- CheckIsUnivariatePolynomial
 ---------------------- Lists ----------------------
 
 // JAA is pretty sure that this function is essentially useless
-define CheckIsLIST(L, opt extra)
+define CheckIsList(L)
   if type(L) = LIST then return; endif;
-  ErrMesg := "arg must be an list";
-  if IsDefined(extra) then
-    ErrMesg := sprint(extra) + " " + ErrMesg;
-  endif;
-  error(ErrMesg);
-enddefine; -- CheckIsLIST
+  error("arg must be a list");
+enddefine; -- CheckIsList
 
 
 // Check that all elements of the list are the same ring
@@ -176,22 +163,18 @@ enddefine; -- CheckIsIdealPolyRingOverField
   
 ---------------------- Strings ----------------------
 
-define CheckIsSTRING(str, extra)
+define CheckIsString(str)
   if type(str) = STRING then return; endif;
-  ErrMesg := "arg must be a string";
-  if IsDefined(extra) then
-    ErrMesg := sprint(extra) + " " + ErrMesg;
-  endif;
-  error(ErrMesg);
-enddefine; -- CheckIsSTRING
+  error("arg must be a string");
+enddefine; -- CheckIsString
   
 
 ---------------------- Records ----------------------
 
-define CheckIsRECORD(R)
+define CheckIsRecord(R)
   if type(R) = RECORD then return; endif;
   error("arg must be a record");
-enddefine; -- CheckIsRECORD
+enddefine; -- CheckIsRecord
 
  
 EndPackage;
