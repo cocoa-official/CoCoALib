@@ -39,7 +39,7 @@ EndDefine; -- IndetsSymbols
 
 -----------------------------------------------------------------------------
 Define SymbolRange(str, lo, hi)
-  CheckIsString(str);
+  CheckIsSTRING(str, "1st");
   // TODO: check arg types properly!
   if [type(hi), type(lo)] = [INT, INT] then
     return [ Record[head:=str, indices:=[i]] | i in (lo..hi) ];
@@ -66,7 +66,7 @@ define LowerString(S)
 enddefine; -- LowerString
 
 Define starting(str)
-  CheckIsString(str);
+  CheckIsSTRING(str);
   CaseSensitive := false;
   // NEATER THIS WAY:  (???)
   // IdentityMap := func(S) return S endfunc;
@@ -198,7 +198,7 @@ EndDefine;
 -- as the RHS.  We do some argument type checking too.
 
 Define LinSol(Matrix, RHS)
-  CheckIsMatrix(Matrix);
+  CheckIsMAT(Matrix, "1st");
   // Check RHS???
   If type(RHS) = LIST Then
     PrintLn "LinSol: OBSOLESCENT USE, second arg should now be a matrix.";
@@ -233,7 +233,7 @@ EndDefine; -- LinSol
 
 -- Compute kernel of a matrix modulo the current characteristic
 Define LinKerModP(M)
-  CheckIsMatrix(M);
+  CheckIsMAT(M);
   If characteristic() = 0 Then error("LinKerModP: characteristic must be positive"); EndIf;
   Return [[AsINT(MapDown(X)) | X In V] | V In gens(SyzOfGens(module(transposed(M))))];
 EndDefine; -- LinKerModP
@@ -250,7 +250,7 @@ Define IsTermOrdering(M)
 EndDefine; -- IsTermOrdering
 
 Define IsPositiveGrading(M)
-  CheckIsMatrix(M);
+  CheckIsMAT(M);
   CheckIsZZ(RingOf(M));
   Return $mat.IsFirstNonZeroInColPositive(M);
 EndDefine; -- IsTermOrdering
@@ -316,10 +316,10 @@ EndDefine;
 --   EndIf;
 -- EndDefine;
 
-Define FieldValues(R)
-  CheckIsRecord(R);
-  Return [R[F] | F In fields(R)];
-EndDefine;
+-- Define FieldValues(R)
+--   CheckIsRecord(R);
+--   Return [R[F] | F In fields(R)];
+-- EndDefine;
 
 Define DebugVersion() Return $builtin.DebugVersion(); EndDefine;
 
@@ -378,7 +378,7 @@ EndDefine;
 
 Define MakeTerm(P,L)
   CheckIsPolyRing(P);
-  CheckIsList(L);
+  CheckIsLIST(L, "2nd");
 //  if type(L) <> LIST then  error("MakeTerm: arg 2 must be a list of exponents"); endif;
   if len(L) <> NumIndets(P) then error("incompatible length and NumIndets"); endif;
   try L := [AsINT(e) | e in L]; uponerror E do error("exponents must be integers"); endtry;
@@ -396,14 +396,14 @@ EndDefine;
 
 
 Define NonZero(L)
-  CheckIsList(L);
+  CheckIsLIST(L);
   Return [X In L | not(IsZero(X))];
 EndDefine;
 
 Define WeightsList()   Return [deg(X)|X In Indets()];                 EndDefine;
 
 Define GCDList(L)
-  CheckIsList(L);
+  CheckIsLIST(L);
   If L = [] Then Return 0; EndIf;
   Ans := 0;           -- Do not start with Ans := L[1], as this
   Foreach X In L Do   -- can give negative GCD values for lists of integers
@@ -414,7 +414,7 @@ EndDefine;
 
 
 Define IntersectionList(L)
-  CheckIsList(L);
+  CheckIsLIST(L);
   If L = [] Then Return L; EndIf;
   -- probably a bad algorithm
   X := L[1];
@@ -567,7 +567,7 @@ EndDefine;
 
 -- syntactic sugar (see redmine 1374)
 define power(X,N)
-  CheckIsInteger(N);
+  CheckIsINT(N, "2nd");
   return X^N;
 enddefine; -- power
 
