@@ -747,11 +747,11 @@ void IdeErrorReporter::implReportError(const string &msg, const CharPointer &fro
 	assert(std::this_thread::get_id()==this->console->interpreterThreadId);
 	this->printError();
 	this->outputStream->print(msg);
-  if (printWHEREline) // anna 2026-10
-    this->reportLineNumberWhenMeaningful(from, to, true, true);
 	assert(dynamic_pointer_cast<IdeOutputStream>(this->outputStream));
 	static_pointer_cast<IdeOutputStream>(this->outputStream)->print("\n", true, IdeOutputStream::normalFormat);
 	this->outputHighlightedChars(from, to);
+  if (printWHEREline) // anna 2026-10
+    this->reportLineNumberWhenMeaningful(from, to, true, true);
 }
 
 void Console::print(const string &s, bool highlight, QTextCharFormat format) {
