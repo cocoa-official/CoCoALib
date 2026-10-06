@@ -48,7 +48,7 @@ namespace CoCoA {
   // Get a helpful string from a CoCoA::exception
   std::string message_from_cocoalib(const exception& exc)
   {
-    return message(exc) + "\n--> [CoCoALib fn] " + context(exc);
+    return message(exc) + "\n-- [CoCoALib \"" + context(exc) + "\"]";
   }
 
 
@@ -4532,53 +4532,59 @@ namespace LexerNS {
 
 using namespace InterpreterNS;
 
-void ErrorReporter::reportError(const RuntimeException &exception) {
-	this->reportErrorW(exception.reason, exception.from, exception.to, false /*printWHEREline*/);
-	const vector<SnapshotFrame>::size_type snapshotSize = exception.snapshot.size();
-	if (snapshotSize) {
-		this->printContext();
-		int nesting=-1;
-		bool dots=false;
-		CharPointer from = exception.from;
-		CharPointer to = exception.to;
-		for (vector<SnapshotFrame>::size_type a=0; a<snapshotSize; ++a) {
-			const SnapshotFrame &frame = exception.snapshot[a];
-			++nesting;
-			if ( (snapshotSize-a>10) && a>10 ) {
-				if (dots) {
-					--nesting;
-					continue;
-				}
-				this->outputStream->print(string(nesting, ' '))->print("...\n");
-				dots = true;
-				continue;
-			}
-			if (nesting) {
-				this->outputStream->print(string(nesting, ' '));
-				this->printCalledBy();
-			}
-			const intrusive_ptr<const FunctionDeclaration> fnDecl(intrusive_ptr_cast<const FunctionDeclaration>(frame.block));
-			if (fnDecl->fnName.length()) {
-				this->outputStream->print("function ");
-				this->printBold(fnDecl->fnName);
-			} else
-				this->printBold("anonymous-function");
-			if (!this->reportLineNumberWhenMeaningful(from, to, true, false)) { // anna 2026 column->true
-				if (frame.block)
-					this->outputStream->print(" (previously defined at the prompt)");
-				else
-					this->outputStream->print(" at top-level");
-			}
-			this->outputStream->newline();
-			from = frame.invocationExp->getBegin();
-			to = frame.invocationExp->getEnd();
-		}
-		this->outputStream->print(string(++nesting, ' '))->print("--> called");
-		if (!this->reportLineNumberWhenMeaningful(from, to, false, false))
-			this->outputStream->print(" at top-level");
-		this->outputStream->newline();
-	}
-}
+  void ErrorReporter::reportError(const RuntimeException &exception)
+  {
+    const auto snapshotSize = exception.snapshot.size();
+    if (!snapshotSize)
+    {
+      this->implReportError(exception.reason, exception.from, exception.to, true /*printWHEREline*/);
+      return;
+    }
+    this->printContext(); // "--> WHERE: "
+    int nesting=-1;
+    bool dots=false;
+    CharPointer from = exception.from;
+    CharPointer to = exception.to;
+    for (vector<SnapshotFrame>::size_type a=0; a<snapshotSize; ++a) {
+      const SnapshotFrame &frame = exception.snapshot[a];
+      ++nesting;
+      if ( (snapshotSize-a>10) && a>10 ) {
+        if (dots) {
+          --nesting;
+          continue;
+        }
+        this->outputStream->print(string(nesting, ' '))->print("...\n");
+        dots = true;
+        continue;
+      }
+      if (nesting) {
+        this->outputStream->print(string(nesting, ' '));
+        this->printCalledBy();
+      }
+      const intrusive_ptr<const FunctionDeclaration> fnDecl(intrusive_ptr_cast<const FunctionDeclaration>(frame.block));
+      if (fnDecl->fnName.length()) {
+        this->outputStream->print("function ");
+        this->printBold(fnDecl->fnName);
+      } else
+        this->printBold("anonymous-function");
+      if (!this->reportLineNumberWhenMeaningful(from, to, true, false)) // AMB 2026 column->true
+      {
+        if (frame.block)
+          this->outputStream->print(" (previously defined at the prompt)");
+        else
+          this->outputStream->print(" at top-level");
+      }
+      this->outputStream->newline();
+      from = frame.invocationExp->getBegin();
+      to = frame.invocationExp->getEnd();
+    }
+    this->outputStream->print(string(++nesting, ' '))->print("--> called");
+    if (!this->reportLineNumberWhenMeaningful(from, to, false, false))
+      this->outputStream->print(" at top-level");
+    this->outputStream->newline();
+    // AMB 2026-10: print ERROR and code snippet at the end
+    this->implReportError(exception.reason, from, to, false /*printWHEREline*/);
+  }
 
   void ErrorReporter::reportInterrupt(const InterpreterNS::InterruptException &intr)
   {
