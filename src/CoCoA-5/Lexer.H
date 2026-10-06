@@ -295,10 +295,6 @@ public:
 		++this->errorCount;
 		this->implReportError(msg);
 	}
-	void reportErrorShort(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to) {
-		++this->errorCount;
-		this->implReportError(msg, from, to, false /*printWHEREline*/);
-	}
 	void reportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to) {
 		++this->errorCount;
 		this->implReportError(msg, from, to, true /*printWHEREline*/);
