@@ -114,7 +114,7 @@ enddefine; -- CheckIsUnivariatePolynomial
 // JAA is pretty sure that this function is essentially useless
 define CheckIsLIST(L, opt extra)
   if type(L) = LIST then return; endif;
-  ErrMesg := "arg must be an list";
+  ErrMesg := "arg must be a list";
   if IsDefined(extra) then
     ErrMesg := sprint(extra) + " " + ErrMesg;
   endif;
