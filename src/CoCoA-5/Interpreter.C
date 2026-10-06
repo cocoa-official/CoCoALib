@@ -4545,7 +4545,7 @@ using namespace InterpreterNS;
     bool dots=false;
     CharPointer from = exception.from;
     CharPointer to = exception.to;
-    for (auto a=0; a<snapshotSize; ++a) {
+    for (vector<SnapshotFrame>::size_type a=0; a<snapshotSize; ++a) {
       const SnapshotFrame &frame = exception.snapshot[a];
       ++nesting;
       if ( (snapshotSize-a>10) && a>10 ) {
