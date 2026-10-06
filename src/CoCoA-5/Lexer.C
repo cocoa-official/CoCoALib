@@ -840,13 +840,15 @@ void DefaultErrorReporter::implReportError(const string &msg) {
 	this->outputStream->print(msg)->newline();
 }
 
-void DefaultErrorReporter::implReportError(const string &msg, const CharPointer &from, const CharPointer &to, const bool printWHEREline) {
-	this->printError();
-	this->outputStream->print(msg);
-  if (printWHEREline) // anna 2026-10
-    this->reportLineNumberWhenMeaningful(from, to, true, true);
-	this->outputStream->newline();
-	this->outputUnderlinedChars(intrusive_ptr_cast<InterpreterNS::CppOSTREAM>(this->outputStream)->out, from, to);
+void DefaultErrorReporter::implReportError(const string &msg, const CharPointer &from, const CharPointer &to, const bool printWHEREline)
+{
+  if (printWHEREline) // AMB 2026-10: before ERROR line
+    if (this->reportLineNumberWhenMeaningful(from, to, true, true))
+      this->outputStream->newline();
+  this->printError(); // "--->>> ERROR: "
+  this->outputStream->print(msg); // may contain a second line: "\n-- [CoCoALib ...]"
+  this->outputStream->newline();
+  this->outputUnderlinedChars(intrusive_ptr_cast<InterpreterNS::CppOSTREAM>(this->outputStream)->out, from, to);
 }
 
 } // namespace LexerNS
