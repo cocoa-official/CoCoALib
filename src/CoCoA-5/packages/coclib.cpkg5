@@ -33,8 +33,8 @@ EndDefine; -- swap
 
 -----------------------------------------------------------------------------
 Define IndetSymbols(P)
-  CheckIsPolyRing(P);
-  Return [ Record[head:=IndetName(x), indices:=IndetSubscripts(x)] | x In indets(P)];
+  -- type checking inside  indets(P)
+  return [ record[head:=IndetName(x), indices:=IndetSubscripts(x)] | x in indets(P)];
 EndDefine; -- IndetsSymbols
 
 -----------------------------------------------------------------------------
@@ -126,7 +126,8 @@ EndDefine; -- starting
 
 -----------------------------------------------------------------------------
 Define CheckArgTypes(TypeList, args)
-  CheckIsList(TypeList);
+  CheckIsLIST(TypeList, "1st");
+  CheckIsLIST(TypeList, "2nd");
   ErrMesg :=
   func(i)
     return "Arg " + sprint(i) + " is " + sprint(type(args[i]))
@@ -197,24 +198,24 @@ EndDefine;
 -- Fix up for LinSol to allow either single vector or a list of vectors
 -- as the RHS.  We do some argument type checking too.
 
-Define LinSol(Matrix, RHS)
-  CheckIsMAT(Matrix, "1st");
-  // Check RHS???
-  If type(RHS) = LIST Then
-    PrintLn "LinSol: OBSOLESCENT USE, second arg should now be a matrix.";
-    If type(RHS[1]) = LIST Then
-      RHS := transposed(mat(RHS));
-    Else
-      RHS := ColMat(RHS);
-    EndIf;
-  EndIf;
-  If type(Matrix) <> MAT Or type(RHS) <> MAT Then
-    error("LinSol: expects arguments (Matrix, Matrix)");
-  EndIf;
-  If RHS = mat([[]]) Then Return RHS; EndIf;
-  If NumRows(Matrix) <> NumRows(RHS) Then
-    error("LinSol: incompatible matrix dimensions");
-  EndIf;
+-- Define LinSol(Matrix, RHS)
+--   CheckIsMAT(Matrix, "1st");
+--   // Check RHS???
+--   If type(RHS) = LIST Then
+--     PrintLn "LinSol: OBSOLESCENT USE, second arg should now be a matrix.";
+--     If type(RHS[1]) = LIST Then
+--       RHS := transposed(mat(RHS));
+--     Else
+--       RHS := ColMat(RHS);
+//     EndIf;
+//   EndIf;
+--   If type(Matrix) <> MAT Or type(RHS) <> MAT Then
+--     error("LinSol: expects arguments (Matrix, Matrix)");
+//   EndIf;
+--   If RHS = mat([[]]) Then Return RHS; EndIf;
+--   If NumRows(Matrix) <> NumRows(RHS) Then
+--     error("LinSol: incompatible matrix dimensions");
+//   EndIf;
   
 -- --   SingleVector := False;
 -- --   If type(RHS[1]) <> LIST Then RHS := [RHS]; SingleVector := True; EndIf;
@@ -232,28 +233,28 @@ Define LinSol(Matrix, RHS)
 
 
 -- Compute kernel of a matrix modulo the current characteristic
-Define LinKerModP(M)
-  CheckIsMAT(M);
-  If characteristic() = 0 Then error("LinKerModP: characteristic must be positive"); EndIf;
-  Return [[AsINT(MapDown(X)) | X In V] | V In gens(SyzOfGens(module(transposed(M))))];
-EndDefine; -- LinKerModP
+-- Define LinKerModP(M)
+--   CheckIsMAT(M);
+--   If characteristic() = 0 Then error("LinKerModP: characteristic must be positive"); EndIf;
+--   Return [[AsINT(MapDown(X)) | X In V] | V In gens(SyzOfGens(module(transposed(M))))];
+-- EndDefine; -- LinKerModP
 
 
 
 
-Define IsTermOrdering(M)
-  CheckIsSquareMatrix(M);
-  CheckIsZZ(RingOf(M));
-  If det(M)=0 Then Return False; EndIf;
-  If not($mat.IsFirstNonZeroInColPositive(M)) Then Return False; EndIf;
-  Return True;
-EndDefine; -- IsTermOrdering
+-- Define IsTermOrdering(M)
+--   CheckIsSquareMatrix(M);
+--   CheckIsZZ(RingOf(M));
+--   If det(M)=0 Then Return False; EndIf;
+--   If not($mat.IsFirstNonZeroInColPositive(M)) Then Return False; EndIf;
+--   Return True;
+-- EndDefine; -- IsTermOrdering
 
-Define IsPositiveGrading(M)
-  CheckIsMAT(M);
-  CheckIsZZ(RingOf(M));
-  Return $mat.IsFirstNonZeroInColPositive(M);
-EndDefine; -- IsTermOrdering
+-- Define IsPositiveGrading(M)
+--   CheckIsMAT(M);
+--   CheckIsZZ(RingOf(M));
+--   Return $mat.IsFirstNonZeroInColPositive(M);
+-- EndDefine; -- IsTermOrdering
 
 -- Define PositiveGrading4(M)
 --   Return $mat.PositiveGrading4(M);
@@ -280,10 +281,10 @@ EndDefine; -- IsTermOrdering
 -- EndDefine;
 
 
-Define Reg5(I)
-  CheckIsIdealPolyRingOverField(I);
-  Return $regularity.Regularity(I);
-EndDefine; -- Reg5
+-- Define Reg5(I)
+--   CheckIsIdealPolyRingOverField(I);
+--   Return $regularity.Regularity(I);
+-- EndDefine; -- Reg5
 
 
 -- Other
@@ -292,16 +293,16 @@ EndDefine; -- Reg5
 -------------------------------
 -- defined here
 
-Define WithoutNth(L,N)   remove(ref L,N); Return L;  EndDefine;
+-- Define WithoutNth(L,N)   remove(ref L,N); Return L;  EndDefine;
 
-Define TypeOfCoeffs() Return type(LC(1)); EndDefine;
+-- Define TypeOfCoeffs() Return type(LC(1)); EndDefine;
 
-Define MapDown(F)
-  CheckIsPolynomial(F);
-  If IsZero(F) Then Return zero(CoeffRing(RingOf(F))); EndIf;
-  If deg(F) = 0 Then Return LC(F); EndIf;
-  error("MapDown: argument is a non-constant polynomial");
-EndDefine;
+-- Define MapDown(F)
+--   CheckIsPolynomial(F);
+--   If IsZero(F) Then Return zero(CoeffRing(RingOf(F))); EndIf;
+--   If deg(F) = 0 Then Return LC(F); EndIf;
+--   error("MapDown: argument is a non-constant polynomial");
+-- EndDefine;
 
 
 -- Define RMap(...)
@@ -326,7 +327,7 @@ Define DebugVersion() Return $builtin.DebugVersion(); EndDefine;
 Define dashes()    Return "-------------------------------"; EndDefine;
 Define equals()    Return "==============================="; EndDefine;
 Define spaces(N)
-  CheckIsNonNegInteger(N);
+  CheckIsINT_nonnegative(N);
   If N>0 Then Return sum(NewList(N," ")); Else Return ""; EndIf;
 EndDefine;
 
@@ -377,7 +378,6 @@ EndDefine;
 -- EndDefine;
 
 Define MakeTerm(P,L)
-  CheckIsPolyRing(P);
   CheckIsLIST(L, "2nd");
 //  if type(L) <> LIST then  error("MakeTerm: arg 2 must be a list of exponents"); endif;
   if len(L) <> NumIndets(P) then error("incompatible length and NumIndets"); endif;
@@ -400,7 +400,7 @@ Define NonZero(L)
   Return [X In L | not(IsZero(X))];
 EndDefine;
 
-Define WeightsList()   Return [deg(X)|X In Indets()];                 EndDefine;
+-- Define WeightsList()   Return [deg(X)|X In Indets()];                 EndDefine;
 
 Define GCDList(L)
   CheckIsLIST(L);
@@ -590,79 +590,79 @@ enddefine; -- power
 -- IsTreeC5(D,AlgType);
 -- IsTreeC5(D,34);
 
-Define IsTree5(...)
-  If not(len(ARGV) IsIn [1,2]) Then
-    error("IsTree5 expects a list of PPs and optionally, a string in the set [\"NOOPT\",\"OPT\",\"CS_NOOPT\",\"CS_OPT\"]");
-  EndIf;
-  If len(ARGV)=1 Then
-    AlgType:="CS_OPT";
-  Else
-    AlgType:=ARGV[2];
-  EndIf;
-  If type(ARGV[1])<>LIST Or MakeSet(shape(ARGV[1]))<>[RINGELEM] Then
-    error("IsTree5 first argument must be a list of PPs");
-  EndIf;
-  L:=ARGV[1];
-  Foreach T In L Do
-    If not($cocoa5.IsSQFRTerm(T)) Then
-      error("IsTree5 expects a list of SQFR power products as input");
-    EndIf;
-  EndForeach;
-  Pre:=L;
-  L:=interreduced(L);
-  If L<>Pre Then
-    PrintLn "Complex has been interreduced. Now is ",L;
-  EndIf;
-  If not(AlgType IsIn ["NOOPT","OPT","CS_NOOPT","CS_OPT"]) Then
-    error("IsTree5 allowed second arguments are NOOPT,OPT,CS_NOOPT,CS_OPT");
-  EndIf;
-  If AlgType="NOOPT" Then Computation:="IsTree_NoOpt"; EndIf;
-  If AlgType="OPT"   Then Computation:="IsTree_Opt"; EndIf;
-  If AlgType="CS_NOOPT" Then Computation:="IsTree_CBNoOpt"; EndIf;
-  If AlgType="CS_OPT"   Then Computation:="IsTree_CBOpt"; EndIf;
-  Return $cocoa5.IsTree5(L,Computation);
-EndDefine; -- IsTree5
+-- Define IsTree5(...)
+--   If not(len(ARGV) IsIn [1,2]) Then
+--     error("IsTree5 expects a list of PPs and optionally, a string in the set [\"NOOPT\",\"OPT\",\"CS_NOOPT\",\"CS_OPT\"]");
+--   EndIf;
+--   If len(ARGV)=1 Then
+--     AlgType:="CS_OPT";
+--   Else
+--     AlgType:=ARGV[2];
+--   EndIf;
+--   If type(ARGV[1])<>LIST Or MakeSet(shape(ARGV[1]))<>[RINGELEM] Then
+--     error("IsTree5 first argument must be a list of PPs");
+--   EndIf;
+--   L:=ARGV[1];
+--   Foreach T In L Do
+--     If not($cocoa5.IsSQFRTerm(T)) Then
+--       error("IsTree5 expects a list of SQFR power products as input");
+--     EndIf;
+--   EndForeach;
+--   Pre:=L;
+--   L:=interreduced(L);
+--   If L<>Pre Then
+--     PrintLn "Complex has been interreduced. Now is ",L;
+--   EndIf;
+--   If not(AlgType IsIn ["NOOPT","OPT","CS_NOOPT","CS_OPT"]) Then
+--     error("IsTree5 allowed second arguments are NOOPT,OPT,CS_NOOPT,CS_OPT");
+--   EndIf;
+--   If AlgType="NOOPT" Then Computation:="IsTree_NoOpt"; EndIf;
+--   If AlgType="OPT"   Then Computation:="IsTree_Opt"; EndIf;
+--   If AlgType="CS_NOOPT" Then Computation:="IsTree_CBNoOpt"; EndIf;
+--   If AlgType="CS_OPT"   Then Computation:="IsTree_CBOpt"; EndIf;
+--   Return $cocoa5.IsTree5(L,Computation);
+-- EndDefine; -- IsTree5
 
 
 
 // 1 or 3 parameters.
 // X is an integer matrix, A,B are integers (long) parameters for the NTL implementation.
-Define LLL5(...)
-  If len(ARGV)=1 Then
-    Return $cocoa5.LLL5(ARGV[1],3,4);
-  Else
-    Return $cocoa5.LLL5(ARGV[1],ARGV[2],ARGV[3]);
-  EndIf;
-EndDefine; -- LLL5
+-- Define LLL5(...)
+--   If len(ARGV)=1 Then
+--     Return $cocoa5.LLL5(ARGV[1],3,4);
+--   Else
+--     Return $cocoa5.LLL5(ARGV[1],ARGV[2],ARGV[3]);
+--   EndIf;
+-- EndDefine; -- LLL5
 
 
 -- See the cocoa5 documentation for this function
 -- Uses NTL
-Define LLLFP5(...)
-  If len(ARGV)=1 Then
-    Return $cocoa5.LLLFP5(ARGV[1],0,0,99/100);
-  Else
-    Return $cocoa5.LLLFP5(ARGV[1],ARGV[2],ARGV[3],ARGV[4]);
-  EndIf;
-EndDefine; -- LLLFP5
+-- Define LLLFP5(...)
+--   If len(ARGV)=1 Then
+--     Return $cocoa5.LLLFP5(ARGV[1],0,0,99/100);
+--   Else
+--     Return $cocoa5.LLLFP5(ARGV[1],ARGV[2],ARGV[3],ARGV[4]);
+--   EndIf;
+-- EndDefine; -- LLLFP5
 
 
 -- See the cocoa5 documentation for this function
 -- Uses NTL
-Define Babai5(Basis,V)
-  Return $cocoa5.Babai5(Basis,V);
-EndDefine; -- Babai5
+-- Define Babai5(Basis,V)
+--   Return $cocoa5.Babai5(Basis,V);
+-- EndDefine; -- Babai5
 
 
 -- See the cocoa5 documentation for this function
 -- Uses NTL
-Define BKZ5(...)
-  If len(ARGV)=1 Then
-    Return $cocoa5.BKZ5(ARGV[1],0,0,99/100,10,0);
-  Else
-    Return $cocoa5.BKZ5(ARGV[1],ARGV[2],ARGV[3],ARGV[4],ARGV[5],ARGV[6]);
-  EndIf;
-EndDefine; -- BKZ5
+-- Define BKZ5(...)
+--   If len(ARGV)=1 Then
+--     Return $cocoa5.BKZ5(ARGV[1],0,0,99/100,10,0);
+--   Else
+--     Return $cocoa5.BKZ5(ARGV[1],ARGV[2],ARGV[3],ARGV[4],ARGV[5],ARGV[6]);
+--   EndIf;
+-- EndDefine; -- BKZ5
 
 -- Define SyzOfGens5(Var X)
 --   Using Var(RingEnv(X)) Do
@@ -735,30 +735,30 @@ EndDefine; -- BKZ5
 -- Define StableBBasis5(...) Return $cocoa5.StableBBasis5(...); EndDefine;
 -- Define StableBBasisNBM5(Pts, Tolerance) Return $cocoa5.StableBBasisNBM5(Pts, Tolerance); EndDefine;
 ------------------------------------------------------------
-Define MVT5(L) Return $cocoa5.MVT5(L);EndDefine;
-Define PrintMVT(X)
-  Tree:=MVT5(X);
-  For J:=1 To len(Tree) Do
-    PrintLn(Tree[J]);
-  EndFor;
-EndDefine; --PrintMVT;
-Define MayerVietorisTreeN1(L) Return $cocoa5.MayerVietorisTreeN1(L);EndDefine;
-Define MVTReg5(L) Return $cocoa5.MVTReg5(L);EndDefine;
-Define IsMonomialIrreducible5(L) Return $cocoa5.IsMonomialIrreducible5(L);EndDefine;
-Define IsMonomialPrime5(L) Return $cocoa5.IsMonomialPrime5(L);EndDefine;
-Define IsMonomialPrimary5(L) Return $cocoa5.IsMonomialPrimary5(L);EndDefine;
-Define MVTRegUpperBound5(L) Return $cocoa5.MVTRegUpperBound5(L);EndDefine;
-Define MVTRegLowerBound5(L) Return $cocoa5.MVTRegLowerBound5(L);EndDefine;
-Define MVTProjDim5(L) Return $cocoa5.MVTProjDim5(L);EndDefine;
-Define MVTProjDimUpperBound5(L) Return $cocoa5.MVTProjDimUpperBound5(L);EndDefine;
-Define MVTProjDimLowerBound5(L) Return $cocoa5.MVTProjDimLowerBound5(L);EndDefine;
-------------------------------------------------------------
-Define AlexanderDual_Frobby5(I, PP) Return $cocoa5.AlexanderDual_Frobby5(I,PP);EndDefine;
-Define IrreducibleDecom_Frobby5(I) Return $cocoa5.IrreducibleDecom_Frobby5(I);EndDefine;
-Define MaximalStandardMonomials_Frobby5(I) Return $cocoa5.MaximalStandardMonomials_Frobby5(I);EndDefine;
-Define PrimaryDecom_Frobby5(I) Return $cocoa5.PrimaryDecom_Frobby5(I);EndDefine;
-Define Dimension_Frobby5(I) Return $cocoa5.Dimension_Frobby5(I);EndDefine;
-Define AssociatedPrimes_Frobby5(I) Return $cocoa5.AssociatedPrimes_Frobby5(I);EndDefine;
+-- Define MVT5(L) Return $cocoa5.MVT5(L);EndDefine;
+-- Define PrintMVT(X)
+--   Tree:=MVT5(X);
+--   For J:=1 To len(Tree) Do
+--     PrintLn(Tree[J]);
+--   EndFor;
+-- EndDefine; --PrintMVT;
+-- Define MayerVietorisTreeN1(L) Return $cocoa5.MayerVietorisTreeN1(L);EndDefine;
+-- Define MVTReg5(L) Return $cocoa5.MVTReg5(L);EndDefine;
+-- Define IsMonomialIrreducible5(L) Return $cocoa5.IsMonomialIrreducible5(L);EndDefine;
+-- Define IsMonomialPrime5(L) Return $cocoa5.IsMonomialPrime5(L);EndDefine;
+-- Define IsMonomialPrimary5(L) Return $cocoa5.IsMonomialPrimary5(L);EndDefine;
+-- Define MVTRegUpperBound5(L) Return $cocoa5.MVTRegUpperBound5(L);EndDefine;
+-- Define MVTRegLowerBound5(L) Return $cocoa5.MVTRegLowerBound5(L);EndDefine;
+-- Define MVTProjDim5(L) Return $cocoa5.MVTProjDim5(L);EndDefine;
+-- Define MVTProjDimUpperBound5(L) Return $cocoa5.MVTProjDimUpperBound5(L);EndDefine;
+-- Define MVTProjDimLowerBound5(L) Return $cocoa5.MVTProjDimLowerBound5(L);EndDefine;
+-- ------------------------------------------------------------
+-- Define AlexanderDual_Frobby5(I, PP) Return $cocoa5.AlexanderDual_Frobby5(I,PP);EndDefine;
+-- Define IrreducibleDecom_Frobby5(I) Return $cocoa5.IrreducibleDecom_Frobby5(I);EndDefine;
+-- Define MaximalStandardMonomials_Frobby5(I) Return $cocoa5.MaximalStandardMonomials_Frobby5(I);EndDefine;
+-- Define PrimaryDecom_Frobby5(I) Return $cocoa5.PrimaryDecom_Frobby5(I);EndDefine;
+-- Define Dimension_Frobby5(I) Return $cocoa5.Dimension_Frobby5(I);EndDefine;
+-- Define AssociatedPrimes_Frobby5(I) Return $cocoa5.AssociatedPrimes_Frobby5(I);EndDefine;
 
 
 
