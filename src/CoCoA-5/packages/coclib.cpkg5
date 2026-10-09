@@ -216,19 +216,19 @@ Define LinSol(Matrix, RHS)
     error("LinSol: incompatible matrix dimensions");
   EndIf;
   
---   SingleVector := False;
---   If type(RHS[1]) <> LIST Then RHS := [RHS]; SingleVector := True; EndIf;
---   If MakeSet([type(V) | V In RHS]) <> [LIST] Then
---     error("LinSol: inappropriate second argument");
---   EndIf;
---   If MakeSet([len(V) | V In RHS]) <> [len(Matrix)] Then
---     error("LinSol: incompatible dimensions between matrix and vector");
---   EndIf;
-  RHS := Cast(transposed(RHS), LIST);
-  Ans := $builtin.LinSol(Matrix, RHS);
---  If SingleVector Then Return Ans[1]; EndIf;
-  Return transposed(mat(Ans));
-EndDefine; -- LinSol
+-- --   SingleVector := False;
+-- --   If type(RHS[1]) <> LIST Then RHS := [RHS]; SingleVector := True; EndIf;
+-- --   If MakeSet([type(V) | V In RHS]) <> [LIST] Then
+-- --     error("LinSol: inappropriate second argument");
+-- --   EndIf;
+-- --   If MakeSet([len(V) | V In RHS]) <> [len(Matrix)] Then
+-- --     error("LinSol: incompatible dimensions between matrix and vector");
+-- --   EndIf;
+--   RHS := Cast(transposed(RHS), LIST);
+--   Ans := $builtin.LinSol(Matrix, RHS);
+-- --  If SingleVector Then Return Ans[1]; EndIf;
+--   Return transposed(mat(Ans));
+-- EndDefine; -- LinSol
 
 
 -- Compute kernel of a matrix modulo the current characteristic
