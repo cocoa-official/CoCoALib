@@ -127,7 +127,7 @@ EndDefine; -- starting
 -----------------------------------------------------------------------------
 Define CheckArgTypes(TypeList, args)
   CheckIsLIST(TypeList, "1st");
-  CheckIsLIST(TypeList, "2nd");
+  CheckIsLIST(args, "2nd");
   ErrMesg :=
   func(i)
     return "Arg " + sprint(i) + " is " + sprint(type(args[i]))
