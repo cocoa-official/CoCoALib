@@ -58,13 +58,13 @@ enddefine; -- CheckVarIsDefined
   
 define incr(ref N)
   CheckVarIsDefined(ref N);
-  if type(N) <> INT then error("value must be integer"); endif;
+  CheckIsINT(N);
   N := N+1;
 enddefine; -- incr
   
 define decr(ref N)
   CheckVarIsDefined(ref N);
-  if type(N) <> INT then error("value must be integer"); endif;
+  CheckIsINT(N);
   N := N-1;
 enddefine; -- decr
   
@@ -356,7 +356,7 @@ EndDefine;
 
 
 Define divisors(K)
-  if type(K) <> INT then error("divisors: arg must be INT"); endif;
+  CheckIsINT(K);
   if K = 0 then error("divisors: arg must be non-zero INT"); endif;
   if abs(K) = 1 then return [1]; endif;
   UPB := FloorSqrt(abs(K));
