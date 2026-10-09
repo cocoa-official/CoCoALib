@@ -293,7 +293,7 @@ EndDefine;
 -------------------------------
 -- defined here
 
--- Define WithoutNth(L,N)   remove(ref L,N); Return L;  EndDefine;
+Define WithoutNth(L,N)   remove(ref L,N); Return L;  EndDefine;
 
 -- Define TypeOfCoeffs() Return type(LC(1)); EndDefine;
 
