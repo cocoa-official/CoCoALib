@@ -2029,16 +2029,18 @@ automatically when this function is called.
 
 
 (defun cocoa5-pop-to-buffer-source-find-X (err-or-warn)
+  "Parse error or warning details after the last input.
+Extracts the error message, line number, column, and file name,
+and attempts to resolve the full file path if possible."
   (progn 
     (setq found t)
     (setq etype err-or-warn)
     (setq emesg-start (point))
-    (re-search-forward "^--> WHERE: " nil t)
-    (beginning-of-line)
-    (backward-char)
+    (end-of-line)
     (setq emesg (buffer-substring emesg-start (point)))
 ;;;;    (re-search-forward "^WHERE: at line(s?) \\([0-9]+\\) (column \\([0-9]+\\)) of \\(.*\\)$" nil t)
-    (re-search-forward "^--> WHERE: at line\\(s?\\) \\([0-9]+\\) (column \\([0-9]+\\))" nil t)
+    (re-search-backward "^--> WHERE: " nil t)
+    (re-search-forward " at line\\(s?\\) \\([0-9]+\\) (column \\([0-9]+\\))" nil t)
     (progn
       (setq eline (buffer-substring (match-beginning 2) (match-end 2)))
       (setq ecol  (buffer-substring (match-beginning 3) (match-end 3)))
@@ -2069,9 +2071,9 @@ automatically when this function is called.
     (goto-char comint-last-input-start)
     ; search for an error message.
 ;    (if (re-search-forward "^Error \\(.*\\) at line \\([0-9]+\\) (column \\([0-9]+\\)) of \\(.*\\)$" nil t)
-    (if (re-search-forward "--> ERROR: " nil t)
+    (if (re-search-forward "--->>> ERROR: " nil t)
 	(cocoa5-pop-to-buffer-source-find-X "ERROR")
-      (if (re-search-forward "--> WARNING: " nil t)
+      (if (re-search-forward "--->>> WARNING: " nil t)
 	  (cocoa5-pop-to-buffer-source-find-X "WARNING")
 	))
     (goto-char (point-max)) ; go to the end of the *cocoa5* buffer. 
