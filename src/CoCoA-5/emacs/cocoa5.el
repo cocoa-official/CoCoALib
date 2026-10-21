@@ -1,3 +1,5 @@
+;; -*- lexical-binding: nil -*- 
+
 ;; cocoa5.el --- major mode for editing and running CoCoA
 
 ;; Copyright (c) 2005-2019  John Abbott, Anna Bigatti
