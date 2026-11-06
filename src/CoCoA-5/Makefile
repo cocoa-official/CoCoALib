@@ -207,7 +207,7 @@ $(COCOA5_WORDLIST):  OnlineHelp.C  wordlist.C  $(COCOA5_DOC_XML)
 	@/bin/rm PrintWordlist
 
 .PHONY: doc
-doc:  cocoa5
+doc:
 	@(cd $(COCOA5_DOC_DIR); $(MAKE))
 
 
