@@ -2525,11 +2525,11 @@ intrusive_ptr<RightValue> RECORD::clone() {
 }
 
 intrusive_ptr<RightValue> LIST::clone() {
+	if (this->data->NumMutableElements == 0)
+		return new LIST(this->data);
 	intrusive_ptr<LIST> copy(new LIST(this->size()));
-	for (intrusive_ptr<RightValue> v: this->container)
-        {
-          copy->addValue(v->clone());
-	}
+	for (intrusive_ptr<RightValue> v: this->data->container)
+		copy->addValue(v->clone());
 	return copy;
 }
 
@@ -2547,8 +2547,10 @@ intrusive_ptr<RightValue> MAT::clone() {
 bool LIST::needsToBeCopiedBeforeChanges() const {
 	if (this->getRefCount()>1)
 		return true;
-	for (ContainerType::const_iterator i = this->container.begin(); i!=this->container.end(); ++i)
-		if ((*i)->needsToBeCopiedBeforeChanges())
+	if (this->data->NumMutableElements == 0)
+		return false;
+	for (const auto& entry: this->data->container)
+		if (entry->needsToBeCopiedBeforeChanges())
 			return true;
 	return false;
 }
@@ -2558,29 +2560,53 @@ bool MAT::needsToBeCopiedBeforeChanges() const {
 }
 
 intrusive_ptr<RightValue> LIST::getValue(ContainerType::size_type index) const {
-	assert(index<=this->container.size());
-	return this->container[index];
+	assert(index<=this->data->container.size());
+	return this->data->container[index];
+}
+
+bool LIST::isMutableValue(const intrusive_ptr<RightValue> &value) {
+	return value && dynamic_cast<const ImmutableRightValue *>(value.get()) == nullptr;
+}
+
+void LIST::makeContainerUnique() {
+	if (!this->data.unique())
+		this->data.reset(new ContainerData(*this->data));
 }
 
 void LIST::setValue(ContainerType::size_type index, intrusive_ptr<RightValue> newValue) {
-	assert(index<=this->container.size());
-	this->container[index] = newValue;
+	assert(index<=this->data->container.size());
+	this->makeContainerUnique();
+	intrusive_ptr<RightValue> &oldValue = this->data->container[index];
+	if (isMutableValue(oldValue))
+		--this->data->NumMutableElements;
+	if (isMutableValue(newValue))
+		++this->data->NumMutableElements;
+	oldValue = newValue;
 }
 
 void LIST::addValue(intrusive_ptr<RightValue> newValue) {
-	this->container.push_back(newValue);
+	this->makeContainerUnique();
+	if (isMutableValue(newValue))
+		++this->data->NumMutableElements;
+	this->data->container.push_back(newValue);
 }
 
 void LIST::insertValue(ContainerType::size_type position, intrusive_ptr<RightValue> newValue) {
-	this->container.insert(this->container.begin()+position, newValue);
+	this->makeContainerUnique();
+	if (isMutableValue(newValue))
+		++this->data->NumMutableElements;
+	this->data->container.insert(this->data->container.begin()+position, newValue);
 }
 
 void LIST::removeValue(ContainerType::size_type position) {
-	this->container.erase(this->container.begin()+position);
+	this->makeContainerUnique();
+	if (isMutableValue(this->data->container[position]))
+		--this->data->NumMutableElements;
+	this->data->container.erase(this->data->container.begin()+position);
 }
 
 LIST::ContainerType::size_type LIST::size() const {
-	return this->container.size();
+	return this->data->container.size();
 }
 
 ostream &MAT::dumpAsString(ostream &out) const {
@@ -2594,14 +2620,14 @@ ostream &MatrixRowValue::dumpAsString(ostream &out) const {
 ostream &LIST::dumpAsString(ostream &out) const {
 	out << "[";
 	bool first = true;
-	for (ContainerType::const_iterator i = this->container.begin(); i!=this->container.end(); ++i) {
+	for (const auto& entry: this->data->container) {
 /// does not work properly????          CoCoA::CheckForInterrupt("Printing LIST");
 		if (first)
 			first = false;
 		else
 			out << ",  ";
-		out << *i;
-		(*i)->dumpRefCountAsString(out);
+		out << entry;
+		entry->dumpRefCountAsString(out);
 	}
 	return out << "]";
 }

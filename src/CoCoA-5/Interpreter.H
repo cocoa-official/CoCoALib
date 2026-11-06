@@ -508,7 +508,17 @@ class LIST : public RightValue {
 public:
 	typedef std::vector<boost::intrusive_ptr<RightValue> > ContainerType;
 private:
-	ContainerType container;
+	struct ContainerData {
+		ContainerType container;
+		ContainerType::size_type NumMutableElements;
+		explicit ContainerData(ContainerType::size_type reserveSize=0) :
+			NumMutableElements(0)
+		{ container.reserve(reserveSize); }
+	};
+	boost::shared_ptr<ContainerData> data;
+	explicit LIST(boost::shared_ptr<ContainerData> data) : data(data) {}
+	void makeContainerUnique();
+	static bool isMutableValue(const boost::intrusive_ptr<RightValue> &value);
 public:
 	static boost::intrusive_ptr<TYPE> type;
 	std::ostream &dumpAsString(std::ostream &out) const;
@@ -520,9 +530,9 @@ public:
 	void insertValue(ContainerType::size_type position, boost::intrusive_ptr<RightValue> newValue);
 	void removeValue(ContainerType::size_type position);
 	ContainerType::size_type size() const;
-	LIST() {}
+	LIST() : data(new ContainerData) {}
 	template <typename T> explicit LIST(const std::vector<T> &v);
-	explicit LIST(const ContainerType::size_type reserveSize) { this->container.reserve(reserveSize); }
+	explicit LIST(const ContainerType::size_type reserveSize) : data(new ContainerData(reserveSize)) {}
 	ContainerType::size_type checkIndex(const boost::intrusive_ptr<const RightValue> v, const boost::intrusive_ptr<const AST::Expression> originalExp) const;
   ContainerType::size_type checkIndexOrEnd(const boost::intrusive_ptr<const RightValue> v, const boost::intrusive_ptr<const AST::Expression> originalExp) const;
 
@@ -1445,6 +1455,7 @@ inline boost::intrusive_ptr<BOOL> Value::from(const bool x) { return BOOL::fromB
 inline boost::intrusive_ptr<RINGHOM> Value::from(const RingHom &x) { return new RINGHOM(x); }
 inline boost::intrusive_ptr<RING> Value::from(const ring &x) { return new RING(x); }
 template <typename T> LIST::LIST(const std::vector<T> &v)
+  : data(new ContainerData)
 {
   for (const T &elem: v)
   {

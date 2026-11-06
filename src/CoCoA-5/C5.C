@@ -216,7 +216,7 @@ namespace InterpreterNS {
 			QTreeWidgetItem * const child = new QTreeWidgetItem();
 			child->setText(COL_NAME, QString::fromStdString("["+lexical_cast<string>(a+1)+"]"));
 			item->addChild(child);
-			container[a]->initTreeWidget(child);
+			this->data->container[a]->initTreeWidget(child);
 		}
 	}
 
