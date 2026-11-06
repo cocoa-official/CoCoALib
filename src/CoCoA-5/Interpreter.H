@@ -510,9 +510,9 @@ public:
 private:
 	struct ContainerData {
 		ContainerType container;
-		ContainerType::size_type mutableElements;
+		ContainerType::size_type NumMutableElements;
 		explicit ContainerData(ContainerType::size_type reserveSize=0) :
-			mutableElements(0)
+			NumMutableElements(0)
 		{ container.reserve(reserveSize); }
 	};
 	boost::shared_ptr<ContainerData> data;

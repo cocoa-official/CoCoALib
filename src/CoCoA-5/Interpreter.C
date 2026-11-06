@@ -2525,7 +2525,7 @@ intrusive_ptr<RightValue> RECORD::clone() {
 }
 
 intrusive_ptr<RightValue> LIST::clone() {
-	if (this->data->mutableElements == 0)
+	if (this->data->NumMutableElements == 0)
 		return new LIST(this->data);
 	intrusive_ptr<LIST> copy(new LIST(this->size()));
 	for (intrusive_ptr<RightValue> v: this->data->container)
@@ -2547,10 +2547,10 @@ intrusive_ptr<RightValue> MAT::clone() {
 bool LIST::needsToBeCopiedBeforeChanges() const {
 	if (this->getRefCount()>1)
 		return true;
-	if (this->data->mutableElements == 0)
+	if (this->data->NumMutableElements == 0)
 		return false;
-	for (ContainerType::const_iterator i = this->data->container.begin(); i!=this->data->container.end(); ++i)
-		if ((*i)->needsToBeCopiedBeforeChanges())
+	for (const auto& entry: this->data->container)
+		if (entry->needsToBeCopiedBeforeChanges())
 			return true;
 	return false;
 }
@@ -2578,30 +2578,30 @@ void LIST::setValue(ContainerType::size_type index, intrusive_ptr<RightValue> ne
 	this->makeContainerUnique();
 	intrusive_ptr<RightValue> &oldValue = this->data->container[index];
 	if (isMutableValue(oldValue))
-		--this->data->mutableElements;
+		--this->data->NumMutableElements;
 	if (isMutableValue(newValue))
-		++this->data->mutableElements;
+		++this->data->NumMutableElements;
 	oldValue = newValue;
 }
 
 void LIST::addValue(intrusive_ptr<RightValue> newValue) {
 	this->makeContainerUnique();
 	if (isMutableValue(newValue))
-		++this->data->mutableElements;
+		++this->data->NumMutableElements;
 	this->data->container.push_back(newValue);
 }
 
 void LIST::insertValue(ContainerType::size_type position, intrusive_ptr<RightValue> newValue) {
 	this->makeContainerUnique();
 	if (isMutableValue(newValue))
-		++this->data->mutableElements;
+		++this->data->NumMutableElements;
 	this->data->container.insert(this->data->container.begin()+position, newValue);
 }
 
 void LIST::removeValue(ContainerType::size_type position) {
 	this->makeContainerUnique();
 	if (isMutableValue(this->data->container[position]))
-		--this->data->mutableElements;
+		--this->data->NumMutableElements;
 	this->data->container.erase(this->data->container.begin()+position);
 }
 
@@ -2620,14 +2620,14 @@ ostream &MatrixRowValue::dumpAsString(ostream &out) const {
 ostream &LIST::dumpAsString(ostream &out) const {
 	out << "[";
 	bool first = true;
-	for (ContainerType::const_iterator i = this->data->container.begin(); i!=this->data->container.end(); ++i) {
+	for (const auto& entry: this->data->container) {
 /// does not work properly????          CoCoA::CheckForInterrupt("Printing LIST");
 		if (first)
 			first = false;
 		else
 			out << ",  ";
-		out << *i;
-		(*i)->dumpRefCountAsString(out);
+		out << entry;
+		entry->dumpRefCountAsString(out);
 	}
 	return out << "]";
 }
