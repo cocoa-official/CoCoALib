@@ -1,12 +1,14 @@
 # Binaries
+src/tests/test-*
+!src/tests/test-*.*
+examples/ex-*
+!examples/ex-*.*
 *.a
 *.o
 *.dll
 *.exe
 *.so
 *.so.*
-examples/ex-*[^.]
-src/tests/test-*[^.]
 
 # IDE folders
 .idea/
