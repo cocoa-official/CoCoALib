@@ -710,7 +710,7 @@ DECLARE_STD_BUILTIN_FUNCTION(homog, 2) {
     const vector<RingElem> v1 = runtimeEnv->evalRVAsListOfRingElem(v, ARG(0));
     intrusive_ptr<LIST> returnValue = new LIST();
     for (long a=0; a<len(v1); ++a)
-      returnValue->addValue(Value::from(homog(v1[a], h->theRingElem)));
+      returnValue->appendValue(Value::from(homog(v1[a], h->theRingElem)));
     return returnValue;
   }
   }
@@ -1306,7 +1306,7 @@ DECLARE_STD_BUILTIN_FUNCTION(CoefficientsWRT, 2) { // AMB
     intrusive_ptr<RECORD> cpp5(new RECORD);
     cpp5->setFieldNoCheck("coeff", Value::from(cpp.myCoeff));
     cpp5->setFieldNoCheck("PP",    Value::from(monomial(P,cpp.myPP)));
-    returnValue->addValue(cpp5);
+    returnValue->appendValue(cpp5);
   }
   return returnValue;
 }
