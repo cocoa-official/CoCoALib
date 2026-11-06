@@ -122,7 +122,7 @@ The arguments of the functions below may be either a machine integer or a ``BigI
 These functions always return [[BigInt]]
 - ``power(a, b)`` -- returns ``a`` to the power ``b`` (error if ``b<0``); ``power(0,0)`` gives 1
 - ``factorial(n)``   -- factorial for non-negative ``n``
-- ``FactorialRange(lo,hi)``   -- product of all integers from ``lo`` to ``hi`` (incl.)
+- ``FactorialRange(lo,hi)``   -- product of all integers from ``lo`` to ``hi`` (incl.); value is 1 if ``lo > hi``
 - ``RangeFactorial(lo,hi)`` -- OBSOLETE: renamed to ``FactorialRange(lo,hi)``
 - ``primorial(n)``   -- primorial for non-negative ``n``
 - ``LogFactorial(n)``   -- approx natural log of ``factorial(n)`` (abs.err. < 5*10^(-8))
