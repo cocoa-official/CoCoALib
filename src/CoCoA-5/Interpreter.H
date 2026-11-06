@@ -526,7 +526,7 @@ public:
 	bool needsToBeCopiedBeforeChanges() const;
 	boost::intrusive_ptr<RightValue> getValue(ContainerType::size_type index) const;
 	void setValue(ContainerType::size_type index, boost::intrusive_ptr<RightValue> newValue);
-	void addValue(boost::intrusive_ptr<RightValue> newValue);
+	void appendValue(boost::intrusive_ptr<RightValue> newValue);
 	void insertValue(ContainerType::size_type position, boost::intrusive_ptr<RightValue> newValue);
 	void removeValue(ContainerType::size_type position);
 	ContainerType::size_type size() const;
@@ -617,7 +617,7 @@ public:
 			return nullptr;
 		return it->second;
 	}
-	inline void addValue(KeyType index, boost::intrusive_ptr<RightValue> v) {
+	inline void insert(KeyType index, boost::intrusive_ptr<RightValue> v) {
 		assert(this->map.find(index)==this->map.end());
 		this->map.insert(std::make_pair(index, v));
 	}
@@ -1459,7 +1459,7 @@ template <typename T> LIST::LIST(const std::vector<T> &v)
 {
   for (const T &elem: v)
   {
-    this->addValue(Value::from(elem));
+    this->appendValue(Value::from(elem));
   }
 }
 inline boost::intrusive_ptr<STRING> Value::from(const std::string &x) { return new STRING(x); }

@@ -566,11 +566,11 @@ void RING::injectIndeterminates(RuntimeEnvironment *runtimeEnv, const intrusive_
               intrusive_ptr<IntMapValue> v = dynamic_pointer_cast<IntMapValue>(map->getValue(i));
               if (!v) {
                 v = new IntMapValue();
-                map->addValue(i, v);
+                map->insert(i, v);
               }
               map = v;
             }
-            map->addValue(subscript(sym, nSubscripts-1), indeterminate);
+            map->insert(subscript(sym, nSubscripts-1), indeterminate);
           }
 // UNUSED?          ++indetIndex;
 	}
@@ -1194,11 +1194,11 @@ intrusive_ptr<LIST> RuntimeEnvironment::currentTypes() {
         {
           const int slot = this->slotFor(s);
           assert(slot>=0 && static_cast<vector<VariableSlot>::size_type>(slot)<getTopLevelFrame()->varSlots.size());
-          result->addValue(intrusive_ptr_cast<TYPE>(getTopLevelFrame()->varSlots[slot].value));
+          result->appendValue(intrusive_ptr_cast<TYPE>(getTopLevelFrame()->varSlots[slot].value));
 	}
 	// Below p is more-or-less of type pair<string, intrusive_ptr<TYPE> >;
 	for (const auto& p: TYPE::taggedTypes)
-		result->addValue(p.second);
+		result->appendValue(p.second);
 	return result;
 }
 
@@ -1251,7 +1251,7 @@ intrusive_ptr<LIST> RuntimeEnvironment::TopLevelFunctions() {
 		const VariableSlot &vslot = getTopLevelFrame()->varSlots[it->second];
 		if (intrusive_ptr<FUNCTION> f = dynamic_pointer_cast<FUNCTION>(vslot.value)) {
 			intrusive_ptr<RECORD> record(new RECORD);
-			result->addValue(record);
+			result->appendValue(record);
 			record->setFieldNoCheck("name", new STRING(it->first));
 			record->setFieldNoCheck("IsExported", Value::from(vslot.hasBeenExported()));
 		}
@@ -1385,7 +1385,7 @@ vector<string> RECORD::myFieldNamesStrings() const {
 intrusive_ptr<LIST> RECORD::fieldNames() const {
 	intrusive_ptr<LIST> result(new LIST);
 	for (MapType::const_iterator pos = this->fields.begin(); pos!=this->fields.end(); ++pos)
-		result->addValue(new STRING(pos->first));
+		result->appendValue(new STRING(pos->first));
 	return result;
 }
 
@@ -1828,7 +1828,7 @@ intrusive_ptr<RightValue> opPlus_LIST_LIST(RuntimeEnvironment *runtimeEnv, const
 	if (size!=l2->size())
 		throw RuntimeException("Cannot sum lists of different sizes", beginOperatorSourcePosition, endOperatorSourcePosition);
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								l1->getValue(a),
 								l2->getValue(a),
 								RuntimeEnvironment::opPlusMap,
@@ -1845,7 +1845,7 @@ intrusive_ptr<RightValue> opMinus_LIST_LIST(RuntimeEnvironment *runtimeEnv, cons
 	if (size!=l2->size())
 		throw RuntimeException("Cannot subtract lists of different sizes", beginOperatorSourcePosition, endOperatorSourcePosition);
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								l1->getValue(a),
 								l2->getValue(a),
 								RuntimeEnvironment::opMinusMap,
@@ -1886,7 +1886,7 @@ intrusive_ptr<RightValue> opStar_IntRatRE_LIST(RuntimeEnvironment *runtimeEnv, c
 	intrusive_ptr<LIST> result = new LIST();
 	const LIST::ContainerType::size_type size = list->size();
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								leftOp,
 								list->getValue(a),
 								RuntimeEnvironment::opStarMap,
@@ -1900,7 +1900,7 @@ intrusive_ptr<RightValue> opStar_LIST_IntRatRE(RuntimeEnvironment *runtimeEnv, c
 	intrusive_ptr<LIST> result = new LIST();
 	const LIST::ContainerType::size_type size = list->size();
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								list->getValue(a),
 								rightOp,
 								RuntimeEnvironment::opStarMap,
@@ -1914,7 +1914,7 @@ intrusive_ptr<RightValue> opSlash_LIST_IntRatRE(RuntimeEnvironment *runtimeEnv, 
 	intrusive_ptr<LIST> result = new LIST();
 	const LIST::ContainerType::size_type size = list->size();
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								list->getValue(a),
 								rightOp,
 								RuntimeEnvironment::opSlashMap,
@@ -2433,7 +2433,7 @@ intrusive_ptr<RightValue> MAT::unaryMinus(const CharPointer &, RuntimeEnvironmen
 //         typedef LIST::ContainerType::size_type INDEX;
 // 	const INDEX size = l1->size();
 // 	for(INDEX i=0; i<size; ++i)
-// 		result->addValue(runtimeEnv->binaryOperatorDispatch(
+// 		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 // 								l1->getValue(i),
 // 								RuntimeEnvironment::opMinusMap,
 // 								beginOperatorSourcePosition,
@@ -2529,7 +2529,7 @@ intrusive_ptr<RightValue> LIST::clone() {
 		return new LIST(this->data);
 	intrusive_ptr<LIST> copy(new LIST(this->size()));
 	for (intrusive_ptr<RightValue> v: this->data->container)
-		copy->addValue(v->clone());
+        copy->appendValue(v->clone());
 	return copy;
 }
 
@@ -2584,7 +2584,7 @@ void LIST::setValue(ContainerType::size_type index, intrusive_ptr<RightValue> ne
 	oldValue = newValue;
 }
 
-void LIST::addValue(intrusive_ptr<RightValue> newValue) {
+void LIST::appendValue(intrusive_ptr<RightValue> newValue) {
 	this->makeContainerUnique();
 	if (isMutableValue(newValue))
 		++this->data->NumMutableElements;
@@ -2826,7 +2826,7 @@ intrusive_ptr<RightValue> UserDefinedFunction::eval(const intrusive_ptr<const In
 		if (!calledWithEllipsis) {
 			const vector<Argument>::size_type nArgs = invocationExpression->args.size();
 			for (vector<Argument>::size_type a=0; a<nArgs; ++a)
-				ellipsisValues->addValue(runtimeEnv->evalArg(invocationExpression->args[a], RuntimeEnvironment::EVAL_BY_VALUE)->asRightValue());
+				ellipsisValues->appendValue(runtimeEnv->evalArg(invocationExpression->args[a], RuntimeEnvironment::EVAL_BY_VALUE)->asRightValue());
 		}
 	}
 	Frame *frame = runtimeEnv->pushFrame(this->fp, invocationExpression, this->fnDecl, this);
@@ -3909,14 +3909,14 @@ intrusive_ptr<Value> RecordExpression::implEval(RuntimeEnvironment *runtimeEnv) 
 intrusive_ptr<Value> ListExpression::implEval(RuntimeEnvironment *runtimeEnv) const {
 	intrusive_ptr<LIST> l(new LIST());
 	for (intrusive_ptr<const Expression> e: this->exps) {
-		l->addValue(e->evalAs<RightValue>(runtimeEnv));
+		l->appendValue(e->evalAs<RightValue>(runtimeEnv));
 	}
 	return l;
 }
 
 intrusive_ptr<Value> CartesianProductExpression::implEval(RuntimeEnvironment *runtimeEnv) const {
 	intrusive_ptr<LIST> previous(new LIST());
-	previous->addValue(new LIST(this->operands.size()));
+	previous->appendValue(new LIST(this->operands.size()));
 	intrusive_ptr<LIST> current;
 	for (intrusive_ptr<const Expression> e: this->operands)
         {
@@ -3927,8 +3927,8 @@ intrusive_ptr<Value> CartesianProductExpression::implEval(RuntimeEnvironment *ru
           for (LIST::ContainerType::size_type a=0; a<previousSize; ++a) {
             for (LIST::ContainerType::size_type b=0; b<lSize; ++b) {
               intrusive_ptr<LIST> cloned = intrusive_ptr_cast<LIST>(previous->getValue(a)->clone());
-              cloned->addValue(l->getValue(b));
-              current->addValue(cloned);
+              cloned->appendValue(l->getValue(b));
+              current->appendValue(cloned);
             }
           }
           previous = current;
@@ -3950,7 +3950,7 @@ intrusive_ptr<Value> ExpSuchThatIdInExpAndExp::implEval(RuntimeEnvironment *runt
 		assert(sourceElem);
 		varSlot.value = sourceElem;
 		if (!this->optionalExp3 || this->optionalExp3->evalAs<BOOL>(runtimeEnv)->theBool)
-			result->addValue(this->exp1->evalAs<RightValue>(runtimeEnv));
+			result->appendValue(this->exp1->evalAs<RightValue>(runtimeEnv));
 	}
 	return result;
 }
@@ -3969,7 +3969,7 @@ intrusive_ptr<Value> IdInExpSuchThatExp::implEval(RuntimeEnvironment *runtimeEnv
 		assert(elem);
 		varSlot.value = elem;
 		if (this->exp2->evalAs<BOOL>(runtimeEnv)->theBool)
-			result->addValue(elem);
+			result->appendValue(elem);
 	}
 	return result;
 }
@@ -3987,7 +3987,7 @@ intrusive_ptr<Value> DotDotExpression::implEval(RuntimeEnvironment *runtimeEnv) 
 		BigInt lower(NL->theBigInt), upper(NR->theBigInt);
                 if (upper-lower > 10000000)  // BUG??? arbitrary max size
                   throw RuntimeException("dot-dot range limited to 10000000 values",this);
-		for (; lower<=upper; ++lower) l->addValue(new INT(lower));
+		for (; lower<=upper; ++lower) l->appendValue(new INT(lower));
 	}
   else
     if ((xL=dynamic_pointer_cast<RINGELEM>(lo)) && (xR=dynamic_pointer_cast<RINGELEM>(hi)))
@@ -4000,7 +4000,7 @@ intrusive_ptr<Value> DotDotExpression::implEval(RuntimeEnvironment *runtimeEnv) 
       if (!IsIndet(lower,xL->theRingElem)) throw RuntimeException(ErrMesg,this->leftExp);
       if (!IsIndet(upper,xR->theRingElem)) throw RuntimeException(ErrMesg,this->rightExp);
       for (; lower<=upper; ++lower)
-        l->addValue(new RINGELEM(indet(polyRing, lower)));
+        l->appendValue(new RINGELEM(indet(polyRing, lower)));
     }
     else
       throw RuntimeException(ErrMesg, this);
