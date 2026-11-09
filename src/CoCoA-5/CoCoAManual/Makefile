@@ -52,9 +52,8 @@ $(COCOA5_DOC_TEX_DIR)/TimeStamp:  CoCoAHelp.xml  aux-files/TeX.xsl  aux-files/Te
 	/bin/mkdir -p $(COCOA5_DOC_TEX_DIR); \
 	cd $(COCOA5_DOC_TEX_DIR); \
 	touch WillBecomeTimeStamp; \
-	java -jar ../aux-files/saxon.jar  ../$(COCOA5_DOC_XML)  ../aux-files/TeX.xsl  CoCoAVersion="$(COCOA5_VER_MAJ).$(COCOA5_VER_MIN).$(COCOA5_VER_MINMIN)"  > CoCoAManual.tex
-	/bin/cp -r $(COCOA5_DOC_AUX_DIR)/TeX-extra-files/*  $(COCOA5_DOC_TEX_DIR)/.
-	@cd $(COCOA5_DOC_TEX_DIR); \
+	java -jar ../aux-files/saxon.jar  ../$(COCOA5_DOC_XML)  ../aux-files/TeX.xsl  CoCoAVersion="$(COCOA5_VER_MAJ).$(COCOA5_VER_MIN).$(COCOA5_VER_MINMIN)"  > CoCoAManual.tex; \
+	/bin/cp -r ../$(COCOA5_DOC_AUX_DIR)/TeX-extra-files/*  .; \
 	echo "[[CoCoA5:LaTeX-->PDF]]  Pass 1 of 4"; pdflatex -halt-on-error CoCoAManual.tex < /dev/null > /dev/null  2>&1; \
 	 if [ $$? -ne 0 ]; then echo "!!!LaTeX error!!! -- see file $(COCOA5_DOC_TEX_DIR)/CoCoAManual.log"; exit 1; fi; \
 	echo "[[CoCoA5:LaTeX-->PDF]]  Pass 2 of 4"; pdflatex -halt-on-error CoCoAManual.tex > /dev/null  2>&1; \
