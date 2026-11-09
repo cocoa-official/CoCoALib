@@ -372,19 +372,15 @@ namespace CoCoA
     if (!IsPolyRing(owner(x)))  CoCoA_THROW_ERROR1(ERR::ReqElemPolyRing);
     if (!IsIndet(x))  CoCoA_THROW_ERROR1(ERR::ReqIndet);
     if (L.empty())  return one(owner(x));
-    const ring P = NewPolyRing(CoeffRing(owner(x)), symbols("x,y"));
+    const static vector<symbol> XY = NewSymbols(2);
+    const int n = len(L);
+    const ring P = NewPolyRing(CoeffRing(owner(x)), XY);
     const RingElem y = indet(P,1);
     RingElem ans = indet(P,0);
-    const int n = len(L);
-    std::vector<RingElem> XplusYimg; XplusYimg.push_back(ans+y); XplusYimg.push_back(zero(P));
-    const RingHom XplusY = PolyAlgebraHom(P,P, XplusYimg);
+    const RingHom XplusY = PolyAlgebraHom(P,P, {ans+y, zero(P)});
     for (int i=0; i < n; ++i)
-    {
-      ans = XplusY(ans);
-      ans = resultant(ans, power(y,2)-L[i], 1);
-    }
-    std::vector<RingElem> images; images.push_back(x); images.push_back(zero(owner(x)));
-    const RingHom phi = PolyAlgebraHom(P, owner(x), images);
+      ans = resultant(XplusY(ans), power(y,2)-L[i], 1); // 1 is indet index of "Y"
+    const RingHom phi = PolyAlgebraHom(P, owner(x), {x, zero(owner(x))});
     return phi(ans);
   }
 
