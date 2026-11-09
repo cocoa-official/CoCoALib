@@ -1,5 +1,5 @@
       verbose
-      Copyright (c)  2016  John Abbott,  Anna M. Bigatti
+      Copyright (c)  2016,2026  John Abbott,  Anna M. Bigatti
       GNU Free Documentation License, Version 1.2
 %!includeconf: ../aux-txt2tags/config.t2t
       TeXTitle{verbose}{John Abbott}
@@ -35,7 +35,7 @@ There is just one constructor:
 %----------------------------------------------------------------------
 There is just one query:
 - ``SetVerbosityLevel(n)`` -- set the global verbosity level to ``n`` (non-negative integer); returns value of previous verbosity level.
-- ``IsVerbosityLevel(n)`` -- ``true`` iff the verbose level is **greater than or equal** to ``n`` (positive integer).
+- ``VerbosityLevel(n)`` -- resturn the current verbosiy level (non-negative integer as a ``long``).
 
 
 === Operations ===[operations]
@@ -47,7 +47,7 @@ There is just one operation: let ``VERBOSE`` be a ``VerboseLog`` object
 **NOTE** a verbose logging command will **always** evaluate its arguments (even if the logging
 command will produce no output because the global level is too low).  It is best not to perform
 costly operations to produce logging output; if you must do so, then place a block of code inside
-the then-part of an ``if (IsVerbosityLevel(...)) {...}`` construct!
+the then-part of an ``if (VerbosityLevel() >= level) {...}`` construct!
 
 
 == Maintainer documentation ==
@@ -79,6 +79,10 @@ nesting depth exceeds a limit?
 
 == Main changes ==
 %======================================================================
+
+**2026**
+- November (v0.99880): replaced `IsVerbosityLevel(n)` by `VerbosityLevel()`
+
 
 **2016**
 - November (v0.99544): first release
