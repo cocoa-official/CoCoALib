@@ -135,7 +135,7 @@ namespace CoCoA
   private: // impl details
     ProdBigInt& myMul(unsigned long n); // NOT THREADSAFE!
     ProdBigInt& myMul(long n);          // NOT THREADSAFE!
-    void myNormalize(int i) /*(morally) const*/;
+    void myNormalize(unsigned int i) /*(morally) const*/;
     unsigned int myIndex(const BigInt& N) const;
     friend std::ostream& operator<<(std::ostream& out, const ProdBigInt& P);
   };
