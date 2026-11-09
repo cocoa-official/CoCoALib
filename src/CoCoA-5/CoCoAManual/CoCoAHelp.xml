@@ -6238,7 +6238,7 @@ FactorialRange(lo: <type>INT</type>, hi:<type>INT</type>): <rtn>INT</rtn>
     </syntax>
 <description>
 This function returns the product of all integers from <tt>lo</tt> to <tt>hi</tt>,
-both extrema included.
+both extrema included.  If <tt>lo &gt; hi</tt>, the return value is 1.
 <example>
 /**/  FactorialRange(5,6);
 30

@@ -8,11 +8,11 @@ export FoldToListInput;
   
 // WARNING: this fn is MUCH SLOWER than FoldToListInput for long inputs
 define FoldToList(str, opt W)
-  if type(str) <> STRING then error("1st arg mustbe STRING"); endif;
+  CheckIsSTRING(str);
   out := OpenOString();
   width := 60; // default value
   if IsDefined(W) then
-    if type(W) <> INT or W < 1 then error("2nd arg must be positive integer"); endif;
+    CheckIsINT_positive(W, "2nd");
     width := W;
   endif;
   print fold(str,width) on out;
@@ -28,11 +28,11 @@ enddefine; -- FoldToList
 
 
 define FoldToListInput(str, opt W)
-  if type(str) <> STRING then error("1st arg mustbe STRING"); endif;
+  CheckIsSTRING(str);
   out := OpenOString();
   width := 60; // default value
   if IsDefined(W) then
-    if type(W) <> INT or W < 1 then error("2nd arg must be positive integer"); endif;
+    CheckIsINT_positive(W, "2nd");
     width := W;
   endif;
   print fold(str,width) on out;

@@ -1,7 +1,7 @@
 
 
 ---Unexisting record---
---> WARNING: Cannot find "PrintTagged", so I'm implicitly untagging the value
+--->>> WARNING: Cannot find "PrintTagged", so I'm implicitly untagging the value
 --> WHERE: at line 6 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^
@@ -9,7 +9,7 @@
 
 
 ---Wrong type---
---> WARNING: The variable "PrintTagged" is not a record, so I'm implicitly untagging the value
+--->>> WARNING: The variable "PrintTagged" is not a record, so I'm implicitly untagging the value
 --> WHERE: at line 10 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^
@@ -17,7 +17,7 @@
 
 
 ---No fields ---
---> WARNING: The variable "PrintTagged" does not contain a field named "dots", so I'm implicitly untagging the value
+--->>> WARNING: The variable "PrintTagged" does not contain a field named "dots", so I'm implicitly untagging the value
 --> WHERE: at line 14 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^
@@ -25,7 +25,7 @@
 
 
 ---Field of wrong type--
---> WARNING: PrintTagged.dots does not contain a function, so I'm implicitly untagging the value
+--->>> WARNING: PrintTagged.dots does not contain a function, so I'm implicitly untagging the value
 --> WHERE: at line 18 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^
@@ -33,7 +33,7 @@
 
 
 ---Wrong arity---
---> WARNING: The function PrintTagged.dots cannot receive two arguments, so I'm implicitly untagging the value
+--->>> WARNING: The function PrintTagged.dots cannot receive two arguments, so I'm implicitly untagging the value
 --> WHERE: at line 22 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^
@@ -41,7 +41,7 @@
 
 
 ---By ref1---
---> WARNING: The function PrintTagged.dots expects a by-ref argument, so I'm implicitly untagging the value
+--->>> WARNING: The function PrintTagged.dots expects a by-ref argument, so I'm implicitly untagging the value
 --> WHERE: at line 26 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^
@@ -49,7 +49,7 @@
 
 
 ---By ref2 --
---> WARNING: The function PrintTagged.dots expects a by-ref argument, so I'm implicitly untagging the value
+--->>> WARNING: The function PrintTagged.dots expects a by-ref argument, so I'm implicitly untagging the value
 --> WHERE: at line 30 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^
@@ -57,7 +57,7 @@
 
 
 ---By ref3---
---> WARNING: The function PrintTagged.dots expects a by-ref argument, so I'm implicitly untagging the value
+--->>> WARNING: The function PrintTagged.dots expects a by-ref argument, so I'm implicitly untagging the value
 --> WHERE: at line 34 (column 9) of tagging.cocoa5
 --> PrintLn a;
 -->         ^

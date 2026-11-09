@@ -48,7 +48,7 @@ namespace CoCoA {
   // Get a helpful string from a CoCoA::exception
   std::string message_from_cocoalib(const exception& exc)
   {
-    return message(exc) + "\n--> [CoCoALib fn] " + context(exc);
+    return message(exc) + "\n-- [CoCoALib \"" + context(exc) + "\"]";
   }
 
 
@@ -566,11 +566,11 @@ void RING::injectIndeterminates(RuntimeEnvironment *runtimeEnv, const intrusive_
               intrusive_ptr<IntMapValue> v = dynamic_pointer_cast<IntMapValue>(map->getValue(i));
               if (!v) {
                 v = new IntMapValue();
-                map->addValue(i, v);
+                map->insert(i, v);
               }
               map = v;
             }
-            map->addValue(subscript(sym, nSubscripts-1), indeterminate);
+            map->insert(subscript(sym, nSubscripts-1), indeterminate);
           }
 // UNUSED?          ++indetIndex;
 	}
@@ -1194,11 +1194,11 @@ intrusive_ptr<LIST> RuntimeEnvironment::currentTypes() {
         {
           const int slot = this->slotFor(s);
           assert(slot>=0 && static_cast<vector<VariableSlot>::size_type>(slot)<getTopLevelFrame()->varSlots.size());
-          result->addValue(intrusive_ptr_cast<TYPE>(getTopLevelFrame()->varSlots[slot].value));
+          result->appendValue(intrusive_ptr_cast<TYPE>(getTopLevelFrame()->varSlots[slot].value));
 	}
 	// Below p is more-or-less of type pair<string, intrusive_ptr<TYPE> >;
 	for (const auto& p: TYPE::taggedTypes)
-		result->addValue(p.second);
+		result->appendValue(p.second);
 	return result;
 }
 
@@ -1251,7 +1251,7 @@ intrusive_ptr<LIST> RuntimeEnvironment::TopLevelFunctions() {
 		const VariableSlot &vslot = getTopLevelFrame()->varSlots[it->second];
 		if (intrusive_ptr<FUNCTION> f = dynamic_pointer_cast<FUNCTION>(vslot.value)) {
 			intrusive_ptr<RECORD> record(new RECORD);
-			result->addValue(record);
+			result->appendValue(record);
 			record->setFieldNoCheck("name", new STRING(it->first));
 			record->setFieldNoCheck("IsExported", Value::from(vslot.hasBeenExported()));
 		}
@@ -1385,7 +1385,7 @@ vector<string> RECORD::myFieldNamesStrings() const {
 intrusive_ptr<LIST> RECORD::fieldNames() const {
 	intrusive_ptr<LIST> result(new LIST);
 	for (MapType::const_iterator pos = this->fields.begin(); pos!=this->fields.end(); ++pos)
-		result->addValue(new STRING(pos->first));
+		result->appendValue(new STRING(pos->first));
 	return result;
 }
 
@@ -1828,7 +1828,7 @@ intrusive_ptr<RightValue> opPlus_LIST_LIST(RuntimeEnvironment *runtimeEnv, const
 	if (size!=l2->size())
 		throw RuntimeException("Cannot sum lists of different sizes", beginOperatorSourcePosition, endOperatorSourcePosition);
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								l1->getValue(a),
 								l2->getValue(a),
 								RuntimeEnvironment::opPlusMap,
@@ -1845,7 +1845,7 @@ intrusive_ptr<RightValue> opMinus_LIST_LIST(RuntimeEnvironment *runtimeEnv, cons
 	if (size!=l2->size())
 		throw RuntimeException("Cannot subtract lists of different sizes", beginOperatorSourcePosition, endOperatorSourcePosition);
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								l1->getValue(a),
 								l2->getValue(a),
 								RuntimeEnvironment::opMinusMap,
@@ -1886,7 +1886,7 @@ intrusive_ptr<RightValue> opStar_IntRatRE_LIST(RuntimeEnvironment *runtimeEnv, c
 	intrusive_ptr<LIST> result = new LIST();
 	const LIST::ContainerType::size_type size = list->size();
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								leftOp,
 								list->getValue(a),
 								RuntimeEnvironment::opStarMap,
@@ -1900,7 +1900,7 @@ intrusive_ptr<RightValue> opStar_LIST_IntRatRE(RuntimeEnvironment *runtimeEnv, c
 	intrusive_ptr<LIST> result = new LIST();
 	const LIST::ContainerType::size_type size = list->size();
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								list->getValue(a),
 								rightOp,
 								RuntimeEnvironment::opStarMap,
@@ -1914,7 +1914,7 @@ intrusive_ptr<RightValue> opSlash_LIST_IntRatRE(RuntimeEnvironment *runtimeEnv, 
 	intrusive_ptr<LIST> result = new LIST();
 	const LIST::ContainerType::size_type size = list->size();
 	for (LIST::ContainerType::size_type a=0; a<size; ++a)
-		result->addValue(runtimeEnv->binaryOperatorDispatch(
+		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 								list->getValue(a),
 								rightOp,
 								RuntimeEnvironment::opSlashMap,
@@ -2433,7 +2433,7 @@ intrusive_ptr<RightValue> MAT::unaryMinus(const CharPointer &, RuntimeEnvironmen
 //         typedef LIST::ContainerType::size_type INDEX;
 // 	const INDEX size = l1->size();
 // 	for(INDEX i=0; i<size; ++i)
-// 		result->addValue(runtimeEnv->binaryOperatorDispatch(
+// 		result->appendValue(runtimeEnv->binaryOperatorDispatch(
 // 								l1->getValue(i),
 // 								RuntimeEnvironment::opMinusMap,
 // 								beginOperatorSourcePosition,
@@ -2525,11 +2525,11 @@ intrusive_ptr<RightValue> RECORD::clone() {
 }
 
 intrusive_ptr<RightValue> LIST::clone() {
+	if (this->data->NumMutableElements == 0)
+		return new LIST(this->data);
 	intrusive_ptr<LIST> copy(new LIST(this->size()));
-	for (intrusive_ptr<RightValue> v: this->container)
-        {
-          copy->addValue(v->clone());
-	}
+	for (intrusive_ptr<RightValue> v: this->data->container)
+        copy->appendValue(v->clone());
 	return copy;
 }
 
@@ -2547,8 +2547,10 @@ intrusive_ptr<RightValue> MAT::clone() {
 bool LIST::needsToBeCopiedBeforeChanges() const {
 	if (this->getRefCount()>1)
 		return true;
-	for (ContainerType::const_iterator i = this->container.begin(); i!=this->container.end(); ++i)
-		if ((*i)->needsToBeCopiedBeforeChanges())
+	if (this->data->NumMutableElements == 0)
+		return false;
+	for (const auto& entry: this->data->container)
+		if (entry->needsToBeCopiedBeforeChanges())
 			return true;
 	return false;
 }
@@ -2558,29 +2560,53 @@ bool MAT::needsToBeCopiedBeforeChanges() const {
 }
 
 intrusive_ptr<RightValue> LIST::getValue(ContainerType::size_type index) const {
-	assert(index<=this->container.size());
-	return this->container[index];
+	assert(index<=this->data->container.size());
+	return this->data->container[index];
+}
+
+bool LIST::isMutableValue(const intrusive_ptr<RightValue> &value) {
+	return value && dynamic_cast<const ImmutableRightValue *>(value.get()) == nullptr;
+}
+
+void LIST::makeContainerUnique() {
+	if (!this->data.unique())
+		this->data.reset(new ContainerData(*this->data));
 }
 
 void LIST::setValue(ContainerType::size_type index, intrusive_ptr<RightValue> newValue) {
-	assert(index<=this->container.size());
-	this->container[index] = newValue;
+	assert(index<=this->data->container.size());
+	this->makeContainerUnique();
+	intrusive_ptr<RightValue> &oldValue = this->data->container[index];
+	if (isMutableValue(oldValue))
+		--this->data->NumMutableElements;
+	if (isMutableValue(newValue))
+		++this->data->NumMutableElements;
+	oldValue = newValue;
 }
 
-void LIST::addValue(intrusive_ptr<RightValue> newValue) {
-	this->container.push_back(newValue);
+void LIST::appendValue(intrusive_ptr<RightValue> newValue) {
+	this->makeContainerUnique();
+	if (isMutableValue(newValue))
+		++this->data->NumMutableElements;
+	this->data->container.push_back(newValue);
 }
 
 void LIST::insertValue(ContainerType::size_type position, intrusive_ptr<RightValue> newValue) {
-	this->container.insert(this->container.begin()+position, newValue);
+	this->makeContainerUnique();
+	if (isMutableValue(newValue))
+		++this->data->NumMutableElements;
+	this->data->container.insert(this->data->container.begin()+position, newValue);
 }
 
 void LIST::removeValue(ContainerType::size_type position) {
-	this->container.erase(this->container.begin()+position);
+	this->makeContainerUnique();
+	if (isMutableValue(this->data->container[position]))
+		--this->data->NumMutableElements;
+	this->data->container.erase(this->data->container.begin()+position);
 }
 
 LIST::ContainerType::size_type LIST::size() const {
-	return this->container.size();
+	return this->data->container.size();
 }
 
 ostream &MAT::dumpAsString(ostream &out) const {
@@ -2594,14 +2620,14 @@ ostream &MatrixRowValue::dumpAsString(ostream &out) const {
 ostream &LIST::dumpAsString(ostream &out) const {
 	out << "[";
 	bool first = true;
-	for (ContainerType::const_iterator i = this->container.begin(); i!=this->container.end(); ++i) {
+	for (const auto& entry: this->data->container) {
 /// does not work properly????          CoCoA::CheckForInterrupt("Printing LIST");
 		if (first)
 			first = false;
 		else
 			out << ",  ";
-		out << *i;
-		(*i)->dumpRefCountAsString(out);
+		out << entry;
+		entry->dumpRefCountAsString(out);
 	}
 	return out << "]";
 }
@@ -2800,7 +2826,7 @@ intrusive_ptr<RightValue> UserDefinedFunction::eval(const intrusive_ptr<const In
 		if (!calledWithEllipsis) {
 			const vector<Argument>::size_type nArgs = invocationExpression->args.size();
 			for (vector<Argument>::size_type a=0; a<nArgs; ++a)
-				ellipsisValues->addValue(runtimeEnv->evalArg(invocationExpression->args[a], RuntimeEnvironment::EVAL_BY_VALUE)->asRightValue());
+				ellipsisValues->appendValue(runtimeEnv->evalArg(invocationExpression->args[a], RuntimeEnvironment::EVAL_BY_VALUE)->asRightValue());
 		}
 	}
 	Frame *frame = runtimeEnv->pushFrame(this->fp, invocationExpression, this->fnDecl, this);
@@ -3883,14 +3909,14 @@ intrusive_ptr<Value> RecordExpression::implEval(RuntimeEnvironment *runtimeEnv) 
 intrusive_ptr<Value> ListExpression::implEval(RuntimeEnvironment *runtimeEnv) const {
 	intrusive_ptr<LIST> l(new LIST());
 	for (intrusive_ptr<const Expression> e: this->exps) {
-		l->addValue(e->evalAs<RightValue>(runtimeEnv));
+		l->appendValue(e->evalAs<RightValue>(runtimeEnv));
 	}
 	return l;
 }
 
 intrusive_ptr<Value> CartesianProductExpression::implEval(RuntimeEnvironment *runtimeEnv) const {
 	intrusive_ptr<LIST> previous(new LIST());
-	previous->addValue(new LIST(this->operands.size()));
+	previous->appendValue(new LIST(this->operands.size()));
 	intrusive_ptr<LIST> current;
 	for (intrusive_ptr<const Expression> e: this->operands)
         {
@@ -3901,8 +3927,8 @@ intrusive_ptr<Value> CartesianProductExpression::implEval(RuntimeEnvironment *ru
           for (LIST::ContainerType::size_type a=0; a<previousSize; ++a) {
             for (LIST::ContainerType::size_type b=0; b<lSize; ++b) {
               intrusive_ptr<LIST> cloned = intrusive_ptr_cast<LIST>(previous->getValue(a)->clone());
-              cloned->addValue(l->getValue(b));
-              current->addValue(cloned);
+              cloned->appendValue(l->getValue(b));
+              current->appendValue(cloned);
             }
           }
           previous = current;
@@ -3924,7 +3950,7 @@ intrusive_ptr<Value> ExpSuchThatIdInExpAndExp::implEval(RuntimeEnvironment *runt
 		assert(sourceElem);
 		varSlot.value = sourceElem;
 		if (!this->optionalExp3 || this->optionalExp3->evalAs<BOOL>(runtimeEnv)->theBool)
-			result->addValue(this->exp1->evalAs<RightValue>(runtimeEnv));
+			result->appendValue(this->exp1->evalAs<RightValue>(runtimeEnv));
 	}
 	return result;
 }
@@ -3943,7 +3969,7 @@ intrusive_ptr<Value> IdInExpSuchThatExp::implEval(RuntimeEnvironment *runtimeEnv
 		assert(elem);
 		varSlot.value = elem;
 		if (this->exp2->evalAs<BOOL>(runtimeEnv)->theBool)
-			result->addValue(elem);
+			result->appendValue(elem);
 	}
 	return result;
 }
@@ -3961,7 +3987,7 @@ intrusive_ptr<Value> DotDotExpression::implEval(RuntimeEnvironment *runtimeEnv) 
 		BigInt lower(NL->theBigInt), upper(NR->theBigInt);
                 if (upper-lower > 10000000)  // BUG??? arbitrary max size
                   throw RuntimeException("dot-dot range limited to 10000000 values",this);
-		for (; lower<=upper; ++lower) l->addValue(new INT(lower));
+		for (; lower<=upper; ++lower) l->appendValue(new INT(lower));
 	}
   else
     if ((xL=dynamic_pointer_cast<RINGELEM>(lo)) && (xR=dynamic_pointer_cast<RINGELEM>(hi)))
@@ -3974,7 +4000,7 @@ intrusive_ptr<Value> DotDotExpression::implEval(RuntimeEnvironment *runtimeEnv) 
       if (!IsIndet(lower,xL->theRingElem)) throw RuntimeException(ErrMesg,this->leftExp);
       if (!IsIndet(upper,xR->theRingElem)) throw RuntimeException(ErrMesg,this->rightExp);
       for (; lower<=upper; ++lower)
-        l->addValue(new RINGELEM(indet(polyRing, lower)));
+        l->appendValue(new RINGELEM(indet(polyRing, lower)));
     }
     else
       throw RuntimeException(ErrMesg, this);
@@ -4532,53 +4558,59 @@ namespace LexerNS {
 
 using namespace InterpreterNS;
 
-void ErrorReporter::reportError(const RuntimeException &exception) {
-	this->reportError(exception.reason, exception.from, exception.to);
-	const vector<SnapshotFrame>::size_type snapshotSize = exception.snapshot.size();
-	if (snapshotSize) {
-		this->printContext();
-		int nesting=-1;
-		bool dots=false;
-		CharPointer from = exception.from;
-		CharPointer to = exception.to;
-		for (vector<SnapshotFrame>::size_type a=0; a<snapshotSize; ++a) {
-			const SnapshotFrame &frame = exception.snapshot[a];
-			++nesting;
-			if ( (snapshotSize-a>10) && a>10 ) {
-				if (dots) {
-					--nesting;
-					continue;
-				}
-				this->outputStream->print(string(nesting, ' '))->print("...\n");
-				dots = true;
-				continue;
-			}
-			if (nesting) {
-				this->outputStream->print(string(nesting, ' '));
-				this->printCalledBy();
-			}
-			const intrusive_ptr<const FunctionDeclaration> fnDecl(intrusive_ptr_cast<const FunctionDeclaration>(frame.block));
-			if (fnDecl->fnName.length()) {
-				this->outputStream->print("function ");
-				this->printBold(fnDecl->fnName);
-			} else
-				this->printBold("anonymous-function");
-			if (!this->reportLineNumberWhenMeaningful(from, to, false, false)) {
-				if (frame.block)
-					this->outputStream->print(" (previously defined at the prompt)");
-				else
-					this->outputStream->print(" at top-level");
-			}
-			this->outputStream->newline();
-			from = frame.invocationExp->getBegin();
-			to = frame.invocationExp->getEnd();
-		}
-		this->outputStream->print(string(++nesting, ' '))->print("called");
-		if (!this->reportLineNumberWhenMeaningful(from, to, false, false))
-			this->outputStream->print(" at top-level");
-		this->outputStream->newline();
-	}
-}
+  void ErrorReporter::reportError(const RuntimeException &exception)
+  {
+    const auto snapshotSize = exception.snapshot.size();
+    if (!snapshotSize)
+    {
+      this->implReportError(exception.reason, exception.from, exception.to, true /*printWHEREline*/);
+      return;
+    }
+    this->printContext(); // "--> WHERE: "
+    int nesting=-1;
+    bool dots=false;
+    CharPointer from = exception.from;
+    CharPointer to = exception.to;
+    for (vector<SnapshotFrame>::size_type a=0; a<snapshotSize; ++a) {
+      const SnapshotFrame &frame = exception.snapshot[a];
+      ++nesting;
+      if ( (snapshotSize-a>10) && a>10 ) {
+        if (dots) {
+          --nesting;
+          continue;
+        }
+        this->outputStream->print(string(nesting, ' '))->print("...\n");
+        dots = true;
+        continue;
+      }
+      if (nesting) {
+        this->outputStream->print(string(nesting, ' '));
+        this->printCalledBy();
+      }
+      const intrusive_ptr<const FunctionDeclaration> fnDecl(intrusive_ptr_cast<const FunctionDeclaration>(frame.block));
+      if (fnDecl->fnName.length()) {
+        this->outputStream->print("function ");
+        this->printBold(fnDecl->fnName);
+      } else
+        this->printBold("anonymous-function");
+      if (!this->reportLineNumberWhenMeaningful(from, to, true, false)) // AMB 2026 column->true
+      {
+        if (frame.block)
+          this->outputStream->print(" (previously defined at the prompt)");
+        else
+          this->outputStream->print(" at top-level");
+      }
+      this->outputStream->newline();
+      from = frame.invocationExp->getBegin();
+      to = frame.invocationExp->getEnd();
+    }
+    this->outputStream->print(string(++nesting, ' '))->print("--> called");
+    if (!this->reportLineNumberWhenMeaningful(from, to, false, false))
+      this->outputStream->print(" at top-level");
+    this->outputStream->newline();
+    // AMB 2026-10: print ERROR and code snippet at the end
+    this->implReportError(exception.reason, from, to, false /*printWHEREline*/);
+  }
 
   void ErrorReporter::reportInterrupt(const InterpreterNS::InterruptException &intr)
   {

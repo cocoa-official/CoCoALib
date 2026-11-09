@@ -216,7 +216,7 @@ namespace InterpreterNS {
 			QTreeWidgetItem * const child = new QTreeWidgetItem();
 			child->setText(COL_NAME, QString::fromStdString("["+lexical_cast<string>(a+1)+"]"));
 			item->addChild(child);
-			container[a]->initTreeWidget(child);
+			this->data->container[a]->initTreeWidget(child);
 		}
 	}
 
@@ -743,11 +743,12 @@ void IdeErrorReporter::implReportError(const string &msg) {
 	this->outputStream->print(msg)->newline();
 }
 
-void IdeErrorReporter::implReportError(const string &msg, const CharPointer &from, const CharPointer &to) {
+void IdeErrorReporter::implReportError(const string &msg, const CharPointer &from, const CharPointer &to, const bool printWHEREline) {
 	assert(std::this_thread::get_id()==this->console->interpreterThreadId);
 	this->printError();
 	this->outputStream->print(msg);
-	this->reportLineNumberWhenMeaningful(from, to, true, true);
+  if (printWHEREline) // anna 2026-10
+    this->reportLineNumberWhenMeaningful(from, to, true, true);
 	assert(dynamic_pointer_cast<IdeOutputStream>(this->outputStream));
 	static_pointer_cast<IdeOutputStream>(this->outputStream)->print("\n", true, IdeOutputStream::normalFormat);
 	this->outputHighlightedChars(from, to);

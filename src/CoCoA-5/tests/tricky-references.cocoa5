@@ -34,3 +34,54 @@ L := [1];
 // L[ F(ref L) ] := 3;
 // PrintLn L;
 
+L1 := [1,2,3];
+L2 := L1;
+L1[1] := 99;
+assert(L1 = [99,2,3]);
+assert(L2 = [1,2,3]);
+
+L1 := [[1,2]];
+L2 := L1;
+L1[1][1] := 99;
+assert(L1 = [[99,2]]);
+assert(L2 = [[1,2]]);
+
+Use QQ[x,y];
+L1 := [x^2+y, x-y];
+L2 := L1;
+L1[1] := x^3+y^2;
+assert(L1[1] = x^3+y^2);
+assert(L2[1] = x^2+y);
+
+L1 := [Mat([[1,2],[3,4]]), Mat([[5,6],[7,8]])];
+L2 := L1;
+L1[1] := Mat([[9,10],[11,12]]);
+L1[2][1][1] := 99;
+assert(L1[1][1][1] = 9);
+assert(L2[1][1][1] = 1);
+assert(L1[2][1][1] = 99);
+assert(L2[2][1][1] = 5);
+
+L1 := [Record[f := 1], Record[f := 2]];
+L2 := L1;
+L1[1] := Record[f := 9];
+L1[2].f := 88;
+assert(L1[1].f = 9);
+assert(L2[1].f = 1);
+assert(L1[2].f = 88);
+assert(L2[2].f = 2);
+
+L1 := [[]];
+L2 := L1[1];
+append(ref L1[1], []);
+assert(L1[1] = [[]]);
+assert(L2 = []);
+
+Define SetFirst(ref L)
+	L[1] := 99;
+EndDefine
+L1 := [[1,2]];
+L2 := L1;
+SetFirst(ref L1[1]);
+assert(L1 = [[99,2]]);
+assert(L2 = [[1,2]]);

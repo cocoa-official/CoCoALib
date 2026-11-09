@@ -228,7 +228,7 @@ protected:
 	void implReportWarning(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
 	void implReportInterrupt(const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
 	void implReportError(const std::string &msg);
-	void implReportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
+  void implReportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to, const bool printWHEREline);
 public:
 	IdeErrorReporter(LexerNS::WarningSeverity warningLevel, Console *console, const boost::intrusive_ptr<IdeOutputStream> outputStream);
 	bool reportLineNumberWhenMeaningful(const LexerNS::CharPointer &fromPos, const LexerNS::CharPointer &toPos, bool printColumns, bool includeHeader);

@@ -261,7 +261,7 @@ protected:
 	virtual void implReportWarning(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to)=0;
 	virtual void implReportInterrupt(const LexerNS::CharPointer &from, const LexerNS::CharPointer &to)=0;
 	virtual void implReportError(const std::string &msg)=0;
-	virtual void implReportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to)=0;
+	virtual void implReportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to, const bool printWHEREline)=0;
 public:
 	const boost::intrusive_ptr<InterpreterNS::OSTREAM> outputStream;
 	ErrorReporter(WarningSeverity warningLevel, const boost::intrusive_ptr<InterpreterNS::OSTREAM> outputStream);
@@ -297,7 +297,7 @@ public:
 	}
 	void reportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to) {
 		++this->errorCount;
-		this->implReportError(msg, from, to);
+		this->implReportError(msg, from, to, true /*printWHEREline*/);
 	}
 	void reportError(const std::string &msg, const LexerNS::Token &tok) {
 		this->reportError(msg, tok.getBegin(), tok.getEnd());
@@ -318,7 +318,7 @@ protected:
 	void implReportWarning(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
 	void implReportInterrupt(const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
 	void implReportError(const std::string &msg);
-	void implReportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to);
+	void implReportError(const std::string &msg, const LexerNS::CharPointer &from, const LexerNS::CharPointer &to, const bool printWHEREline);
 public:
 	DefaultErrorReporter(WarningSeverity warningLevel, const boost::intrusive_ptr<InterpreterNS::CppOSTREAM> outputStream);
 	~DefaultErrorReporter() /*throw ()*/;

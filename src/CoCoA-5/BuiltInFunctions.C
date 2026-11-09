@@ -108,7 +108,7 @@ DECLARE_STD_BUILTIN_FUNCTION(ZipFileList, 1) {
 	intrusive_ptr<LIST> result(new LIST);
 	const int numEntries = zip_get_num_files(zf);
 	for(int a=0; a<numEntries; ++a)
-		result->addValue(new STRING(zip_get_name(zf, a, ZIP_FL_UNCHANGED)));
+		result->appendValue(new STRING(zip_get_name(zf, a, ZIP_FL_UNCHANGED)));
 	::zip_close(zf);
 	return result;
 }
@@ -161,7 +161,7 @@ DECLARE_BUILTIN_FUNCTION(NewList) {
   intrusive_ptr<RightValue> val = INT::zero;
   if (invocationExpression->args.size()==2)
     val = runtimeEnv->evalArgAs<RightValue>(ARG(1));
-  for(long i=0; i<n; ++i)  returnValue->addValue(val);
+  for(long i=0; i<n; ++i)  returnValue->appendValue(val);
 	return returnValue;
 }
 
@@ -190,7 +190,7 @@ DECLARE_BUILTIN_FUNCTION(first) {
   if ((unsigned long)n > list->size())
     throw RuntimeException("value greater than list length", ARG(1).exp);
 	intrusive_ptr<LIST> returnValue = new LIST();
-	for(long i=0; i<n; ++i)  returnValue->addValue(list->getValue(i));
+	for(long i=0; i<n; ++i)  returnValue->appendValue(list->getValue(i));
 	return returnValue;
 }
 
@@ -212,7 +212,7 @@ DECLARE_BUILTIN_FUNCTION(last) {
   if ((unsigned long)n>s)
     throw RuntimeException("value greater than list length", ARG(1).exp);
 	intrusive_ptr<LIST> returnValue = new LIST();
-	for(unsigned long i=s-n; i<s; ++i)  returnValue->addValue(list->getValue(i));
+	for(unsigned long i=s-n; i<s; ++i)  returnValue->appendValue(list->getValue(i));
 	return returnValue;
 }
 
@@ -274,7 +274,7 @@ DECLARE_BUILTIN_FUNCTION(concat) {
           intrusive_ptr<LIST> list = runtimeEnv->evalArgAs<LIST>(arg);
           int size = list->size();
           for(int a=0; a<size; ++a)
-            returnValue->addValue(list->getValue(a));
+            returnValue->appendValue(list->getValue(a));
 	}
 	return returnValue;
 }
@@ -289,7 +289,7 @@ DECLARE_STD_BUILTIN_FUNCTION(ConcatLists, 1) {
 			throw RuntimeException("The argument is not a list of lists", ARG(0).exp);
 		const LIST::ContainerType::size_type len = l->size();
 		for(LIST::ContainerType::size_type b=0; b<len; ++b)
-			result->addValue(l->getValue(b));
+			result->appendValue(l->getValue(b));
 	}
 	return result;
 }
@@ -298,7 +298,7 @@ END_STD_BUILTIN_FUNCTION
 DECLARE_STD_BUILTIN_FUNCTION(append, 2) {
 	intrusive_ptr<RightValue> elem = runtimeEnv->evalArgAs<RightValue>(ARG(1));
 	intrusive_ptr<LIST> list = runtimeEnv->obtainUnshared<LIST>(ARG(0));
-	list->addValue(elem);
+	list->appendValue(elem);
 	return VoidValue::theInstance;
 }
 END_STD_BUILTIN_FUNCTION
@@ -307,7 +307,7 @@ DECLARE_STD_BUILTIN_FUNCTION(reversed, 1) {
 	intrusive_ptr<LIST> list = runtimeEnv->evalArgAs<LIST>(ARG(0));
 	intrusive_ptr<LIST> returnValue = new LIST();
 	for(LIST::ContainerType::size_type a=list->size(); a!=0; /**/)
-		returnValue->addValue(list->getValue(--a));
+		returnValue->appendValue(list->getValue(--a));
 	return returnValue;
 }
 END_STD_BUILTIN_FUNCTION
@@ -616,7 +616,7 @@ DECLARE_STD_BUILTIN_FUNCTION(ascii, 1) {
     intrusive_ptr<LIST> l(new LIST());
 		const string s(RefTo<string>(v));
 		for (const unsigned char c: s)
-                  l->addValue(new INT(static_cast<int>(c)));
+                  l->appendValue(new INT(static_cast<int>(c)));
 		return l; }
 	case 2: {
 		long n;
@@ -693,13 +693,13 @@ DECLARE_STD_BUILTIN_FUNCTION(VersionInfo, 0) { // AMB
   intrusive_ptr<RECORD> ExtLib(new RECORD);
   ExtLib->setFieldNoCheck("name", Value::from(std::string("Boost")));
   ExtLib->setFieldNoCheck("version", Value::from(ToString(BOOST_VERSION)));
-  ExtLibList->addValue(ExtLib);
+  ExtLibList->appendValue(ExtLib);
   for (int i=0; i < NumLibs; ++i)
   {
     intrusive_ptr<RECORD> ExtLib(new RECORD);
     ExtLib->setFieldNoCheck("name", Value::from(ExternalLibs()[i].myName));
     ExtLib->setFieldNoCheck("version", Value::from(ExternalLibs()[i].myVersion));
-		ExtLibList->addValue(ExtLib);
+		ExtLibList->appendValue(ExtLib);
   }
   rec->setFieldNoCheck("ExternalLibs", ExtLibList);
   return rec;

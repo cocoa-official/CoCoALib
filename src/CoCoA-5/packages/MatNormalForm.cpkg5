@@ -191,7 +191,7 @@ Define SmithFactor(A)
   Err := "Input must be a matrix over ZZ or poly ring";
   If type(A)<>MAT Then error(Err); EndIf;
   R := RingOf(A);
-  If R<>RingZZ() And not(IsPolyRing(R)) Then error(Err); EndIf;
+  If not(IsZZ(R)) And not(IsPolyRing(R)) Then error(Err); EndIf;
   NR := NumRows(A);  NC := NumCols(A);
   If NR <= NC Then
     S := Record[U:=IdentityMat(R,NR),

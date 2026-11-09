@@ -23,27 +23,6 @@ EndDefine;
   --   permutations(S) -- all permutations of S
 -----------------------------------------------------------------------------
 
-// Arg checking procedures: either return nothing or throw.
-
-define CheckIsNNegINT(n, FnName)
-  if type(n) <> INT or n < 0 then
-    error(FnName + ": argument must be non-negative integer");
-  endif;
-enddefine; -- CheckIsNNegINT
-  
-define CheckIsPositiveINT(n, FnName)
-  if type(n) <> INT or n <= 0 then
-    error(FnName + ": argument must be positive integer");
-  endif;
-enddefine; -- CheckIsNNegINT
-  
-define CheckIsLIST(L, FnName)
-  if type(L) <> LIST then
-    error(FnName + ": argument must be a list");
-  endif;
-enddefine; -- CheckIsLIST
-  
-
 
 Define subsets(...)
   If len(ARGV) = 1 Then
@@ -63,8 +42,8 @@ EndDefine;
 
 -- Returns a list of all subsets of cardinality N
 Define SubsetsN(S, N)
-  CheckIsLIST(S, "SubsetsN");
-  CheckIsNNegINT(N, "SubsetsN");
+  CheckIsLIST(S, "1st");
+  CheckIsINT_nonnegative(N, "2nd");
   If len(S) < N Then Return []; EndIf;
   If N = 0 Then Return [[]]; EndIf;
   If N = 1 Then Return [[X] | X In S]; EndIf;
@@ -77,7 +56,7 @@ EndDefine; -- SubsetsN
 
 -- Returns a list of all subsets
 Define AllSubsets(S)
-  CheckIsLIST(S, "AllSubsets");
+  CheckIsLIST(S);
   If S = [] Then Return [[]]; EndIf;
   half := $.AllSubsets(tail(S));
   FirstS := S[1];
@@ -88,8 +67,8 @@ EndDefine; -- AllSubsets
 ------------------------------------------------------------------
 -- Returns S >< S >< .. >< S  (N times)
 Define tuples(S, N)
-  CheckIsLIST(S, "tuples");
-  CheckIsNNegINT(N, "tuples");
+  CheckIsLIST(S, "1st");
+  CheckIsINT_nonnegative(N, "2nd");
   If N < 0 Then error("tuples: tuple size must be non-negative"); EndIf;
   If N = 0 Then Return [[]]; EndIf;
   If S = [] Then Return []; EndIf; -- empty set has no N-tuples for N > 0
@@ -109,7 +88,7 @@ EndDefine; -- TupleCtor
 -- Returns a list of all the permutations of L
 -- it will give repeated elements if L has repeated elements
 Define permutations(L)
-  CheckIsLIST(L, "permutations");
+  CheckIsLIST(L);
   If len(L) <= 1 Then Return [L]; EndIf;
   Return ConcatLists([[concat([L[I]],X) | X In $.permutations(WithoutNth(L,I))]
 		     | I In 1..len(L)]);
@@ -119,7 +98,7 @@ EndDefine; -- Permutations
 ------------------------------------------------------------------
 -- Function to compute all integer partitions of N
 Define partitions(N)
-  CheckIsNNegINT(N, "partitions");
+  CheckIsINT_nonnegative(N);
   if N = 0 then return []; endif;
   Return ConcatLists([ $.Partitions2(N,length,N) | length In 1..N]);
 EndDefine;
@@ -154,7 +133,7 @@ EndDefine; -- Partitions3
 
 
 Define SumOfDivisors(N)
-  CheckIsPositiveINT(N, "SumOfDivisors");
+  CheckIsINT_positive(N);
   If N = 1 Then Return 1; EndIf;
   facs := FactorINT_TrialDiv(N,N);
   p := facs.factors;
