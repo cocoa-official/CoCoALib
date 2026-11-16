@@ -819,16 +819,23 @@ then
   HAVE_FROBBY=yes
   FROBBY_LIB_DIR=$(dirname "$FROBBY_LIB")
   FROBBY_LIB_DIR=$(cd "$FROBBY_LIB_DIR"; pwd)
+  FROBBY_INC_DIR="$(dirname "$FROBBY_LIB_DIR")/include"
   FROBBY_LIB="$FROBBY_LIB_DIR"/$(basename "$FROBBY_LIB")
   FROBBY_LIB_EXTN=$($SCRIPT_DIR/extn.sh "$FROBBY_LIB")
-  # Make symbolic links in  $EXTLIB_DIR/lib  and  $EXTLIB_DIR/include
-  /bin/ln -s "$FROBBY_LIB"  "$EXTLIB_DIR/lib/libfrobby-symlink.$FROBBY_LIB_EXTN"
-  /bin/ln -s $(dirname "$FROBBY_LIB_DIR")/src/frobby.h  "$EXTLIB_DIR/include/"
   if [ $? -ne 0 ]
   then
-    echo "$0: ERROR: frobby.h header file not found in `dirname \"$FROBBY_LIB_DIR\"`"  > /dev/stderr
+    echo "$0: ERROR: frobby.h header file not found in $FROBBY_INC_DIR"  > /dev/stderr
     exit 1
   fi
+  FROBBY_VERSION=$(CXX=$CXX $SCRIPT_DIR/frobby-version.sh  "$FROBBY_INC_DIR"  "$FROBBY_LIB"  "$GMP_LIB"  "$GMPXX_LIB"  2>$ERR_MESGS)
+  if [ $? -ne 0 ]
+  then
+      echo "$0: ERROR: could not determine version of libfrobby (req. v.0.9.5 or newer)" > /dev/stderr
+      exit 1
+  fi
+  # Make symbolic links in  $EXTLIB_DIR/lib  and  $EXTLIB_DIR/include
+  /bin/ln -s "$FROBBY_LIB"  "$EXTLIB_DIR/lib/libfrobby-symlink.$FROBBY_LIB_EXTN"
+  /bin/ln -s "$FROBBY_INC_DIR/frobby.h"  "$EXTLIB_DIR/include/"
 else
   HAVE_FROBBY=no
 fi

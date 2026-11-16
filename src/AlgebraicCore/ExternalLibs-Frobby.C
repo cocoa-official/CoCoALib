@@ -49,8 +49,7 @@ namespace CoCoA
 
   const char* FrbVersion()
   {
-    return "UNKNOWN (0.9.4?)";
-//    return constants::version;
+    return frobby_version;
   }
 
   namespace // anonymous
