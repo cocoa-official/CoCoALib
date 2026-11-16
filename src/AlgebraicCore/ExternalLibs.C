@@ -76,7 +76,11 @@ namespace CoCoA
     #endif
     #ifdef CoCoA_WITH_GFAN
     info.push_back(ExternalLibInfo("Gfan","UNKNOWN libgfan","UNKNOWN" /* >= 0.6*/,"http://home.math.au.dk/jensen/software/gfan/gfan.html"));
-    info.push_back(ExternalLibInfo("CDD","UNKNOWN libcddgmp","UNKNOWN" /* tested only with 094h*/,"https://www.inf.ethz.ch/personal/fukudak/cdd_home/index.html"));
+    #ifdef dd_DDVERSION
+    info.push_back(ExternalLibInfo("CDD","UNKNOWN libcddgmp",ToString(dd_DDVERSION) /* tested only with 094h*/,"https://www.inf.ethz.ch/personal/fukudak/cdd_home/index.html"));
+    #else
+    info.push_back(ExternalLibInfo("CDD","UNKNOWN libcddgmp",ToString(DDVERSION) /* <0.93*/,"https://www.inf.ethz.ch/personal/fukudak/cdd_home/index.html"));
+    #endif
     #endif
     #ifdef CoCoA_WITH_GSL
     //    info.push_back(ExternalLibInfo("GSL","UNKNOWN libgsl","UNKNOWN" /* >= ?*/,"https://www.gnu.org/software/gsl/"));
