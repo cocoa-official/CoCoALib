@@ -1469,6 +1469,22 @@ fi
 
 
 ##################################################################
+# Put in flags for building server
+
+echo "# Settings for CoCoAServer"                             >> "$CONFIG_TMP"
+
+# Hack for MinGW as it needs libws2_32
+MINGW=$(uname -s | grep -F MINGW)
+if [ -n "$MINGW" ]
+then
+  echo "WIN_LDLIBS=-lws2_32"                                  >> "$CONFIG_TMP"
+fi
+
+echo "SERVER_LDLIBS=\$(LDLIBS)  \$(WIN_LDLIBS)"               >> "$CONFIG_TMP"
+echo                                                          >> "$CONFIG_TMP"
+
+
+##################################################################
 # Put in flag for building Qt GUI
 
 echo "# Settings for CoCoA-5 Qt GUI"                          >> "$CONFIG_TMP"
