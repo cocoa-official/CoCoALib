@@ -377,10 +377,10 @@ namespace CoCoA
     const ring P = NewPolyRing(CoeffRing(owner(x)), XY);
     const RingElem y = indet(P,1);
     RingElem ans = indet(P,0);
-    const RingHom XplusY = PolyAlgebraHom(P,P, {ans+y, zero(P)});
+    const RingHom XplusY = PolyAlgebraHom(P,P, vector<RingElem>{ans+y, zero(P)});
     for (int i=0; i < n; ++i)
       ans = resultant(XplusY(ans), power(y,2)-L[i], 1); // 1 is indet index of "Y"
-    const RingHom phi = PolyAlgebraHom(P, owner(x), {x, zero(owner(x))});
+    const RingHom phi = PolyAlgebraHom(P, owner(x), vector<RingElem>{x, zero(owner(x))});
     return phi(ans);
   }
 
