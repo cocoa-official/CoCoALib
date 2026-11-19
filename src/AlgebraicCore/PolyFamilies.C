@@ -356,7 +356,7 @@ namespace CoCoA
   //=======================================================
   // Swinnerton-Dyer polynomials
 
-  // Just let the BigInt version do the work
+  // Just let the BigRat version do the work
   RingElem SwinnertonDyerPoly(ConstRefRingElem x, const std::vector<long>& L)
   {
     const long n = len(L);
