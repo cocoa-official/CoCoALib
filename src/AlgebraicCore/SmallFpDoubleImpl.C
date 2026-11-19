@@ -34,10 +34,10 @@ namespace CoCoA
 
   // MaxInt gives the largest integer N such that all integers from 1 to N
   // N can be represented exactly using the type SmallFpDoubleImpl::value_t.
-  constexpr long SmallFpDoubleImpl::ourMaxInt() noexcept
+  constexpr long long SmallFpDoubleImpl::ourMaxInt() noexcept
   {
     constexpr double MAX = 2 / numeric_limits<value_t>::epsilon();
-    return static_cast<long>(MAX);
+    return static_cast<long long>(MAX);
   }
 
 
@@ -83,7 +83,7 @@ namespace CoCoA
     return p*(ourMaxInt()/p/2); // Largest (integer) multiple of p <= MaxInt/2.
   }
 
-  inline long SmallFpDoubleImpl::ourCalcIterLimit(value_t p) noexcept
+  inline long long SmallFpDoubleImpl::ourCalcIterLimit(value_t p) noexcept
   {
 return (ourMaxInt()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum without exceeding MaxInt/2.
     // const long MaxIters = (ourMaxInt()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum without exceeding MaxInt/2.

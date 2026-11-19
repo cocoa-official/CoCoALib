@@ -73,20 +73,20 @@ namespace CoCoA
     bool myIsZeroAddMul(value_t& lhs, value_t y, value_t z) const noexcept(!CoCoA_DEBUG_MODE);///< lhs += y*z, result says whether lhs == 0.
     value_t myNormalize(value_t n) const noexcept(!CoCoA_DEBUG_MODE);
     value_t myHalfNormalize(value_t n) const noexcept(!CoCoA_DEBUG_MODE);
-    long myMaxIters() const noexcept { return myIterLimit; }
+    long long myMaxIters() const noexcept { return myIterLimit; }
 
   private: // Data members
     const value_t myModulusValue;
     const bool myResiduesAreSymm;  // Used only in myExport
     const value_t myResidueUPBValue;
-    const long myIterLimit;
+    const long long myIterLimit;
 
   private: // impl details
     static value_t ourCheckCtorArg(const MachineInt& n);
     static value_t ourCheckCtorArg(SmallPrime p);
     static value_t ourCalcResidueUPB(value_t p) noexcept;
-    static long ourCalcIterLimit(value_t p) noexcept;
-    static constexpr long ourMaxInt() noexcept;
+    static long long ourCalcIterLimit(value_t p) noexcept;
+    static constexpr long long ourMaxInt() noexcept;
   };  // end of class SmallFpDoubleImpl
 
 
