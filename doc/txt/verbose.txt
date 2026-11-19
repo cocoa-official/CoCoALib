@@ -35,7 +35,7 @@ There is just one constructor:
 %----------------------------------------------------------------------
 There is just one query:
 - ``SetVerbosityLevel(n)`` -- set the global verbosity level to ``n`` (non-negative integer); returns value of previous verbosity level.
-- ``VerbosityLevel(n)`` -- resturn the current verbosiy level (non-negative integer as a ``long``).
+- ``VerbosityLevel(n)`` -- returns the current verbosity level (non-negative integer as a ``long``).
 
 
 === Operations ===[operations]
