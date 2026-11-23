@@ -94,7 +94,7 @@ namespace CoCoA
       CoCoA_THROW_ERROR1(ERR::MixedRings);
     vector<RingElem> v(vec);
     const long ncols = len(myM);
-    myLinRelnValue.resize(ncols, zero(myRing));
+    myLinRelnValue.clear(); myLinRelnValue.resize(ncols, zero(myRing));
     myLinRelnValue.push_back(one(myRing));
     for (long i=0; i < ncols; ++i)
     {

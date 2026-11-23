@@ -524,6 +524,26 @@ namespace CoCoA
     try { ideal Ignore2 = saturate(I,J); } catch (const CoCoA::ErrorInfo& err) { CoCoA_ASSERT_ALWAYS(err == ERR::MixedRings); }
   }
 
+  void TestLinDepMill_20261123()
+  {
+    // BUG reported by Christoph Lueders via email
+    const ring& QQ = RingQQ();
+    auto VecQQ = [&](const std::vector<int>& v) { vector<RingElem> ans; for (int i:v) ans.push_back(RingElem(QQ,i)); return ans;};
+    LinDepMill LDM(QQ, 4);
+    LDM.myAppendVec(VecQQ({1,0,0,0}));
+    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
+    LDM.myAppendVec(VecQQ({0,1,0,0}));
+    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
+    LDM.myAppendVec(VecQQ({0,0,0,1}));
+    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
+    LDM.myAppendVec(VecQQ({0,5,-2,0}));
+    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
+    LDM.myAppendVec(VecQQ({-4,0,0,5}));
+    CoCoA_ASSERT_ALWAYS(!LDM.myLinReln().empty());
+    LDM.myAppendVec(VecQQ({0,0,2,0}));
+    CoCoA_ASSERT_ALWAYS(LDM.myLinReln() == VecQQ({0,-5,0,1,1}));
+  }
+  
   void TestResultant_20261109()
   {
     PolyRing QQxy = NewPolyRing(RingQQ(), symbols("x,y"));
@@ -572,6 +592,7 @@ namespace CoCoA
     TestIsIndetPosPower();
     TestCoeffEmbeddingHom();
     TestNewMatrixOrdering();
+    TestLinDepMill_20261123();
     TestResultant_20261109();
   }
 
