@@ -22,6 +22,9 @@
 
 #ifdef CoCoA_WITH_GFAN
 
+#include "cdd/setoper.h"
+#include "cdd/cdd.h"
+
 #include "CoCoA/SmartPtrIRC.H"
 
 #include <iosfwd>

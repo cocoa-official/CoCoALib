@@ -1,4 +1,4 @@
-//   Copyright (c)  2017,2022  John Abbott and Anna M. Bigatti
+//   Copyright (c)  2017,2022,2026  John Abbott and Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -82,20 +82,23 @@ namespace CoCoA
       CoCoA_THROW_ERROR1(ERR::ReqNonZero);
     if (deg(f,x) < deg(g,x))  return SubresultantSeq(g, f, x);
     VerboseLog VERBOSE("SubresultantSeq");
-    VERBOSE(90) << "Inputs:" << endl;
-    VERBOSE(90) << "LPP(f) = " << LPP(f) << endl;
-    VERBOSE(90) << "LPP(g) = " << LPP(g) << endl;
+    if (VerbosityLevel() >= 90)
+    {
+      VERBOSE(90) << "Inputs:" << endl;
+      VERBOSE(90) << "lcx(f,x) = " << lcx(f,x) << endl;
+      VERBOSE(90) << "lcx(g,x) = " << lcx(g,x) << endl;
+    }
     vector<RingElem> S;
     RingElem s = power(lcx(g,x), deg(f,x)-deg(g,x));
     RingElem A = g;
     RingElem B = prem(f,-g,x);
     if (IsZero(B))
     { // g is a factor of f: two cases: g const or g not const
-      if (!IsConstant(g))  { S.push_back(zero(P)); return S; }
+      if (deg(g,x) != 0)  { S.push_back(zero(P)); return S; }
       S.push_back(s*one(P));
       return S;
     }
-    VERBOSE(90) << "Before loop LPP(prem) = " << LPP(B) << endl; // prem is sometimes huge...
+    if (VerbosityLevel() >= 90)  VERBOSE(90) << "Before loop lcx(prem,x) = " << lcx(B,x) << endl; // prem is sometimes huge...
     while (true)
     {
       CheckForInterrupt("Subresultant");
@@ -109,7 +112,7 @@ namespace CoCoA
       {
         VERBOSE(90) << "case delta > 1; in fact delta = " << delta << endl;
         C = power(lcx(B,x), delta-1)*B/power(s, delta-1);
-        VERBOSE(90) << "LPP(C) = " << LPP(C) << endl;
+        if (VerbosityLevel() >= 90)  VERBOSE(90) << "lcx(C,x) = " << lcx(C,x) << endl;
         S.push_back(C);
       }
       else
@@ -120,7 +123,7 @@ namespace CoCoA
       B = prem(A, -B, x);
       const RingElem D = power(s,delta)*lcx(A,x);
       B /= D; // exact div!
-      if (!IsZero(B))  VERBOSE(90) << "LPP(B) = " << LPP(B) << endl;
+      if (!IsZero(B) && VerbosityLevel() >= 90)  VERBOSE(90) << "lcx(B,x) = " << lcx(B,x) << endl;
       A = C;
       s = lcx(A,x);
     }

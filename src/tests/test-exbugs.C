@@ -1,4 +1,4 @@
-//   Copyright (c)  2005,2019  John Abbott, Anna M. Bigatti
+//   Copyright (c)  2005,2019,2026  John Abbott, Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 
@@ -543,6 +543,17 @@ namespace CoCoA
     LDM.myAppendVec(VecQQ({0,0,2,0}));
     CoCoA_ASSERT_ALWAYS(LDM.myLinReln() == VecQQ({0,-5,0,1,1}));
   }
+  
+  void TestResultant_20261109()
+  {
+    PolyRing QQxy = NewPolyRing(RingQQ(), symbols("x,y"));
+    const RingElem f(QQxy, "x^2-2");
+    const RingElem g(QQxy, "y^3-3");
+    const RingElem res_fgx = resultant(f,g,0);  // wrt indet with index 0
+    const RingElem res_fgy = resultant(f,g,1);  // wrt indet with index 1
+    CoCoA_ASSERT_ALWAYS(res_fgx == power(g,2));
+    CoCoA_ASSERT_ALWAYS(res_fgy == power(f,3));
+  }
 
   //-------------------------------------------------------
   void program()
@@ -582,7 +593,9 @@ namespace CoCoA
     TestCoeffEmbeddingHom();
     TestNewMatrixOrdering();
     TestLinDepMill_20261123();
+    TestResultant_20261109();
   }
+
 
 } // end of namespace CoCoA
 

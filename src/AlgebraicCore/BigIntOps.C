@@ -495,7 +495,7 @@ namespace CoCoA
   {
     if (IsZero(myFactors[0]))  return *this;
     if (IsZero(N))  { myFactors[0] = 0; return *this; }
-    const int i = myIndex(N);
+    const unsigned int i = myIndex(N);
     if (i < len(myFactors))
     {
       myFactors[i] *= N;
@@ -529,7 +529,7 @@ namespace CoCoA
     // Assumes a factor of 4 between "bucket" sizes
     CoCoA_ASSERT(!IsZero(N));
     size_t sz = mpz_size(mpzref(N));
-    int i = 0;
+    unsigned int i = 0;
     while (sz >= 4)
     {
       sz /= 4;
@@ -538,7 +538,7 @@ namespace CoCoA
     return i;
   }
 
-  void ProdBigInt::myNormalize(int i) /*(morally) const*/
+  void ProdBigInt::myNormalize(unsigned int i) /*(morally) const*/
   {
     const unsigned int n = len(myFactors);
     CoCoA_ASSERT(i < n);
