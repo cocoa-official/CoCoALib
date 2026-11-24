@@ -26,7 +26,7 @@ all: CoCoAServer
 	touch all
 
 CoCoAServer: $(OBJS) $(COCOA_LIB)
-	$(COMPILE) $(OBJS) -o CoCoAServer $(LDLIBS)  # just LINKS the object files
+	$(COMPILE) $(OBJS) -o CoCoAServer $(SERVER_LDLIBS)  # just LINKS the object files
 
 
 .PHONY: benchmarks

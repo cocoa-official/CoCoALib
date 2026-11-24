@@ -34,10 +34,10 @@ namespace CoCoA
 
   // MaxInt gives the largest integer N such that all integers from 1 to N
   // N can be represented exactly using the type SmallFpDoubleImpl::value_t.
-  constexpr long SmallFpDoubleImpl::ourMaxInt() noexcept
+  constexpr double SmallFpDoubleImpl::ourMaxInt_double() noexcept
   {
     constexpr double MAX = 2 / numeric_limits<value_t>::epsilon();
-    return static_cast<long>(MAX);
+    return MAX;
   }
 
 
@@ -80,12 +80,12 @@ namespace CoCoA
   // These two inline fns are used only in the ctors.
   inline SmallFpDoubleImpl::value_t SmallFpDoubleImpl::ourCalcResidueUPB(value_t p) noexcept
   {
-    return p*(ourMaxInt()/p/2); // Largest (integer) multiple of p <= MaxInt/2.
+    return p*(ourMaxInt_double()/p/2); // Largest (integer) multiple of p <= MaxInt/2.
   }
 
-  inline long SmallFpDoubleImpl::ourCalcIterLimit(value_t p) noexcept
+  inline double SmallFpDoubleImpl::ourCalcIterLimit(value_t p) noexcept
   {
-return (ourMaxInt()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum without exceeding MaxInt/2.
+return (ourMaxInt_double()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum without exceeding MaxInt/2.
     // const long MaxIters = (ourMaxInt()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum without exceeding MaxInt/2.
     // constexpr long MaxLong = numeric_limits<long>::max();
     // if (MaxIters > MaxLong) return MaxLong; // JAA reckons this'll never happen.
@@ -122,7 +122,7 @@ return (ourMaxInt()/(p-1)/(p-1)/2); // Max no. of unreduced products you can sum
 
   long SmallFpDoubleImpl::ourMaxModulus() noexcept(!CoCoA_DEBUG_MODE)
   {
-    const double SqrtMax2 = std::floor(sqrt(ourMaxInt()/2))-1;
+    const double SqrtMax2 = std::floor(sqrt(ourMaxInt_double()/2))-1;
     const long ans = PrevPrime(static_cast<long>(SqrtMax2));
     CoCoA_ASSERT(ourCalcIterLimit(ans) > 0);
     return ans;

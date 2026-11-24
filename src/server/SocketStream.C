@@ -52,6 +52,27 @@ using std::min;
 
 #if defined (_WIN32) || defined (_WIN64)
 #define SIGCHLD 17
+
+namespace
+{
+  struct WinsockInit
+  {
+    WinsockInit()
+    {
+      WSADATA wsaData;
+      if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+        CoCoA_THROW_ERROR("Could not startup Winsock API", "WinsockInit");
+    }
+    ~WinsockInit() { WSACleanup(); }
+  };
+
+  void EnsureWinsockInitialized()
+  {
+    static WinsockInit TheInstance;
+  }
+}
+#else
+namespace { inline void EnsureWinsockInitialized() {} }
 #endif
 
 
@@ -64,6 +85,7 @@ namespace CoCoA
 
   SocketStreambuf::SocketStreambuf(unsigned short PortNum)
   {
+    EnsureWinsockInitialized();
     myPacketCounter=0;
     mySentBytes=0;
 
@@ -102,7 +124,11 @@ namespace CoCoA
       mySocketFD = accept(ListenFD, (struct sockaddr*)&ClientAddress, &AddrSize);
       if (mySocketFD < 0) 
         CoCoA_THROW_ERROR("accept failed (how can this happen?)", "SocketStreambuf ctor for server end");
+#if defined (_WIN32) || defined (_WIN64)
+      #pragma message("Windows does not support forking -- server will compile, but not work properly.")
+#else
       if (fork() == 0) break; // ctor succeeds only in the child
+#endif
       close(mySocketFD);
     }
 
@@ -112,6 +138,7 @@ namespace CoCoA
 
   SocketStreambuf::SocketStreambuf(const char hostname[], unsigned short PortNum)
   {
+    EnsureWinsockInitialized();
     myPacketCounter=0;
     mySentBytes=0;
 
