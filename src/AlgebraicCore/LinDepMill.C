@@ -1,4 +1,4 @@
-//   Copyright (c)  2018  John Abbott,  Anna M. Bigatti
+//   Copyright (c)  2018,2026  John Abbott,  Anna M. Bigatti
 
 //   This file is part of the source of CoCoALib, the CoCoA Library.
 //
@@ -27,7 +27,8 @@
 
 //#include <vector>
 using std::vector;
-
+#include <limits>
+using std::numeric_limits;
 
 namespace CoCoA
 {
@@ -38,10 +39,34 @@ namespace CoCoA
   class LinDepMillBase
   {
   public:
+    LinDepMillBase(const ring& k, long n);
     virtual bool myAppendVec(const std::vector<RingElem>& v) = 0;
     virtual const std::vector<RingElem>& myLinReln() const = 0;
     virtual ~LinDepMillBase();
+  protected:
+    void myCheckVec(const std::vector<RingElem>& v) const /*final*/;
+  protected: // data members
+    /*const*/ ring myRing;
+    /*const*/ int myDim;
+
   };
+
+  LinDepMillBase::LinDepMillBase(const ring& k, long dim):
+      myRing(k),
+      myDim(dim)  // static_cast ???
+  {
+    if (!IsField(k))  CoCoA_THROW_ERROR1(ERR::ReqField);
+    if (dim <= 0)  CoCoA_THROW_ERROR2(ERR::ReqPositive, "dimension");
+    if (dim > numeric_limits<int>::max())  CoCoA_THROW_ERROR2(ERR::ArgTooBig, "dimension");
+  }
+
+  void LinDepMillBase::myCheckVec(const std::vector<RingElem>& v) const
+  {
+    if (len(v) != myDim)  CoCoA_THROW_ERROR1(ERR::IncompatDims);
+    if (owner(v[0]) != myRing || !HasUniqueOwner(v))
+      CoCoA_THROW_ERROR1(ERR::MixedRings);
+  }
+
 
   bool LinDepMill::myAppendVec(const std::vector<RingElem>& v)
   { return myImpl->myAppendVec(v); }
@@ -58,13 +83,11 @@ namespace CoCoA
   {
   public:
     LinDepMill_generic(const ring& k, long dim);
-    bool myAppendVec(const std::vector<RingElem>& v) override;
-    const std::vector<RingElem>& myLinReln() const override  { return myLinRelnValue; }
+    bool myAppendVec(const std::vector<RingElem>& v) override final;
+    const std::vector<RingElem>& myLinReln() const override final { return myLinRelnValue; }
 // DEFAULT DTOR is OK    virtual ~LinDepMill_generic();
   
   private:
-    ring myRing;
-    int myVecLen;
     std::vector< std::vector<RingElem> > myM;
     std::vector< std::vector<RingElem> > myRowRepr;
     std::vector<int> myColIndices;
@@ -73,11 +96,8 @@ namespace CoCoA
 
 
   LinDepMill_generic::LinDepMill_generic(const ring& K, long dim):
-      myRing(K),
-      myVecLen(dim)
+      LinDepMillBase(K,dim) // checks the args
   {
-    if (!IsField(K))  CoCoA_THROW_ERROR1(ERR::ReqField);
-    if (dim <= 0)  CoCoA_THROW_ERROR2(ERR::ReqPositive, "dimension");
     myM.reserve(dim);
     myRowRepr.reserve(dim);
     myColIndices.reserve(dim);
@@ -88,36 +108,35 @@ namespace CoCoA
   // What is rtn value???
   bool LinDepMill_generic::myAppendVec(const std::vector<RingElem>& vec)
   {
-    const long n = len(vec);
-    if (n != myVecLen)  CoCoA_THROW_ERROR1(ERR::IncompatDims);
-    if (owner(vec[0]) != myRing || !HasUniqueOwner(vec))
-      CoCoA_THROW_ERROR1(ERR::MixedRings);
+    myCheckVec(vec);
     vector<RingElem> v(vec);
     const long ncols = len(myM);
-    myLinRelnValue.clear(); myLinRelnValue.resize(ncols, zero(myRing));
+    for (RingElem& entry: myLinRelnValue)  { entry = 0; }
+    myLinRelnValue.resize(ncols, zero(myRing));
     myLinRelnValue.push_back(one(myRing));
     for (long i=0; i < ncols; ++i)
     {
       const long col = myColIndices[i];
-      if (IsZero(v[col])) continue;
+      if (IsZero(v[col]))  continue;
       const RingElem c = v[col]/myM[i][col];
-      for (long j=0; j < n; ++j)
+      for (long j=0; j < myDim; ++j)
         v[j] -= c*myM[i][j];
       for (long j=0; j < len(myRowRepr[i]); ++j)
         myLinRelnValue[j] -= c*myRowRepr[i][j];
     }
-    for (long i=0; i < n; ++i)
+    bool ReducedToZero = true;
+    for (long i=0; i < myDim; ++i)
     {
-      if (IsZero(v[i])) continue;
+      if (IsZero(v[i]))  continue;
       // if v!=0 add it to the mill:
+      ReducedToZero = false;
       myM.push_back(v);
       myColIndices.push_back(i);
       myRowRepr.push_back(myLinRelnValue);
-      myLinRelnValue.clear();
       break;
     }
     // v is reduced: if 0 -> myLinRelnValue; else -> mill
-    return !myLinRelnValue.empty();
+    return ReducedToZero;
   }
 
 
@@ -127,13 +146,11 @@ namespace CoCoA
   {
   public:
     LinDepMill_Fp(const ring& k, long dim);
-    bool myAppendVec(const std::vector<RingElem>& v) override;
-    const std::vector<RingElem>& myLinReln() const override  { return myLinRelnValue; }
+    bool myAppendVec(const std::vector<RingElem>& v) override final;
+    const std::vector<RingElem>& myLinReln() const override final  { return myLinRelnValue; }
 // DEFAULT DTOR is OK    virtual ~LinDepMill_Fp();
   
   private:
-    ring myRing;
-    int myVecLen;
     // std::vector< std::vector<RingElem> > myM;
     // std::vector< std::vector<RingElem> > myRowRepr;
     // std::vector<int> myColIndices;
@@ -143,8 +160,7 @@ namespace CoCoA
   };
 
   LinDepMill_Fp::LinDepMill_Fp(const ring& k, long dim):
-      myRing(k),
-      myVecLen(dim),
+      LinDepMillBase(k, dim),
       myLinRelnValue(),
       myArithModP(ConvertTo<long>(characteristic(k))),
       myMill(myArithModP,dim)
@@ -155,22 +171,19 @@ namespace CoCoA
 
   bool LinDepMill_Fp::myAppendVec(const std::vector<RingElem>& v)
   {
-    /* check arg */
-    vector<SmallFpImpl::value> vec(myVecLen);
-    for (int i=0; i < myVecLen; ++i)
-    {
+    myCheckVec(v);
+    vector<SmallFpImpl::value> vec(myDim);
+    for (int i=0; i < myDim; ++i)
       vec[i] = myArithModP.myReduce(ConvertTo<BigInt>(v[i]));
-    }
-    const bool GotALinDep = myMill.myAppendVec(vec);
-    if (!GotALinDep) myLinRelnValue.clear();
-    if (GotALinDep)
+    const bool ReducedToZero = myMill.myAppendVec(vec);
+    if (ReducedToZero)
     {
       const vector<SmallFpImpl::value>& reln = myMill.myLinReln();
       myLinRelnValue.resize(len(reln), zero(myRing));
       for (int i=0; i < len(reln); ++i)
         myLinRelnValue[i] = myArithModP.myExportNonNeg(reln[i]);
     }
-    return GotALinDep;
+    return ReducedToZero;
   }
 
 
