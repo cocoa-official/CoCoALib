@@ -157,8 +157,8 @@ namespace CoCoA
       VERBOSE(80) << "Iteration " << IterNum << " PP = " << t << endl;
       
       coefficients(coeffs, NF(monomial(P_old, exponents(t)), I), QB_old);
-      LDM.myAppendVec(coeffs);
-      if (LDM.myLinReln().empty()) // independent
+      const bool FoundReln = LDM.myAppendVec(coeffs);
+      if ( !FoundReln ) // independent
         AddToQBAndUpdate(QBG, QB_new, t);
       else
         AddToGBAndUpdate(QBG, GB_new, t, LDM.myLinReln(), QB_new);

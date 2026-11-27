@@ -530,18 +530,24 @@ namespace CoCoA
     const ring& QQ = RingQQ();
     auto VecQQ = [&](const std::vector<int>& v) { vector<RingElem> ans; for (int i:v) ans.push_back(RingElem(QQ,i)); return ans;};
     LinDepMill LDM(QQ, 4);
-    LDM.myAppendVec(VecQQ({1,0,0,0}));
-    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
-    LDM.myAppendVec(VecQQ({0,1,0,0}));
-    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
-    LDM.myAppendVec(VecQQ({0,0,0,1}));
-    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
-    LDM.myAppendVec(VecQQ({0,5,-2,0}));
-    CoCoA_ASSERT_ALWAYS(LDM.myLinReln().empty());
-    LDM.myAppendVec(VecQQ({-4,0,0,5}));
-    CoCoA_ASSERT_ALWAYS(!LDM.myLinReln().empty());
-    LDM.myAppendVec(VecQQ({0,0,2,0}));
+    CoCoA_ASSERT_ALWAYS(!LDM.myAppendVec(VecQQ({1,0,0,0})));
+    CoCoA_ASSERT_ALWAYS(!LDM.myAppendVec(VecQQ({0,1,0,0})));
+    CoCoA_ASSERT_ALWAYS(!LDM.myAppendVec(VecQQ({0,0,0,1})));
+    CoCoA_ASSERT_ALWAYS(!LDM.myAppendVec(VecQQ({0,5,-2,0})));
+    CoCoA_ASSERT_ALWAYS(LDM.myAppendVec(VecQQ({-4,0,0,5})));  // lin dep!
+    CoCoA_ASSERT_ALWAYS(LDM.myAppendVec(VecQQ({0,0,2,0})));   // again!
     CoCoA_ASSERT_ALWAYS(LDM.myLinReln() == VecQQ({0,-5,0,1,1}));
+    // Same test but over a small finite field
+    const ring& Fp = NewZZmod(32003);
+    auto VecFp = [&](const std::vector<int>& v) { vector<RingElem> ans; for (int i: v) ans.push_back(RingElem(Fp,i)); return ans;};
+    LinDepMill LDM2(Fp, 4);
+    CoCoA_ASSERT_ALWAYS(!LDM2.myAppendVec(VecFp({1,0,0,0})));
+    CoCoA_ASSERT_ALWAYS(!LDM2.myAppendVec(VecFp({0,1,0,0})));
+    CoCoA_ASSERT_ALWAYS(!LDM2.myAppendVec(VecFp({0,0,0,1})));
+    CoCoA_ASSERT_ALWAYS(!LDM2.myAppendVec(VecFp({0,5,-2,0})));
+    CoCoA_ASSERT_ALWAYS(LDM2.myAppendVec(VecFp({-4,0,0,5})));  // lin dep!
+    CoCoA_ASSERT_ALWAYS(LDM2.myAppendVec(VecFp({0,0,2,0})));   // again!
+    CoCoA_ASSERT_ALWAYS(LDM2.myLinReln() == VecFp({0,-5,0,1,1}));
   }
   
   void TestResultant_20261109()
