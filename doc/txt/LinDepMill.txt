@@ -1,0 +1,71 @@
+      LinDepMill
+      Copyright (c)  2026  John Abbott, Anna M. Bigatti
+      GNU Free Documentation License, Version 1.2
+%!includeconf: ../aux-txt2tags/config.t2t
+      TeXTitle{LinDepMill}{John Abbott, Anna M. Bigatti}
+
+
+== Examples ==[examples]
+%----------------------------------------------------------------------
+
+No example currently :-(
+
+- [ex-empty.C ../../examples/index.html#ex-empty.C]
+-
+
+== User documentation ==
+%======================================================================
+
+The class ``LinDepMill`` serves to detect linear dependencies in a
+succession of vectors.
+
+
+=== Constructors and pseudo-constructors ===[constructors]
+%----------------------------------------------------------------------
+
+There is just one constructor:
+- ``LinDepMill(k, n)``  a linear dependency checker for vectors of length ``n`` over the field ``k``; error if ``k`` is not a field, or if ``n < 1``.
+-
+
+=== Queries and views ===[queries]
+%----------------------------------------------------------------------
+
+Currently there are no queries for a ``LinDepMill``.
+
+
+=== Operations ===[operations]
+%----------------------------------------------------------------------
+
+There are just two operations: adjoin/test a vector, and read the coefficients
+of the linear relation if one was found.
+
+Let ``LDM`` be a linear dependency mill for vectors of length ``n`` over the field ``k``.  And let ``v`` be a vector of length ``n`` over ``k``.
+- ``LDM.myAppendVec(v)`` -- ``true`` iff ``v`` is linearly dependent on the vectors previous appended to ``LDM``; if ``v`` is not dependent then it is used to expand the linear span.
+- ``LDM.myLinReln()`` -- returns a vector of elements of ``k`` which is a linear relation; the return value makes sense only if the last call to ``LDM.myAppendVec`` returned ``true``
+-
+
+It is the caller's responsibility to keep track of which vectors passed
+to ``myAppendVec`` were retained as generators of the linear span.  This
+information is necessary to interpret the return value of ``myLinReln``.
+
+
+== Maintainer documentation ==
+%======================================================================
+
+MISSING -- coming soon (I hope).
+
+== Bugs, shortcomings and other ideas ==
+%======================================================================
+
+The behaviour of ``myLinReln`` could be friendlier.  It does expose
+some internal workings, but this is probably harmless.
+
+
+== Main changes ==
+%======================================================================
+
+**2026**
+- November (v0.99880): finally wrote some documentation; cleaned the impl
+
+
+
