@@ -290,14 +290,14 @@ namespace CoCoA
 
     matrix MD = NewDenseMat(IdentityMat(K, NRows));
     vector<RingElem> flattenv = FlattenByRows(MD);
-    ILD.myAppendVec(flattenv);
+    bool FoundReln = ILD.myAppendVec(flattenv);
 
     /*C++17 [[maybe_unused]]*/    double S1=0, S2=0, S5=0, V;
-    while ( (ILD.myLinReln()).empty() )
+    while ( !FoundReln )
     {
-      V = CpuTime(); MD = M*MD;                    S1 += (CpuTime()-V);
-      V = CpuTime(); flattenv = FlattenByRows(MD); S2 += (CpuTime()-V);
-      V = CpuTime(); ILD.myAppendVec(flattenv);    S5 += (CpuTime()-V);
+      V = CpuTime(); MD = M*MD;                                S1 += (CpuTime()-V);
+      V = CpuTime(); flattenv = FlattenByRows(MD);             S2 += (CpuTime()-V);
+      V = CpuTime(); FoundReln = ILD.myAppendVec(flattenv);    S5 += (CpuTime()-V);
     }
 
     double Y = CpuTime();
@@ -358,19 +358,19 @@ namespace CoCoA
     SetEntry(fPow, 0,0, one(K));
 
     vector<RingElem> FlatVec = FlattenByRows(fPow);
-    ILD.myAppendVec(FlatVec);
+    bool FoundReln = ILD.myAppendVec(FlatVec);
 
     U = CpuTime();
     double S1 = 0;
     double S2 = 0;
     double S5 = 0;
     double V;
-    while ( (ILD.myLinReln()).empty() )
+    while ( !FoundReln )
     {
       CheckForInterrupt("MinPolyQuotMat");
-      V = CpuTime(); fPow = M*fPow;                 S1 += (CpuTime()-V);
-      V = CpuTime(); FlatVec = FlattenByRows(fPow); S2 += (CpuTime()-V);
-      V = CpuTime(); ILD.myAppendVec(FlatVec);      S5 += (CpuTime()-V);
+      V = CpuTime(); fPow = M*fPow;                             S1 += (CpuTime()-V);
+      V = CpuTime(); FlatVec = FlattenByRows(fPow);             S2 += (CpuTime()-V);
+      V = CpuTime(); FoundReln = ILD.myAppendVec(FlatVec);      S5 += (CpuTime()-V);
     }
     VERBOSE(90) << "time cycle: --> " << (CpuTime() - U) << std::endl;
 
@@ -435,7 +435,7 @@ namespace CoCoA
 
     RingElem p = one(P);
     coeffs[0] = one(K);
-    ILD.myAppendVec(coeffs);
+    bool FoundReln = ILD.myAppendVec(coeffs);
 
     double W = CpuTime();
     double S1 = 0;
@@ -443,13 +443,13 @@ namespace CoCoA
     double S3 = 0;
     double S4 = 0;
     double U;
-    while ( (ILD.myLinReln()).empty() )
+    while ( !FoundReln )
     {
       CheckForInterrupt("MinPolyQuotDef");
       U = CpuTime();  p *= f;  S1 = S1+(CpuTime()-U);
       U = CpuTime();  p = NF(p, I);  S2 = S2+(CpuTime()-U);
       U = CpuTime();  coefficients(coeffs, p, QB);  S3 = S3+(CpuTime()-U);
-      U = CpuTime();  ILD.myAppendVec(coeffs);  S4 = S4+(CpuTime()-U);
+      U = CpuTime();  FoundReln = ILD.myAppendVec(coeffs);  S4 = S4+(CpuTime()-U);
     }
     W = CpuTime() - W;
     VERBOSE(90) << "time cycle: --> " << (W) << std::endl;
@@ -512,14 +512,14 @@ namespace CoCoA
 
     RingElem p = one(P);
     coeffs[0] = one(K);
-    ILD.myAppendVec(coeffs);
+    bool FoundReln = ILD.myAppendVec(coeffs);
     double W = CpuTime();
     double S1 = 0;
     double S2 = 0;
     double S3 = 0;
     double S4 = 0;
     RingElem partial = zero(P);
-    while ( (ILD.myLinReln()).empty() )
+    while ( !FoundReln )
     {
       CheckForInterrupt("MinPolyQuotDefLin");
       U = CpuTime();  //p = p*f;
@@ -530,7 +530,7 @@ namespace CoCoA
       S1 = S1+(CpuTime()-U);
       //    U = CpuTime();  p = NF(p, I);  S2 = S2+(CpuTime()-U);
       U = CpuTime();  coefficients(coeffs, p, QB);  S3 = S3+(CpuTime()-U);
-      U = CpuTime();  ILD.myAppendVec(coeffs);  S4 = S4+(CpuTime()-U);
+      U = CpuTime();  FoundReln = ILD.myAppendVec(coeffs);  S4 = S4+(CpuTime()-U);
     }
     W = CpuTime() - W;
     VERBOSE(90) << "  ... MinPolyDefQuot: cycle " << W << std::endl;
@@ -959,15 +959,16 @@ namespace CoCoA
     RingElem z = indet(P, NumIndets(P)-1);
     RingElem p = one(P);
     coeffs[0] = one(K);
-    ILD.myAppendVec(coeffs);
-    while ( (ILD.myLinReln()).empty() )
+    bool FoundReln = ILD.myAppendVec(coeffs);
+    while ( !FoundReln )
     {
       p = NF(p*z, I);
       coefficients(coeffs, p, QB);
-      ILD.myAppendVec(coeffs);
+      FoundReln = ILD.myAppendVec(coeffs);
     }
     if (len(ILD.myLinReln()) != len(QB)+1)
       CoCoA_THROW_ERROR2(ERR::BadArg, "Last indet not good: len(linreln)!=len(QB)");
+    // At this point ILD contains a basis for the full space, so myAppendVec will always return true
     RingElem MinPoly_z(P);
     const vector<RingElem>& linreln = ILD.myLinReln();
     long d;
